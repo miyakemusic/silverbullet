@@ -1,0 +1,63 @@
+package jp.silverbullet.register;
+
+import java.util.BitSet;
+
+import jp.silverbullet.handlers.InterruptHandler;
+import jp.silverbullet.handlers.SvDevice;
+
+abstract public class SvSimulator {
+//	private SimRegisterControl regControl;
+	private SvDeviceHandler deviceHandler;
+
+//	protected SimRegisterControl getRegControl() {
+//		return regControl;
+//	}
+	protected void triggerInterrupt() {
+		this.deviceHandler.onInterrupt();
+	}
+	
+	protected void updateBlockData(long address, byte[] data) {
+		this.deviceHandler.onUpdateBlockData(address, data);
+	}
+	
+	protected int getValue(int index, BitSet value, BitSet mask) {
+		return Integer.valueOf(RegisterValueCalculator.getValue(index, value, mask));
+	}
+	
+	public void setDevice(final SvDeviceHandler deviceHandler) {
+		this.deviceHandler = deviceHandler;
+		
+		SvDevice device = new SvDevice() {
+			@Override
+			public BitSet readIo(long address) {
+				return null;
+			}
+
+			@Override
+			public byte[] readBlock(long address, int size) {
+				return null;
+			}
+
+			@Override
+			public int writeIo(long address, BitSet data, BitSet mask) {
+				deviceHandler.onUpdateRegister(address, data, mask);
+				return 1;
+			}
+
+			@Override
+			public void setInterruptHandler(InterruptHandler interruptHandler) {
+
+			}
+			
+		};
+		
+//		regControl = new SimRegisterControl(new RegisterAccess(device));
+	}
+	
+	abstract protected void writeIo(long address, BitSet data, BitSet mask);
+//	abstract protected void readIo(long address);
+//	abstract protected byte[] readBlock(long address, int size);
+	abstract protected void writeBlock(long address, byte[] data);
+//	abstract protected boolean isFile(long address);
+//	abstract protected String getBlockDescription(long address);
+}
