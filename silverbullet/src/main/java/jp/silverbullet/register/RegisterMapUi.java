@@ -2,6 +2,7 @@ package jp.silverbullet.register;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javafx.application.Platform;
@@ -15,6 +16,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
+import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
@@ -59,6 +61,8 @@ public class RegisterMapUi extends VBox implements RegisterMapListener {
 			if (model.exists(i)) {
 				VBox v = new VBox();
 				vbox.getChildren().add(v);
+				
+				// Should be refactored
 				{
 					HBox hbox = new HBox();
 					v.getChildren().add(hbox);
@@ -107,6 +111,16 @@ public class RegisterMapUi extends VBox implements RegisterMapListener {
 							}
 							else {
 								final Button button =  new Button(value);
+					
+								button.setOnDragDone(new EventHandler<DragEvent>() {
+									@Override
+									public void handle(DragEvent arg0) {
+										List<File> files = arg0.getDragboard().getFiles();
+										if (files.size() > 0) {
+											model.setBlock(ii,  jj,  files.get(0));
+										}
+									}
+								});
 								button.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
 									@Override
 									public void handle(MouseEvent arg0) {

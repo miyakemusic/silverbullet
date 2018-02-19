@@ -94,6 +94,7 @@ public class BuilderFx extends Application {
 	private GuiPropertyFx guiPropFx;
 
 	private TestRecorderUi testUi;
+	private BuilderServer webServer;
 		
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -277,6 +278,7 @@ public class BuilderFx extends Application {
 			@Override
 			public void handle(WindowEvent arg0) {
 				saveFile("sv_backup.zip");
+				System.exit(0);
 			}
         });
         loadFile("sv_backup.zip");
@@ -314,6 +316,13 @@ public class BuilderFx extends Application {
         startWebServer();
        
         handleMessage();
+        
+//        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+//			@Override
+//			public void handle(WindowEvent arg0) {
+//				System.exit(0);
+//			}
+//        });
 	}
 
 	protected void exportPropInfo() {
@@ -390,7 +399,7 @@ public class BuilderFx extends Application {
 	}
 
 	protected void startWebServer() {
-		new BuilderServer(8081);
+		webServer = new BuilderServer(8081);
 	}
 
 	protected void startRemoteCommandServer() {
