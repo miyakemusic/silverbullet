@@ -19,6 +19,7 @@ import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import jp.silverbullet.dependency.analyzer.DependencyFrameFx;
 import jp.silverbullet.dependency.engine.DependencyBuilder;
+import jp.silverbullet.dependency.engine.MarcoExtractor;
 import jp.silverbullet.dependency.speceditor2.DependencySpecDetail;
 import jp.silverbullet.dependency.speceditor2.DependencySpecHolder;
 import jp.silverbullet.uidesigner.pane.DependencyFrameFactory;
@@ -26,7 +27,9 @@ import jp.silverbullet.uidesigner.pane.SvPanelModel;
 
 public class DependencySpecListFx extends VBox {
 
+	private SvPanelModel svPanelModel;
 	public DependencySpecListFx(List<String> allIds, DependencySpecHolder dependencySpecHolder, final SvPanelModel svPanelModel) {
+		this.svPanelModel = svPanelModel;
 		final TableView<MyData> tableView = new TableView<>();
 		
 		TableColumn<MyData, String> idColumn = new TableColumn<>("ID");
@@ -94,7 +97,7 @@ public class DependencySpecListFx extends VBox {
 //			return "Loop!! " + history.get(history.size()-1);
 //		}
 		Set<String> ret = new LinkedHashSet<String>();
-		for (String warning : new DependencyBuilder(id, dependencySpecHolder).getWarnings()) {
+		for (String warning : new DependencyBuilder(id, dependencySpecHolder, new MarcoExtractor(svPanelModel.getPropertyStore())).getWarnings()) {
 			ret.add(warning);
 		}
 		return ret.toString().replace("[", "").replace("]", "").replace(", ", "\n");

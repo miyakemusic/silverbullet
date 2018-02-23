@@ -78,29 +78,32 @@ public class DependencySpecEditorModelImpl implements DependencySpecEditorModel 
 		element = stripBracket(element);
 		getDependencySpecHolder().addSpec(id, element, formula);
 
-		if (this.getDependencySpecHolder().getPassiveRelations(id, element).size() == 1) {
-			if (formula.getValueMatched().equals(DependencyFormula.TRUE) || formula.getValueMatched().equals(DependencyFormula.FALSE)) {
-				
-				DependencyFormula formula2 = formula.clone();
-				if (formula.getEvalution().equals(DependencyFormula.EQUAL)) {
-					formula2.setEvalution(DependencyFormula.NOTEQUAL);
-				}
-				else if (formula.getEvalution().equals(DependencyFormula.NOTEQUAL)) {
-					formula2.setEvalution(DependencyFormula.EQUAL);
-				}
-				formula2.setValueMatched(DependencyFormula.FALSE);
-				
-				if (formula.getValueMatched().equals(DependencyFormula.TRUE)) {
-					formula2.setValueMatched(DependencyFormula.FALSE);
-				}
-				else if (formula.getValueMatched().equals(DependencyFormula.FALSE)) {
-					formula2.setValueMatched(DependencyFormula.TRUE);
-				}
-				 
-				getDependencySpecHolder().addSpec(id, element, formula2);
+//		if (this.getDependencySpecHolder().getPassiveRelations(id, element).size() == 1) {
+//			addAlternativeCondition(id, element, formula);
+//		}
+	}
+
+	private void addAlternativeCondition(String id, String element, DependencyFormula formula) {
+		if (formula.getValueMatched().equals(DependencyFormula.TRUE) || formula.getValueMatched().equals(DependencyFormula.FALSE)) {
+			
+			DependencyFormula formula2 = formula.clone();
+			if (formula.getEvalution().equals(DependencyFormula.EQUAL)) {
+				formula2.setEvalution(DependencyFormula.NOTEQUAL);
 			}
+			else if (formula.getEvalution().equals(DependencyFormula.NOTEQUAL)) {
+				formula2.setEvalution(DependencyFormula.EQUAL);
+			}
+			formula2.setValueMatched(DependencyFormula.FALSE);
+			
+			if (formula.getValueMatched().equals(DependencyFormula.TRUE)) {
+				formula2.setValueMatched(DependencyFormula.FALSE);
+			}
+			else if (formula.getValueMatched().equals(DependencyFormula.FALSE)) {
+				formula2.setValueMatched(DependencyFormula.TRUE);
+			}
+			 
+			getDependencySpecHolder().addSpec(id, element, formula2);
 		}
-		
 	}
 	
 	private String wrapBracket(String id) {
@@ -124,6 +127,56 @@ public class DependencySpecEditorModelImpl implements DependencySpecEditorModel 
 	@Override
 	public void setConfirmRequired(String element) {
 		this.getDependencySpecHolder().getSpecs().get(this.getProperty().getId()).setConfirmEnabled(element, true);;
+	}
+
+	@Override
+	public void addOpositeCondition(String element, DependencySpecDetail spec) {
+//		element = stripBracket(element);
+		DependencyFormula newSpec = spec.getSpecification().clone();
+		if (this.getProperty().isListProperty()) {
+			if (spec.getPassiveElement().equals(DependencyFormula.VISIBLE)) {
+				
+			}
+			else if (spec.getPassiveElement().equals(DependencyFormula.ENABLED)) {
+				
+			}
+			else {
+				if (newSpec.getValueMatched().equals(DependencyFormula.TRUE)) {
+					newSpec.setValueMatched(DependencyFormula.FALSE);
+				}
+				else {
+					newSpec.setValueMatched(DependencyFormula.TRUE);
+				}
+				newSpec.setRightSide(DependencyFormula.OTHER);
+			}
+			
+		}
+		else if (this.getProperty().isBooleanProperty()) {
+			if (spec.getPassiveElement().equals(DependencyFormula.VISIBLE)) {
+				
+			}
+			else if (spec.getPassiveElement().equals(DependencyFormula.ENABLED)) {
+				
+			}
+			else {
+				if (spec.getSpecification().getRightSide().equals(DependencyFormula.TRUE)) {
+					newSpec.setRightSide(DependencyFormula.FALSE);
+				}
+				else if (spec.getSpecification().getRightSide().equals(DependencyFormula.FALSE)) {
+					newSpec.setRightSide(DependencyFormula.TRUE);
+				}
+				if (newSpec.getValueMatched().equals(DependencyFormula.TRUE)) {
+					newSpec.setValueMatched(DependencyFormula.FALSE);
+				}
+				else {
+					newSpec.setValueMatched(DependencyFormula.TRUE);
+				}
+			}
+		}
+		else {
+			return;
+		}
+		getDependencySpecHolder().addSpec(getProperty().getId(), spec.getPassiveElement(), newSpec);
 	}
 
 }

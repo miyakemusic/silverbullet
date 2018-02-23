@@ -12,11 +12,12 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import jp.silverbullet.SvProperty;
 import jp.silverbullet.SvPropertyListener;
 import jp.silverbullet.dependency.engine.DependencyInterface;
 
-public abstract class SvPropertyWidgetFx extends HBox implements SvPropertyListener {
+public abstract class SvPropertyWidgetFx extends StackPane implements SvPropertyListener {
 
 	
 	private SvProperty property;

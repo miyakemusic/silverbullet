@@ -30,4 +30,6 @@ public interface DependencySpecEditorModel {
 
 	public void setConfirmRequired(String element);
 
+	public void addOpositeCondition(String title, DependencySpecDetail spec);
+
 }

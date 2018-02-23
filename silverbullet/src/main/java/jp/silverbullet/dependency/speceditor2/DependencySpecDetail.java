@@ -7,7 +7,7 @@ public class DependencySpecDetail implements Cloneable {
 
 
 	@Override
-	protected DependencySpecDetail clone() {
+	public DependencySpecDetail clone() {
 		try {
 			DependencySpecDetail ret = (DependencySpecDetail)super.clone();
 			ret.specification = this.specification.clone();

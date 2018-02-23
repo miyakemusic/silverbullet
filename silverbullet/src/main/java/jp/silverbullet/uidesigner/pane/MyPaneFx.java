@@ -4,20 +4,26 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import jp.silverbullet.uidesigner.pane.UiElement.LayoutType;
 import jp.silverbullet.uidesigner.widgets.Description;
 import javafx.scene.input.MouseEvent;
 
-public abstract class MyPaneFx extends Pane {
+public abstract class MyPaneFx extends StackPane {
 	
 	abstract protected void onAddUniversal();
 
@@ -44,7 +50,28 @@ public abstract class MyPaneFx extends Pane {
 		});
 
 		this.setLayout(layoutType);
-		super.getChildren().add(base);
+		
+		if (desc.isDefined(Description.BORDERTITLE)) {
+			Label title = new Label(" " + desc.getValue(Description.BORDERTITLE) + " ");
+			title.setStyle(title.getStyle() + ";" + "-fx-translate-y: -16;");
+			if (this.style.isDefined("-fx-background-color")) {
+				title.setStyle(title.getStyle() + ";-fx-background-color:" + this.style.getValue("-fx-background-color"));
+			}
+		    //title.getStyleClass().add("bordered-titled-title");
+//		    StackPane.setAlignment(title, Pos.TOP_CENTER);
+//
+//		    StackPane contentPane = new StackPane();
+//		    base.getStyleClass().add("bordered-titled-content");
+//		    contentPane.getChildren().add(base);
+//
+//		    getStyleClass().add("bordered-titled-border");
+//		    super.getChildren().addAll(title, contentPane);	
+		    this.setAlignment(Pos.TOP_LEFT);
+			super.getChildren().addAll(title, base);
+		}
+		else {
+			super.getChildren().add(base);
+		}
 		
 		this.setFocusTraversable(true);
 		
@@ -154,19 +181,19 @@ public abstract class MyPaneFx extends Pane {
 	
 	private void setLayout(LayoutType layout) {
 		if (layout == null) {
-			this.base = new VBox();
+			this.base = new VBox();//new TilePane(Orientation.VERTICAL);
 		}
 		else if (layout.equals(LayoutType.Flow)) {
 			this.base = new FlowPane();
 		}
 		else if (layout.equals(LayoutType.Horizontal)) {
-			this.base = new HBox();
+			this.base = new HBox();//new TilePane(Orientation.HORIZONTAL);
 		}
 		else if (layout.equals(LayoutType.Vertical)) {
-			this.base = new VBox();
+			this.base = new VBox();//new TilePane(Orientation.VERTICAL);
 		}
 		else if (layout.equals(LayoutType.Absolute)) {
-			this.base = new Pane();
+			this.base = new AnchorPane();
 		}
 		else {
 			this.base = new VBox();

@@ -74,13 +74,14 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 
-public class BuilderFx extends Application {
+public abstract class BuilderFx extends Application {
 	
+//	private static final String SV_BACKUP_ZIP = "sv_backup.zip";
 	private static final String DESIGNER_TMP = "sv_tmp";
-	private static BuilderModel builderModel = new BuilderModelImpl();
-	private static DesignerModel designerModel = new DesignerModelImpl(builderModel);
-	private static TestRecorder testRecorder = new TestRecorder(builderModel);
-	private static RegisterMapModel registerMapModel = new RegisterMapModel(builderModel);
+	private BuilderModel builderModel;// = new BuilderModelImpl();
+	private static DesignerModel designerModel;// = new DesignerModelImpl(builderModel);
+	private TestRecorder testRecorder;// = new TestRecorder(builderModel);
+	private RegisterMapModel registerMapModel;// = new RegisterMapModel(builderModel);
 
 	public static DesignerModel getModel() {
 		return designerModel;
@@ -96,6 +97,13 @@ public class BuilderFx extends Application {
 	private TestRecorderUi testUi;
 	private BuilderServer webServer;
 		
+	public BuilderFx() {
+		builderModel = new BuilderModelImpl();
+		designerModel = new DesignerModelImpl(builderModel);
+		testRecorder = new TestRecorder(builderModel);
+		registerMapModel = new RegisterMapModel(builderModel);		
+	}
+	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		builderModel.setUserPath(this.getClass().getName().replace("." + this.getClass().getSimpleName(), ""));
@@ -277,11 +285,11 @@ public class BuilderFx extends Application {
         primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 			@Override
 			public void handle(WindowEvent arg0) {
-				saveFile("sv_backup.zip");
+				saveFile(getBackupFilename());
 				System.exit(0);
 			}
         });
-        loadFile("sv_backup.zip");
+        loadFile(getBackupFilename());
         
         designerModel.getBuilderModel().getDependency().addDependencyListener(new DependencyListener() {
 			@Override
@@ -324,6 +332,8 @@ public class BuilderFx extends Application {
 //			}
 //        });
 	}
+
+	abstract protected String getBackupFilename();
 
 	protected void exportPropInfo() {
 		XmlPersistent<PropertyType> per = new XmlPersistent<>();
@@ -483,7 +493,7 @@ public class BuilderFx extends Application {
 	}
 
 	protected void backup() {
-		saveFile("sv_backup.zip");
+		saveFile(getBackupFilename());
 	}
 
 	protected void showRegisterIOForTest() {

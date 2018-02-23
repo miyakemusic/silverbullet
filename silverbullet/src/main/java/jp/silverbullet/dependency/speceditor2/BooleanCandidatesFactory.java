@@ -13,7 +13,7 @@ public class BooleanCandidatesFactory implements CandidatesFatory {
 
 	@Override
 	public List<String> getAnswerCandidates() {
-		return Arrays.asList(DependencyFormula.ANY);
+		return Arrays.asList(DependencyFormula.ANY, DependencyFormula.TRUE, DependencyFormula.FALSE, DependencyFormula.OTHER);
 	}
 
 	@Override

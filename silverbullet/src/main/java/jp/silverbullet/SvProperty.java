@@ -333,4 +333,12 @@ public class SvProperty implements Cloneable {
 		return "";
 	}
 
+	public List<String> getListIds() {
+		List<String> ret = new ArrayList<String>();
+		for (ListDetailElement e: this.getListDetail()) {
+			ret.add(e.getId());
+		}
+		return ret;
+	}
+
 }

@@ -39,7 +39,7 @@ public abstract class GuiPropertyFx extends VBox {
 	private static String[] descriptionOptions = {Description.UID, Description.RELATEDID, Description.WIDTH, Description.HEIGHT, Description.TITLE_WIDTH, 
 		Description.TABLE_COLUMN_WIDTH, Description.TABS, Description.FUNCTIONKEY, Description.LAYOUT, Description.TITLEVISIBLE,
 		Description.BUTTON_WIDTH, Description.ITEMS_PER_LINE, Description.LIST_ICONS, Description.USER_CODE, Description.X, Description.Y,
-		Description.TABHEADERHIGHT};
+		Description.TABHEADERHIGHT, Description.BORDERTITLE, Description.TITLESTYLE};
 	private static String[] styleCandOptions = {"-fx-font-size", "-fx-font-weight", "-fx-font-family", "-fx-background-color", "-fx-color", 
 		"-fx-border-width", "-fx-border-color", "-fx-spacing", "-fx-padding", "-fx-hgap", "-fx-vgap", 
 		"-fx-alignment", "-fx-background-image", "-fx-graphic"/*, "-fx-tab-max-height"*/};

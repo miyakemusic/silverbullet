@@ -88,6 +88,14 @@ public class DependencySpecEditorPaneFx extends VBox {
 				}
 			}
 		}));
+		hbox.getChildren().add(createButton("Add Oposite Cond.", new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				if (currentItem.getValue().type.equals(MyNodeItem.Type.Equation)) {
+					addOpositeCondition();
+				}
+			}
+		}));
 		hbox.getChildren().add(createButton("Set Confirm", new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
@@ -127,6 +135,13 @@ public class DependencySpecEditorPaneFx extends VBox {
 		updateNodes();
 	}
 
+	protected void addOpositeCondition() {
+		if (currentItem.getValue().type.equals(MyNodeItem.Type.Equation)) {
+			model.addOpositeCondition(currentItem.getValue().title, currentItem.getValue().spec);
+		}
+		updateNodes();
+	}
+	
 	protected void showEquationEditor(final MyNodeItem myNodeItem) {
 		final MyDialogFx dialog = new MyDialogFx("Equation Editor", this);
 		dialog.setSize(800, 400);

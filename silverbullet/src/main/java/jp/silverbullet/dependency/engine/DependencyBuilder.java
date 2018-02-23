@@ -12,45 +12,32 @@ import jp.silverbullet.dependency.speceditor2.DependencySpecHolder;
 public class DependencyBuilder {
 	private Map<Integer, List<DependencySpecDetail>> layers = new LinkedHashMap<>();
 	private String initialId = "";
-	private DepNode root = new DepNode(null, null);
+//	private DepNode root = new DepNode(null, null);
 	private List<String> warnings = new ArrayList<String>();
 	
-	public DependencyBuilder(String id, DependencySpecHolder specHolder) {
+	public DependencyBuilder(String id, DependencySpecHolder specHolder, MarcoExtractor marcoExtractor) {
 		initialId = id;
 		
 		List<DependencySpecDetail> specs = specHolder.getActiveRelations(id);
+		specs = marcoExtractor.extractMacros(specs);
 		getLayer(0).addAll(specs);
 		calc(1, specHolder, specs);
-		
-		for (int l : this.layers.keySet()) {
-		//	System.out.println(l);
-			for (DependencySpecDetail d: this.layers.get(l)) {
-			//	System.out.println(" " + d.toString());
-			}
-		}
 	}
 
 	protected void calc(int layer, DependencySpecHolder specHolder,	List<DependencySpecDetail> specs) {
 		for (DependencySpecDetail d : specs) {
-//			DepNode newNode = root2.addChild(d);
 			List<DependencySpecDetail> targets = new ArrayList<>();
 			for (DependencySpecDetail target : specHolder.getActiveRelations(d.getPassiveId())) {
 				if (!d.getPassiveElement().equals(target.getSpecification().getElement())) {
-			//		System.out.print("No:");
-			//		System.out.println(d.toString() + "->" + target.toString());
 					continue;
 				}
-			//	System.out.print("Yes:");
 				if (target.getPassiveId().equals(this.initialId)) {
 					if (target.getPassiveElement().equals(DependencyFormula.VALUE)) { // <- this is trial code
-				//		System.out.println(target.getPassiveId() + " tried to changed initial ID' value !!!" + this.initialId);
 						warnings.add("Loop!! by " + target.getSpecification().getId());
 						continue;
 					}
 				}
-				
 				targets.add(target);
-				
 			}
 			getLayer(layer).addAll(targets);
 			

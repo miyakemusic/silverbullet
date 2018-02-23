@@ -144,7 +144,7 @@ public class EquationEditorModelImpl implements EquationEditorModel {
 		else if (this.property.isNumericProperty()) {
 			this.candidatesFactory = new NumericCandidatesFactory(property);
 		}
-		else if (this.property.isActionProperty()) {
+		else if (this.property.isActionProperty() || this.property.isBooleanProperty()) {
 			this.candidatesFactory = new BooleanCandidatesFactory(property);
 		}
 		else {

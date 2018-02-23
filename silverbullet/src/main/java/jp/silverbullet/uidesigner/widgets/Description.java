@@ -22,6 +22,8 @@ public class Description {
 	public static final String Y = "-y-position";
 	public static final String TABHEADERHIGHT = "-tab-header-height";
 	public static final String RELATEDID = "-related-id";
+	public static final String BORDERTITLE = "-border-title";
+	public static final String TITLESTYLE = "-title-style";
 	
 	private List<String> list = new ArrayList<String>();
 //	private String description;

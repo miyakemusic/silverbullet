@@ -6,7 +6,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
@@ -14,12 +13,13 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
-import jp.silverbullet.MyDialogFx;
 import jp.silverbullet.uidesigner.EditableWidgetListenerFx;
 import jp.silverbullet.uidesigner.pane.CommonWidgetListener;
 
-public class EditableWidgetFx extends VBox {
+public class EditableWidgetFx extends StackPane {
 
 	private EditableWidgetListenerFx listener;
 	private SvPropertyWidgetFx widget;
@@ -121,16 +121,11 @@ public class EditableWidgetFx extends VBox {
 			}
 		});
 		
-//		widget.prefHeightProperty().bind(this.heightProperty());
+//		Pane hbox = new VBox();
+//		hbox.getChildren().add(widget);
+	//	this.getChildren().add(hbox);
 		this.getChildren().add(widget);
-//		
-//		this.widthProperty().addListener(new ChangeListener<Number>() {
-//			@Override
-//			public void changed(ObservableValue<? extends Number> observable,
-//					Number oldValue, Number newValue) {
-//
-//			}
-//		});
+
 		this.parentProperty().addListener(new ChangeListener<Parent>() {
 			@Override
 			public void changed(ObservableValue<? extends Parent> arg0,
@@ -139,6 +134,7 @@ public class EditableWidgetFx extends VBox {
 				if (arg2 == null) {
 					//System.out.println("EditableWidgetFx Removed");
 					getChildren().clear();
+					//hbox.getChildren().clear();
 				}
 			}
 		});

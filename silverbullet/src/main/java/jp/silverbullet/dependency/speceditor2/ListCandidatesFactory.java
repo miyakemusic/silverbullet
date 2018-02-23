@@ -24,17 +24,17 @@ public class ListCandidatesFactory implements CandidatesFatory {
 	@Override
 	public List<String> getElementCandidates() {
 		List<String> ret = new ArrayList<String>();
+		ret.add(DependencyFormula.VALUE);
 		ret.add(DependencyFormula.VISIBLE);
 		ret.add(DependencyFormula.ENABLED);
-		ret.add(DependencyFormula.VALUE);
 		return ret;
 	}
 
 	@Override
 	public List<String> getOperatorCandidates() {
 		List<String> ret = new ArrayList<String>();
-		ret.add("=");
-		ret.add("!=");
+		ret.add(DependencyFormula.EQUAL);
+	//	ret.add(DependencyFormula.NOTEQUAL);
 		return ret;
 	}
 
@@ -49,6 +49,7 @@ public class ListCandidatesFactory implements CandidatesFatory {
 			for (ListDetailElement e : property.getListDetail()) {
 				answerCandidates.add(e.getId());
 			}
+			answerCandidates.add(DependencyFormula.OTHER);
 		}
 	}
 

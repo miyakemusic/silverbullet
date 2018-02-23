@@ -9,12 +9,15 @@ import java.util.Set;
 
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import jp.silverbullet.dependency.speceditor2.DependencySpecHolderListener.ChangeType;
 @XmlRootElement
 public class DependencySpecHolder {
 	
 	private HashMap<String, DependencySpec> specs = new HashMap<String, DependencySpec>();
+	
+	@XmlTransient
 	private Set<DependencySpecHolderListener> listeners = new HashSet<DependencySpecHolderListener>();
 		
 	public void addDependencySpecHolderListener(DependencySpecHolderListener listener) {
@@ -45,7 +48,7 @@ public class DependencySpecHolder {
 		List<DependencySpecDetail> ret = new ArrayList<DependencySpecDetail>();
 		for (String id2 : specs.keySet()) {
 			DependencySpec spec = specs.get(id2);
-			 ret.addAll(spec.findRelations(id));
+			ret.addAll(spec.findRelations(id));
 		}
 		return ret;
 	}

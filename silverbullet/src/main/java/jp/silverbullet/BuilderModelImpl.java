@@ -159,15 +159,6 @@ public class BuilderModelImpl implements BuilderModel {
 	@Override
 	public List<String> getSelectedIds() {
 		PropertyListModel2 model = new PropertyListModel2(this.propertiesHolder);
-//		IdEditorUi ui = new IdEditorUi(model) {
-//			@Override
-//			protected void onAdd(List<String> ids) {
-//				selectedId = ids;
-//				setVisible(false);
-//			}
-//		};
-//		ui.setModal(true);
-//		ui.setVisible(true);
 		return selectedId;
 	}
 

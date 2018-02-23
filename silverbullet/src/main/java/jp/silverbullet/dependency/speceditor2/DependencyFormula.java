@@ -36,6 +36,8 @@ public class DependencyFormula implements Cloneable{
 	public static final String NOTEQUAL = "!=";
 
 	public static final String LISTMASK = "ListMask";
+
+	public static final String OTHER = "*OTHER*";
 	
 	
 	public void setId(String id) {
@@ -49,7 +51,7 @@ public class DependencyFormula implements Cloneable{
 	public void setEvalution(String evalution) {
 		this.evalution = evalution;
 	}
-
+	
 	public void setRightSide(String rightSide) {
 		this.rightSide = rightSide;
 	}

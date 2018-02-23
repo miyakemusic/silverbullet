@@ -1,7 +1,6 @@
 package jp.silverbullet.dependency.speceditor2;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import jp.silverbullet.SvProperty;
@@ -30,6 +29,10 @@ public class ValueTargetCandidatesFactory implements TargetCandidatesFactory {
 		}
 		else if (property.isActionProperty()) {
 			ret.add(DependencyFormula.ANY);
+		}
+		else if (property.isBooleanProperty()) {
+			ret.add(DependencyFormula.TRUE);
+			ret.add(DependencyFormula.FALSE);
 		}
 		return ret;
 	}

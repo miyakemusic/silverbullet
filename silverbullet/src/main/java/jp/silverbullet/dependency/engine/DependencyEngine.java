@@ -48,7 +48,8 @@ public abstract class DependencyEngine {
 	}
 
 	public void requestChange(String id, String value) throws RequestRejectedException {
-		DependencyBuilder dependencyBuilder = new DependencyBuilder(id, specHolder);
+		
+		DependencyBuilder dependencyBuilder = new DependencyBuilder(id, specHolder, new MarcoExtractor(getPropertiesStore()));
 		
 		tentativeStore = new TentativePropertyStore(getPropertiesStore());
 		
@@ -188,7 +189,7 @@ public abstract class DependencyEngine {
 					}
 				}
 			}
-			else if (changedProperty.isActionProperty()) {
+			else if (changedProperty.isActionProperty() || changedProperty.isBooleanProperty()) {
 				changedProperty.setCurrentValue(specDetail.getSpecification().getValueMatched());
 			}
 		}
@@ -214,6 +215,9 @@ public abstract class DependencyEngine {
 		if (specDetail.getSpecification().getRightSide().equals(DependencyFormula.ANY)) {
 			conditionSatisfied = true;
 		}
+//		else if (specDetail.getSpecification().getRightSide().equals(DependencyFormula.OTHER)) {
+//			conditionSatisfied = true;
+//		}
 		else if (specDetail.getSpecification().getEvalution().equals(DependencyFormula.EQUAL)) {
 			conditionSatisfied = specDetail.getSpecification().getRightSide().equals(value);
 		}
