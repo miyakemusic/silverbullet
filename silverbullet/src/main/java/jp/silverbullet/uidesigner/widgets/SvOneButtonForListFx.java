@@ -87,9 +87,10 @@ public class SvOneButtonForListFx extends SvPropertyWidgetFx {
 	}
 
 	protected void updatePresentation(String value) {
-		if (!description.getValue(Description.LIST_ICONS).isEmpty()) {
-			button.setStyle(button.getStyle() + ";-fx-graphic:" + description.getSubValue(Description.LIST_ICONS, value));
-		}
+//		if (description.isDefined(Description.LIST_ICONS)) {
+//			button.setStyle(button.getStyle() + ";-fx-graphic:" + description.getSubValue(Description.LIST_ICONS, value));
+//		}
+		DescriptionUtil.applyListIcon(button, value, description);
 		button.setText(this.getProperty().getSelectedListTitle());
 	}
 

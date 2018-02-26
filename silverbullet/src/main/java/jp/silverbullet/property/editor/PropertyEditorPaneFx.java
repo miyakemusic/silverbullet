@@ -14,7 +14,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -34,8 +37,8 @@ import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import jp.silverbullet.MyDialogFx;
 import jp.silverbullet.property.PropertyHolder;
+import jp.silverbullet.register.MyMessageBox;
 
-@SuppressWarnings("restriction")
 public abstract class PropertyEditorPaneFx extends VBox {
 	private PropertyListModel2 model;
 	private ListDetailModel2 listModel = new ListDetailModel2();;
@@ -139,7 +142,7 @@ public abstract class PropertyEditorPaneFx extends VBox {
 		add.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				model.addNew(selectedRow);
+				addNewId();
 			}
 		});
 		
@@ -315,5 +318,15 @@ public abstract class PropertyEditorPaneFx extends VBox {
 	}
 	public void removeListener() {
 		model.removeListener();
+	}
+	private void addNewId() {
+		try {
+			String id = MyMessageBox.showInput("ID_", this);
+			model.addNew(selectedRow, id);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 }

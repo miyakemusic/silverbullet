@@ -11,6 +11,7 @@ import javafx.event.EventHandler;
 import javafx.event.EventType;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -355,7 +356,9 @@ public abstract class SvPanelFx extends VBox {
 		dialog.showModal(node);
 		node.removeListeners();
 	}
-
+	
+	private boolean doNotRequestDependency = false;
+	
 	private void createStaticWidget(Pane basePane2, UiElement e, TabPane tabPane2, List<String> tabNames) {
 		if (e.getWidgetType().equals(UiElement.Label)) {
 			Label label = new Label(e.getDescription());
@@ -407,7 +410,6 @@ public abstract class SvPanelFx extends VBox {
 				}
 				String tabId = desc.getValue(Description.RELATEDID);
 				
-				
 				if (!tabId.isEmpty()) {
 					SvProperty prop = model.getProperty(tabId);
 					for (ListDetailElement ee : prop.getAvailableListDetail()) {
@@ -418,6 +420,9 @@ public abstract class SvPanelFx extends VBox {
 
 						@Override
 						public void changed(ObservableValue<? extends Tab> arg0, Tab arg1, Tab arg2) {
+							if (doNotRequestDependency) {
+								return;
+							}
 							int index = tabPaneTmp.getTabs().indexOf(arg2);
 							try {
 								model.getDi().getDependency().requestChange(tabId, prop.getAvailableListDetail().get(index).getId());
@@ -431,6 +436,7 @@ public abstract class SvPanelFx extends VBox {
 					prop.addListener(new SvPropertyListener() {
 						@Override
 						public void onValueChanged(String id, String value) {
+							doNotRequestDependency = true;
 							int index = 0;
 							for (ListDetailElement ee : prop.getAvailableListDetail()) {
 								if (ee.getId().equals(value)) {
@@ -439,7 +445,7 @@ public abstract class SvPanelFx extends VBox {
 								}
 								index++;
 							}
-							
+							doNotRequestDependency = false;
 						}
 
 						@Override
@@ -478,7 +484,6 @@ public abstract class SvPanelFx extends VBox {
 					newTabList = new ArrayList<String>(Arrays.asList(tabs.split(",")));
 				}
 				
-	//			tabPane.setTabMaxHeight(0);
 				basePane2.getChildren().add(pane);
 				pane.getChildren().add(tabPane);
 			}

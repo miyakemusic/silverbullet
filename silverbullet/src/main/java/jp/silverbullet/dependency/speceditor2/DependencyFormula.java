@@ -124,4 +124,14 @@ public class DependencyFormula implements Cloneable{
 		return id + "." + element + " " + evalution + " " + rightSide;
 	}
 
+	public static String getOppositeValue(String value2) {
+		if (value2.equals(DependencyFormula.TRUE)) {
+			return DependencyFormula.FALSE;
+		}
+		else if (value2.equals(DependencyFormula.FALSE)) {
+			return DependencyFormula.TRUE;
+		}
+		return "";
+	}
+
 }

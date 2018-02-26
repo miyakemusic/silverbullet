@@ -121,8 +121,11 @@ public class SvPanelModelImpl implements SvPanelModel {
 		else if (property.isActionProperty()) {
 			return Arrays.asList(FUNCTIONKEY);
 		}
+		else if (property.isTextProperty()) {
+			return Arrays.asList(TEXT_BOX, LABEL, FUNCTIONKEY);
+		}
 		else if (property.isBooleanProperty()) {
-			return Arrays.asList(CHECK_BOX, FUNCTIONKEY);
+			return Arrays.asList(CHECK_BOX, TOGGLE_BUTTON, FUNCTIONKEY);
 		}
 		return null;
 	}

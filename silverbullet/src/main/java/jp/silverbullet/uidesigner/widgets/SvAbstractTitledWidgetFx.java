@@ -12,6 +12,7 @@ public abstract class SvAbstractTitledWidgetFx extends SvPropertyWidgetFx {
 	
 	private Label unit;
 	private Label title;
+	private Description description;
 
 	@Override
 	public void onTitleChanged(String id, String title) {
@@ -21,7 +22,7 @@ public abstract class SvAbstractTitledWidgetFx extends SvPropertyWidgetFx {
 	public SvAbstractTitledWidgetFx(SvProperty prop,
 			DependencyInterface widgetListener, Description description) {
 		super(prop, widgetListener);
-		
+		this.description = description;
 		Pane pane = null;// = new VBox();
 		if (description.isDefined(Description.TITLESTYLE)) {
 			String titleStyle = description.getValue(Description.TITLESTYLE);
@@ -64,6 +65,10 @@ public abstract class SvAbstractTitledWidgetFx extends SvPropertyWidgetFx {
 		pane.getChildren().add(createContent(prop, widgetListener, description));
 //		unit = new Label(prop.getUnit());
 //		pane.getChildren().add(unit);
+	}
+
+	public Description getDescription() {
+		return description;
 	}
 
 	abstract protected Node createContent(SvProperty prop,

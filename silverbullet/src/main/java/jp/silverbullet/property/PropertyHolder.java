@@ -58,10 +58,24 @@ public class PropertyHolder {
 	public List<String> getAllTypes() {
 		return new ArrayList<String>(this.types.getDefinitions().keySet());
 	}
+		
+	public void addProperty(PropertyDef newProperty) {
+//		newProperty.setArgumentDef(this.getTypes().getArguments(newProperty.getType()));
+		newProperty.setArgumentDef(argDef);
+		newProperty.initArgumentValues();
+		newProperty.addPropertyDefListener(listener);
+		
+		this.properties.add(newProperty);
+		fireOnAdded(newProperty);
+	}
+	
 	public void addPropertyAfter(PropertyDef newProperty, PropertyDef property) {
 		int index = this.properties.indexOf(property);
-		this.properties.add(index+1, newProperty);
+		newProperty.setArgumentDef(argDef);
+		newProperty.initArgumentValues();
 		newProperty.addPropertyDefListener(listener);
+		
+		this.properties.add(index+1, newProperty);
 		fireOnAdded(newProperty);
 	}
 
@@ -78,15 +92,7 @@ public class PropertyHolder {
 		}
 		
 	};
-	
-	public void addProperty(PropertyDef newProperty) {
-//		newProperty.setArgumentDef(this.getTypes().getArguments(newProperty.getType()));
-		newProperty.setArgumentDef(argDef);
-		newProperty.initArgumentValues();
-		this.properties.add(newProperty);
-		newProperty.addPropertyDefListener(listener);
-		fireOnAdded(newProperty);
-	}
+
 	protected void fireOnAdded(PropertyDef newProperty) {
 		for (PropertyHolderListener listener : listeners) {
 			listener.onAdded(newProperty);

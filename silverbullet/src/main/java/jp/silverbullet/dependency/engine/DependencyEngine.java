@@ -1,7 +1,9 @@
 package jp.silverbullet.dependency.engine;
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -55,10 +57,23 @@ public abstract class DependencyEngine {
 		
 		try {
 			setCurrentValue(tentativeStore.getProperty(id), value);
-			for (List<DependencySpecDetail> specs : dependencyBuilder.getLayers().values()) {
-				for (DependencySpecDetail spec : specs ) {
-					doDependency(spec, tentativeStore);
+			Map<Integer, Set<String>> changedHistory = new LinkedHashMap<>();
+			Set<String> lastChangedList = new HashSet<>();
+			
+			for (int layer : dependencyBuilder.getLayers().keySet()) {
+//				System.out.println("Layer: " + layer);
+				if (changedHistory.get(layer - 1) != null) {
+					lastChangedList = changedHistory.get(layer - 1);
 				}
+				changedHistory.put(layer, new HashSet<String>());
+				List<DependencySpecDetail> specs = dependencyBuilder.getLayers().get(layer);
+			//for (List<DependencySpecDetail> specs : dependencyBuilder.getLayers().values()) {
+				for (DependencySpecDetail spec : specs ) {
+					if (lastChangedList.contains(spec.getSpecification().getId()) || changedHistory.size() == 1) {
+						doDependency(spec, tentativeStore, changedHistory.get(layer));
+					}
+				}
+				
 			}
 			
 			if (isConfirmEnabled()) {
@@ -122,7 +137,7 @@ public abstract class DependencyEngine {
 		return tentativeStore.getChangedHistory();
 	}
 
-	private void doDependency(DependencySpecDetail specDetail, TentativePropertyStore propertyStore) throws DependencyException {
+	private void doDependency(DependencySpecDetail specDetail, TentativePropertyStore propertyStore, Set<String> changed) throws DependencyException {
 		SvProperty changedProperty = propertyStore.getProperty(specDetail.getPassiveId());
 //		System.out.println(changedProperty.getId());
 		Boolean conditionSatisfied = false;
@@ -131,8 +146,11 @@ public abstract class DependencyEngine {
 		conditionSatisfied = isConditionSatisfied(specDetail, value);
 		
 		if (!conditionSatisfied) {
+			
 			return;
 		}
+		
+		changed.add(changedProperty.getId());
 		String passiveElement = specDetail.getPassiveElement();
 		// Common dependency
 		if (passiveElement.equals(DependencyFormula.ENABLED)) {
@@ -190,6 +208,7 @@ public abstract class DependencyEngine {
 				}
 			}
 			else if (changedProperty.isActionProperty() || changedProperty.isBooleanProperty()) {
+				System.out.println(changedProperty.getId() + "=" + specDetail.getSpecification().getValueMatched());
 				changedProperty.setCurrentValue(specDetail.getSpecification().getValueMatched());
 			}
 		}

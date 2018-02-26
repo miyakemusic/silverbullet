@@ -137,6 +137,9 @@ public class WidgetFactoryFx {
 		else if (widgetType.equals(SvPanelModel.TOGGLE_BUTTONS)) {
 			ret = createToggleButtons(prop, description);
 		}
+		else if (widgetType.equals(SvPanelModel.TOGGLE_BUTTON)) {
+			ret = createToggleButton(prop, style, description);
+		}
 		else if (widgetType.equals(SvPanelModel.LABEL)) {
 			ret = createLabel(prop, description);
 		}
@@ -156,6 +159,10 @@ public class WidgetFactoryFx {
 			ret = createLabel(prop, description);
 		}
 		return ret;		
+	}
+
+	private SvPropertyWidgetFx createToggleButton(SvProperty prop, Description style, Description description) {
+		return new SvToggleButtonFx(prop, this.svPanelHandler, style, description);
 	}
 
 	private SvPropertyWidgetFx createFunctionKey(SvProperty prop, Description style, Description description) {

@@ -99,7 +99,15 @@ public class TestRecorderUi extends VBox implements TestRecorderListener {
 			}
 		});
 		
-		hbox.getChildren().addAll(play, record, scriptName, load, insert, save,update);
+		Button clear = new Button("Clear");
+		clear.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				testRecorder.clear();
+			}
+		});
+		
+		hbox.getChildren().addAll(play, record, scriptName, load, insert, save, update, clear);
 		this.getChildren().add(hbox);
 		tableView = new TableView<>();
 		tableView.setEditable(true);

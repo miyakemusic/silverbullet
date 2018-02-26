@@ -16,6 +16,7 @@ public interface SvPanelModel {
 	public static final String TEXT_BOX = "Text Box";
 	public static final String SLIDER = "Slider";
 	public static final String TOGGLE_BUTTONS = "Toggle Buttons";
+	public static final String TOGGLE_BUTTON = "Toggle Button";
 	public static final String LABEL = "Static Label";
 	public static final String ONE_BUTTON = "One Button";
 	public static final String FUNCTIONKEY = "Function Key";

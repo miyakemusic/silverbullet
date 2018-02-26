@@ -17,10 +17,12 @@ public class SvLabelFx extends SvAbstractTitledWidgetFx {
 		String value  = "";
 		if (this.getProperty().isListProperty()) {
 			value = this.getProperty().getSelectedListTitle();
+			DescriptionUtil.applyListIcon(label,  this.getProperty().getCurrentValue(), getDescription());
 		}
 		else {
 			value = this.getProperty().getCurrentValue();
 		}
+		
 		label.setText(value);
 	}
 

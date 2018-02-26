@@ -125,17 +125,23 @@ public class RegisterMapUi extends VBox implements RegisterMapListener {
 									@Override
 									public void handle(MouseEvent arg0) {
 										if (arg0.getButton().equals(MouseButton.PRIMARY)) {
-											HBox h = new HBox();
-											TextField textField = new TextField(button.getText());
-											h.getChildren().add(textField);
-											MyDialogFx dlg = new MyDialogFx("", hbox);
-											//dlg.setControl(textField);
-											dlg.setSize(200, 90);
-											//dlg.setX(button.getLocalToSceneTransform().getMxx());
-											dlg.showModal(h);
-											if (dlg.isOkClicked()) {
-												model.setValue(ii, jj, Integer.valueOf(textField.getText()));
-											}		
+											try {
+												String text = MyMessageBox.showInput(button.getText(), hbox);
+												model.setValue(ii, jj, Integer.valueOf(text));
+											} catch (Exception e) {
+												// TODO Auto-generated catch block
+												e.printStackTrace();
+											}
+											
+//											HBox h = new HBox();
+//											TextField textField = new TextField(button.getText());
+//											h.getChildren().add(textField);
+//											MyDialogFx dlg = new MyDialogFx("", hbox);
+//											dlg.setSize(200, 90);
+//											dlg.showModal(h);
+//											if (dlg.isOkClicked()) {
+//												model.setValue(ii, jj, Integer.valueOf(textField.getText()));
+//											}		
 										}
 										else if (arg0.getButton().equals(MouseButton.SECONDARY)) {
 											if (width != 32) {

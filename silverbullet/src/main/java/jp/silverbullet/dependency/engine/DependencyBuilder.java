@@ -26,8 +26,9 @@ public class DependencyBuilder {
 
 	protected void calc(int layer, DependencySpecHolder specHolder,	List<DependencySpecDetail> specs) {
 		for (DependencySpecDetail d : specs) {
+			String id = d.getPassiveId();
 			List<DependencySpecDetail> targets = new ArrayList<>();
-			for (DependencySpecDetail target : specHolder.getActiveRelations(d.getPassiveId())) {
+			for (DependencySpecDetail target : specHolder.getActiveRelations(id)) {
 				if (!d.getPassiveElement().equals(target.getSpecification().getElement())) {
 					continue;
 				}
@@ -39,10 +40,29 @@ public class DependencyBuilder {
 				}
 				targets.add(target);
 			}
+			//addWIthSort(layer, targets, id);
 			getLayer(layer).addAll(targets);
 			
 			calc(layer+1, specHolder, specHolder.getActiveRelations(d.getPassiveElement()));
 		}
+	}
+
+	private void addWIthSort(int layer, List<DependencySpecDetail> targets, String id) {
+		List<DependencySpecDetail> list = new ArrayList<DependencySpecDetail>();
+		
+		getLayer(layer).addAll(targets);
+		for (DependencySpecDetail d : getLayer(layer)) {
+			if (!d.getPassiveId().equals(id)) {
+				list.add(d);
+			}
+		}
+		for (DependencySpecDetail d : getLayer(layer)) {
+			if (!list.contains(d)) {
+				list.add(d);
+			}
+		}
+		getLayer(layer).clear();
+		getLayer(layer).addAll(list);
 	}
 
 	public List<String> getWarnings() {

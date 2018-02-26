@@ -385,4 +385,9 @@ public class TestRecorder implements RegisterMonitor {
 		this.simulatorEnabled = enabled;
 	}
 
+	public void clear() {
+		this.tableData.clear();
+		updateTable();
+	}
+
 }

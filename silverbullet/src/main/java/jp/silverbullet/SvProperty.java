@@ -73,7 +73,12 @@ public class SvProperty implements Cloneable {
 	public SvProperty(PropertyDef property) {
 		this.property = property;
 		if (this.isListProperty()) {
-			this.currentValue = property.getArgumentValue("defaultKey");
+			try {
+				this.currentValue = property.getArgumentValue("defaultKey");
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		else {
 			this.currentValue = property.getArgumentValue("defaultValue");

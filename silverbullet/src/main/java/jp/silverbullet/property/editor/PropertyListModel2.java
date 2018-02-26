@@ -8,6 +8,8 @@ import java.util.regex.Pattern;
 
 import javax.swing.table.AbstractTableModel;
 
+import jp.silverbullet.SvProperty;
+import jp.silverbullet.property.ListDetailElement;
 import jp.silverbullet.property.PropertyDef;
 import jp.silverbullet.property.PropertyHolder;
 import jp.silverbullet.property.PropertyHolderListener;
@@ -186,9 +188,13 @@ public class PropertyListModel2 extends AbstractTableModel {
 	}
 
 
-	public void addNew(int selectedRow) {
+	public void addNew(int selectedRow, String id) {
 		PropertyDef newProperty = new PropertyDef();
-		newProperty.initId("ID_NEW_PROPERRTY");
+		newProperty.initId(id);
+		if (!filterProperty.isEmpty()) {
+			newProperty.setType(filterProperty);
+		}
+
 		if (selectedRow == 0) {
 			this.holder.addProperty(newProperty);
 		}
