@@ -399,14 +399,21 @@ public abstract class SvPanelFx extends VBox {
 				Tab tab = new Tab(tabNames.get(0));
 				tabPane2.getTabs().add(tab);
 				tab.setContent(pane);
+				tab.setClosable(false);
+	//			pane.setMouseTransparent(true);
 				tabNames.remove(0);
 
 			}
 			else if (!tabs.isEmpty()){
 				tabPane = new TabPane();
+				
+//				tabPane.setMouseTransparent(true);
 				String tabHeaderHeight = desc.getValue(Description.TABHEADERHIGHT);
 				if (!tabHeaderHeight.isEmpty()) {
 					tabPane.setTabMaxHeight(Double.valueOf(tabHeaderHeight));
+				}
+				if (desc.isDefined(Description.HEIGHT)) {
+					tabPane.setMinHeight(Double.valueOf(desc.getValue(Description.HEIGHT)));
 				}
 				String tabId = desc.getValue(Description.RELATEDID);
 				

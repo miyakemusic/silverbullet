@@ -186,7 +186,7 @@ public class RegisterIoGenerator {
 
 	private void generateWrite(List<String> source, RegisterBit bit, SvRegister register) {
 		createComment(source, bit);
-		source.add("        public void set_" + createMethodName(bit) + "(" + getType(bit) + " value) {");
+		source.add("        public void set_" + createMethodName(register, bit) + "(" + getType(bit) + " value) {");
 		String[] tmp = getBitRange(bit);
 		String bit2 = tmp[0];
 		String bit1 = "";
@@ -207,18 +207,16 @@ public class RegisterIoGenerator {
 
 	private void generateRead(List<String> source, RegisterBit bit, SvRegister register) {
 		createComment(source, bit);
-		source.add("        public " + getType(bit) + " get_" + createMethodName(bit) + "() {");
+		source.add("        public " + getType(bit) + " get_" + createMethodName(register, bit) + "() {");
 		source.add("    	    return " + readIo(bit, getAddressDef(register.getAddress())) + ";");
 		source.add("        }");
 	}
 
-	protected String createMethodName(RegisterBit bit) {
-		String s = convertName(bit.getName());
-//		if (s.contains("[")) {
-//			s = s.split("\\[")[0];
-//		}
+	protected String createMethodName(SvRegister register, RegisterBit bit) {
+		String s = /*convertName(register.getName()) + "_" +*/ convertName(bit.getName());
 		return s.replace("[", "_").replace("]", "_").replace(":", "_").replace(".", "_").replace(" ", "");
 	}
+	
 	protected void createComment(List<String> source, RegisterBit bit) {
 		source.add("    /**");
 		for (String s : bit.getDescription().split(";")) {
@@ -299,20 +297,20 @@ public class RegisterIoGenerator {
 //					bit.setType(ReadWriteType.UNUSED);
 //				}
 				if (bit.isWriteEnabled()) {
-					source.add("    abstract public void write_" + convertName(bit.getName()) + "(int value);");
+					source.add("    abstract public void write_" + convertName(register.getName()) + "_" + convertName(bit.getName()) + "(int value);");
 				}
 //				if (bit.isReadEnabled()) {
 //					source.add("    abstract void read_" + convertName(bit.getName()) + "();");
 //				}
 			}
-			source.add("    abstract public void read_" + convertName(register.getName()) + "();");
+			source.add("    abstract public void read_" + convertName(register.getName()) + "_" + convertName(register.getName()) + "();");
 		}
 			
 		source.addAll(new SimSourceGenerator() {
 			protected void getElementMethod(List<String> source, SvRegister register, RegisterBit bit,
 					String index) {
 				source.add("				int value = getValue(" + index  + ", data, mask);");
-				source.add("				write_" + convertName(bit.getName()) + "(" + "value" + ");");
+				source.add("				write_" + convertName(register.getName()) + "_" + convertName(bit.getName()) + "(" + "value" + ");");
 			}
 			
 			@Override
@@ -356,7 +354,7 @@ public class RegisterIoGenerator {
 			@Override
 			protected void getAddressMethod(List<String> source,
 					SvRegister register) {
-				source.add("				read_" + convertName(register.getName()) + "(" + "" + ");");
+				source.add("				read_" + convertName(register.getName()) + "_" + convertName(register.getName()) + "(" + "" + ");");
 				
 			}
 

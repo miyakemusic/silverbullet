@@ -32,12 +32,14 @@ public class TenKeyFx extends VBox {
 			}
 		};
 		int i = 0;
-		for (Integer x = 0; x < 3; x++) {
-			for (Integer y = 0; y < 3; y++) {
+		String[] order = {"7","8","9","4","5","6","1","2","3","0","+/-", "BS"};
+		for (Integer y = 0; y < 4; y++) {
+			for (Integer x = 0; x < 3; x++) {
+			
 				Button button = new Button();
-				button.setPrefHeight(70);
-				button.setPrefWidth(80);
-				button.setText(String.valueOf(i++));
+				button.setPrefHeight(50);
+				button.setPrefWidth(60);
+				button.setText(order[i++]);
 				grid.add(button, x, y);
 				button.setOnAction(handelr);
 			}

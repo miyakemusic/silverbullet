@@ -2,14 +2,17 @@ package jp.silverbullet.uidesigner.widgets;
 
 import jp.silverbullet.SvProperty;
 import jp.silverbullet.dependency.engine.DependencyInterface;
+import jp.silverbullet.uidesigner.pane.SvCommonDialog;
 import jp.silverbullet.uidesigner.pane.SvPanelModel;
 import jp.silverbullet.uidesigner.pane.UiElement;
 
 public class WidgetFactoryFx {
 	private DependencyInterface svPanelHandler;
+	private SvCommonDialog commonDialog;
 
-	public WidgetFactoryFx(DependencyInterface widgetListener) {
+	public WidgetFactoryFx(DependencyInterface widgetListener, SvCommonDialog commonDialog) {
 		this.svPanelHandler = widgetListener;
+		this.commonDialog = commonDialog;
 	}
 
 	public SvPropertyWidgetFx createRadioButton(SvProperty prop, Description description) {
@@ -28,7 +31,6 @@ public class WidgetFactoryFx {
 			else {
 				return SvPanelModel.RADIO_BUTTONS;
 			}
-			
 		}
 		else if (prop.isTextProperty()) {
 			return SvPanelModel.TEXT_BOX;
@@ -48,47 +50,50 @@ public class WidgetFactoryFx {
 		else if (prop.isLabelProperty()) {
 			return SvPanelModel.LABEL;
 		}
-
+		else if (prop.isImageProperty()) {
+			return SvPanelModel.IMAGE;
+		}
+		
 		return SvPanelModel.LABEL;
 	}
 	
-	private SvPropertyWidgetFx createAuto(SvProperty prop, UiElement element) {
-		SvPropertyWidgetFx ret = null;
-		Description description = new Description(element.getDescription());
-		Description style = new Description(element.getStyle());
-		if (prop.isListProperty()) {
-			if (prop.getAvailableListDetail().size() > 2) {
-				ret = createComboBox(prop, description);
-			}
-			else {
-				ret = createRadioButton(prop, description);//createComboBox(prop);
-			}
-			
-		}
-		else if (prop.isTextProperty()) {
-			ret = createText(prop, description);
-		}
-		else if (prop.isNumericProperty()) {
-			ret = createText(prop, description);
-		}
-		else if (prop.isBooleanProperty()) {
-			ret = createCheckBox(prop, description);
-		}
-		else if (prop.isActionProperty()) {
-			ret = createButton(prop, style, description);
-		}
-		else if (prop.isTableProperty()) {
-			ret = createTable(prop, description);
-		}
-		else if (prop.isLabelProperty()) {
-			ret = createLabel(prop, description);
-		}
-		else if (prop.isNumericNoneProperty()) {
-			ret = createCheckBoxText(prop, description);
-		}
-		return ret;
-	//	return new EditableWidgetFx(ret);
-	}
+//	private SvPropertyWidgetFx createAuto(SvProperty prop, UiElement element) {
+//		SvPropertyWidgetFx ret = null;
+//		Description description = new Description(element.getDescription());
+//		Description style = new Description(element.getStyle());
+//		if (prop.isListProperty()) {
+//			if (prop.getAvailableListDetail().size() > 2) {
+//				ret = createComboBox(prop, description);
+//			}
+//			else {
+//				ret = createRadioButton(prop, description);//createComboBox(prop);
+//			}
+//			
+//		}
+//		else if (prop.isTextProperty()) {
+//			ret = createText(prop, description);
+//		}
+//		else if (prop.isNumericProperty()) {
+//			ret = createText(prop, description);
+//		}
+//		else if (prop.isBooleanProperty()) {
+//			ret = createCheckBox(prop, description);
+//		}
+//		else if (prop.isActionProperty()) {
+//			ret = createButton(prop, style, description);
+//		}
+//		else if (prop.isTableProperty()) {
+//			ret = createTable(prop, description);
+//		}
+//		else if (prop.isLabelProperty()) {
+//			ret = createLabel(prop, description);
+//		}
+//		else if (prop.isNumericNoneProperty()) {
+//			ret = createCheckBoxText(prop, description);
+//		}
+//		return ret;
+//	//	return new EditableWidgetFx(ret);
+//	}
 	
 	private SvPropertyWidgetFx createCheckBoxText(SvProperty prop, Description description) {
 		return new SvCheckBoxTextFx(prop, svPanelHandler, description);
@@ -155,10 +160,17 @@ public class WidgetFactoryFx {
 		else if (widgetType.equals(SvPanelModel.BUTTON)) {
 			ret = createButton(prop, style, description);
 		}
+		else if (widgetType.equals(SvPanelModel.IMAGE)) {
+			ret = createImage(prop, style, description);
+		}
 		else {
 			ret = createLabel(prop, description);
 		}
 		return ret;		
+	}
+
+	private SvPropertyWidgetFx createImage(SvProperty prop, Description style, Description description) {
+		return new SvImageFx(prop, this.svPanelHandler, style, description);
 	}
 
 	private SvPropertyWidgetFx createToggleButton(SvProperty prop, Description style, Description description) {
@@ -194,6 +206,6 @@ public class WidgetFactoryFx {
 	}
 
 	private SvPropertyWidgetFx createText(SvProperty prop, Description description) {
-		return new SvTextFieldFx(prop, this.svPanelHandler, description);
+		return new SvTextFieldFx(prop, this.svPanelHandler, description, commonDialog);
 	}
 }

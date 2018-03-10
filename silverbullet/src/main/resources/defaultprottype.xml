@@ -11,6 +11,12 @@
             </value>
         </entry>
         <entry>
+            <key>ImageProperty</key>
+            <value>
+           		<list>persistent</list>
+            </value>
+        </entry>
+        <entry>
             <key>TextProperty</key>
             <value>
                 <list>defaultValue</list>

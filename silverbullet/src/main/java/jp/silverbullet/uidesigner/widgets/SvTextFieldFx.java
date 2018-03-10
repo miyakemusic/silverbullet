@@ -18,9 +18,11 @@ public class SvTextFieldFx extends SvAbstractTitledWidgetFx {
 
 	private TextField textField;
 	private Label optionalInfo;
+	private SvCommonDialog commonDialog;
 
-	public SvTextFieldFx(SvProperty prop, DependencyInterface svPanelHandler, Description description) {
+	public SvTextFieldFx(SvProperty prop, DependencyInterface svPanelHandler, Description description, SvCommonDialog commonDialog) {
 		super(prop, svPanelHandler, description);
+		this.commonDialog = commonDialog;
 	}
 
 	@Override
@@ -72,23 +74,11 @@ public class SvTextFieldFx extends SvAbstractTitledWidgetFx {
 	private void updateOptional(SvProperty prop) {
 		if (prop.isNumericProperty()) {
 			this.optionalInfo.setText("Min:" + prop.getMin() + ", Max:" + prop.getMax());
-			
 		}
 	}
 
 	protected void updatePropertyValue(String id, String text) {
 		sendToDependency(id, text);
-//		if (this.getProperty().isNumericProperty()) {
-//			try {
-//				checkMinMax(text);
-//				sendToDependency(id, text);
-//			} catch (Exception e) {
-//				textField.setText(this.getProperty().getCurrentValue());
-//			}
-//		}
-//		else {
-//			sendToDependency(id, text);
-//		}
 	}
 
 	protected void sendToDependency(String id, String text) {
@@ -107,29 +97,6 @@ public class SvTextFieldFx extends SvAbstractTitledWidgetFx {
 			}
 		}
 	}
-//	protected void checkMinMax(String text) throws Exception {
-//		Double numeric = Double.valueOf(text);
-//		
-//		if (numeric < Double.valueOf(this.getProperty().getMin())) {
-//			//JOptionPane.showMessageDialog(this, "Min. is " + this.getProperty().getMin());
-//			Alert alert = new Alert(AlertType.INFORMATION);
-//			alert.setTitle("Information Dialog");
-//			alert.setHeaderText(null);
-//			alert.setContentText("Min. is " + this.getProperty().getMin());
-//			alert.showAndWait();
-//			throw new Exception();
-//		}
-//		else if (numeric > Double.valueOf(this.getProperty().getMax())) {
-//			//JOptionPane.showMessageDialog(this, "Max. is " + this.getProperty().getMax());
-//			Alert alert = new Alert(AlertType.INFORMATION);
-//			alert.setTitle("Information Dialog");
-//			alert.setHeaderText(null);
-//			alert.setContentText("Max. is " + this.getProperty().getMax());
-//			alert.showAndWait();
-//			throw new Exception();
-//		}
-//		
-//	}
 
 	@Override
 	public void onListMaskChanged(String id, String string) {
@@ -139,10 +106,10 @@ public class SvTextFieldFx extends SvAbstractTitledWidgetFx {
 
 	protected void showTenkey(final SvProperty prop) {
 		try {
-			String ret = SvCommonDialog.showTenkey(prop, this);
+			String ret = commonDialog.showTenkey2(prop, this);
 			this.getDependencyInterface().requestChange(prop.getId(), ret);
 		} catch (Exception e1) {
-	
+			
 		}
 	}
 }

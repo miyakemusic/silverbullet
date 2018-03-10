@@ -11,7 +11,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.shape.Line;
 import jp.silverbullet.SvProperty;
 import jp.silverbullet.dependency.engine.DependencyInterface;
-import jp.silverbullet.uidesigner.RowData;
+import jp.silverbullet.uidesigner.SvRowData;
 import jp.silverbullet.uidesigner.TableContent;
 
 public class SvChartFx extends SvPropertyWidgetFx {
@@ -42,9 +42,9 @@ public class SvChartFx extends SvPropertyWidgetFx {
 		
 		double xmin = Double.MAX_VALUE, xmax = Double.MIN_VALUE;
 		double ymin = Double.MAX_VALUE, ymax = Double.MIN_VALUE;
-		for (RowData rowData : content.getData()) {
+		for (SvRowData rowData : content.getData()) {
 			for (int col = content.getxAxisColumn(); col < content.getHeaders().size(); col++) {
-				double v = Double.valueOf(rowData.getElement().get(col));
+				double v = Double.valueOf(rowData.getElements().get(col).getValue());
 				if (col == content.getxAxisColumn()) {
 					xmin = Math.min(xmin, v);
 					xmax = Math.max(xmax, v);
@@ -78,10 +78,10 @@ public class SvChartFx extends SvPropertyWidgetFx {
             lineChart.getData().add(series1);
         }
         
-        for (RowData rowData : content.getData()) {
+        for (SvRowData rowData : content.getData()) {
         	for (int col = content.getxAxisColumn() + 1; col < content.getHeaders().size(); col++) {
-        		double x = Double.valueOf(rowData.getElement().get(content.getxAxisColumn()));
-        		double y = Double.valueOf(rowData.getElement().get(col)); 
+        		double x = Double.valueOf(rowData.getElements().get(content.getxAxisColumn()).getValue());
+        		double y = Double.valueOf(rowData.getElements().get(col).getValue()); 
         		lineChart.getData().get(col - content.getxAxisColumn()-1).getData().add(new XYChart.Data(x, y));
         	}
         }

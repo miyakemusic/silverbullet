@@ -61,6 +61,7 @@ import jp.silverbullet.uidesigner.DesignerModelImpl;
 import jp.silverbullet.uidesigner.MyCommonDialogFx;
 import jp.silverbullet.uidesigner.pane.DependencyFrameFactory;
 import jp.silverbullet.uidesigner.pane.GuiPropertyFx;
+import jp.silverbullet.uidesigner.pane.SvCommonDialog;
 import jp.silverbullet.uidesigner.pane.SvPanelFx;
 import jp.silverbullet.uidesigner.pane.SvPanelModel;
 import jp.silverbullet.uidesigner.pane.SvPanelModelImpl;
@@ -272,7 +273,8 @@ public abstract class BuilderFx extends Application {
                 
         tabPane.minHeightProperty().bind(primaryStage.heightProperty());
              
-        factory = new WidgetFactoryFx(designerModel.getBuilderModel().getDependency());
+        
+        factory = new WidgetFactoryFx(designerModel.getBuilderModel().getDependency(), new SvCommonDialog(primaryStage));
         
         root.getChildren().add(tabPane);       
         

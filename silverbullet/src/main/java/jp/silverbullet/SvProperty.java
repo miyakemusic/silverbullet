@@ -56,6 +56,8 @@ public class SvProperty implements Cloneable {
 	public static final String SWEEP_BAND_PROPERTY = "SweepBandProperty";
 	public static final String TRACE_LIST_PROPERTY = "TraceListProperty";
 	public static final String DOUBLE_FREEWORD_NONE_PROPERTY = "DoubleFreeWordNoneProperty";
+	public static final String IMAGE_PROPERTY = "ImageProperty";
+	
 	private PropertyDef property;
 	private String currentValue = "";
 	private String prevValue = "";
@@ -121,7 +123,12 @@ public class SvProperty implements Cloneable {
 //		lock.writeLock();
 		if (this.isDoubleProperty()) {
 			try {
-			value = String.format("%." + getDecimal() + "f", Double.parseDouble(value));
+				if (getDecimal().endsWith("e")) {
+					value = String.format("%." + getDecimal().replaceAll("e", "") + "e", Double.parseDouble(value));
+				}
+				else {
+					value = String.format("%." + getDecimal() + "f", Double.parseDouble(value));
+				}
 			}
 			catch (Exception e) {
 				e.printStackTrace();
@@ -344,6 +351,10 @@ public class SvProperty implements Cloneable {
 			ret.add(e.getId());
 		}
 		return ret;
+	}
+
+	public boolean isImageProperty() {
+		return this.property.getType().equals(IMAGE_PROPERTY);
 	}
 
 }

@@ -15,7 +15,7 @@ public class TableContent {
 		this.title = title;
 	}
 	private List<String> headers = new ArrayList<String>();
-	private List<RowData> data = new ArrayList<>();
+	private List<SvRowData> data = new ArrayList<>();
 	private int xAxisColumn;
 	public int getxAxisColumn() {
 		return xAxisColumn;
@@ -30,11 +30,10 @@ public class TableContent {
 		this.headers = headers;
 	}
 	
-//	@XmlAttribute(name="d")
-	public List<RowData> getData() {
+	public List<SvRowData> getData() {
 		return data;
 	}
-	public void setData(List<RowData> data) {
+	public void setData(List<SvRowData> data) {
 		this.data = data;
 	}
 
