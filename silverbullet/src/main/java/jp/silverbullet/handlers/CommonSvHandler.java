@@ -21,17 +21,20 @@ public class CommonSvHandler extends AbstractSvHandler {
 	}
 
 	@Override
-	protected void onExecute(final List<ChangedItemValue> list, final SvHandlerModel model2) {
-	//	System.out.println("CommonSvHandler onExecute");
+	protected void onExecute(final SvHandlerModel model2, Map<String, List<ChangedItemValue>> changed) {
 		
 		// Run when values are changed. Ignores enabled/visible.
 		boolean run = false;
-		for (ChangedItemValue v : list) {
-			if (v.element.equals(DependencyFormula.VALUE)) {
-				run = true;
-				break;
+		
+		for (String id : this.handlerProperty.getIds()) {
+			for (ChangedItemValue v : changed.get(id)) {
+				if (v.element.equals(DependencyFormula.VALUE)) {
+					run = true;
+					break;
+				}
 			}
 		}
+
 		if (!run) {
 	//		System.out.println("CommonSvHandler onExecute return");
 			return;
@@ -41,7 +44,7 @@ public class CommonSvHandler extends AbstractSvHandler {
 			String className = getModel().getUserApplicationPath() + "."  + this.handlerProperty.getExternalClass().split("\\.")[0];
 			String methodName = this.handlerProperty.getExternalClass().split("\\.")[1];
 			object = getInstance(className);
-			final Method method = object.getClass().getMethod(methodName, List.class, SvHandlerModel.class);
+			final Method method = object.getClass().getMethod(methodName, SvHandlerModel.class, Map.class);
 
 			// Async handlers
 			if (this.handlerProperty.getAsync()) {
@@ -49,7 +52,7 @@ public class CommonSvHandler extends AbstractSvHandler {
 					@Override
 					public void run() {
 						try {
-							method.invoke(object, list, model2);
+							method.invoke(object, model2, changed);
 						} catch (IllegalAccessException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -64,7 +67,7 @@ public class CommonSvHandler extends AbstractSvHandler {
 				}.start();
 			}
 			else {
-				method.invoke(object, list, model2);
+				method.invoke(object, model2, changed);
 			}
 			
 		} catch (ClassNotFoundException e) {

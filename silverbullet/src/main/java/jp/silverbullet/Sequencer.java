@@ -107,7 +107,8 @@ public abstract class Sequencer implements DependencyInterface {
 		};
 		
 		for (HandlerProperty handler : toRunHandlers) {
-			new CommonSvHandler(model, handler).execute(getRelatedChanges(handler.getIds(), getDependency().getChagedItems()));
+			new CommonSvHandler(model, handler).execute(/*getRelatedChanges(handler.getIds(), getDependency().getChagedItems()),*/
+					getDependency().getChagedItems());
 		}
 	}
 
