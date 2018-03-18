@@ -201,7 +201,6 @@ public abstract class GuiPropertyFx extends VBox {
 		@Override
 		public void changed(ObservableValue<? extends String> arg0,
 				String arg1, String arg2) {
-			System.out.println();
 		}
 		
 	};

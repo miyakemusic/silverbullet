@@ -35,7 +35,6 @@ public class SvToggleButtonsFx extends SvAbstractTitledWidgetFx {
 			this.buttons.get(value).setSelected(true);
 		}
 		else {
-			System.out.println(this.getClass().getSimpleName() + " NO KEY");
 		}
 	}
 

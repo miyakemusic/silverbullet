@@ -94,10 +94,10 @@ public class TestRecorder implements RegisterMonitor {
 	}
 
 	private void updateTable() {
-		TableData tableData = new TableData();
-		tableData.setTest("'DUMMY");
-		this.tableData.add(tableData);
-		this.tableData.remove(tableData);
+//		TableData tableData = new TableData();
+//		tableData.setTest("'DUMMY");
+//		this.tableData.add(tableData);
+//		this.tableData.remove(tableData);
 	}
 
 	public void play() {
@@ -115,7 +115,7 @@ public class TestRecorder implements RegisterMonitor {
 					}
 					String[] c = line.split("=");
 					if (c.length < 2) {
-						System.out.println(line);
+		
 					}
 					final String cmd = c[0];
 					final String prm = c[1];
@@ -200,8 +200,7 @@ public class TestRecorder implements RegisterMonitor {
 			try {
 				dependency.requestChange(id, value);
 			} catch (RequestRejectedException e) {
-				System.out.println("LOADING ERROR: " + e.getMessage().replace("\n", ""));
-				//e.printStackTrace();
+
 			}
 		}
 		this.tableData.clear();
@@ -327,23 +326,14 @@ public class TestRecorder implements RegisterMonitor {
 
 	@Override
 	public void writeIo(long address, BitSet data, BitSet mask) {
-//		String d = data.toString();
-//		String text = "write(0x" + Long.toHexString(address) + ")=" + d;
-//		if (!currentCommand.getRegister().isEmpty()) {
-//			currentCommand.setRegister(currentCommand.getRegister() + ";" + text);
-//		}
-//		else {
-//			currentCommand.setRegister(text);
-//		}
-		TableData row = new TableData();
-		row.setTest("*REG:writeIo (0x" + Long.toHexString(address) + ") = " + data + ":" +  mask);
-		this.tableData.add(row);
-		updateTable();
+//		TableData row = new TableData();
+//		row.setTest("*REG:writeIo (0x" + Long.toHexString(address) + ") = " + data + ":" +  mask);
+//		this.tableData.add(row);
+//		updateTable();
 	}
 
 	@Override
 	public void updateBlock(long address, byte[] data) {
-		System.out.println("updateBlock ");
 		TableData row = new TableData();
 		row.setTest("*REG:updateBlock(0x" + Long.toHexString(address) + ") = ");
 		this.tableData.add(row);
@@ -352,7 +342,6 @@ public class TestRecorder implements RegisterMonitor {
 
 	@Override
 	public void updateIo(long address, BitSet data, BitSet mask) {
-		//System.out.println("updateIo ");
 		TableData row = new TableData();
 		row.setTest("*REG:updateIo(0x" + Long.toHexString(address) + ") = ");
 		this.tableData.add(row);
@@ -361,11 +350,7 @@ public class TestRecorder implements RegisterMonitor {
 
 	@Override
 	public void interrupt() {
-//		System.out.println("interrupt ");
-//		TableData row = new TableData();
-//		row.setTest("interrupt");
-//		this.tableData.add(row);
-//		updateTable();
+
 	}
 
 	@Override

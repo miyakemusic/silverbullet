@@ -41,7 +41,6 @@ public class WebSocketBroadcaster {
 //	}
 	
 	public void sendMessage(final String message) {
-		System.out.println(message);
 		for(final WebSocketObject member: clients){
 			new Thread() {
 				@Override

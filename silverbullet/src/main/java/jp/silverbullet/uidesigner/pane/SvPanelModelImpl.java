@@ -116,7 +116,7 @@ public class SvPanelModelImpl implements SvPanelModel {
 			return Arrays.asList(TABLE, CHART_SCATTER);
 		}
 		else if (property.isNumericProperty()) {
-			return Arrays.asList(TEXT_BOX, SLIDER, LABEL, FUNCTIONKEY);
+			return Arrays.asList(TEXT_BOX, SLIDER, LABEL, FUNCTIONKEY, GAUGE);
 		}
 		else if (property.isActionProperty()) {
 			return Arrays.asList(FUNCTIONKEY);

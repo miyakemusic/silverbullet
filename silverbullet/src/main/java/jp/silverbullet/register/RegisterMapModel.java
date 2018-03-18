@@ -9,9 +9,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javafx.application.Platform;
 import jp.silverbullet.BuilderFx;
@@ -27,7 +31,7 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 	private long maxAddress;
 	private BuilderModel builderModel;
 	private RegisterMapListener listener;
-	private InterruptHandler interruptHandler;
+	private Set<InterruptHandler> interruptHandlers = new HashSet<>();
 	private SvSimulator currentDevice;
 	private SvSimulator simulator;
 	private SvSimulator nullSimulator = new NullSimulator();
@@ -217,9 +221,11 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 		return getRegAt(regIndex).getAddress();
 	}
 
-	public void triggerInterrupt() {
-		if (interruptHandler != null) {
-			interruptHandler.onTrigger();
+	private ReadWriteLock lock = new ReentrantReadWriteLock();
+	public synchronized void triggerInterrupt() {
+		lock.readLock();
+		for (InterruptHandler handler : this.interruptHandlers) {
+			handler.onTrigger();
 		}
 		if (this.listener != null) {
 			this.listener.onInterrupt();
@@ -228,10 +234,17 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 	}
 
 	@Override
-	public void setInterruptHandler(InterruptHandler interruptHandler) {
-		this.interruptHandler = interruptHandler;
+	public void addInterruptHandler(InterruptHandler interruptHandler) {
+		lock.writeLock();
+		this.interruptHandlers.add(interruptHandler);
 	}
 
+	@Override
+	public void removeInterruptHandler(InterruptHandler interruptHandler) {
+		lock.writeLock();
+		this.interruptHandlers.remove(interruptHandler);
+	}
+	
 	public void setValue(int regIndex, int block, int value) {
 		String bits = getBits(regIndex, block);
 		BitSet current = getCurrentValue(regIndex);

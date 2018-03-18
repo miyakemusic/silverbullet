@@ -56,5 +56,9 @@ public class SpecElement {
 	public void setType(Type type) {
 		this.type = type;
 	}
+
+	public void addAll(SpecElement loadSpec) {
+		this.children.addAll(loadSpec.getChildren());
+	}
 	
 }

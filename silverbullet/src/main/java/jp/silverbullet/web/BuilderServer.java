@@ -52,7 +52,6 @@ public class BuilderServer {
         server.setHandler(handlers);
 
         try {
-            System.out.println(">>> STARTING EMBEDDED JETTY SERVER, PRESS ANY KEY TO STOP");
             server.start();
              		
             server.join();

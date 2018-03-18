@@ -171,4 +171,8 @@ public class SvTexHolder {
 			}
 		}
 	}
+
+	public void addAll(SvTexHolder holder) {
+		this.map.putAll(holder.map);
+	}
 }

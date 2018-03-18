@@ -25,7 +25,6 @@ public class SvCalculator {
 			}
 			return result.toString();
 		} catch (ScriptException e) {
-			//System.out.println("CALC ERROR "+ formula + ", " + valueDefinition + ", " + targetProperty.getUsersId() + ", " + newValue);
 			e.printStackTrace();
 		}
 		return "ERROR";
@@ -34,7 +33,6 @@ public class SvCalculator {
 	private static String[] elements = {DependencyFormula.VALUE, DependencyFormula.MIN, DependencyFormula.MAX};
 	
 	private String replaceCurrentValue(String formula) {
-//		System.out.println(formula);
 		formula = formula.replace("*CALC[", "").replace("]", "");
 		for (String id : model.getAllIds()) {
 			for (String e : elements) {
@@ -43,7 +41,6 @@ public class SvCalculator {
 				}
 			}
 		}
-//		System.out.println(formula);
 		return formula;
 	}
 }

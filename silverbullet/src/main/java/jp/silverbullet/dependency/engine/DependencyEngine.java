@@ -61,7 +61,6 @@ public abstract class DependencyEngine {
 			Set<String> lastChangedList = new HashSet<>();
 			
 			for (int layer : dependencyBuilder.getLayers().keySet()) {
-//				System.out.println("Layer: " + layer);
 				if (changedHistory.get(layer - 1) != null) {
 					lastChangedList = changedHistory.get(layer - 1);
 				}
@@ -139,7 +138,6 @@ public abstract class DependencyEngine {
 
 	private void doDependency(DependencySpecDetail specDetail, TentativePropertyStore propertyStore, Set<String> changed) throws DependencyException {
 		SvProperty changedProperty = propertyStore.getProperty(specDetail.getPassiveId());
-//		System.out.println(changedProperty.getId());
 		Boolean conditionSatisfied = false;
 		String value = this.tentativeStore.getProperty(specDetail.getSpecification().getId()).getCurrentValue();
 		
@@ -208,7 +206,6 @@ public abstract class DependencyEngine {
 				}
 			}
 			else if (changedProperty.isActionProperty() || changedProperty.isBooleanProperty()) {
-				System.out.println(changedProperty.getId() + "=" + specDetail.getSpecification().getValueMatched());
 				changedProperty.setCurrentValue(specDetail.getSpecification().getValueMatched());
 			}
 		}
@@ -292,6 +289,19 @@ public abstract class DependencyEngine {
 
 	public List<String> getChangedIds() {
 		return tentativeStore.getChangedIds();
+	}
+
+	public void importSpec(String filename) {
+		try {
+			DependencySpecHolder tmp = persister.load(filename, DependencySpecHolder.class);
+			for (String key : tmp.getSpecs().keySet()) {
+				DependencySpec spec = tmp.getSpecs().get(key);
+				this.specHolder.getSpecs().put(key, spec);
+			}
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

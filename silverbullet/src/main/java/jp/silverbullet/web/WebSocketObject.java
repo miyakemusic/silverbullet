@@ -33,7 +33,6 @@ public class WebSocketObject {
 
     @OnWebSocketClose
     public void onClose(int statusCode, String reason) {
-    	System.out.println("WebSocket close : " + session.getRemoteAddress().getAddress().getHostAddress());
     	WebSocketBroadcaster.getInstance().bye(this);
     }
 

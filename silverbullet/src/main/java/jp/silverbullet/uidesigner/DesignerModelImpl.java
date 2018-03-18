@@ -132,4 +132,15 @@ public class DesignerModelImpl implements DesignerModel {
 		UiElement e = this.holder.getLayouts().get(name).findElement(pointer).clone();
 		cutLayouts.push(e);
 	}
+
+	@Override
+	public void importFile(String folder) {
+		try {
+			LayoutHolder tmpLayout = layoutPersister.load(folder + "/" + LAYOUT_XML, LayoutHolder.class);
+			this.holder.getLayouts().putAll(tmpLayout.getLayouts());
+			di.importFile(folder);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
 }

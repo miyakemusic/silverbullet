@@ -142,7 +142,6 @@ public class CommonPopupFx {
 		parent.setOnMousePressed(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
-				System.out.println("MyPane selected");
 				commonListener.onSelect(parent);
 				if (event.isSecondaryButtonDown()) {
 					contextMenu.show(parent, event.getScreenX(), event.getScreenY());

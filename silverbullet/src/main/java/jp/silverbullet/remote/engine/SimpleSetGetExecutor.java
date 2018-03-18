@@ -68,18 +68,15 @@ private String value;
 			Platform.runLater(new FxRunnable(tex.getVlist(), value){
 				@Override
 				void onCompleted() {
-					System.out.println("Notify complete...");
 					getModel().getSyncController().notifyComplete();
 				}
 			});
 
 			if (!getModel().getSyncController().isCompleted()) {
-				System.out.println("Waiting completion...");
 				getModel().getSyncController().waitComplete();
-				System.out.println("Waiting completion... Done");
 			}
 			else {
-				System.out.println("Already completed");
+				
 			}
 		}
 		else {
@@ -102,9 +99,17 @@ private String value;
 	public String getListElementId(SvTex tex, String value) {
 		for (String s : getListParamsList(tex)) {
 			String[] tmp = s.split("=");
-			if (getMandatory(tmp[0]).equals(value)) {
+			String def = tmp[0];
+			String mandatory = getMandatory(tmp[0]);
+			if (mandatory.length() > value.length()) {
+				return "";
+			}
+			if (def.substring(0, value.length()).toUpperCase().equals(value.toUpperCase())) {
 				return tmp[1];
 			}
+//			if (mandatory.equals(value)) {
+//				return tmp[1];
+//			}
 		}
 		return "";
 	}

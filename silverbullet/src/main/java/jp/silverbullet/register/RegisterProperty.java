@@ -27,6 +27,12 @@ public class RegisterProperty {
 	public void remove(SvRegister svRegister) {
 		this.registers.remove(svRegister);
 	}
+
+	public void addAll(List<SvRegister> registers2) {
+		for (SvRegister reg : registers2) {
+			this.registers.add(reg);
+		}
+	}
 	
 	
 }

@@ -36,10 +36,8 @@ public class CommonSvHandler extends AbstractSvHandler {
 		}
 
 		if (!run) {
-	//		System.out.println("CommonSvHandler onExecute return");
 			return;
 		}
-	//	System.out.println(this.handlerProperty.getExternalClass());
 		try {
 			String className = getModel().getUserApplicationPath() + "."  + this.handlerProperty.getExternalClass().split("\\.")[0];
 			String methodName = this.handlerProperty.getExternalClass().split("\\.")[1];

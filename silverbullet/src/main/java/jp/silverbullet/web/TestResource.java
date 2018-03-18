@@ -482,7 +482,6 @@ public class TestResource {
     	
     //	js.append("};\n");    	
 		js.append("});\n");
-		System.out.println(js.toString());
 		return js.toString();
 	}
 

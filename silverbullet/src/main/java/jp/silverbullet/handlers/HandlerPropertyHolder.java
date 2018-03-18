@@ -27,5 +27,9 @@ public class HandlerPropertyHolder {
 	public void removeHanlder(HandlerProperty handler) {
 		this.handlers.remove(handler);
 	}
+
+	public void addAll(HandlerPropertyHolder tmpHandler) {
+		this.handlers.addAll(tmpHandler.getHandlers());
+	}
 	
 }

@@ -131,18 +131,12 @@ public abstract class MyPaneFx extends StackPane {
 		this.widthProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> arg0, Number arg1, Number arg2) {
-//				System.out.println("MyPaneFx=" + MyPaneFx.this.getStyle());
-//				System.out.println("MyPaneFx=" + MyPaneFx.this.getWidth());
-//				System.out.println("basae=" + base.getWidth());
 				base.setPrefWidth(arg2.doubleValue() - calcMargin());
 			}
 		});
 		this.heightProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> arg0, Number arg1, Number arg2) {
-//				System.out.println("MyPaneFx=" + MyPaneFx.this.getStyle());
-//				System.out.println("MyPaneFx=" + MyPaneFx.this.getWidth());
-//				System.out.println("basae=" + base.getWidth());
 				base.setPrefHeight(arg2.doubleValue() - calcMargin());
 			}
 		});
@@ -213,7 +207,6 @@ public abstract class MyPaneFx extends StackPane {
 			@Override
 			public void handle(MouseEvent arg0) {
 				dragging = true;
-				System.out.println("setOnMousePressed");
 				initialX = MyPaneFx.this.getLayoutX();
 				initialY = MyPaneFx.this.getLayoutY();
 				
@@ -230,7 +223,6 @@ public abstract class MyPaneFx extends StackPane {
 				if (!dragging) {
 					return;
 				}
-				//System.out.println(arg0.getScreenX());
 				double sceneX = arg0.getSceneX();
 				double sceneY = arg0.getSceneY();
 		
@@ -294,6 +286,9 @@ private int calcMargin() {
 	String bw = style.getValue("-fx-border-width");
 	int margin = 0;
 	if (!pad.isEmpty()) {
+		if (pad.contains(",")) {
+			pad = pad.split(",")[0];
+		}
 		margin += Integer.valueOf(pad);
 	}
 	if (!bw.isEmpty()) {

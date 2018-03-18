@@ -44,8 +44,6 @@ public abstract class Sequencer implements DependencyInterface {
 		// resolves dependencies
 		getDependency().requestChange(id, value);
 		
-//		System.out.println("Dependency compelted");
-		
 		List<String> changedIds = getDependency().getChangedIds();
 
 		Set<HandlerProperty> toRunHandlers = new LinkedHashSet<>();

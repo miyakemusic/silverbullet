@@ -238,6 +238,27 @@ public class BuilderModelImpl implements BuilderModel {
 	}
 
 	@Override
+	public void importFile(String folder) {
+		PropertyHolder tmpProps = loadTestProp(folder + "/" + ID_DEF_XML);
+		tmpProps.initialize();
+		this.propertiesHolder.addAll(tmpProps);
+		this.store.importProperties(tmpProps);
+		this.dependency.importSpec(folder + DEPENDENCYSPEC_XML);
+		RegisterProperty tmpRegister = loadRegisterProperty(folder + "/" + REGISTER_XML);
+		this.registerProperty.addAll(tmpRegister.getRegisters());
+		
+		HandlerPropertyHolder tmpHandler = loadHandlerPropertyHolder(folder + "/" + HANDLER_XML);
+		if (handlerPropertyHolder == null) {
+			handlerPropertyHolder = new HandlerPropertyHolder();
+		}
+		handlerPropertyHolder.addAll(tmpHandler);
+		
+		this.texHolder.addAll(loadRemote(folder + "/" + REMOTE_XML));
+		this.hardSpec.addAll(loadSpec(folder + "/" + HARDSPEC_XML));
+		this.userStory.addAll(loadSpec(folder + "/" + USERSTORY_XML));	
+	}
+	
+	@Override
 	public void loadDefault() {
 		XmlPersistent<PropertyType> per = new XmlPersistent<>();
 		try {
@@ -355,7 +376,4 @@ public class BuilderModelImpl implements BuilderModel {
 	public void setUserPath(String userPath) {
 		userApplicationPath = userPath;
 	}
-
-
-
 }

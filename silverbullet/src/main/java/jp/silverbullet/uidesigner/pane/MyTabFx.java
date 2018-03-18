@@ -28,7 +28,6 @@ public class MyTabFx extends TabPane {
 		setOnMousePressed(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
-				System.out.println("MyTabFx selected");
 				commonListener.onSelect(MyTabFx.this);
 				if (event.isSecondaryButtonDown()) {
 					contextMenu.show(MyTabFx.this, event.getScreenX(), event.getScreenY());

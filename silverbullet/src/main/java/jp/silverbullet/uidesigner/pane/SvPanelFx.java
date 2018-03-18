@@ -134,24 +134,6 @@ public abstract class SvPanelFx extends VBox {
 			model.updatePosition(x, y, pointer);
 		}
 
-//		@Override
-//		public void onMoving(double x, double y, double width, double height, Object pointer) {
-//			Object parent = ((Node)pointer).getParent();
-//			System.out.println("pointer=" + pointer.getClass().getName());
-//			System.out.println("Parent=" + parent.getClass().getSimpleName());
-//			if (parent instanceof Pane) {
-//				if (!((Pane)parent).getChildren().contains(resizingBox)) {
-//					((Pane)parent).getChildren().add(resizingBox);
-//				}
-//			//	System.out.println();
-//				resizingBox.setVisible(true);
-//				resizingBox.setLayoutX(x);
-//				resizingBox.setLayoutY(y);
-//				resizingBox.setPrefWidth(width);
-//				resizingBox.setPrefHeight(height);
-//			}
-//		}
-
 	};
 //	private List<SvWidgetFx> allWidgets = new ArrayList<SvWidgetFx>();
 	
@@ -247,7 +229,6 @@ public abstract class SvPanelFx extends VBox {
 		this.setOnMousePressed(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
-				System.out.println("SvPaneFx selected");
 				model.setSelected(null);
 				if (event.isSecondaryButtonDown()) {
 					showPopup(contextMenu, event);
@@ -512,7 +493,6 @@ public abstract class SvPanelFx extends VBox {
 			String[] tmp = description.split(":");
 			if (tmp[0].equals("-width")) {
 				pane.setMinWidth(Double.valueOf(tmp[1]));
-			//	System.out.println("setMinWidth");
 			}
 			else if (tmp[0].equals("-height")) {
 				pane.setMinHeight(Double.valueOf(tmp[1]));

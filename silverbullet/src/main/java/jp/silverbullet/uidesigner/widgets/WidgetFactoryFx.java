@@ -163,10 +163,17 @@ public class WidgetFactoryFx {
 		else if (widgetType.equals(SvPanelModel.IMAGE)) {
 			ret = createImage(prop, style, description);
 		}
+		else if (widgetType.equals(SvPanelModel.GAUGE)) {
+			ret = createGauge(prop, style, description);
+		}
 		else {
 			ret = createLabel(prop, description);
 		}
 		return ret;		
+	}
+
+	private SvPropertyWidgetFx createGauge(SvProperty prop, Description style, Description description) {
+		return new SvGaugeFx(prop, this.svPanelHandler, style, description);
 	}
 
 	private SvPropertyWidgetFx createImage(SvProperty prop, Description style, Description description) {

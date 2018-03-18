@@ -34,8 +34,12 @@ public class RegisterAccess {
 		this.driver = deviceDriver;
 	}
 	
-	public void setInterruptHandler(InterruptHandler interruptHandler) {
-		this.driver.setInterruptHandler(interruptHandler);
+	public void addInterruptHandler(InterruptHandler interruptHandler) {
+		this.driver.addInterruptHandler(interruptHandler);
+	}
+	
+	public void removeInteruptHandler(InterruptHandler interruptHandler) {
+		this.driver.removeInterruptHandler(interruptHandler);
 	}
 	
 	public void writeIo(long address, final boolean value, int bit) {
@@ -101,4 +105,6 @@ public class RegisterAccess {
 	public byte[] readBlock(long address, int size) {
 		return driver.readBlock(address, size);
 	}
+
+
 }

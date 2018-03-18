@@ -29,7 +29,7 @@ public abstract class RegisterIoTestPane extends VBox {
 		}
 
 		@Override
-		public void setInterruptHandler(InterruptHandler interruptHandler) {
+		public void addInterruptHandler(InterruptHandler interruptHandler) {
 			// TODO Auto-generated method stub
 			
 		}
@@ -38,6 +38,12 @@ public abstract class RegisterIoTestPane extends VBox {
 		public byte[] readBlock(long address, int size) {
 			// TODO Auto-generated method stub
 			return null;
+		}
+
+		@Override
+		public void removeInterruptHandler(InterruptHandler interruptHandler) {
+			// TODO Auto-generated method stub
+			
 		}
 		
 	};

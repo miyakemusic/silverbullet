@@ -277,10 +277,9 @@ public abstract class PropertyEditorPaneFx extends VBox {
 						CellEditEvent<ObservableList<SimpleStringProperty>, String> event) {
 					String oldValue = event.getOldValue();
 					String value = event.getNewValue();
-				//	System.out.println(event);
 					event.getRowValue().get(j).set(value);
 					for (ObservableList<SimpleStringProperty> list : allData) {
-				//		System.out.println(list);
+
 					}
 				}
 			});

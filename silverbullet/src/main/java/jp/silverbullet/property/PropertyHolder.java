@@ -140,4 +140,8 @@ public class PropertyHolder {
 		this.listeners.remove(listener2);
 	}
 
+	public void addAll(PropertyHolder tmpProps) {
+		this.properties.addAll(tmpProps.getProperties());
+	}
+
 }

@@ -37,4 +37,6 @@ public interface DesignerModel {
 	UiElement paste();
 
 	void copy(String name, Object pointer);
+
+	void importFile(String designerTmp);
 }

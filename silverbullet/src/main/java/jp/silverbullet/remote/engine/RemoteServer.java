@@ -108,7 +108,6 @@ public class RemoteServer {
 		@Override
 		public String onReceived(String line) {	
 			// In Remote thread
-	//		System.out.println(line);
 			String[] tmp = line.split("\\s+");
 			String command = tmp[0];
 

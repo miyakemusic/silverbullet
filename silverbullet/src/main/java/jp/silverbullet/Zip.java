@@ -27,7 +27,6 @@ public class Zip {
 		              BufferedInputStream(checksum));
 		          ZipEntry entry;
 		          while((entry = zis.getNextEntry()) != null) {
-		             System.out.println("Extracting: " +entry);
 		             int count;
 		             byte data[] = new byte[BUFFER];
 		             // write the files to the disk
@@ -43,7 +42,6 @@ public class Zip {
 		             dest.close();
 		          }
 		          zis.close();
-		          System.out.println("Checksum:"+checksum.getChecksum().getValue());
 		       } catch(Exception e) {
 		          e.printStackTrace();
 		       }
@@ -63,7 +61,6 @@ public class Zip {
 	         File files[] = f.listFiles();//.list();
 
 	         for (int i=0; i<files.length; i++) {
-	            System.out.println("Adding: "+files[i]);
 	            FileInputStream fi = new 
 	              FileInputStream(files[i].getAbsolutePath());
 	            origin = new 

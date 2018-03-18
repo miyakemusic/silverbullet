@@ -34,7 +34,6 @@ public abstract class WebSocketClientHandler {
             public void onWebSocketText(String message2)
             {
                 super.onWebSocketText(message2);
-                //System.out.println("Received TEXT message: " + message);
                 onMessageReceived(message2);
             }
 
@@ -51,7 +50,6 @@ public abstract class WebSocketClientHandler {
 					public void actionPerformed(ActionEvent arg0) {
 						try {
 							connect(optBridge, port);
-							System.out.println("reconnect");
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();

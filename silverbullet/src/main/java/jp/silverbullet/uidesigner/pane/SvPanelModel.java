@@ -23,6 +23,7 @@ public interface SvPanelModel {
 	public static final String CHECK_BOX = "Check Box";
 	public static final String BUTTON = "Button";
 	public static final String IMAGE = "Image";
+	public static final String GAUGE = "GAUGE";
 	
 	
 	BuilderModel getDi();

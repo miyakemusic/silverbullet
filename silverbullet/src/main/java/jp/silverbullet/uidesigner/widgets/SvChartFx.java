@@ -27,8 +27,7 @@ public class SvChartFx extends SvPropertyWidgetFx {
 
 	@Override
 	public void onValueChanged(String id, String value) {
-		updateGraph();
-
+//		updateGraph();
 	}
 
 	protected void updateGraph() {

@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javafx.application.Platform;
 import jp.silverbullet.handlers.InterruptHandler;
 import jp.silverbullet.handlers.RegisterAccess;
 import jp.silverbullet.register.RangeGetter;
@@ -57,23 +58,32 @@ public class RegisterIoGenerator {
 			source.add("         this.registerAccess = registerAccess2;");
 			source.add("    }");
 			source.add("    private Object lock = new Object();");
+		
 			source.add("    public void waitIntrrupt() {");
-			source.add("        this.registerAccess.setInterruptHandler(new InterruptHandler() {");
-			source.add("    	    @Override");
-			source.add("    	    public void onTrigger() {");
-			source.add("    	        synchronized(lock) {");
-			source.add("    		        lock.notify();");
-			source.add("                }");
-			source.add("    	    }    ");		
-			source.add("        });");
-			source.add("        try {");
-			source.add("           synchronized(lock) {");
-			source.add("    	       lock.wait();");
-			source.add("           }");
-			source.add("        } catch (InterruptedException e) {");
-			source.add("    	    e.printStackTrace();");
-			source.add("        }");
+			source.add("    InterruptHandler interruptHandler = new InterruptHandler() {");
+			source.add("        @Override");
+			source.add("        public void onTrigger() {");
+			source.add("            synchronized(lock) {");
+			source.add("    	        lock.notifyAll();");
+			source.add("            }");
+			source.add("        }  ");  
+			source.add("    };");
+			source.add("    this.registerAccess.addInterruptHandler(interruptHandler);");
+			source.add("    try {");
+			source.add("       synchronized(lock) {");
+			source.add("           lock.wait();");
+			source.add("           Platform.runLater(new Runnable() {");
+			source.add("              @Override");
+			source.add("              public void run() {");
+			source.add("           	   registerAccess.removeInteruptHandler(interruptHandler);");
+			source.add("              }");
+			source.add("           });");
+			source.add("      }");
+			source.add("    } catch (InterruptedException e) {");
+			source.add("        e.printStackTrace();");
 			source.add("    }");
+			source.add("    }");
+			
 			for (SvRegister register : registerProperty.getRegisters()) {
 				if (register.isBlock()) {
 					continue;

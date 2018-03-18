@@ -85,7 +85,6 @@ public class SvComboBoxFx extends SvAbstractTitledWidgetFx {
 			combo.getSelectionModel().select(options.get(getProperty().getCurrentValue()));
 		}
 		catch (Exception e) {
-			System.out.println(getProperty().getId() + "," + getProperty().getCurrentValue());
 			e.printStackTrace();
 		}
 		ignoreEvent = false;

@@ -15,6 +15,9 @@ public class SvPropertyStore {
 	private List<String> types = new ArrayList<String>();
 	
 	public SvPropertyStore(PropertyHolder propertiesHolder) {		
+		registerProperties(propertiesHolder);
+	}
+	private void registerProperties(PropertyHolder propertiesHolder) {
 		for (PropertyDef prop : propertiesHolder.getProperties()) {
 			stripString(prop);
 			map.put(prop.getId(), new SvProperty(prop));
@@ -24,7 +27,6 @@ public class SvPropertyStore {
 			}
 		}
 		propertiesHolder.addPropertyHolderListener(new PropertyHolderListener() {
-
 			@Override
 			public void onAdded(PropertyDef newProperty) {
 				map.put(newProperty.getId(), new SvProperty(newProperty));
@@ -44,9 +46,7 @@ public class SvPropertyStore {
 			public void onIdChanged(String oldId, String newId) {
 				map.put(newId, map.get(oldId));
 				map.remove(oldId);
-				
 			}
-			
 		});
 	}
 	private void stripString(PropertyDef prop) {
@@ -75,9 +75,6 @@ public class SvPropertyStore {
 	
 	public SvProperty getProperty(String id) {
 		SvProperty ret = this.map.get(id);
-		if (ret == null) {
-			System.out.println("null");
-		}
 		return ret;
 	}
 	public List<String> getAllTypes() {
@@ -114,6 +111,10 @@ public class SvPropertyStore {
 			ret.add(this.map.get(id));
 		}
 		return ret;
+	}
+	
+	public void importProperties(PropertyHolder propertiesHolder) {
+		registerProperties(propertiesHolder);
 	}
 
 }

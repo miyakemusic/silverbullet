@@ -45,7 +45,6 @@ public class SvSocketServer {
 					if (handler.isQuery(line)) {
 						out.println(ret);
 						out.flush();
-						System.out.println("***REMOTE***   " + line + "->  ret:" + ret);
 					}
 				}
 				socket.close();

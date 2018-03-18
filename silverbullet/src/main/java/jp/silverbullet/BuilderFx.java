@@ -120,6 +120,13 @@ public abstract class BuilderFx extends Application {
 				openFile();
 			}
         });
+        MenuItem importMenu = new MenuItem("Import");
+        importMenu.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				importFile();
+			}
+        });
         MenuItem saveAsMenu = new MenuItem("Save as");
         saveAsMenu.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -155,7 +162,7 @@ public abstract class BuilderFx extends Application {
 				exportPropInfo();
 			}
         });
-        fileMenu.getItems().addAll(openMenu, saveAsMenu, backupMenu, createJavaFileMenu, cleanMenu, exportMenu);
+        fileMenu.getItems().addAll(openMenu, saveAsMenu, importMenu, backupMenu, createJavaFileMenu, cleanMenu, exportMenu);
                 
         Menu specMenu = new Menu("Spec.");
         MenuItem storyMenu = new MenuItem("Story");
@@ -705,6 +712,25 @@ public abstract class BuilderFx extends Application {
 		updateTabs();
 	}
 
+	protected void importFile() {
+		FileChooser fc = new FileChooser();
+		fc.setTitle("select file");
+		//fc.setInitialDirectory(new File(System.getProperty("user.home")));
+		fc.setInitialDirectory(new File("."));
+		fc.getExtensionFilters().add(new ExtensionFilter("ZIP", "*.zip"));
+
+		File f = fc.showOpenDialog(null);
+		
+		String filename = f.getAbsolutePath();
+		
+		if (f != null) {
+			Zip.unzip(filename, DESIGNER_TMP);
+			designerModel.importFile(DESIGNER_TMP);
+			//this.builderModel.importFile(DESIGNER_TMP);
+		}
+		updateTabs();
+	}
+	
 	protected void saveFile() {
 		FileChooser fc = new FileChooser();
 		fc.setTitle("select file");
@@ -712,7 +738,6 @@ public abstract class BuilderFx extends Application {
 		fc.getExtensionFilters().add(new ExtensionFilter("ZIP", "*.zip"));
 
 		File f = fc.showSaveDialog(null);
-		// System.out.println(f);
 
 		if (f != null) {
 			//Path path = f.toPath();

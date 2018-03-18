@@ -59,4 +59,6 @@ public interface BuilderModel {
 	RegisterAccess getRegisterAccess();
 
 	void setUserPath(String userPath);
+
+	void importFile(String filename);
 }

@@ -42,7 +42,6 @@ public class LayoutConfiguration {
 		for (UiElement e : elements2) {
 			if (e.getPointer().equals(widget)) {
 				elements2.remove(e);
-				System.out.println("Removed:" + e.toString());
 				break;
 			}
 			else if(e.getWidgetType().equals("Pane")) {
@@ -62,12 +61,6 @@ public class LayoutConfiguration {
 	public UiElement findElement(Object widget) {
 		UiElement ret = findElement(this.elements, widget);
 
-		if (ret == null) {
-			System.out.println(widget + " not found!!");
-		}
-		else {
-			System.out.println(widget);
-		}
 		return ret;
 	}
 

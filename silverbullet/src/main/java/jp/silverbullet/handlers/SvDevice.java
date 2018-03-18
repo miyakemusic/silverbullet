@@ -7,5 +7,6 @@ public interface SvDevice {
 	byte[] readBlock(long address, int size);
 	int writeIo(long address, BitSet data, BitSet mask);
 	
-	void setInterruptHandler(InterruptHandler interruptHandler);
+	void addInterruptHandler(InterruptHandler interruptHandler);
+	void removeInterruptHandler(InterruptHandler interruptHandler);
 }

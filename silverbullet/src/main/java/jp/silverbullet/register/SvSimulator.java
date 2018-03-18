@@ -12,7 +12,7 @@ abstract public class SvSimulator {
 //	protected SimRegisterControl getRegControl() {
 //		return regControl;
 //	}
-	protected void triggerInterrupt() {
+	protected synchronized void triggerInterrupt() {
 		this.deviceHandler.onInterrupt();
 	}
 	
@@ -45,8 +45,14 @@ abstract public class SvSimulator {
 			}
 
 			@Override
-			public void setInterruptHandler(InterruptHandler interruptHandler) {
+			public void addInterruptHandler(InterruptHandler interruptHandler) {
 
+			}
+
+			@Override
+			public void removeInterruptHandler(InterruptHandler interruptHandler) {
+				// TODO Auto-generated method stub
+				
 			}
 			
 		};
