@@ -223,10 +223,12 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 
 	private ReadWriteLock lock = new ReentrantReadWriteLock();
 	public synchronized void triggerInterrupt() {
-		lock.readLock();
+		lock.readLock().lock();
 		for (InterruptHandler handler : this.interruptHandlers) {
 			handler.onTrigger();
 		}
+		lock.readLock().unlock();
+		
 		if (this.listener != null) {
 			this.listener.onInterrupt();
 		}
@@ -235,14 +237,16 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 
 	@Override
 	public void addInterruptHandler(InterruptHandler interruptHandler) {
-		lock.writeLock();
+		lock.writeLock().lock();
 		this.interruptHandlers.add(interruptHandler);
+		lock.writeLock().unlock();
 	}
 
 	@Override
 	public void removeInterruptHandler(InterruptHandler interruptHandler) {
-		lock.writeLock();
+		lock.writeLock().lock();;
 		this.interruptHandlers.remove(interruptHandler);
+		lock.writeLock().unlock();
 	}
 	
 	public void setValue(int regIndex, int block, int value) {

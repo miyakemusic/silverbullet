@@ -37,6 +37,7 @@ public class RegisterIoGenerator {
 			source.add("package " + path + ";");
 			source.add("import " + RegisterAccess.class.getName() + ";");
 			source.add("import " + InterruptHandler.class.getName() + ";");
+			source.add("import javafx.application.Platform;");
 			source.add("public class " + className + " {");
 			for (SvRegister register : registerProperty.getRegisters()) {
 				String registerAddressDef = "ADDR_" + convertName(register.getName()).toUpperCase();

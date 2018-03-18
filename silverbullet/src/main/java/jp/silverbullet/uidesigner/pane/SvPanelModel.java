@@ -24,7 +24,7 @@ public interface SvPanelModel {
 	public static final String BUTTON = "Button";
 	public static final String IMAGE = "Image";
 	public static final String GAUGE = "GAUGE";
-	
+	public static final String JFREECHART = "JFreeChart";
 	
 	BuilderModel getDi();
 

@@ -113,7 +113,7 @@ public class SvPanelModelImpl implements SvPanelModel {
 			return Arrays.asList(COMBO_BOX, RADIO_BUTTONS, TOGGLE_BUTTONS, ONE_BUTTON, LABEL, FUNCTIONKEY);
 		}
 		else if (property.isTableProperty()) {
-			return Arrays.asList(TABLE, CHART_SCATTER);
+			return Arrays.asList(TABLE, CHART_SCATTER, JFREECHART);
 		}
 		else if (property.isNumericProperty()) {
 			return Arrays.asList(TEXT_BOX, SLIDER, LABEL, FUNCTIONKEY, GAUGE);

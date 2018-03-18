@@ -166,10 +166,17 @@ public class WidgetFactoryFx {
 		else if (widgetType.equals(SvPanelModel.GAUGE)) {
 			ret = createGauge(prop, style, description);
 		}
+		else if (widgetType.equals(SvPanelModel.JFREECHART)) {
+			ret = createJFreeChart(prop, style, description);
+		}
 		else {
 			ret = createLabel(prop, description);
 		}
 		return ret;		
+	}
+
+	private SvPropertyWidgetFx createJFreeChart(SvProperty prop, Description style, Description description) {
+		return new SvChartJFree(prop, this.svPanelHandler, style, description);
 	}
 
 	private SvPropertyWidgetFx createGauge(SvProperty prop, Description style, Description description) {
