@@ -22,9 +22,9 @@ public class NumericCandidatesFactory implements CandidatesFatory {
 
 	@Override
 	public List<String> getElementCandidates() {
-		List<String> ret =  new ArrayList<String>(Arrays.asList(DependencyFormula.VALUE, DependencyFormula.VISIBLE, DependencyFormula.ENABLED));
-		ret.add(DependencyFormula.MIN);
-		ret.add(DependencyFormula.MAX);
+		List<String> ret =  new ArrayList<String>(Arrays.asList(DependencySpecDetail.VALUE, DependencySpecDetail.VISIBLE, DependencySpecDetail.ENABLED));
+		ret.add(DependencySpecDetail.MIN);
+		ret.add(DependencySpecDetail.MAX);
 		return ret;
 	}
 
@@ -42,7 +42,7 @@ public class NumericCandidatesFactory implements CandidatesFatory {
 	@Override
 	public void setElement(String element) {
 		answerCandidates.clear();
-		if (element.equals(DependencyFormula.VALUE)) {
+		if (element.equals(DependencySpecDetail.VALUE)) {
 			answerCandidates.add(DependencyFormula.ANY);
 			answerCandidates.add(this.property.getMin());
 			answerCandidates.add(this.property.getMax());

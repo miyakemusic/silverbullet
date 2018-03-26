@@ -5,7 +5,18 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class DependencySpecDetail implements Cloneable {
 
+	public static final String VALUE = "Value";
+	
+	public static final String VISIBLE = "Visible";
 
+	public static final String ENABLED = "Enabled";
+	
+	public static final String LISTMASK = "ListMask";
+	
+	public static final String MIN = "Min";
+
+	public static final String MAX = "Max";
+	
 	@Override
 	public DependencySpecDetail clone() {
 		try {

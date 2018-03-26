@@ -61,7 +61,7 @@ public class ConfirmationPaneFx extends VBox {
         for (DependencySpecDetail e : dependencySpec.getSpecs()) {
         	elements.add(e.getPassiveElement());
         }
-        elements.add(DependencyFormula.VALUE);
+        elements.add(DependencySpecDetail.VALUE);
         for (String e : elements) {
         	data.add(new MyData(e, dependencySpec.isConfirmEnabled(e), dependencySpec));
         }

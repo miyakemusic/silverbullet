@@ -6,6 +6,7 @@ import javax.script.ScriptException;
 
 import jp.silverbullet.SvProperty;
 import jp.silverbullet.dependency.speceditor2.DependencyFormula;
+import jp.silverbullet.dependency.speceditor2.DependencySpecDetail;
 
 public class SvCalculator {
 	private ScriptEngine scriptEngine = new ScriptEngineManager().getEngineByName("JavaScript");
@@ -30,7 +31,7 @@ public class SvCalculator {
 		return "ERROR";
 	}
 
-	private static String[] elements = {DependencyFormula.VALUE, DependencyFormula.MIN, DependencyFormula.MAX};
+	private static String[] elements = {DependencySpecDetail.VALUE, DependencySpecDetail.MIN, DependencySpecDetail.MAX};
 	
 	private String replaceCurrentValue(String formula) {
 		formula = formula.replace("*CALC[", "").replace("]", "");

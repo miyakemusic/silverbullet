@@ -6,7 +6,6 @@ import java.util.List;
 import jp.silverbullet.SvPropertyStore;
 import jp.silverbullet.dependency.speceditor2.DependencyFormula;
 import jp.silverbullet.dependency.speceditor2.DependencySpecDetail;
-import jp.silverbullet.property.ListDetailElement;
 
 public class MarcoExtractor {
 
@@ -50,14 +49,5 @@ public class MarcoExtractor {
 			ret.add(d);
 		}
 		return ret;
-	}
-
-	private String getAlternative(String valueMatched) {
-		if (valueMatched.equals(DependencyFormula.FALSE)) {
-			return DependencyFormula.TRUE;
-		}
-		else {
-			return DependencyFormula.FALSE;
-		}
 	}
 }

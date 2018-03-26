@@ -11,6 +11,7 @@ import jp.silverbullet.SvProperty;
 import jp.silverbullet.SvPropertyListener;
 import jp.silverbullet.SvPropertyStore;
 import jp.silverbullet.dependency.speceditor2.DependencyFormula;
+import jp.silverbullet.dependency.speceditor2.DependencySpecDetail;
 
 
 public class TentativePropertyStore {
@@ -23,32 +24,32 @@ public class TentativePropertyStore {
 
 		@Override
 		public void onValueChanged(String id, String value) {
-			getHistory(id).add(new ChangedItemValue(DependencyFormula.VALUE, value));
+			getHistory(id).add(new ChangedItemValue(DependencySpecDetail.VALUE, value));
 		}
 
 		@Override
 		public void onEnableChanged(String id, boolean b) {
-			getHistory(id).add(new ChangedItemValue(DependencyFormula.ENABLED, String.valueOf(b)));
+			getHistory(id).add(new ChangedItemValue(DependencySpecDetail.ENABLED, String.valueOf(b)));
 		}
 
 		@Override
 		public void onFlagChanged(String id, Flag flag) {
 			if (flag.equals(Flag.MAX)) {
-				getHistory(id).add(new ChangedItemValue(DependencyFormula.MAX, flag.toString()));
+				getHistory(id).add(new ChangedItemValue(DependencySpecDetail.MAX, flag.toString()));
 			}
 			else if (flag.equals(Flag.MIN)) {
-				getHistory(id).add(new ChangedItemValue(DependencyFormula.MIN, flag.toString()));
+				getHistory(id).add(new ChangedItemValue(DependencySpecDetail.MIN, flag.toString()));
 			}
 		}
 
 		@Override
 		public void onVisibleChanged(String id, Boolean b) {
-			getHistory(id).add(new ChangedItemValue(DependencyFormula.VISIBLE, String.valueOf(b)));
+			getHistory(id).add(new ChangedItemValue(DependencySpecDetail.VISIBLE, String.valueOf(b)));
 		}
 
 		@Override
 		public void onListMaskChanged(String id, String value) {
-			getHistory(id).add(new ChangedItemValue(DependencyFormula.LISTMASK, value));
+			getHistory(id).add(new ChangedItemValue(DependencySpecDetail.LISTMASK, value));
 		}
 
 		@Override
@@ -89,22 +90,22 @@ public class TentativePropertyStore {
 			for (ChangedItemValue item : this.getHistory(id)) {
 				SvProperty propertyOriginal = this.propertiesStore.getProperty(id);
 				SvProperty tmpChangedProperty = this.properties.get(id);
-				if (item.element.equals(DependencyFormula.MAX)) {
+				if (item.element.equals(DependencySpecDetail.MAX)) {
 					propertyOriginal.setMax(tmpChangedProperty.getMax());
 				}
-				else if (item.element.equals(DependencyFormula.MIN)) {
+				else if (item.element.equals(DependencySpecDetail.MIN)) {
 					propertyOriginal.setMin(tmpChangedProperty.getMin());
 				}
-				else if (item.element.equals(DependencyFormula.VALUE)) {
+				else if (item.element.equals(DependencySpecDetail.VALUE)) {
 					propertyOriginal.setCurrentValue(tmpChangedProperty.getCurrentValue());
 				}
-				else if (item.element.equals(DependencyFormula.ENABLED)) {
+				else if (item.element.equals(DependencySpecDetail.ENABLED)) {
 					propertyOriginal.setEnabled(tmpChangedProperty.isEnabled());
 				}
-				else if (item.element.equals(DependencyFormula.VISIBLE)) {
+				else if (item.element.equals(DependencySpecDetail.VISIBLE)) {
 					propertyOriginal.setVisible(tmpChangedProperty.isVisible());
 				}
-				else if (item.element.equals(DependencyFormula.LISTMASK)) {
+				else if (item.element.equals(DependencySpecDetail.LISTMASK)) {
 					propertyOriginal.setListMask(tmpChangedProperty.getListMask());
 				}
 			}

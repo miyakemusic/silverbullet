@@ -8,6 +8,7 @@ import java.util.Map;
 
 import jp.silverbullet.ChangedItemValue;
 import jp.silverbullet.dependency.speceditor2.DependencyFormula;
+import jp.silverbullet.dependency.speceditor2.DependencySpecDetail;
 
 public class CommonSvHandler extends AbstractSvHandler {
 
@@ -28,7 +29,7 @@ public class CommonSvHandler extends AbstractSvHandler {
 		
 		for (String id : this.handlerProperty.getIds()) {
 			for (ChangedItemValue v : changed.get(id)) {
-				if (v.element.equals(DependencyFormula.VALUE)) {
+				if (v.element.equals(DependencySpecDetail.VALUE)) {
 					run = true;
 					break;
 				}

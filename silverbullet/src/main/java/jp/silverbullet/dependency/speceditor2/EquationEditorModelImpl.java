@@ -24,16 +24,16 @@ public class EquationEditorModelImpl implements EquationEditorModel {
 		
 	public EquationEditorModelImpl(DependencySpecEditorModel model, String targetElement, MyNodeItem prev) {
 		this.model = model; 
-		if (targetElement.equals(DependencyFormula.VALUE)) {
+		if (targetElement.equals(DependencySpecDetail.VALUE)) {
 			targetCandidatesFactory = new ValueTargetCandidatesFactory(model.getProperty());
 		}
-		else if (targetElement.equals(DependencyFormula.ENABLED) || targetElement.equals(DependencyFormula.VISIBLE)) {
+		else if (targetElement.equals(DependencySpecDetail.ENABLED) || targetElement.equals(DependencySpecDetail.VISIBLE)) {
 			targetCandidatesFactory = new BooleanTargetCandidatesFactory(model.getProperty());
 		}
-		else if (targetElement.equals(DependencyFormula.MIN)) {
+		else if (targetElement.equals(DependencySpecDetail.MIN)) {
 			targetCandidatesFactory = new MinTargetCandidatesFactory(model.getProperty());
 		}
-		else if (targetElement.equals(DependencyFormula.MAX)) {
+		else if (targetElement.equals(DependencySpecDetail.MAX)) {
 			targetCandidatesFactory = new MaxTargetCandidatesFactory(model.getProperty());
 		}
 		else {
@@ -214,7 +214,7 @@ public class EquationEditorModelImpl implements EquationEditorModel {
 
 	@Override
 	public void setDefaultChoice(String string) {
-		this.setElement(DependencyFormula.VALUE);
+		this.setElement(DependencySpecDetail.VALUE);
 		this.setAnswer(string);
 	}
 

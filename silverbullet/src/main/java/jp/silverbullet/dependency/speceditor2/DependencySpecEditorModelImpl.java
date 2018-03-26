@@ -53,17 +53,17 @@ public class DependencySpecEditorModelImpl implements DependencySpecEditorModel 
 	public List<String> getAllNodes() {
 		SvProperty prop = this.getProperty();
 		List<String> ret = new ArrayList<String>();
-		ret.add(DependencyFormula.VISIBLE);
-		ret.add(DependencyFormula.ENABLED);
-		ret.add(DependencyFormula.VALUE);
+		ret.add(DependencySpecDetail.VISIBLE);
+		ret.add(DependencySpecDetail.ENABLED);
+		ret.add(DependencySpecDetail.VALUE);
 		if (prop.isListProperty()) {
 			for (ListDetailElement e : prop.getListDetail()) {
 				ret.add(wrapBracket(e.getId()));
 			}
 		}
 		else if (prop.isNumericProperty()) {
-			ret.add(DependencyFormula.MIN);
-			ret.add(DependencyFormula.MAX);
+			ret.add(DependencySpecDetail.MIN);
+			ret.add(DependencySpecDetail.MAX);
 		}
 		return ret;
 	}
@@ -134,10 +134,10 @@ public class DependencySpecEditorModelImpl implements DependencySpecEditorModel 
 //		element = stripBracket(element);
 		DependencyFormula newSpec = spec.getSpecification().clone();
 		if (this.getProperty().isListProperty()) {
-			if (spec.getPassiveElement().equals(DependencyFormula.VISIBLE)) {
+			if (spec.getPassiveElement().equals(DependencySpecDetail.VISIBLE)) {
 				
 			}
-			else if (spec.getPassiveElement().equals(DependencyFormula.ENABLED)) {
+			else if (spec.getPassiveElement().equals(DependencySpecDetail.ENABLED)) {
 				
 			}
 			else {
@@ -152,10 +152,10 @@ public class DependencySpecEditorModelImpl implements DependencySpecEditorModel 
 			
 		}
 		else if (this.getProperty().isBooleanProperty()) {
-			if (spec.getPassiveElement().equals(DependencyFormula.VISIBLE)) {
+			if (spec.getPassiveElement().equals(DependencySpecDetail.VISIBLE)) {
 				
 			}
-			else if (spec.getPassiveElement().equals(DependencyFormula.ENABLED)) {
+			else if (spec.getPassiveElement().equals(DependencySpecDetail.ENABLED)) {
 				
 			}
 			else {

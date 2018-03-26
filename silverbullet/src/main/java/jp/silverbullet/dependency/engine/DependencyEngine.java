@@ -151,22 +151,22 @@ public abstract class DependencyEngine {
 		changed.add(changedProperty.getId());
 		String passiveElement = specDetail.getPassiveElement();
 		// Common dependency
-		if (passiveElement.equals(DependencyFormula.ENABLED)) {
+		if (passiveElement.equals(DependencySpecDetail.ENABLED)) {
 			Boolean b = calcAndBoolean(specDetail, passiveElement);
 			changedProperty.setEnabled(b);
 		}
-		else if (passiveElement.equals(DependencyFormula.VISIBLE)) {
+		else if (passiveElement.equals(DependencySpecDetail.VISIBLE)) {
 			Boolean b = calcAndBoolean(specDetail, passiveElement);
 			changedProperty.setVisible(b);
 		}
 		else {	
 			// Specific dependency
 			if (changedProperty.isListProperty()) {
-				if (passiveElement.equals(DependencyFormula.VALUE)) {
+				if (passiveElement.equals(DependencySpecDetail.VALUE)) {
 					changedProperty.setCurrentValue(specDetail.getSpecification().getValueMatched());
 				}
 				else {
-					if (specDetail.getSpecification().getElement().equals(DependencyFormula.VALUE)) {
+					if (specDetail.getSpecification().getElement().equals(DependencySpecDetail.VALUE)) {
 						String maskId = passiveElement; 		
 						Boolean mask = !Boolean.parseBoolean(specDetail.getSpecification().getValueMatched());//changedProperty.getListMask().get(maskId);
 						if (mask && changedProperty.getCurrentValue().equals(maskId)) {
@@ -183,12 +183,12 @@ public abstract class DependencyEngine {
 				}
 			}
 			else if (changedProperty.isNumericProperty()) {
-				if (passiveElement.equals(DependencyFormula.VALUE)) {
+				if (passiveElement.equals(DependencySpecDetail.VALUE)) {
 					String tmpValue = "";
 					tmpValue = calculator.calculate(specDetail.getSpecification().getValueMatched());				
 					setCurrentValue(changedProperty, tmpValue);
 				}
-				else if (passiveElement.equals(DependencyFormula.MAX)) {
+				else if (passiveElement.equals(DependencySpecDetail.MAX)) {
 					if (conditionSatisfied) {
 						changedProperty.setMax(specDetail.getSpecification().getValueMatched());
 					}
@@ -196,7 +196,7 @@ public abstract class DependencyEngine {
 						changedProperty.setCurrentValue(changedProperty.getMax());
 					}
 				}
-				else if (passiveElement.equals(DependencyFormula.MIN)) {
+				else if (passiveElement.equals(DependencySpecDetail.MIN)) {
 					if (conditionSatisfied) {
 						changedProperty.setMin(specDetail.getSpecification().getValueMatched());
 					}

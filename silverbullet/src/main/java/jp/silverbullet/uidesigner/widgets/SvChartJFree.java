@@ -26,12 +26,25 @@ public class SvChartJFree extends SvPropertyWidgetFx {
 		super(prop, dependencyInterface);
 		final SwingNode chartSwingNode = new SwingNode();
 
-	    chartSwingNode.setContent(
-	      new ChartPanel(
+		ChartPanel panel = new ChartPanel(
 	    		  lineChart = generateLineChart()
-	      )      
-	    );
+	      ) ;
+	    chartSwingNode.setContent(panel);
+	    chartSwingNode.setMouseTransparent(true);
 	    this.getChildren().add(chartSwingNode);
+	    
+	    new DescriptionApplyer(description) {
+			@Override
+			protected void setPrefWidth(Double width) {
+				SvChartJFree.this.setPrefWidth(width);
+			}
+
+			@Override
+			protected void setPrefHeight(Double height) {
+				SvChartJFree.this.setPrefHeight(height);
+			}
+	    	
+	    };
 	}
 
 	private JFreeChart generateLineChart() {

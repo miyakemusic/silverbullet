@@ -18,7 +18,7 @@ public class BooleanCandidatesFactory implements CandidatesFatory {
 
 	@Override
 	public List<String> getElementCandidates() {
-		return Arrays.asList(DependencyFormula.VISIBLE, DependencyFormula.ENABLED, DependencyFormula.VALUE);
+		return Arrays.asList(DependencySpecDetail.VISIBLE, DependencySpecDetail.ENABLED, DependencySpecDetail.VALUE);
 	}
 
 	@Override

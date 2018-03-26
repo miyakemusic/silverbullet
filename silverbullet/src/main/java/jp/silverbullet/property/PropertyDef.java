@@ -135,7 +135,6 @@ public class PropertyDef implements Cloneable {
 		this.updateArgument(index, s);
 	}
 	protected int findArgumentIndex(String key) {
-//		int index = this.argumentDef.indexOf(key);
 		int index = this.argumetnDefInterface.get(type).indexOf(key);
 		return index;
 	}

@@ -7,12 +7,6 @@ public class DependencyFormula implements Cloneable{
 
 	public static final String SAMEVALUE = "*SAME_VALUE*";
 
-	public static final String VALUE = "Value";
-
-	public static final String MIN = "Min";
-
-	public static final String MAX = "Max";
-
 	public static final String ANY = "**Any**";
 
 	public static final String EQUAL = "=";
@@ -25,17 +19,11 @@ public class DependencyFormula implements Cloneable{
 
 	public static final String SMALLER_EQUAL = "<=";
 
-	public static final String VISIBLE = "Visible";
-
-	public static final String ENABLED = "Enabled";
-
 	public static final String TRUE = "true";
 
 	public static final String FALSE = "false";
 
 	public static final String NOTEQUAL = "!=";
-
-	public static final String LISTMASK = "ListMask";
 
 	public static final String OTHER = "*OTHER*";
 	

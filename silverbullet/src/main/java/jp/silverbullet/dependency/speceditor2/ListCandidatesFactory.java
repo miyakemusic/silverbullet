@@ -24,9 +24,9 @@ public class ListCandidatesFactory implements CandidatesFatory {
 	@Override
 	public List<String> getElementCandidates() {
 		List<String> ret = new ArrayList<String>();
-		ret.add(DependencyFormula.VALUE);
-		ret.add(DependencyFormula.VISIBLE);
-		ret.add(DependencyFormula.ENABLED);
+		ret.add(DependencySpecDetail.VALUE);
+		ret.add(DependencySpecDetail.VISIBLE);
+		ret.add(DependencySpecDetail.ENABLED);
 		return ret;
 	}
 
@@ -41,11 +41,11 @@ public class ListCandidatesFactory implements CandidatesFatory {
 	@Override
 	public void setElement(String element) {
 		this.answerCandidates.clear();
-		if (element.equals(DependencyFormula.ENABLED) || element.equals(DependencyFormula.VISIBLE)) {
+		if (element.equals(DependencySpecDetail.ENABLED) || element.equals(DependencySpecDetail.VISIBLE)) {
 			answerCandidates.add(DependencyFormula.TRUE);
 			answerCandidates.add(DependencyFormula.FALSE);
 		}
-		else if (element.equals(DependencyFormula.VALUE)) {
+		else if (element.equals(DependencySpecDetail.VALUE)) {
 			for (ListDetailElement e : property.getListDetail()) {
 				answerCandidates.add(e.getId());
 			}

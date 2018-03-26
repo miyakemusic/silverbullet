@@ -23,8 +23,8 @@ public class DefaultCandidatesFactory implements CandidatesFatory {
 	@Override
 	public List<String> getElementCandidates() {
 		List<String> ret = new ArrayList<String>();
-		ret.add(DependencyFormula.VISIBLE);
-		ret.add(DependencyFormula.ENABLED);
+		ret.add(DependencySpecDetail.VISIBLE);
+		ret.add(DependencySpecDetail.ENABLED);
 		return ret;
 	}
 
