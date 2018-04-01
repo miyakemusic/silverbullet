@@ -1,6 +1,5 @@
 package jp.silverbullet.uidesigner;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -110,7 +109,7 @@ public class DesignerModelImpl implements DesignerModel {
 		try {
 			holder = layoutPersister.load(folder + "/" + LAYOUT_XML, LayoutHolder.class);
 			di.load(folder);
-		} catch (FileNotFoundException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -139,7 +138,7 @@ public class DesignerModelImpl implements DesignerModel {
 			LayoutHolder tmpLayout = layoutPersister.load(folder + "/" + LAYOUT_XML, LayoutHolder.class);
 			this.holder.getLayouts().putAll(tmpLayout.getLayouts());
 			di.importFile(folder);
-		} catch (FileNotFoundException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

@@ -5,5 +5,6 @@ public enum DependencyTargetElement {
 	Visible,
 	Value,
 	ListItemEnabled,
-	ListItemVisible
+	ListItemVisible,
+	Any, Min, Max
 }

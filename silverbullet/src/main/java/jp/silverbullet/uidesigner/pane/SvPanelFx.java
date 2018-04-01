@@ -31,6 +31,9 @@ import jp.silverbullet.dependency.analyzer.DependencyFrameFx;
 import jp.silverbullet.dependency.engine.RequestRejectedException;
 import jp.silverbullet.dependency.speceditor2.DependencySpecEditorModelImpl;
 import jp.silverbullet.dependency.speceditor2.DependencySpecEditorPaneFx;
+import jp.silverbullet.dependency.speceditor3.ui.DependecyEditorModel;
+import jp.silverbullet.dependency.speceditor3.ui.DependencyEditorUi;
+import jp.silverbullet.dependency.speceditor3.ui.DependencyTreeUi;
 import jp.silverbullet.property.ListDetailElement;
 import jp.silverbullet.uidesigner.EditableWidgetListenerFx;
 import jp.silverbullet.uidesigner.pane.UiElement.LayoutType;
@@ -309,8 +312,14 @@ public abstract class SvPanelFx extends VBox {
 				showDependencyDiagramUi(property.getId());
 			}
 
+			@Override
+			public void onDependency2(SvProperty property) {
+				showDependencyDiagramUi2(property.getId());
+			}
+
 		});
 	}
+
 	protected SvPropertyWidgetFx createWidget(UiElement e) {
 		SvPropertyWidgetFx widget = factory.create(model.getProperty(e.getId()), e);
 		return widget;
@@ -336,6 +345,15 @@ public abstract class SvPanelFx extends VBox {
 		DependencyFrameFx node = createDependencySpecPane(id, this.model);
 		dialog.showModal(node);
 		node.removeListeners();
+	}
+	
+	protected void showDependencyDiagramUi2(String id) {
+		MyDialogFx dialog = new MyDialogFx("Dependency Diagram", this);
+		DependecyEditorModel dependencyEditorModel = new DependecyEditorModel(model.getProperty(id), this.model.getDi().getDependencySpecHolder2(), model.getPropertyHolder(), model.getPropertyStore());
+		Pane node = new DependencyEditorUi(dependencyEditorModel);
+		dialog.showModal(node);
+		
+		
 	}
 	
 	private boolean doNotRequestDependency = false;

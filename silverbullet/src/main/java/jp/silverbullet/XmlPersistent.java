@@ -28,17 +28,11 @@ public class XmlPersistent<T> {
 	    m.marshal(content, new File(filename));
 	}
 	
-	public T load(String filename, Class<T> cls) throws FileNotFoundException {
+	public T load(String filename, Class<T> cls) throws IOException {
 		File file = FileUtils.getFile(filename);
-		try {
-			String input = FileUtils.readFileToString(file, "UTF-8");
-			return loadFromXml(input, cls);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return null;	
+		String input = FileUtils.readFileToString(file, "UTF-8");
+		return loadFromXml(input, cls);
+
 	}
 	
 	public T loadFromXml(String xml, Class<T> cls) throws FileNotFoundException {

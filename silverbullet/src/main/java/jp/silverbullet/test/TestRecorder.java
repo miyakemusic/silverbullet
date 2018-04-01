@@ -207,7 +207,7 @@ public class TestRecorder implements RegisterMonitor {
 		XmlPersistent<TableDataList> propertyPersister = new XmlPersistent<>();
 		try {
 			this.tableData.addAll(propertyPersister.load(prm + "/test.xml", TableDataList.class).getData());
-		} catch (FileNotFoundException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -255,7 +255,7 @@ public class TestRecorder implements RegisterMonitor {
 		XmlPersistent<IdValues> propertyPersister = new XmlPersistent<IdValues>();
 		try {
 			return propertyPersister.load(path + "/snapshot.xml", IdValues.class);	
-		} catch (FileNotFoundException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;

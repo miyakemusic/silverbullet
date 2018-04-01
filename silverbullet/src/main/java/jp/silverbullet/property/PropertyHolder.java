@@ -144,4 +144,13 @@ public class PropertyHolder {
 		this.properties.addAll(tmpProps.getProperties());
 	}
 
+	public PropertyDef getProperty(String id) {
+		for (PropertyDef property : this.properties) {
+			if (property.getId().equals(id)) {
+				return property;
+			}
+		}
+		return null;
+	}
+
 }

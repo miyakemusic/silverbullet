@@ -215,8 +215,14 @@ public abstract class BuilderFx extends Application {
 				showRegisterEditor();
 			}
         });
-                
-        specMenu.getItems().addAll(storyMenu, propertyMenu, dependencyMenu, handlerMenu, remoteMenu, hardwareControlMenu, hardwareIoMenu);
+        MenuItem dependencyMenu2 = new MenuItem("Dependency2");
+        dependencyMenu2.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				showDependencySpec2();
+			}
+        });
+        specMenu.getItems().addAll(storyMenu, propertyMenu, dependencyMenu, handlerMenu, remoteMenu, hardwareControlMenu, hardwareIoMenu, dependencyMenu2);
         
         Menu tabMenu = new Menu("Tab");
         MenuItem deleteMenu = new MenuItem("Delete");
@@ -584,6 +590,10 @@ public abstract class BuilderFx extends Application {
 		
 	}
 
+	protected void showDependencySpec2() {
+
+	}
+	
 	protected void cleanProperties() {
 		PropertyHolder holder = designerModel.getBuilderModel().getPropertyHolder();
 		List<PropertyDef> shouldBeRemoved = new ArrayList<PropertyDef>();

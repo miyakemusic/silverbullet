@@ -277,7 +277,7 @@ public abstract class DependencyEngine {
 	public void loadSpec(String filename) {
 		try {
 			this.specHolder = persister.load(filename, DependencySpecHolder.class);
-		} catch (FileNotFoundException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -298,7 +298,7 @@ public abstract class DependencyEngine {
 				DependencySpec spec = tmp.getSpecs().get(key);
 				this.specHolder.getSpecs().put(key, spec);
 			}
-		} catch (FileNotFoundException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

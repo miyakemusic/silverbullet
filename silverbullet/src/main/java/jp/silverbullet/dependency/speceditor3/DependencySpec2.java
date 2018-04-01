@@ -4,19 +4,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlRootElement(name="DependencySpec")
 public class DependencySpec2 {	
 	public static final String DefaultItem = "DefaultItem";
-	private Map<DependencyTargetElement, Map<String, List<DependencyExpressionHolder>>> map = new HashMap<>();
+	
+	private HashMap<DependencyTargetElement, DependencyExpressionHolderMap> depExpHolderMap = new HashMap<>();
 	private String id;
 
+	public DependencySpec2() {}
+	
 	public DependencySpec2(String id) {
 		this.id = id;
-	}
-
-	public Map<DependencyTargetElement, Map<String, List<DependencyExpressionHolder>>> getMap() {
-		return map;
 	}
 
 	public String getId() {
@@ -37,12 +37,12 @@ public class DependencySpec2 {
 
 
 	private List<DependencyExpressionHolder> getSpecs(DependencyTargetElement targetElement, String targetListItem) {
-		if (!map.containsKey(targetElement)) {
-			Map<String, List<DependencyExpressionHolder>> map2 = new HashMap<>();
-			map.put(targetElement, map2);
+		if (!depExpHolderMap.containsKey(targetElement)) {
+			DependencyExpressionHolderMap map2 = new DependencyExpressionHolderMap();
+			depExpHolderMap.put(targetElement, map2);
 		}
 		
-		Map<String, List<DependencyExpressionHolder>> map2 = map.get(targetElement);
+		DependencyExpressionHolderMap map2 = depExpHolderMap.get(targetElement);
 		if (!map2.containsKey(targetListItem)) {
 			map2.put(targetListItem, new ArrayList<DependencyExpressionHolder>());
 		}
@@ -58,7 +58,7 @@ public class DependencySpec2 {
 		if (id.equals(targetId)) {
 			return ret;
 		}
-		for (Map<String, List<DependencyExpressionHolder>> map2 : this.map.values())  {
+		for (DependencyExpressionHolderMap map2 : this.depExpHolderMap.values())  {
 			for (String key : map2.keySet()) {
 				List<DependencyExpressionHolder> list = map2.get(key);
 				for (DependencyExpressionHolder expressionHolder : list) {
@@ -90,4 +90,27 @@ public class DependencySpec2 {
 		}
 		return ret;
 	}
+
+	public HashMap<DependencyTargetElement, DependencyExpressionHolderMap> getDepExpHolderMap() {
+		return depExpHolderMap;
+	}
+
+	public void setDepExpHolderMap(HashMap<DependencyTargetElement, DependencyExpressionHolderMap> depExpHolderMap) {
+		this.depExpHolderMap = depExpHolderMap;
+	}
+
+	public boolean remove(DependencyExpression pointer) {
+		for (DependencyExpressionHolderMap map2 : this.depExpHolderMap.values())  {
+			for (String key : map2.keySet()) {
+				List<DependencyExpressionHolder> list = map2.get(key);
+				for (DependencyExpressionHolder expressionHolder : list) {
+					if (expressionHolder.remove(pointer)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
 }

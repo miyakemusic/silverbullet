@@ -63,7 +63,10 @@ public abstract class DependencyEngine2 {
 				}
 				else {
 					String v = calcResult(spec);
-					if (prop.isNumericProperty()) {
+					if (prop.isListProperty()) {
+						v = v.replace("%", "");
+					}
+					else if (prop.isNumericProperty()) {
 						RangeChecker rangeChecker = new RangeChecker(prop.getMin(), prop.getMax(), v);
 						if (!rangeChecker.isSatisfied()) {
 							if (spec.getSettingDisabledBehavior().equals(DependencyExpressionHolder.SettingDisabledBehavior.Reject)) {
@@ -94,18 +97,26 @@ public abstract class DependencyEngine2 {
 	}
 	
 	private String calcResult(DependencyProperty spec) {
-		if (spec.getValue().startsWith(ExpressionBuilder.EXPRESSION)) {
-			return calculator.calculate("ret=" + strip(spec));
-		}
-		else if (spec.getValue().startsWith(ExpressionBuilder.SCRIPT)) {
+		if (spec.getValue().startsWith(ExpressionBuilder.SCRIPT)) {
 			return calculator.calculate(strip(spec));
 		}
 		else {
-			return spec.getValue();
+			String ret = calculator.calculate("ret=" + spec.getValue()/*strip(spec)*/);
+			return ret;
 		}
+
+//		else {
+//			return spec.getValue();
+//		}
 	}
 	private String strip(DependencyProperty spec) {
+		try {
 		return spec.getValue().split("[\\[\\]]+")[1];
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "";
 	}
 	private SvProperty getProperty(String id) {
 		return getPropertiesStore().getProperty(id);
@@ -120,41 +131,44 @@ public abstract class DependencyEngine2 {
 		if (condition.isEmpty()) {
 			return true;
 		}
-		else if (condition.startsWith(ExpressionBuilder.EXPRESSION)) {
-			String exp = condition.replace(ExpressionBuilder.EXPRESSION + "[", "").replaceAll("]", "");
-			return calculator.isSatisfied("ret=" +exp);
+		else if (condition.contains(DependencyExpression.AnyValue)) {
+			return true;
 		}
-		else {
-			String comparator = "";
-			String[] comparators = {DependencyExpression.Equals, DependencyExpression.NotEquals, DependencyExpression.LargerThan, DependencyExpression.SmallerThan};
-			for (String c : comparators) {
-				if (condition.contains(c)) {
-					comparator = c;
-					break;
-				}
-			}
-			String left = condition.split(comparator)[0];
-			String right = condition.split(comparator)[1];
-			
-			if (right.equals(DependencyExpression.AnyValue)) {
-				return true;
-			}
-			else {
-				condition = calculator.replaceWithRealValue(condition).replaceAll("[\\$%]+", "");
-				left = condition.split(comparator)[0];
-				right = condition.split(comparator)[1];
-				if (comparator.equals(DependencyExpression.Equals)) {
-					return left.equals(right);
-				}
-				else if (comparator.equalsIgnoreCase(DependencyExpression.NotEquals)) {
-					return !left.equals(right);
-				}
-				else {
-					
-				}
-			}
+		else /*if (condition.startsWith(ExpressionBuilder.EXPRESSION))*/ {
+			//String exp = condition.replace(ExpressionBuilder.EXPRESSION + "[", "").replaceAll("]", "");
+			return calculator.isSatisfied("ret=" + condition);
 		}
-		return true;
+//		else {
+//			String comparator = "";
+//			String[] comparators = {DependencyExpression.Equals, DependencyExpression.NotEquals, DependencyExpression.LargerThan, DependencyExpression.SmallerThan};
+//			for (String c : comparators) {
+//				if (condition.contains(c)) {
+//					comparator = c;
+//					break;
+//				}
+//			}
+//			String left = condition.split(comparator)[0];
+//			String right = condition.split(comparator)[1];
+//			
+//			if (right.equals(DependencyExpression.AnyValue)) {
+//				return true;
+//			}
+//			else {
+//				condition = calculator.replaceWithRealValue(condition).replaceAll("[\\$%]+", "");
+//				left = condition.split(comparator)[0];
+//				right = condition.split(comparator)[1];
+//				if (comparator.equals(DependencyExpression.Equals)) {
+//					return left.equals(right);
+//				}
+//				else if (comparator.equalsIgnoreCase(DependencyExpression.NotEquals)) {
+//					return !left.equals(right);
+//				}
+//				else {
+//					
+//				}
+//			}
+//		}
+//		return true;
 	}
 }
 class ChangedProperty {

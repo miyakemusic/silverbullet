@@ -1,7 +1,6 @@
 package jp.silverbullet;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
@@ -11,6 +10,7 @@ import jp.silverbullet.dependency.engine.DependencyEngine;
 import jp.silverbullet.dependency.engine.DependencyInterface;
 import jp.silverbullet.dependency.engine.RequestRejectedException;
 import jp.silverbullet.dependency.speceditor2.DependencySpecHolder;
+import jp.silverbullet.dependency.speceditor3.DependencySpecHolder2;
 import jp.silverbullet.property.PropertyHolder;
 import jp.silverbullet.property.PropertyType;
 import jp.silverbullet.property.editor.PropertyListModel2;
@@ -33,6 +33,7 @@ public class BuilderModelImpl implements BuilderModel {
 	private static final String REGISTER_XML = "register.xml";
 	private static final String HARDSPEC_XML = "hardspec.xml";
 	private static final String USERSTORY_XML = "userstory.xml";
+	private static final String DEPENDENCYSPEC2_XML = "dependencyspec2.xml";
 	
 	private List<String> selectedId;
 	private SvPropertyStore store;
@@ -43,6 +44,7 @@ public class BuilderModelImpl implements BuilderModel {
 	private HandlerPropertyHolder handlerPropertyHolder = new HandlerPropertyHolder();
 	private SvTexHolder texHolder = new SvTexHolder();
 	private RegisterProperty registerProperty = new RegisterProperty();
+	private DependencySpecHolder2 dependencySpecHolder2 = new DependencySpecHolder2();
 //	private UserRegisterControl userRegisterAccess;// 
 	private SpecElement userStory = new SpecElement();
 	
@@ -175,6 +177,16 @@ public class BuilderModelImpl implements BuilderModel {
 		saveRegister(folder + "/" + REGISTER_XML);
 		saveSpec(this.hardSpec, folder + "/" + HARDSPEC_XML);
 		saveSpec(this.userStory, folder + "/" + USERSTORY_XML);
+		saveDependencySpecHolder2(this.dependencySpecHolder2, folder + "/" + DEPENDENCYSPEC2_XML);
+	}
+
+	private void saveDependencySpecHolder2(DependencySpecHolder2 dependencySpecHolder22, String filename) {
+		XmlPersistent<DependencySpecHolder2> propertyPersister = new XmlPersistent<>();
+		try {
+			propertyPersister.save(dependencySpecHolder22, filename, DependencySpecHolder2.class);
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void saveSpec(SpecElement spec, String filename) {
@@ -235,6 +247,8 @@ public class BuilderModelImpl implements BuilderModel {
 		this.texHolder = loadRemote(folder + "/" + REMOTE_XML);
 		this.hardSpec = loadSpec(folder + "/" + HARDSPEC_XML);
 		this.userStory = loadSpec(folder + "/" + USERSTORY_XML);
+		
+		this.dependencySpecHolder2 = loadDependencySpec2(folder + "/" + DEPENDENCYSPEC2_XML);
 	}
 
 	@Override
@@ -281,7 +295,7 @@ public class BuilderModelImpl implements BuilderModel {
 		XmlPersistent<SpecElement> propertyPersister = new XmlPersistent<>();
 		try {
 			return propertyPersister.load(filename, SpecElement.class);
-		} catch (FileNotFoundException e) {
+		} catch (Exception e) {
 			return new SpecElement();
 		}
 	}
@@ -290,16 +304,28 @@ public class BuilderModelImpl implements BuilderModel {
 		XmlPersistent<RegisterProperty> propertyPersister = new XmlPersistent<>();
 		try {
 			return propertyPersister.load(filename, RegisterProperty.class);
-		} catch (FileNotFoundException e) {
+		} catch (Exception e) {
 			return new RegisterProperty();
 		}
 	}
 
+
+	private DependencySpecHolder2 loadDependencySpec2(String filename) {
+		XmlPersistent<DependencySpecHolder2> propertyPersister = new XmlPersistent<>();
+		try {
+			return propertyPersister.load(filename, DependencySpecHolder2.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new DependencySpecHolder2();
+		}
+	}
+
+	
 	private SvTexHolder loadRemote(String filename) {
 		XmlPersistent<SvTexHolder> propertyPersister = new XmlPersistent<SvTexHolder>();
 		try {
 			return propertyPersister.load(filename, SvTexHolder.class);
-		} catch (FileNotFoundException e) {
+		} catch (Exception e) {
 			return new SvTexHolder();
 		}
 	}
@@ -308,7 +334,7 @@ public class BuilderModelImpl implements BuilderModel {
 		XmlPersistent<HandlerPropertyHolder> propertyPersister = new XmlPersistent<HandlerPropertyHolder>();
 		try {
 			return propertyPersister.load(filename, HandlerPropertyHolder.class);
-		} catch (FileNotFoundException e) {
+		} catch (Exception e) {
 			return null;
 		}
 	}
@@ -326,7 +352,7 @@ public class BuilderModelImpl implements BuilderModel {
 		XmlPersistent<PropertyHolder> propertyPersister = new XmlPersistent<PropertyHolder>();
 		try {
 			return propertyPersister.load(filename, PropertyHolder.class);
-		} catch (FileNotFoundException e) {
+		} catch (Exception e) {
 			return null;
 		}
 	}
@@ -375,5 +401,10 @@ public class BuilderModelImpl implements BuilderModel {
 	@Override
 	public void setUserPath(String userPath) {
 		userApplicationPath = userPath;
+	}
+
+	@Override
+	public DependencySpecHolder2 getDependencySpecHolder2() {
+		return dependencySpecHolder2;
 	}
 }

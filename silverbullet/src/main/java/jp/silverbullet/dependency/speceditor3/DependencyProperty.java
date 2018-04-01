@@ -17,8 +17,10 @@ public class DependencyProperty {
 	private DependencyProperty other;
 	private boolean otherSourceConsumed = false;
 	private SettingDisabledBehavior settingDisabledBehavior;
+	private DependencyExpression pointer;
 	
-	public DependencyProperty(String id, String selectionId, DependencyTargetElement element, String expression, String value) {
+	public DependencyProperty(String id, String selectionId, DependencyTargetElement element, 
+			String expression, String value, DependencyExpression pointer) {
 		super();
 		this.id = id;
 		this.selectionId = selectionId;
@@ -30,12 +32,14 @@ public class DependencyProperty {
 		triggerIds.addAll(idCollector.collectIds(expression));
 	}
 	
-	public DependencyProperty(String id, DependencyTargetElement element, String expression, String value) {
+	public DependencyProperty(String id, DependencyTargetElement element, 
+			String expression, String value, DependencyExpression pointer) {
 		super();
 		this.id = id;
 		this.element = element;
 		this.condition = expression;
 		this.value = value;
+		this.pointer = pointer;
 		
 		triggerIds.addAll(idCollector.collectIds(value));
 		triggerIds.addAll(idCollector.collectIds(expression));

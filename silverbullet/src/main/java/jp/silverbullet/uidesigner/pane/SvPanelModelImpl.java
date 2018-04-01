@@ -89,7 +89,7 @@ public class SvPanelModelImpl implements SvPanelModel {
 		try {
 			LayoutConfiguration content = new XmlPersistent<LayoutConfiguration>().load(getFilename(), LayoutConfiguration.class);
 			this.model.setLayoutConfiguration(name, content);
-		} catch (FileNotFoundException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

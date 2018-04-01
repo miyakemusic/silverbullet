@@ -62,4 +62,8 @@ public class DependencyBuilder3 {
 		}
 	}
 
+	public DependencyNode getTree() {
+		return tree;
+	}
+
 }

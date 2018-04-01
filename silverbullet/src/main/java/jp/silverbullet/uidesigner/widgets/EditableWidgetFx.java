@@ -28,6 +28,7 @@ public class EditableWidgetFx extends StackPane {
 		final ContextMenu contextMenu = new ContextMenu();
 		MenuItem edit = new MenuItem("Edit Property");
 		MenuItem dependency = new MenuItem("Edit Dependency");
+		MenuItem dependency2 = new MenuItem("Edit Dependency2");
 		MenuItem handler = new MenuItem("Edit Handlers");
 		MenuItem cut = new MenuItem("Cut");
 		MenuItem remove = new MenuItem("Remove");
@@ -52,7 +53,7 @@ public class EditableWidgetFx extends StackPane {
 		});
 		move.getItems().addAll(up, down);
 			
-		 contextMenu.getItems().addAll(edit, dependency, handler, cut, remove, change, style, property, move);
+		 contextMenu.getItems().addAll(edit, dependency, handler, cut, remove, change, style, property, move, dependency2);
 
 		 edit.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -84,6 +85,12 @@ public class EditableWidgetFx extends StackPane {
 			@Override
 			public void handle(ActionEvent arg0) {
 				listener.onDependency(widget.getProperty());
+			}
+		 });
+		 dependency2.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				listener.onDependency2(widget.getProperty());
 			}
 		 });
 		 handler.setOnAction(new EventHandler<ActionEvent>() {

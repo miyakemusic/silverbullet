@@ -2,8 +2,10 @@ package jp.silverbullet;
 
 import java.util.List;
 
+import javafx.scene.Node;
 import jp.silverbullet.dependency.engine.DependencyInterface;
 import jp.silverbullet.dependency.speceditor2.DependencySpecHolder;
+import jp.silverbullet.dependency.speceditor3.DependencySpecHolder2;
 import jp.silverbullet.property.PropertyHolder;
 import jp.silverbullet.register.RegisterProperty;
 import jp.silverbullet.remote.SvTexHolder;
@@ -61,4 +63,6 @@ public interface BuilderModel {
 	void setUserPath(String userPath);
 
 	void importFile(String filename);
+
+	DependencySpecHolder2 getDependencySpecHolder2();
 }

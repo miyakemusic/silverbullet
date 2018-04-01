@@ -1,9 +1,21 @@
 package jp.silverbullet.dependency.speceditor3;
 
-public abstract class ExpressionBuilder {
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+
+@XmlRootElement
+public class ExpressionBuilder {
 	public static final String SCRIPT = "*SCRIPT";
-	public static final String EXPRESSION = "*EXPRESSION";
+//	public static final String EXPRESSION = "*EXPRESSION";
 	private String expression = "";
+	
+	@XmlTransient
+	private ExpressionBuilderListener listener;
+	
+	public ExpressionBuilder() {}
+	public ExpressionBuilder(ExpressionBuilderListener listener) {
+		this.listener = listener;
+	}
 	
 	public ExpressionBuilder conditionIdValue(String id) {
 		expression += createIdValue(id);
@@ -44,20 +56,24 @@ public abstract class ExpressionBuilder {
 		this.expression += DependencyExpression.AnyValue;
 	}
 
-	public ExpressionBuilder resultValue(String targetValue) {
+//	public ExpressionBuilder resultValue(String targetValue) {
+//		targetValueAdded(targetValue);
+//		return this;
+//	}
+
+	protected void targetValueAdded(String targetValue) {
+		this.listener.onTargetValueAdded(targetValue, this);
+	}
+
+	public ExpressionBuilder resultExpression(String targetValue) {
+		//targetValueAdded(EXPRESSION + "[" + targetValue + "]");
 		targetValueAdded(targetValue);
 		return this;
 	}
 
-	abstract protected void targetValueAdded(String targetValue);
-
-	public ExpressionBuilder resultExpression(String targetValue) {
-		targetValueAdded(EXPRESSION + "[" + targetValue + "]");
-		return this;
-	}
-
 	public ExpressionBuilder conditionExpression(String condition) {
-		this.expression += EXPRESSION + "[" + condition + "]";
+		//this.expression += EXPRESSION + "[" + condition + "]";
+		this.expression += condition;
 		return this;
 	}
 
@@ -66,10 +82,11 @@ public abstract class ExpressionBuilder {
 		return this;
 	}
 
-	public ExpressionBuilder resultIdValue(String id) {
-		targetValueAdded(EXPRESSION + "[" +createIdValue(id) + "]");
-		return this;
-	}
+//	public ExpressionBuilder resultIdValue(String id) {
+////		targetValueAdded(EXPRESSION + "[" +createIdValue(id) + "]");
+//		targetValueAdded(createIdValue(id));
+//		return this;
+//	}
 
 	public ExpressionBuilder resultScript(String script) {
 		targetValueAdded(SCRIPT + "[" + script + "]");

@@ -8,15 +8,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.bind.JAXBException;
+
 import org.junit.jupiter.api.Test;
 
 import jp.silverbullet.SvProperty;
 import jp.silverbullet.SvPropertyStore;
+import jp.silverbullet.XmlPersistent;
 import jp.silverbullet.dependency.engine.RequestRejectedException;
 import jp.silverbullet.dependency.speceditor3.DependencyExpressionHolder.SettingDisabledBehavior;
 import jp.silverbullet.property.ArgumentDefInterface;
 import jp.silverbullet.property.ListDetailElement;
 import jp.silverbullet.property.PropertyDef;
+import jp.silverbullet.spec.SpecElement;
 
 class DependencySpecDetail2Test {
 
@@ -49,15 +53,15 @@ class DependencySpecDetail2Test {
 		//// Enabled ///
 		{
 			DependencyExpressionHolder specDetail = new DependencyExpressionHolder(DependencyTargetElement.Enabled);
-			specDetail.addExpression().resultValue(DependencyExpression.True).conditionIdValue(idTestMode).equals().conditionSelectionId(idTestModeManual);		
-		//	specDetail.addExpression().resultValue(DependencyExpression.False).conditionOther();
+			specDetail.addExpression().resultExpression(DependencyExpression.True).conditionIdValue(idTestMode).equals().conditionSelectionId(idTestModeManual);		
 			specBand.add(specDetail);
 		}
 	    //// Value ///
 		{
 			DependencyExpressionHolder specDetailBand = new DependencyExpressionHolder(DependencyTargetElement.Value);
-			specDetailBand.addExpression().resultValue(idBandManual).conditionIdValue(idStartWavelength).equals().anyValue();
-			specDetailBand.addExpression().resultValue(idBandManual).conditionIdValue(idStopWavelength).equals().anyValue();
+			specDetailBand.addExpression().resultExpression("%" + idBandManual).conditionIdValue(idStartWavelength).equals().anyValue();
+//			specDetailBand.addExpression().resultValue(/*"%" +*/ idBandManual).conditionIdValue(idStartWavelength).equals().anyValue();
+			specDetailBand.addExpression().resultExpression("%" + idBandManual).conditionIdValue(idStopWavelength).equals().anyValue();
 			specBand.add(specDetailBand);
 		}
 		
@@ -67,10 +71,9 @@ class DependencySpecDetail2Test {
 			DependencySpec2 spec = new DependencySpec2(idStartWavelength);
 			holder.add(spec);
 			DependencyExpressionHolder specDetailStartW = new DependencyExpressionHolder(DependencyTargetElement.Value);
-			specDetailStartW.addExpression().resultValue("1530").conditionIdValue(idBand).equals().conditionSelectionId(idBandC);
+			specDetailStartW.addExpression().resultExpression("1530").conditionIdValue(idBand).equals().conditionSelectionId(idBandC);
 			
 			specDetailStartW.addExpression().resultExpression("$" + idStopWavelength + ".Value").conditionExpression("$" + idStartWavelength + ".Value > " + "$" + idStopWavelength + ".Value");
-			//specDetailStartW.addExpression().resultExpression("(ID_OSA_STARTWAVELENGTH.Value + ID_OSA_STOPWAVELENGTH.Value)/2.0");
 			spec.add(specDetailStartW);
 			
 		}
@@ -80,7 +83,7 @@ class DependencySpecDetail2Test {
 			DependencySpec2 spec = new DependencySpec2(idStopWavelength);
 			holder.add(spec);
 			DependencyExpressionHolder specDetailStopW = new DependencyExpressionHolder(DependencyTargetElement.Value);
-			specDetailStopW.addExpression().resultValue("1565").conditionIdValue(idBand).equals().conditionSelectionId(idBandC);
+			specDetailStopW.addExpression().resultExpression("1565").conditionIdValue(idBand).equals().conditionSelectionId(idBandC);
 			specDetailStopW.addExpression().resultExpression("$" + idStartWavelength + ".Value").conditionExpression("$" + idStopWavelength + ".Value < " + "$" + idStartWavelength + ".Value");
 			spec.add(specDetailStopW);
 		}
@@ -95,7 +98,7 @@ class DependencySpecDetail2Test {
 			DependencySpec2 spec = new DependencySpec2(idApplicationInBand);
 			holder.add(spec);
 			DependencyExpressionHolder specDetail = new DependencyExpressionHolder(DependencyTargetElement.ListItemVisible);
-			specDetail.addExpression().resultValue(DependencyExpression.True).conditionIdValue(idModel).equals().conditionSelectionId(idModel21A);
+			specDetail.addExpression().resultExpression(DependencyExpression.True).conditionIdValue(idModel).equals().conditionSelectionId(idModel21A);
 //			specDetail.addExpression().resultValue(DependencyExpression.False).conditionOther();
 			spec.add(idApplicationInBand, specDetail);
 			
@@ -117,25 +120,25 @@ class DependencySpecDetail2Test {
 		
 		assertTrue(spec2.get(0).getId().equals(idBand));
 		assertTrue(spec2.get(0).getElement().equals(DependencyTargetElement.Value));
-		assertTrue(spec2.get(0).getCondition().equals("$ID_OSA_START_WAVELENGTH.Value==*AnyValue"));
-		assertTrue(spec2.get(0).getValue().equals(idBandManual));
+		assertTrue(spec2.get(0).getCondition().equals("$ID_OSA_START_WAVELENGTH.Value==*any"));
+//		assertTrue(spec2.get(0).getValue().equals(idBandManual));
 	
 		assertTrue(spec2.get(1).getId().equals(idStopWavelength));
 		assertTrue(spec2.get(1).getElement().equals(DependencyTargetElement.Value));
-		assertTrue(spec2.get(1).getCondition().equals("*EXPRESSION[$ID_OSA_STOP_WAVELENGTH.Value < $ID_OSA_START_WAVELENGTH.Value]"));
-		assertTrue(spec2.get(1).getValue().equals("*EXPRESSION[$ID_OSA_START_WAVELENGTH.Value]"));
+		assertTrue(spec2.get(1).getCondition().equals("$ID_OSA_STOP_WAVELENGTH.Value < $ID_OSA_START_WAVELENGTH.Value"));
+		assertTrue(spec2.get(1).getValue().equals("$ID_OSA_START_WAVELENGTH.Value"));
 				
 		List<DependencyProperty> spec3 = builder2.getSpecs(1);
 		
 		assertTrue(spec3.get(0).getId().equals(idStopWavelength));
 		assertTrue(spec3.get(0).getElement().equals(DependencyTargetElement.Value));
 		assertTrue(spec3.get(0).getCondition().equals("$ID_OSA_BAND.Value==%ID_OSA_BAND_C"));
-		assertTrue(spec3.get(0).getValue().equals("1565"));
+//		assertTrue(spec3.get(0).getValue().equals("1565"));
 	
 		assertTrue(spec3.get(1).getId().equals(idBand));
 		assertTrue(spec3.get(1).getElement().equals(DependencyTargetElement.Value));
-		assertTrue(spec3.get(1).getCondition().equals("$ID_OSA_STOP_WAVELENGTH.Value==*AnyValue"));
-		assertTrue(spec3.get(1).getValue().equals("ID_OSA_BAND_MANUAL"));	
+		assertTrue(spec3.get(1).getCondition().equals("$ID_OSA_STOP_WAVELENGTH.Value==*any"));
+//		assertTrue(spec3.get(1).getValue().equals("ID_OSA_BAND_MANUAL"));	
 		
 		assertTrue(store.getProperty(idBand).getCurrentValue().equals(idBandC));
 		try {
@@ -178,6 +181,16 @@ class DependencySpecDetail2Test {
 			assertTrue(log2.getElement().equals(DependencyTargetElement.Value));
 			assertTrue(log2.getValue().equals("1565.000"));
 		} catch (RequestRejectedException e) {
+			e.printStackTrace();
+		}
+		
+//		DependencyBuilder3 builder = new DependencyBuilder3(idBand, holder);
+//		assertTrue(builder.getTree().getDependencyProperty().getId().equals(idBand));
+		
+		XmlPersistent<DependencySpecHolder2> propertyPersister = new XmlPersistent<>();
+		try {
+			propertyPersister.save(holder, "C:\\Projects\\dep.xml", DependencySpecHolder2.class);
+		} catch (JAXBException e) {
 			e.printStackTrace();
 		}
 	}
@@ -257,7 +270,7 @@ class DependencySpecDetail2Test {
 			DependencySpec2 spec = new DependencySpec2(idStartWavelength);
 			holder.add(spec);
 			DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.Value);
-			detail.addExpression().resultIdValue(idStopWavelength).conditionIdValue(idStartWavelength).largerThan().conditionIdValue(idStopWavelength);
+			detail.addExpression().resultExpression("$" + idStopWavelength +".Value").conditionIdValue(idStartWavelength).largerThan().conditionIdValue(idStopWavelength);
 			spec.add(detail);
 		}
 		////////// Stop Wavelength///////////
@@ -265,7 +278,7 @@ class DependencySpecDetail2Test {
 			DependencySpec2 spec = new DependencySpec2(idStopWavelength);
 			holder.add(spec);
 			DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.Value);
-			detail.addExpression().resultIdValue(idStartWavelength).conditionSelectionId(idStopWavelength).largerThan().conditionIdValue(idStartWavelength);
+			detail.addExpression().resultExpression("$" +idStartWavelength +".Value").conditionIdValue(idStartWavelength).largerThan().conditionIdValue(idStopWavelength);
 			spec.add(detail);
 		}
 		
@@ -305,8 +318,8 @@ class DependencySpecDetail2Test {
 			DependencySpec2 spec = new DependencySpec2(idApplication);
 			holder.add(spec);
 			DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.ListItemVisible);
-			detail.addExpression().resultValue(DependencyExpression.True).conditionIdValue(idModel).equals().conditionSelectionId(idModel21A);
-			detail.addExpression().resultValue(DependencyExpression.False).conditionIdValue(idModel).equals().conditionSelectionId(idModel20A);
+			detail.addExpression().resultExpression(DependencyExpression.True).conditionIdValue(idModel).equals().conditionSelectionId(idModel21A);
+			detail.addExpression().resultExpression(DependencyExpression.False).conditionIdValue(idModel).equals().conditionSelectionId(idModel20A);
 			spec.add(idApplicationInBand, detail);
 		}
 		
@@ -354,9 +367,9 @@ class DependencySpecDetail2Test {
 			DependencySpec2 spec = new DependencySpec2(idApplication);
 			holder.add(spec);
 			DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.ListItemVisible);
-			detail.addExpression().resultValue(DependencyExpression.True).conditionIdValue(idModel).equals().conditionSelectionId(idModel21A);
-			detail.addExpression().resultValue(DependencyExpression.True).conditionIdValue(idModel).equals().conditionSelectionId(idModel23A);
-			detail.addExpression().resultValue(DependencyExpression.False).conditionElse();
+			detail.addExpression().resultExpression(DependencyExpression.True).conditionIdValue(idModel).equals().conditionSelectionId(idModel21A);
+			detail.addExpression().resultExpression(DependencyExpression.True).conditionIdValue(idModel).equals().conditionSelectionId(idModel23A);
+			detail.addExpression().resultExpression(DependencyExpression.False).conditionElse();
 			spec.add(idApplicationInBand, detail);
 		}
 		DependencyEngine2 engine = createEngine(holder, store);
@@ -451,7 +464,7 @@ class DependencySpecDetail2Test {
 	}
 	
 	@Test
-	void testLimitOver() {
+	void testLimitOverReject() {
 		String idStartWavelength = "ID_OSA_START_WAVELENGTH";
 		String idStopWavelength = "ID_OSA_STOP_WAVELENGTH";
 		
@@ -475,7 +488,7 @@ class DependencySpecDetail2Test {
 			holder.add(spec);
 			DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.Value);
 			detail.addExpression().resultExpression("$" + idStopWavelength + ".Value" + "-100");
-			detail.setSettingDisabledBehavior(SettingDisabledBehavior.Adjust);
+			detail.setSettingDisabledBehavior(SettingDisabledBehavior.Reject);
 			spec.add(detail);
 		}
 		DependencyEngine2 engine = createEngine(holder, store);
@@ -493,15 +506,51 @@ class DependencySpecDetail2Test {
 		
 		try {
 			exception = false;
+			store.getProperty(idStartWavelength).setCurrentValue("1300.0");
 			engine.requestChange(idStopWavelength, "1300");
 			assertTrue(store.getProperty(idStartWavelength).getCurrentValue().equals("1250.000"));
 			
 		} catch (RequestRejectedException e) {
 			exception = true;
 		}
-		assertTrue(!exception);
+		assertTrue(store.getProperty(idStartWavelength).getCurrentValue().equals("1300.000"));
+		assertTrue(exception);
 	}
 	
+	@Test
+	void testResultExpression() {
+		String idStartWavelength = "ID_OSA_START_WAVELENGTH";
+		String idStopWavelength = "ID_OSA_STOP_WAVELENGTH";
+		String idBand = "ID_OSA_BAND";
+		String idBandC = "ID_OSA_BAND_C";
+		String idBandManual = "ID_OSA_BAND_MANUAL";
+		
+		DepProperyStore store = createPropertyStore();
+		store.add(createListProperty(idBand, Arrays.asList(idBandC, idBandManual), idBandC));
+		store.add(createDoubleProperty(idStartWavelength, 1250, "nm", 0, 9999, 3));
+		store.add(createDoubleProperty(idStopWavelength, 1650, "nm", 0, 9999, 3));
+		DependencySpecHolder2 holder = new DependencySpecHolder2();
+		////////// Band ///////////
+		{
+			DependencySpec2 spec = new DependencySpec2(idBand);
+			holder.add(spec);
+			DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.Value);
+			detail.addExpression().resultExpression("%" + idBandManual).conditionExpression("$ID_OSA_START_WAVELENGTH.Value > 2000");
+			detail.setSettingDisabledBehavior(SettingDisabledBehavior.Reject);
+			spec.add(detail);
+		}
+
+		DependencyEngine2 engine = createEngine(holder, store);
+		
+
+		try {
+			engine.requestChange(idStartWavelength, "2100");
+			assertTrue(store.getProperty(idBand).getCurrentValue().equals(idBandManual));
+			
+		} catch (RequestRejectedException e) {
+
+		}
+	}
 	
 	private DependencyEngine2 createEngine(DependencySpecHolder2 holder, DepProperyStore store) {
 		DependencyEngine2 engine = new DependencyEngine2() {

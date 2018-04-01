@@ -16,4 +16,6 @@ public interface EditableWidgetListenerFx {
 
 	void onDependency(SvProperty property);
 
+	void onDependency2(SvProperty property);
+
 }
