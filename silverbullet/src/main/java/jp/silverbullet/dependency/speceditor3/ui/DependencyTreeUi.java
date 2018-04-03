@@ -10,8 +10,15 @@ import java.util.Set;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
+import jp.silverbullet.MyDialogFx;
 import jp.silverbullet.dependency.speceditor3.DependencyBuilder3;
 import jp.silverbullet.dependency.speceditor3.DependencyExpression;
 import jp.silverbullet.dependency.speceditor3.DependencyExpressionHolder;
@@ -21,15 +28,20 @@ import jp.silverbullet.dependency.speceditor3.DependencyProperty;
 import jp.silverbullet.dependency.speceditor3.DependencySpec2;
 import jp.silverbullet.dependency.speceditor3.DependencyTargetElement;
 import jp.silverbullet.dependency.speceditor3.IdCollector;
+import jp.silverbullet.property.PropertyHolder;
+import jp.silverbullet.property.editor.PropertyEditorPaneFx;
 
 public class DependencyTreeUi extends AnchorPane {
-	private EventHandler<ActionEvent> eventHandler = new EventHandler<ActionEvent>() {
+	private EventHandler<MouseEvent> eventHandler = new EventHandler<MouseEvent>() {
 		@Override
-		public void handle(ActionEvent arg0) {
-//			listener.onIdChange( ((Button)arg0.getSource()).getText() );
-			dependencyEditorModel.fireSelectionChanged( ((Button)arg0.getSource()).getText());
+		public void handle(MouseEvent event) {
+			if (event.getButton().equals(MouseButton.PRIMARY)){
+				dependencyEditorModel.fireSelectionChanged( ((Button)event.getSource()).getText());
+				event.consume();
+			}
 		}
 	};
+	    
 	private static final double xoffset = 300;
 	private static final double yoffset = 10;
 	private static final double xwidth = 220;
@@ -42,11 +54,29 @@ public class DependencyTreeUi extends AnchorPane {
 	private Map<DependencyNode, Button> buttonMap = new HashMap<>();
 	private List<Button> triggerButtons = new ArrayList<>();
 	private Button mainButton;
-	
+	private ContextMenu contextMenu = new ContextMenu();
+		
 	public DependencyTreeUi(DependecyEditorModel dependencyEditorModel) {
 		this.setStyle("-fx-border-width:1;-fx-border-color:black;");
 		this.setPrefHeight(300);
 		
+		contextMenu = new ContextMenu();	
+		MenuItem targetMenu = new MenuItem("Add target");
+		targetMenu.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				showIdSelector(dependencyEditorModel.getPropertyHolder());
+			}
+		});
+		contextMenu.getItems().addAll(targetMenu);
+		this.setOnMousePressed(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				if (event.getButton().equals(MouseButton.SECONDARY)) {
+					showPopup(contextMenu, event);
+				}
+			}
+		});
 		this.dependencyEditorModel = dependencyEditorModel;
 		dependencyEditorModel.addtListener(new DependecyEditorModelListener() {
 			@Override
@@ -56,11 +86,21 @@ public class DependencyTreeUi extends AnchorPane {
 
 			@Override
 			public void onSelectionChanged(String id) {
+			}
+
+			@Override
+			public void onRequestAdd(String id, DependencyTargetElement dependencyTargetElement, String selectionId) {
 				// TODO Auto-generated method stub
 				
 			}
+
 		});
 		buildUi();
+	}
+
+	protected void showPopup(ContextMenu contextMenu,
+			MouseEvent event) {
+		contextMenu.show(this, event.getScreenX(), event.getScreenY());
 	}
 
 	private void buildUi() {
@@ -142,7 +182,7 @@ public class DependencyTreeUi extends AnchorPane {
 
 	private Button createButton(String id) {
 		Button button = new Button(id);
-		button.setOnAction(eventHandler );
+		button.setOnMouseClicked( eventHandler );
 		button.setPrefWidth(xwidth);
 		button.setPrefHeight(yheight);
 		return button;
@@ -158,6 +198,9 @@ public class DependencyTreeUi extends AnchorPane {
 				Button button = createButton(node.getDependencyProperty().getId());
 				button.setLayoutX(x);
 				button.setLayoutY(y);
+				if (node.isRecursive()) {
+					button.setStyle("-fx-border-color:red;-fx-border-width:1;");
+				}
 				if (layer == 0) {
 					button.setStyle("-fx-background-color:lightblue");
 					mainButton = button;
@@ -197,4 +240,39 @@ public class DependencyTreeUi extends AnchorPane {
 		registeredNodes.get(layer).add(node);
 	}
 
+	protected void showIdSelector(PropertyHolder propertyHolder) {
+		MyDialogFx dialog = new MyDialogFx("ID", this);
+		final PropertyEditorPaneFx node = new PropertyEditorPaneFx(propertyHolder) {
+			@Override
+			protected void onClose() {
+				removeListener();
+				dialog.close();
+			}
+
+			@Override
+			protected void onSelect(List<String> selected, List<String> subs) {
+				removeListener();
+				String id = selected.get(0);
+				showElementSelector(id);
+			}
+		};
+
+		dialog.showModal(node);
+	}
+
+	protected void showElementSelector(String id) {
+		MyDialogFx dialog = new MyDialogFx("Target Element", this);
+		dialog.setMaxHeight(200);
+		dialog.setMaxWidth(400);
+		VBox vbox = new VBox();
+		ComboBox<String> combo = new ComboBox<>();
+		combo.getItems().addAll(this.dependencyEditorModel.getAllElements(id));
+		vbox.getChildren().add(combo);
+		dialog.showModal(vbox);
+		if (dialog.isOkClicked()) {
+			DependencyTargetConverter e = dependencyEditorModel.getRealTargetElement(combo.getSelectionModel().getSelectedItem());
+
+			dependencyEditorModel.requestAddingSpec(id, e.getElement(), e.getSelectionId());
+		}
+	}
 }

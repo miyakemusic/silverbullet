@@ -2,8 +2,6 @@ package jp.silverbullet.dependency.speceditor3.ui;
 
 import java.util.List;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -11,6 +9,7 @@ import javafx.event.EventHandler;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -59,7 +58,7 @@ public class DependencySpecEditorUi extends VBox {
 	    
 		ContextMenu contextMenu = new ContextMenu();	
 		
-		EventHandler handler = new EventHandler<ActionEvent>() {
+		EventHandler<ActionEvent> handler = new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
 				String text = ((MenuItem)arg0.getSource()).getText();
@@ -68,29 +67,29 @@ public class DependencySpecEditorUi extends VBox {
 					targetElement = text;
 				}
 				else if (arg0.getSource() instanceof MenuItem){
-					
 					if (targetElement.isEmpty()) {
 						DependencyTargetElement e = DependencyTargetElement.valueOf(text);
-						showEditor(propertyHolder, dependencyEditorModel, e, "");
+						showEditor(e, "");
 					}
 					else {
 						DependencyTargetElement e = DependencyTargetElement.valueOf(targetElement);
-						showEditor(propertyHolder, dependencyEditorModel, e, text);
+						showEditor(e, text);
 						targetElement = "";
 					}
 				}
 			}
 		};
-		MenuItem enabledMenu = new MenuItem(DependencyTargetElement.Enabled.name());
-		//enabledMenu.setUserData(DependencyTargetElement.Enabled);
+			
+		MenuItem menuItemEnabled = new MenuItem(DependencyTargetElement.Enabled.name());
+		contextMenu.getItems().add(menuItemEnabled);
+	
+		MenuItem menuItemVisible = new MenuItem(DependencyTargetElement.Visible.name());
+		contextMenu.getItems().add(menuItemVisible);
 		
-		MenuItem visibleMenu = new MenuItem(DependencyTargetElement.Visible.name());
-		//visibleMenu.setUserData(DependencyTargetElement.Visible);
-		MenuItem valueMenu = new MenuItem(DependencyTargetElement.Value.name());	
-		contextMenu.getItems().addAll(enabledMenu, visibleMenu, valueMenu);
+		MenuItem menuItemValue = new MenuItem(DependencyTargetElement.Value.name());
+		contextMenu.getItems().add(menuItemValue);
 		
 		if (property.isNumericProperty()) {
-				
 			MenuItem elementMin = new MenuItem(DependencyTargetElement.Min.name());
 			MenuItem elementMax = new MenuItem(DependencyTargetElement.Max.name());
 			contextMenu.getItems().addAll(elementMin, elementMax);
@@ -108,9 +107,7 @@ public class DependencySpecEditorUi extends VBox {
 				listItemVisibleMenu.getItems().add(visibleItem);
 			}
 		}
-		
-
-		
+				
 		registerHandler(contextMenu.getItems(), handler);
 		
 		tableView.setOnMousePressed(new EventHandler<MouseEvent>() {
@@ -129,6 +126,7 @@ public class DependencySpecEditorUi extends VBox {
 		
 		tableView.setItems(data);
 		
+		contextMenu.getItems().add(new SeparatorMenuItem());
 		MenuItem remove = new MenuItem("Remove");
 		remove.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -136,7 +134,73 @@ public class DependencySpecEditorUi extends VBox {
 				removeSpec(tableView, spec);
 			}
 		});
-		contextMenu.getItems().add(remove);
+		MenuItem edit = new MenuItem("Edit");
+		edit.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				editSpec(tableView);
+			}
+		});
+		contextMenu.getItems().addAll(edit, remove);
+	}
+
+	protected void editSpec(TableView<DependencyTableRowData> tableView) {
+		DependencyTableRowData rowData = tableView.getSelectionModel().getSelectedItem();
+		String selectionId = "";
+		DependencyTargetConverter  converter = this.dependencyEditorModel.getRealTargetElement(rowData.getElement());
+		DependencyTargetElement e = converter.getElement();
+		String defaultValue = rowData.getValue();
+		String defaultCondition = rowData.getCondition();
+		
+		new SpecEditorCreator(e, selectionId, defaultValue, defaultCondition) {
+			@Override
+			protected void completed() {
+				removeSpec(tableView, dependencyEditorModel.getDependencySpecHolder().getSpecs().get(dependencyEditorModel.getSelectedProperty().getId()));
+			}
+		};
+	}
+
+	protected void showEditor(DependencyTargetElement e, String selectionId) {
+		String defaultValue = "";
+		String defaultCondition = "";
+		new SpecEditorCreator(e, selectionId, defaultValue, defaultCondition);
+	}
+	
+	class SpecEditorCreator {
+		protected void completed() {}
+		public SpecEditorCreator(DependencyTargetElement e, String selectionId, String defaultValue,
+			String defaultCondition) {
+		
+			MyDialogFx dialog = new MyDialogFx("Dependency", DependencySpecEditorUi.this);
+			ExpressionEditorUi node = new ExpressionEditorUi(dependencyEditorModel.getSelectedProperty(), e, propertyHolder, defaultValue, defaultCondition);
+			dialog.showModal(node);
+			if (!dialog.isOkClicked()) {
+				return;
+			}
+			completed();
+			String value = node.getValue();
+			String condition = node.getCondition();
+			
+			if (value.isEmpty() && condition.isEmpty()) {
+				return;
+			}
+			DependencySpecHolder2 holder = dependencyEditorModel.getDependencySpecHolder();
+			DependencySpec2 spec = holder.get(dependencyEditorModel.getSelectedProperty().getId());
+			holder.add(spec);
+			
+			DependencyExpressionHolder detail = new DependencyExpressionHolder(e);
+			detail.addExpression().resultExpression(value).conditionExpression(condition);
+			
+			if (!selectionId.isEmpty()) {
+				spec.add(selectionId, detail);
+			}
+			else {
+				spec.add(detail);
+			}
+	
+			updateList(spec);
+			dependencyEditorModel.fireModelUpdated();
+		}
 	}
 
 	protected void removeSpec(TableView<DependencyTableRowData> tableView, DependencySpec2 spec) {
@@ -164,48 +228,14 @@ public class DependencySpecEditorUi extends VBox {
 					for (String k : h.getExpressions().keySet()) {
 						DependencyExpressionList list = h.getExpressions().get(k);
 						for (DependencyExpression exp : list.getDependencyExpressions()) {
-							if (key.equals(DependencySpec2.DefaultItem)) {
-								data.add(new DependencyTableRowData(e.name(), k, exp.getExpression().getExpression(), exp));
-							}
-							else {
-								data.add(new DependencyTableRowData(key + "." + e.name().replace("ListItem", "").toLowerCase(), k, exp.getExpression().getExpression(), exp));
-							}
+							String presentation = this.dependencyEditorModel.convertPresentationElement(key, e);
+							data.add(new DependencyTableRowData(presentation, k, exp.getExpression().getExpression(), exp));
 						}
 					}
 				}
 			}
 			
 		}
-	}
-
-	protected void showEditor(PropertyHolder propertyHolder, DependecyEditorModel dependencyEditorModel, DependencyTargetElement e, String selectionId) {
-		MyDialogFx dialog = new MyDialogFx("Dependency", this);
-
-		ExpressionEditorUi node = new ExpressionEditorUi(propertyHolder);
-		dialog.showModal(node);
-		
-		String value = node.getValue();
-		String condition = node.getCondition();
-		
-		if (value.isEmpty() && condition.isEmpty()) {
-			return;
-		}
-		DependencySpecHolder2 holder = dependencyEditorModel.getDependencySpecHolder();
-		DependencySpec2 spec = holder.get(dependencyEditorModel.getSelectedProperty().getId());
-		holder.add(spec);
-		DependencyExpressionHolder detail = new DependencyExpressionHolder(e);
-		detail.addExpression().resultExpression(value).conditionExpression(condition);
-		
-		if (selectionId.isEmpty()) {
-			spec.add(detail);
-		}
-		else {
-			spec.add(selectionId, detail);
-		}
-		
-		updateList(spec);
-		
-		dependencyEditorModel.fireModelUpdated();
 	}
 	
 	protected void showPopup(ContextMenu contextMenu,
@@ -216,6 +246,10 @@ public class DependencySpecEditorUi extends VBox {
 
 	public void update() {
 		buildUi();
+	}
+
+	public void requestAdd(String id, DependencyTargetElement dependencyTargetElement, String selectionId) {
+		showEditor(dependencyTargetElement, selectionId);
 	}
 
 }

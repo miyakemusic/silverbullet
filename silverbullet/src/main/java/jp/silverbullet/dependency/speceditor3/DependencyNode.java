@@ -6,12 +6,12 @@ import java.util.List;
 public class DependencyNode {
 	private List<DependencyNode> children = new ArrayList<>();
 	private DependencyProperty dependencyProperty;
-	private DependencyNode parent;
+	private List<DependencyNode> parents = new ArrayList<>();
 	private boolean recursive = false;
 
 	public DependencyNode(DependencyProperty prop, DependencyNode parent) {
 		this.dependencyProperty = prop;
-		this.parent = parent;
+		this.parents.add(parent);
 	}
 	
 	public void addChild(DependencyNode depProp) {
@@ -35,15 +35,15 @@ public class DependencyNode {
 	}
 
 	public DependencyNode getParent() {
-		return parent;
+		return parents.get(0);
 	}
 
-	public void setParent(DependencyNode parent) {
-		this.parent = parent;
+	public void addParent(DependencyNode parent) {
+		this.parents.add(parent);
 	}
 
 	private boolean alreadyChanged(DependencyNode dependencyNode) {
-		if (dependencyNode.getParent().getParent() == null) {
+		if (dependencyNode.getParent() == null || dependencyNode.getParent().getParent() == null) {
 			return false;
 		}
 		if (dependencyNode.getParent().getDependencyProperty().getId().equals(this.getDependencyProperty().getId())) {

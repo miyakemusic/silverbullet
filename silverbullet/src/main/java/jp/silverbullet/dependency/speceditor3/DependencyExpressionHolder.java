@@ -1,9 +1,12 @@
 package jp.silverbullet.dependency.speceditor3;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
@@ -117,5 +120,16 @@ public class DependencyExpressionHolder {
 			}
 		}
 		return false;
+	}
+
+	public Set<String> getTriggerIds() {
+		Set<String> ret = new HashSet<String>();
+		IdCollector collector = new IdCollector();
+		for (String key : this.expressions.keySet()) {
+			ret.addAll(collector.collectIds(key));
+			DependencyExpressionList list = this.expressions.get(key);
+			ret.addAll(list.getTriggerIds());
+		}
+		return ret;
 	}
 }

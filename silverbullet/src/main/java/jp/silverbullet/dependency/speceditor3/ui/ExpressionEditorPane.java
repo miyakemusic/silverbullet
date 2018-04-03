@@ -17,15 +17,21 @@ import jp.silverbullet.dependency.speceditor3.DependencyTargetElement;
 import jp.silverbullet.property.PropertyHolder;
 import jp.silverbullet.property.editor.PropertyEditorPaneFx;
 
-public class ExpressionEditorPane extends VBox {
+public abstract class ExpressionEditorPane extends VBox {
 
+	abstract protected boolean isIdVisible();
+	abstract protected List<String> getComparators();
+	abstract protected List<String> getResultCandidates();
+	abstract protected List<String> getComparisonTargets();
+	
 	private TextArea textArea = new TextArea();
 	protected String lastestId = "";
 	
-	public ExpressionEditorPane(String title, PropertyHolder propertyHolder) {
+	public ExpressionEditorPane(String title, PropertyHolder propertyHolder, String defaultValue) {
 		this.setStyle("-fx-border-width:1);-fx-border-color:black;-fx-padding:5;");
 		textArea.setPrefWidth(800);
 		textArea.setPrefHeight(200);
+		textArea.setText(defaultValue);
 		
 		Label label = new Label(title);
 		label.setPrefWidth(100);
@@ -36,43 +42,53 @@ public class ExpressionEditorPane extends VBox {
 		
 		HBox valueBox = new HBox();
 		this.getChildren().add(valueBox);
-		Button idSelector = new Button("ID");
-		valueBox.getChildren().add(idSelector);
-		idSelector.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				showIdSelector(propertyHolder);
-			}		
-		});
-		valueBox.getChildren().add(createCommonButton(DependencyExpression.True));
-		valueBox.getChildren().add(createCommonButton(DependencyExpression.False));
+		
+		if(isIdVisible()) {
+			Button idSelector = new Button("ID");
+			valueBox.getChildren().add(idSelector);
+			idSelector.setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent arg0) {
+					showIdSelector(propertyHolder);
+				}		
+			});
+		}
+		for (String val : getResultCandidates()) {
+			valueBox.getChildren().add(createCommonButton(val));
+		}
+		//valueBox.getChildren().add(createCommonButton(DependencyExpression.True));
+		//valueBox.getChildren().add(createCommonButton(DependencyExpression.False));
 		
 		HBox comparator = new HBox();
 		this.getChildren().add(comparator);
-		comparator.getChildren().add(createCommonButton(DependencyExpression.Equals));
-		comparator.getChildren().add(createCommonButton(DependencyExpression.LargerThan));
-		comparator.getChildren().add(createCommonButton(DependencyExpression.NotEquals));
-		comparator.getChildren().add(createCommonButton(DependencyExpression.SmallerThan));
+		for (String comp : getComparators()) {
+			comparator.getChildren().add(createCommonButton(comp));
+		}
+//		comparator.getChildren().add(createCommonButton(DependencyExpression.Equals));
+//		comparator.getChildren().add(createCommonButton(DependencyExpression.LargerThan));
+//		comparator.getChildren().add(createCommonButton(DependencyExpression.NotEquals));
+//		comparator.getChildren().add(createCommonButton(DependencyExpression.SmallerThan));
 
 		HBox comparisonTarget = new HBox();
 		this.getChildren().add(comparisonTarget);
 		
-		Button idChoice = new Button("List Item");
-		comparisonTarget.getChildren().add(idChoice);
-		idChoice.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				showIdSelector(propertyHolder);
-			}
-		});
-		comparisonTarget.getChildren().add(createCommonButton(DependencyExpression.AnyValue));
-		comparisonTarget.getChildren().add(createCommonButton(DependencyExpression.ELSE));
+//		Button idChoice = new Button("List Item");
+//		comparisonTarget.getChildren().add(idChoice);
+//		idChoice.setOnAction(new EventHandler<ActionEvent>() {
+//			@Override
+//			public void handle(ActionEvent arg0) {
+//				showIdSelector(propertyHolder);
+//			}
+//		});
+		//comparisonTarget.getChildren().add(createCommonButton(DependencyExpression.AnyValue));
+		for (String compTarget : getComparisonTargets()) {
+			comparisonTarget.getChildren().add(createCommonButton(compTarget));
+		}
 	}
 	
 	protected void showIdSelector(PropertyHolder propertyHolder) {
 		MyDialogFx dialog = new MyDialogFx("ID", this);
 		final PropertyEditorPaneFx node = new PropertyEditorPaneFx(propertyHolder) {
-
 			@Override
 			protected void onClose() {
 				removeListener();
@@ -88,7 +104,6 @@ public class ExpressionEditorPane extends VBox {
 				}
 				else {
 					insertText(first + " == " + "%"  + subs.get(0));
-					
 				}
 			}
 		};

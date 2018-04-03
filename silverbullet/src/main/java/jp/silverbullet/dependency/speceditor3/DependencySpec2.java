@@ -3,7 +3,10 @@ package jp.silverbullet.dependency.speceditor3;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="DependencySpec")
@@ -111,6 +114,20 @@ public class DependencySpec2 {
 			}
 		}
 		return false;
+	}
+
+	public Set<String> getTriggerIds() {
+		Set<String> ret = new HashSet<String>();
+		for (DependencyExpressionHolderMap map2 : this.depExpHolderMap.values())  {
+			for (String key : map2.keySet()) {
+				List<DependencyExpressionHolder> list = map2.get(key);
+				for (DependencyExpressionHolder expressionHolder : list) {
+					ret.addAll(expressionHolder.getTriggerIds());
+				}
+			}
+		}
+		
+		return ret;
 	}
 
 }

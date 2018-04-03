@@ -542,13 +542,42 @@ class DependencySpecDetail2Test {
 
 		DependencyEngine2 engine = createEngine(holder, store);
 		
-
 		try {
 			engine.requestChange(idStartWavelength, "2100");
 			assertTrue(store.getProperty(idBand).getCurrentValue().equals(idBandManual));
 			
 		} catch (RequestRejectedException e) {
 
+		}
+	}
+	
+	@Test
+	void testConditionOnly() {
+		String idStartWavelength = "ID_OSA_START_WAVELENGTH";
+		String idStopWavelength = "ID_OSA_STOP_WAVELENGTH";
+		
+		DepProperyStore store = createPropertyStore();
+		store.add(createDoubleProperty(idStartWavelength, 1500, "nm", 1250, 1650, 3));
+		store.add(createDoubleProperty(idStopWavelength, 1550, "nm", 1250, 1650, 3));
+		
+		DependencySpecHolder2 holder = new DependencySpecHolder2();
+		
+		////////// Start Wavelength///////////
+		{
+			DependencySpec2 spec = new DependencySpec2(idStartWavelength);
+			holder.add(spec);
+			DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.Value);
+			detail.addExpression().resultExpression("$" + idStopWavelength +".Value + 100");
+			spec.add(detail);
+		}
+		
+		DependencyEngine2 engine = createEngine(holder, store);
+		try {			
+			engine.requestChange(idStopWavelength, "1500");
+			assertTrue(store.getProperty(idStartWavelength).getCurrentValue().equals("1600.000"));
+			assertTrue(store.getProperty(idStopWavelength).getCurrentValue().equals("1500.000"));
+		} catch (RequestRejectedException e) {
+			e.printStackTrace();
 		}
 	}
 	

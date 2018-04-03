@@ -1,9 +1,8 @@
 package jp.silverbullet.dependency.speceditor3.ui;
 
 import javafx.scene.layout.VBox;
-import jp.silverbullet.SvProperty;
-import jp.silverbullet.dependency.speceditor3.DependencySpecHolder2;
-import jp.silverbullet.property.PropertyHolder;
+import jp.silverbullet.dependency.speceditor3.DependencyTargetElement;
+import jp.silverbullet.dependency.speceditor3.GlobalMap;
 
 public class DependencyEditorUi extends VBox {
 	DependencySpecEditorUi dependencySpecEditorUi = null;
@@ -19,10 +18,15 @@ public class DependencyEditorUi extends VBox {
 			public void onSelectionChanged(String id) {
 				dependencyEditorModel.setProperty(dependencyEditorModel.getProperty(id));
 				dependencySpecEditorUi.update();
-			}	
+			}
+
+			public void onRequestAdd(String id, DependencyTargetElement dependencyTargetElement, String selectionId) {
+				dependencySpecEditorUi.requestAdd(id, dependencyTargetElement, selectionId);
+			}
 		});
 		
 		this.getChildren().add(new DependencyTreeUi(dependencyEditorModel));
 		this.getChildren().add(dependencySpecEditorUi = new DependencySpecEditorUi(dependencyEditorModel));
+		this.getChildren().add(new GlobalMapUi(new GlobalMap(dependencyEditorModel.getDependencySpecHolder())));
 	}
 }

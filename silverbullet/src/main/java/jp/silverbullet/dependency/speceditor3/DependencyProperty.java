@@ -27,7 +27,7 @@ public class DependencyProperty {
 		this.element = element;
 		this.condition = expression;
 		this.value = value;
-	
+		
 		triggerIds.addAll(idCollector.collectIds(value));
 		triggerIds.addAll(idCollector.collectIds(expression));
 	}
