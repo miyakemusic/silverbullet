@@ -2,17 +2,30 @@ package jp.silverbullet.dependency.speceditor3;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import jp.silverbullet.dependency.speceditor3.ui.DependencyEditorModel;
+import jp.silverbullet.dependency.speceditor3.ui.GlobalMapListener;
+import jp.silverbullet.property.PropertyHolder;
 
 public class GlobalMap {
 	private Map<String, DNode> map = new HashMap<>();
-	private int levelCount = 0;
+	private Set<GlobalMapListener> listeners = new HashSet<GlobalMapListener>();
+	private int maxLevelInde = 0;
+	private DependencyEditorModel dependecyEditorModel;
 	
-	public GlobalMap(DependencySpecHolder2 holder) {
-		for (String id : holder.getSpecs().keySet()) {
-			DependencySpec2 spec = holder.getSpecs().get(id);
-			
+	public GlobalMap(DependencyEditorModel dependencyEditorModel) {
+		this.dependecyEditorModel = dependencyEditorModel;
+		build();
+	}
+
+	private void build() {
+		this.map.clear();
+		for (String id : dependecyEditorModel.getDependencySpecHolder().getSpecs().keySet()) {
+			DependencySpec2 spec = dependecyEditorModel.getDependencySpecHolder().getSpecs().get(id);
 			DNode node = getNode(id);
 			for (String s : spec.getTriggerIds()) {
 				connect(node, s);
@@ -20,13 +33,20 @@ public class GlobalMap {
 		}
 		
 		for (DNode node : map.values()) {
-			//System.out.println(node.getParents().size() + ":" + node.getId());
-			node.setLevel(0);
+			node.setLevel(0, new ArrayList<>());
+		}	
+		List<String> independent = new ArrayList<>();
+		for (String key : map.keySet()) {
+			DNode node = map.get(key);
+			this.maxLevelInde = Math.max(node.getLevel(), this.maxLevelInde);
+			if (node.independent()) {
+				independent.add(key);
+			}
+		}
+		for (String key : independent) {
+			this.map.remove(key);
 		}
 		
-		for (DNode node : map.values()) {
-			this.levelCount = Math.max(node.getLevel(), this.levelCount);
-		}
 	}
 
 	private void connect(DNode node, String s) {
@@ -43,7 +63,7 @@ public class GlobalMap {
 	}
 
 	public int getLevelCount() {
-		return levelCount;
+		return maxLevelInde + 1;
 	}
 
 	public List<DNode> getNodes(int level) {
@@ -54,6 +74,32 @@ public class GlobalMap {
 			}
 		}
 		return ret;
+	}
+
+	public void addListener(GlobalMapListener globalMapListener) {
+		this.listeners.add(globalMapListener);
+	}
+
+	public void setSelectedId(String id) {
+		dependecyEditorModel.setSelectedId(id);
+		for (GlobalMapListener listener : this.listeners) {
+			listener.onIdChange(id);
+		}
+	}
+
+	public void update() {
+		this.build();
+		for (GlobalMapListener listener : this.listeners) {
+			listener.onUpdated();
+		}
+	}
+
+	public PropertyHolder getPropertyHolder() {
+		return this.dependecyEditorModel.getPropertyHolder();
+	}
+
+	public DependencyEditorModel getDependencyEditorModel() {
+		return this.dependecyEditorModel;
 	}
 }
 

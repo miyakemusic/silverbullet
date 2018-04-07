@@ -14,7 +14,7 @@ import jp.silverbullet.dependency.speceditor3.DependencyTargetElement;
 import jp.silverbullet.property.ListDetailElement;
 import jp.silverbullet.property.PropertyHolder;
 
-public class DependecyEditorModel {
+public class DependencyEditorModel {
 
 	private static final String VISIBLE = "visible";
 	private static final String ENABLED = "enabled";
@@ -24,7 +24,7 @@ public class DependecyEditorModel {
 	private SvPropertyStore store;
 	private Set<DependecyEditorModelListener> listeners = new HashSet<>();
 	private SvProperty mainProperty;
-	public DependecyEditorModel(SvProperty property, DependencySpecHolder2 dependencySpecHolder2 ,
+	public DependencyEditorModel(SvProperty property, DependencySpecHolder2 dependencySpecHolder2 ,
 			PropertyHolder propertyHolder, SvPropertyStore store) {
 		
 		this.property = property;
@@ -64,7 +64,7 @@ public class DependecyEditorModel {
 		this.listeners.add(listener);
 	}
 
-	public void fireSelectionChanged(String id) {
+	private void fireSelectionChanged(String id) {
 		for (DependecyEditorModelListener listener : listeners) {
 			listener.onSelectionChanged(id);
 		}
@@ -118,6 +118,13 @@ public class DependecyEditorModel {
 		}
 		else {
 			return e.name();
+		}
+	}
+
+	public void setSelectedId(String id) {
+		if (!id.equals(this.getSelectedProperty().getId())) {
+			this.setProperty(this.getProperty(id));
+			this.fireSelectionChanged(id);
 		}
 	}
 

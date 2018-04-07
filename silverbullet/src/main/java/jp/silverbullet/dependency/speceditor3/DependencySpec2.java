@@ -118,7 +118,8 @@ public class DependencySpec2 {
 
 	public Set<String> getTriggerIds() {
 		Set<String> ret = new HashSet<String>();
-		for (DependencyExpressionHolderMap map2 : this.depExpHolderMap.values())  {
+		for (DependencyTargetElement target : this.depExpHolderMap.keySet())  {
+			DependencyExpressionHolderMap map2 = depExpHolderMap.get(target);
 			for (String key : map2.keySet()) {
 				List<DependencyExpressionHolder> list = map2.get(key);
 				for (DependencyExpressionHolder expressionHolder : list) {

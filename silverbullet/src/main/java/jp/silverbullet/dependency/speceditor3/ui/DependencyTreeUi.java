@@ -7,18 +7,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javafx.event.ActionEvent;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
-import jp.silverbullet.MyDialogFx;
+import jp.silverbullet.SvProperty;
 import jp.silverbullet.dependency.speceditor3.DependencyBuilder3;
 import jp.silverbullet.dependency.speceditor3.DependencyExpression;
 import jp.silverbullet.dependency.speceditor3.DependencyExpressionHolder;
@@ -28,15 +25,13 @@ import jp.silverbullet.dependency.speceditor3.DependencyProperty;
 import jp.silverbullet.dependency.speceditor3.DependencySpec2;
 import jp.silverbullet.dependency.speceditor3.DependencyTargetElement;
 import jp.silverbullet.dependency.speceditor3.IdCollector;
-import jp.silverbullet.property.PropertyHolder;
-import jp.silverbullet.property.editor.PropertyEditorPaneFx;
 
 public class DependencyTreeUi extends AnchorPane {
 	private EventHandler<MouseEvent> eventHandler = new EventHandler<MouseEvent>() {
 		@Override
 		public void handle(MouseEvent event) {
 			if (event.getButton().equals(MouseButton.PRIMARY)){
-				dependencyEditorModel.fireSelectionChanged( ((Button)event.getSource()).getText());
+				dependencyEditorModel.setSelectedId( ((Button)event.getSource()).getText());
 				event.consume();
 			}
 		}
@@ -49,34 +44,20 @@ public class DependencyTreeUi extends AnchorPane {
 	private static final double xstep = 250;
 	private static final double ystep = 40;
 
-	private DependecyEditorModel dependencyEditorModel;
+	private DependencyEditorModel dependencyEditorModel;
 	private Map<Integer, List<DependencyNode>> registeredNodes = new HashMap<>();
 	private Map<DependencyNode, Button> buttonMap = new HashMap<>();
 	private List<Button> triggerButtons = new ArrayList<>();
 	private Button mainButton;
 	private ContextMenu contextMenu = new ContextMenu();
 		
-	public DependencyTreeUi(DependecyEditorModel dependencyEditorModel) {
+	public DependencyTreeUi(DependencyEditorModel dependencyEditorModel) {
 		this.setStyle("-fx-border-width:1;-fx-border-color:black;");
 		this.setPrefHeight(300);
 		
 		contextMenu = new ContextMenu();	
-		MenuItem targetMenu = new MenuItem("Add target");
-		targetMenu.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				showIdSelector(dependencyEditorModel.getPropertyHolder());
-			}
-		});
-		contextMenu.getItems().addAll(targetMenu);
-		this.setOnMousePressed(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent event) {
-				if (event.getButton().equals(MouseButton.SECONDARY)) {
-					showPopup(contextMenu, event);
-				}
-			}
-		});
+		new SpecAdditionMenu(this, contextMenu, dependencyEditorModel);
+
 		this.dependencyEditorModel = dependencyEditorModel;
 		dependencyEditorModel.addtListener(new DependecyEditorModelListener() {
 			@Override
@@ -86,6 +67,7 @@ public class DependencyTreeUi extends AnchorPane {
 
 			@Override
 			public void onSelectionChanged(String id) {
+				buildUi();
 			}
 
 			@Override
@@ -98,36 +80,21 @@ public class DependencyTreeUi extends AnchorPane {
 		buildUi();
 	}
 
-	protected void showPopup(ContextMenu contextMenu,
-			MouseEvent event) {
-		contextMenu.show(this, event.getScreenX(), event.getScreenY());
-	}
-
 	private void buildUi() {
 		this.registeredNodes.clear();
+		this.triggerButtons.clear();
+		this.buttonMap.clear();
 		this.getChildren().clear();
-		DependencyBuilder3 builder = new DependencyBuilder3(dependencyEditorModel.getMainProperty().getId(), dependencyEditorModel.getDependencySpecHolder());
+		SvProperty property = dependencyEditorModel.getSelectedProperty();
+		
+		DependencyBuilder3 builder = new DependencyBuilder3(property.getId(), dependencyEditorModel.getDependencySpecHolder());
 		DependencyNode tree = builder.getTree();
 		
-		DependencySpec2 spec = dependencyEditorModel.getDependencySpecHolder().get(dependencyEditorModel.getMainProperty().getId());
-		DependencyProperty depProp = new DependencyProperty(dependencyEditorModel.getMainProperty().getId(), 
+		DependencySpec2 spec = dependencyEditorModel.getDependencySpecHolder().get(property.getId());
+		DependencyProperty depProp = new DependencyProperty(property.getId(), 
 				DependencyTargetElement.Any, "", "", null);
-		IdCollector collector = new IdCollector();
-		Set<String> ids = new HashSet<>();
-		for (DependencyExpressionHolderMap map2 : spec.getDepExpHolderMap().values())  {
-			for (String key : map2.keySet()) {
-				List<DependencyExpressionHolder> list = map2.get(key);
-				for (DependencyExpressionHolder expressionHolder : list) {
-					for (String value : expressionHolder.getExpressions().keySet()) {
-						ids.addAll(collector.collectIds(value));
-						for (DependencyExpression exp : expressionHolder.getExpressions().get(value).getDependencyExpressions()) {
-							String expression = exp.getExpression().getExpression();
-							ids.addAll(collector.collectIds(expression));
-						}
-					}
-				}
-			}
-		}
+
+		Set<String> ids = spec.getTriggerIds();
 		tree.setDependencyProperty(depProp);
 		int i = 0;
 		for (String id : ids) {
@@ -139,14 +106,47 @@ public class DependencyTreeUi extends AnchorPane {
 			button.setLayoutY(yoffset + i* ystep); 
 			i++;
 		}
-		add(0, tree);
-		workThrough(tree.getChildren(), 1);
+		List<PendingItem> pendingList = new ArrayList<>();
 		
+		add(0, tree, pendingList);
+		workThrough(tree.getChildren(), 1, pendingList);
+		for (PendingItem item : pendingList) {
+			item.execute();
+		}
 		drawTree();
 		drawLine();
 	}
+	
+	private void workThrough(List<DependencyNode> nodes, int layer, List<PendingItem> pendingList) {
+		for (DependencyNode n : nodes) {
+			if (n.getDependencyProperty().getCondition().equals(DependencyExpression.ELSE)) {
+				continue;
+			}
+			add(layer, n, pendingList);
+			if (n.isLeaf()) {
+				return;
+			}
+			workThrough(n.getChildren(), layer + 1, pendingList);
+		}
+	}
+	private void add(int layer, DependencyNode node, List<PendingItem> pendingList) {
+		if (!registeredNodes.containsKey(layer)) {
+			registeredNodes.put(layer, new ArrayList<DependencyNode>());
+		}
 
+		// Check if already added
+		for (DependencyNode n : registeredNodes.get(layer)) {
+			if (node.getDependencyProperty().getId().equals(n.getDependencyProperty().getId())) {	
+				pendingList.add(new PendingItem(node.getParent(), n));
+				//node.getParent().addChild(n);
+				return;
+			}
+		}
+		
+		registeredNodes.get(layer).add(node);
+	}
 	private void drawLine() {
+		// Trigger buttons
 		for (Button button : this.triggerButtons) {
 			Line line = new Line();
 			line.setStartX(xwidth + button.getLayoutX());
@@ -157,6 +157,7 @@ public class DependencyTreeUi extends AnchorPane {
 			this.getChildren().add(line);
 		}
 		
+		// Relation buttons
 		for (int layer : this.registeredNodes.keySet()) {
 			List<DependencyNode> nodes = this.registeredNodes.get(layer);
 			for (int n = 0; n < nodes.size(); n++) {
@@ -164,6 +165,7 @@ public class DependencyTreeUi extends AnchorPane {
 				for (DependencyNode nextNode : node.getChildren()) {
 					Button start = buttonMap.get(node);
 					Button end = buttonMap.get(nextNode);
+//					System.out.println(layer + ":" + start.getText() + " -> " + end.getText());
 					if (end == null) {
 						continue;
 					}
@@ -211,68 +213,18 @@ public class DependencyTreeUi extends AnchorPane {
 			}
 		}
 	}
+}
+class PendingItem {
 
-	private void workThrough(List<DependencyNode> nodes, int layer) {
-		for (DependencyNode n : nodes) {
-			if (n.getDependencyProperty().getCondition().equals(DependencyExpression.ELSE)) {
-				continue;
-			}
-			add(layer, n);
-			if (n.isLeaf()) {
-				return;
-			}
-			workThrough(n.getChildren(), layer + 1);
-		}
+	private DependencyNode parent;
+	private DependencyNode child;
+
+	public PendingItem(DependencyNode parent, DependencyNode child) {
+		this.parent = parent;
+		this.child = child;
 	}
-
-	private void add(int layer, DependencyNode node) {
-		if (!registeredNodes.containsKey(layer)) {
-			registeredNodes.put(layer, new ArrayList<DependencyNode>());
-		}
-
-		// Check if already added
-		for (DependencyNode n : registeredNodes.get(layer)) {
-			if (node.getDependencyProperty().getId().equals(n.getDependencyProperty().getId())) {
-				return;
-			}
-		}
-		
-		registeredNodes.get(layer).add(node);
-	}
-
-	protected void showIdSelector(PropertyHolder propertyHolder) {
-		MyDialogFx dialog = new MyDialogFx("ID", this);
-		final PropertyEditorPaneFx node = new PropertyEditorPaneFx(propertyHolder) {
-			@Override
-			protected void onClose() {
-				removeListener();
-				dialog.close();
-			}
-
-			@Override
-			protected void onSelect(List<String> selected, List<String> subs) {
-				removeListener();
-				String id = selected.get(0);
-				showElementSelector(id);
-			}
-		};
-
-		dialog.showModal(node);
-	}
-
-	protected void showElementSelector(String id) {
-		MyDialogFx dialog = new MyDialogFx("Target Element", this);
-		dialog.setMaxHeight(200);
-		dialog.setMaxWidth(400);
-		VBox vbox = new VBox();
-		ComboBox<String> combo = new ComboBox<>();
-		combo.getItems().addAll(this.dependencyEditorModel.getAllElements(id));
-		vbox.getChildren().add(combo);
-		dialog.showModal(vbox);
-		if (dialog.isOkClicked()) {
-			DependencyTargetConverter e = dependencyEditorModel.getRealTargetElement(combo.getSelectionModel().getSelectedItem());
-
-			dependencyEditorModel.requestAddingSpec(id, e.getElement(), e.getSelectionId());
-		}
+	
+	public void execute() {
+		this.parent.addChild(child);
 	}
 }

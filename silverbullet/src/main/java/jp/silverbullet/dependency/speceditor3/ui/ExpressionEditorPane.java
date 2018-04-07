@@ -4,15 +4,12 @@ import java.util.List;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import jp.silverbullet.MyDialogFx;
-import jp.silverbullet.dependency.speceditor3.DependencyExpression;
 import jp.silverbullet.dependency.speceditor3.DependencyTargetElement;
 import jp.silverbullet.property.PropertyHolder;
 import jp.silverbullet.property.editor.PropertyEditorPaneFx;

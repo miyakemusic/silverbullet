@@ -30,10 +30,10 @@ import jp.silverbullet.property.PropertyHolder;
 public class DependencySpecEditorUi extends VBox {
 	private ObservableList<DependencyTableRowData> data = FXCollections.observableArrayList();
 	protected String targetElement = "";
-	private DependecyEditorModel dependencyEditorModel;
+	private DependencyEditorModel dependencyEditorModel;
 	private PropertyHolder propertyHolder;
 
-	public DependencySpecEditorUi(DependecyEditorModel dependencyEditorModel) {
+	public DependencySpecEditorUi(DependencyEditorModel dependencyEditorModel) {
 		this.dependencyEditorModel = dependencyEditorModel;
 		this.propertyHolder = dependencyEditorModel.getPropertyHolder();
 				

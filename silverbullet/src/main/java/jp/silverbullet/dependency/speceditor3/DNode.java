@@ -29,12 +29,24 @@ public class DNode {
 		return children;
 	}
 	
-	public void setLevel(int level) {
+	public void setLevel(int level, List<String> experienced) {
+		if (experienced.contains(id)) {
+			return;
+		}
+		experienced.add(id);
 		if (this.level < level) {
 			this.level = level;
 		}
 		for (DNode sub : this.getChildren()) {
-			sub.setLevel(level + 1);
+			if (!experienced.contains(sub.getId())) {
+				List<String> subExperienced = new ArrayList<>();
+				subExperienced.addAll(experienced);
+				sub.setLevel(level + 1, subExperienced);
+			}
 		}
+	}
+
+	public boolean independent() {
+		return (this.parents.size() == 0) && (this.children.size() == 0);
 	}
 }
