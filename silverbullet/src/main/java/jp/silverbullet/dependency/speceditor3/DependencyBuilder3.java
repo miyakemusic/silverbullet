@@ -4,23 +4,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DependencyBuilder3 {
-	private DependencyNode tree = new DependencyNode(null, null);
+	private DependencyNode tree = new DependencyNode(null, null, -1);
 	
 	public DependencyBuilder3(String id, DependencySpecHolder2 specHolder) {
 		List<DependencyProperty> specs = specHolder.findSpecsToBeChangedSpecBy(id);
-		
-		analyze(tree, specHolder, specs, id);
+		List<String> experienced = new ArrayList<String>();
+		experienced.add(id);
+		analyze(tree, specHolder, specs, id, experienced, 0);
 	}
 
-	private void analyze(DependencyNode node, DependencySpecHolder2 specHolder, List<DependencyProperty> specs, String id) {
+	private void analyze(DependencyNode node, DependencySpecHolder2 specHolder, List<DependencyProperty> specs, String id, List<String> experienced, int layer) {
 		for (DependencyProperty depProp : specs) {
-			DependencyNode subNode = new DependencyNode(depProp, node);
-			if (depProp.getId().equals(id)) {
+			DependencyNode subNode = new DependencyNode(depProp, node, layer);
+//			if (depProp.getId().equals(id)) {
+			if (experienced.contains(depProp.getId())) {
 				subNode.setRecursive(true);
 			}
 			node.addChild(subNode);
 			if (!subNode.isRecursive()) {
-				analyze(subNode, specHolder, specHolder.findSpecsToBeChangedSpecBy(depProp.getId()), id);
+				List<String> subExperienced = new ArrayList<>();
+				subExperienced.add(depProp.getId());
+				subExperienced.addAll(experienced);
+				analyze(subNode, specHolder, specHolder.findSpecsToBeChangedSpecBy(depProp.getId()), id, subExperienced, layer+1);
 			}
 		}
 	}

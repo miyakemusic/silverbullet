@@ -10,6 +10,9 @@ import jp.silverbullet.dependency.engine.DependencyEngine;
 import jp.silverbullet.dependency.engine.DependencyInterface;
 import jp.silverbullet.dependency.engine.RequestRejectedException;
 import jp.silverbullet.dependency.speceditor2.DependencySpecHolder;
+import jp.silverbullet.dependency.speceditor3.CachedPropertyStore;
+import jp.silverbullet.dependency.speceditor3.DepPropertyStore;
+import jp.silverbullet.dependency.speceditor3.DependencyEngine2;
 import jp.silverbullet.dependency.speceditor3.DependencySpecHolder2;
 import jp.silverbullet.property.PropertyHolder;
 import jp.silverbullet.property.PropertyType;
@@ -60,6 +63,29 @@ public class BuilderModelImpl implements BuilderModel {
 		}
 	};
 	
+	private DependencyEngine2 dependency2 = new DependencyEngine2() {
+		@Override
+		protected DependencySpecHolder2 getDependencyHolder() {
+			return dependencySpecHolder2;
+		}
+
+		@Override
+		protected DepPropertyStore getPropertiesStore() {
+			return new DepPropertyStore() {
+
+				@Override
+				public SvProperty getProperty(String id) {
+					return store.getProperty(id);
+				}
+
+				@Override
+				public void add(SvProperty createListProperty) {
+				}
+			};
+		}
+
+	};
+	
 	private EasyAccessModel easyAccessModel = new EasyAccessModel() {
 		@Override
 		public void requestChange(final String id, final String value) {
@@ -99,8 +125,8 @@ public class BuilderModelImpl implements BuilderModel {
 			}
 
 			@Override
-			protected DependencyEngine getDependency() {
-				return dependency;
+			protected DependencyEngine2 getDependency() {
+				return dependency2;
 			}
 
 

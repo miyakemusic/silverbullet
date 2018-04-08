@@ -1,7 +1,5 @@
 package jp.silverbullet.dependency.engine;
 
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -50,9 +48,7 @@ public abstract class DependencyEngine {
 	}
 
 	public void requestChange(String id, String value) throws RequestRejectedException {
-		
 		DependencyBuilder dependencyBuilder = new DependencyBuilder(id, specHolder, new MarcoExtractor(getPropertiesStore()));
-		
 		tentativeStore = new TentativePropertyStore(getPropertiesStore());
 		
 		try {

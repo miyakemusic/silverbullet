@@ -8,9 +8,11 @@ public class DependencyNode {
 	private DependencyProperty dependencyProperty;
 	private List<DependencyNode> parents = new ArrayList<>();
 	private boolean recursive = false;
+	private int layer;
 
-	public DependencyNode(DependencyProperty prop, DependencyNode parent) {
+	public DependencyNode(DependencyProperty prop, DependencyNode parent, int layer) {
 		this.dependencyProperty = prop;
+		this.layer = layer;
 		this.parents.add(parent);
 	}
 	
@@ -61,7 +63,8 @@ public class DependencyNode {
 	}
 
 	public int getLayer() {
-		return goback(this, 0) - 1;
+		return layer;
+		//return goback(this, 0) - 1;
 	}
 
 	private int goback(DependencyNode dependencyNode, int number) {

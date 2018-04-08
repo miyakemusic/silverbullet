@@ -137,9 +137,9 @@ public class DependencyTreeUi extends AnchorPane {
 		// Check if already added
 		for (DependencyNode n : registeredNodes.get(layer)) {
 			if (node.getDependencyProperty().getId().equals(n.getDependencyProperty().getId())) {	
-				pendingList.add(new PendingItem(node.getParent(), n));
+				//pendingList.add(new PendingItem(node.getParent(), n));
 				//node.getParent().addChild(n);
-				return;
+				//return;
 			}
 		}
 		

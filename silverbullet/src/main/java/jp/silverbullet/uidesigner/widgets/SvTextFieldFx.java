@@ -109,7 +109,7 @@ public class SvTextFieldFx extends SvAbstractTitledWidgetFx {
 			String ret = commonDialog.showTenkey2(prop, this);
 			this.getDependencyInterface().requestChange(prop.getId(), ret);
 		} catch (Exception e1) {
-			
+			e1.printStackTrace();
 		}
 	}
 }

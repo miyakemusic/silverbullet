@@ -10,7 +10,6 @@ import jp.silverbullet.ChangedItemValue;
 import jp.silverbullet.SvProperty;
 import jp.silverbullet.SvPropertyListener;
 import jp.silverbullet.SvPropertyStore;
-import jp.silverbullet.dependency.speceditor2.DependencyFormula;
 import jp.silverbullet.dependency.speceditor2.DependencySpecDetail;
 
 
@@ -72,7 +71,6 @@ public class TentativePropertyStore {
 	}
 
 	public SvProperty getProperty(String id) {
-//		return this.propertiesStore.getProperty(id);
 		if (!this.properties.keySet().contains(id)) {
 			SvProperty original = this.propertiesStore.getProperty(id);
 			SvProperty clone = original.clone();
@@ -132,17 +130,9 @@ public class TentativePropertyStore {
 
 	public List<String> getChangedIds() {
 		return new ArrayList<String>(this.changedHistory.keySet());
-//		List<String> ret = new ArrayList<String>();
-//		for (String key : this.getChangedHistory().keySet()) {
-//			if (this.getChangedHistory().get(key).size() > 0) {
-//				ret.add(key);
-//			}
-//		}
-//		return ret;
 	}
 
 	public List<ChangedItemValue> getChanged(String id) {
-		// TODO Auto-generated method stub
 		return this.changedHistory.get(id);
 	}
 }

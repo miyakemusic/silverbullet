@@ -83,7 +83,7 @@ public class SvProperty implements Cloneable {
 			}
 		}
 		else {
-			this.currentValue = property.getArgumentValue("defaultValue");
+			this.setCurrentValue(property.getArgumentValue("defaultValue"));
 		}
 //		this.min = property.getArgumentValue("min");
 //		this.max = property.getArgumentValue("max");
@@ -122,6 +122,9 @@ public class SvProperty implements Cloneable {
 	public void setCurrentValue(String value) {		
 //		lock.writeLock();
 		if (this.isDoubleProperty()) {
+			if (value.isEmpty()) {
+				value = "0";
+			}
 			try {
 				if (getDecimal().endsWith("e")) {
 					value = String.format("%." + getDecimal().replaceAll("e", "") + "e", Double.parseDouble(value));
@@ -152,7 +155,11 @@ public class SvProperty implements Cloneable {
 	}
 
 	private String getDecimal() {
-		return property.getArgumentValue("decimal");
+		String ret = property.getArgumentValue("decimal");
+		if (ret.isEmpty()) {
+			ret = "0";
+		}
+		return ret;
 	}
 
 	public void addListener(SvPropertyListener propertyListener) {

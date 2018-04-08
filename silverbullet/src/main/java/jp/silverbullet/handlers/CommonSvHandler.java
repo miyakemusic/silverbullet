@@ -6,9 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jp.silverbullet.ChangedItemValue;
-import jp.silverbullet.dependency.speceditor2.DependencyFormula;
-import jp.silverbullet.dependency.speceditor2.DependencySpecDetail;
+import jp.silverbullet.dependency.speceditor3.ChangedItemValue2;
+import jp.silverbullet.dependency.speceditor3.DependencyTargetElement;
 
 public class CommonSvHandler extends AbstractSvHandler {
 
@@ -22,14 +21,14 @@ public class CommonSvHandler extends AbstractSvHandler {
 	}
 
 	@Override
-	protected void onExecute(final SvHandlerModel model2, Map<String, List<ChangedItemValue>> changed) {
+	protected void onExecute(final SvHandlerModel model2, Map<String, List<ChangedItemValue2>> changed) {
 		
 		// Run when values are changed. Ignores enabled/visible.
 		boolean run = false;
 		
 		for (String id : this.handlerProperty.getIds()) {
-			for (ChangedItemValue v : changed.get(id)) {
-				if (v.element.equals(DependencySpecDetail.VALUE)) {
+			for (ChangedItemValue2 v : changed.get(id)) {
+				if (v.getElement().equals(DependencyTargetElement.Value)) {
 					run = true;
 					break;
 				}

@@ -12,6 +12,7 @@ import jp.silverbullet.dependency.engine.DependencyEngine;
 import jp.silverbullet.dependency.engine.DependencyInterface;
 import jp.silverbullet.dependency.engine.DependencyListener;
 import jp.silverbullet.dependency.engine.RequestRejectedException;
+import jp.silverbullet.dependency.speceditor3.DependencyEngine2;
 import jp.silverbullet.handlers.AbstractSvHandler;
 import jp.silverbullet.handlers.CommonSvHandler;
 import jp.silverbullet.handlers.EasyAccessModel;
@@ -23,7 +24,7 @@ import jp.silverbullet.handlers.SvHandlerModel;
 public abstract class Sequencer implements DependencyInterface {
 	abstract protected SvPropertyStore getPropertiesStore();
 	abstract protected HandlerPropertyHolder getHandlerPropertyHolder();
-	abstract protected DependencyEngine getDependency();
+	abstract protected DependencyEngine2 getDependency();
 	abstract protected String getUserApplicationPath();
 	abstract protected EasyAccessModel getEasyAccessModel();
 	abstract protected RegisterAccess getRegisterAccess();
@@ -41,6 +42,7 @@ public abstract class Sequencer implements DependencyInterface {
 	public void requestChange(String id, String value)
 			throws RequestRejectedException {
 		fireRequestChange(id, value);
+		
 		// resolves dependencies
 		getDependency().requestChange(id, value);
 		
