@@ -1,12 +1,10 @@
 package jp.silverbullet.dependency.speceditor3.ui;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javafx.scene.Node;
 import jp.silverbullet.SvProperty;
 import jp.silverbullet.SvPropertyStore;
 import jp.silverbullet.dependency.speceditor3.DependencySpecHolder2;
@@ -126,6 +124,28 @@ public class DependencyEditorModel {
 			this.setProperty(this.getProperty(id));
 			this.fireSelectionChanged(id);
 		}
+	}
+
+	public DependencyTargetElement convertElementFromPresentation(String element) {
+		if (element.contains(".")) {
+			if (element.endsWith("." + VISIBLE)) {
+				return DependencyTargetElement.ListItemVisible;
+			}
+			else if (element.endsWith("." + ENABLED)) {
+				return DependencyTargetElement.ListItemEnabled;
+			}
+		}
+		else {
+			return DependencyTargetElement.valueOf(element);
+		}
+		return null;
+	}
+
+	public String getSelectionId(String element) {
+		if (element.contains(".")) {
+			return element.split("\\.")[0];
+		}
+		return "";
 	}
 
 }

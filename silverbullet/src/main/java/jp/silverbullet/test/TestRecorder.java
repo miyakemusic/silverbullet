@@ -66,31 +66,31 @@ public class TestRecorder implements RegisterMonitor {
 			}
 		});
 		
-		builderModel.getDependency().addDependencyListener(new DependencyListener() {
-			@Override
-			public boolean confirm(String history) {
-				currentCommand.setDependency(currentCommand.getDependency() + "\n Confirm:" + history);
-				updateTable();
-				return true;
-			}
-
-			@Override
-			public void onResult(
-					Map<String, List<ChangedItemValue>> changedHistory) {
-				String s = "";
-				int i = 0;
-				for (String key : changedHistory.keySet()) {
-					if (i++ == 0) {
-						continue;
-					}
-					for (ChangedItemValue v : changedHistory.get(key)) {
-						s += " " + key + "." + v + ";";
-					}
-				}
-				currentCommand.setDependency(s);
-				updateTable();
-			}
-		});
+//		builderModel.getDependency().addDependencyListener(new DependencyListener() {
+//			@Override
+//			public boolean confirm(String history) {
+//				currentCommand.setDependency(currentCommand.getDependency() + "\n Confirm:" + history);
+//				updateTable();
+//				return true;
+//			}
+//
+//			@Override
+//			public void onResult(
+//					Map<String, List<ChangedItemValue>> changedHistory) {
+//				String s = "";
+//				int i = 0;
+//				for (String key : changedHistory.keySet()) {
+//					if (i++ == 0) {
+//						continue;
+//					}
+//					for (ChangedItemValue v : changedHistory.get(key)) {
+//						s += " " + key + "." + v + ";";
+//					}
+//				}
+//				currentCommand.setDependency(s);
+//				updateTable();
+//			}
+//		});
 	}
 
 	private void updateTable() {

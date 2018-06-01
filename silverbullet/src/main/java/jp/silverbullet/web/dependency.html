@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<script type="text/javascript" src="jquery-3.3.1.min.js"></script> 
+<script type="text/javascript" src="jquery-ui.js"></script> 
+<script type="text/javascript" src="handsontable.full.js"></script>
+<script type="text/javascript" src="dependency.js"></script>
+
+<link rel="stylesheet" media="screen" href="handsontable.full.css">
+<link rel="stylesheet" type="text/css" href="jquery-ui.css">
+<link rel="stylesheet" type="text/css" href="mycss.css">
+
+<head>
+<meta charset="UTF-8">
+<title>Dependency editor</title>
+</head>
+<body> 
+<div id="panel">
+</div>
+
+<div id="depDialog">
+<div id="targetId"></div><br>
+<select id="targetIdElement"></select><br>
+Value:<BR>
+<select id="valueBoolean"></select>
+<textarea id="valueText" rows=5 cols=50></textarea>
+<div><button value="true"><button value="false"></div>
+<br>
+Condition:<BR>
+<textarea id="conditionText" rows=5 cols=50></textarea>
+
+<br><br>
+<div id="mainTable"></div>
+
+<div id="triggerId"></div>
+</div>
+</body>
+</html>

@@ -16,6 +16,7 @@ public class DependencyExpression {
 			targetValueAdded(targetValue);
 		}
 	});
+	private boolean confirmationRequired = false;
 	
 	public DependencyExpression(String expression, DependencyExpressionListener listener) {
 		this.expression.setExpression(expression);
@@ -50,5 +51,14 @@ public class DependencyExpression {
 	public void setExpression(ExpressionBuilder expression) {
 		this.expression = expression;
 	}
+
+	public boolean isConfirmationRequired() {
+		return confirmationRequired;
+	}
+
+	public void setConfirmationRequired(boolean confirmationRequired) {
+		this.confirmationRequired = confirmationRequired;
+	}
+
 	
 }

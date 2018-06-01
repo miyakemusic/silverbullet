@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javafx.application.Platform;
-import jp.silverbullet.dependency.engine.DependencyEngine;
 import jp.silverbullet.dependency.engine.DependencyInterface;
 import jp.silverbullet.dependency.engine.DependencyListener;
 import jp.silverbullet.dependency.engine.RequestRejectedException;

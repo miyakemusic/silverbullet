@@ -7,6 +7,7 @@ import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import jp.silverbullet.MyDialogFx;
@@ -53,31 +54,15 @@ public abstract class ExpressionEditorPane extends VBox {
 		for (String val : getResultCandidates()) {
 			valueBox.getChildren().add(createCommonButton(val));
 		}
-		//valueBox.getChildren().add(createCommonButton(DependencyExpression.True));
-		//valueBox.getChildren().add(createCommonButton(DependencyExpression.False));
-		
+
 		HBox comparator = new HBox();
 		this.getChildren().add(comparator);
 		for (String comp : getComparators()) {
 			comparator.getChildren().add(createCommonButton(comp));
 		}
-//		comparator.getChildren().add(createCommonButton(DependencyExpression.Equals));
-//		comparator.getChildren().add(createCommonButton(DependencyExpression.LargerThan));
-//		comparator.getChildren().add(createCommonButton(DependencyExpression.NotEquals));
-//		comparator.getChildren().add(createCommonButton(DependencyExpression.SmallerThan));
-
 		HBox comparisonTarget = new HBox();
 		this.getChildren().add(comparisonTarget);
-		
-//		Button idChoice = new Button("List Item");
-//		comparisonTarget.getChildren().add(idChoice);
-//		idChoice.setOnAction(new EventHandler<ActionEvent>() {
-//			@Override
-//			public void handle(ActionEvent arg0) {
-//				showIdSelector(propertyHolder);
-//			}
-//		});
-		//comparisonTarget.getChildren().add(createCommonButton(DependencyExpression.AnyValue));
+
 		for (String compTarget : getComparisonTargets()) {
 			comparisonTarget.getChildren().add(createCommonButton(compTarget));
 		}
@@ -120,6 +105,7 @@ public abstract class ExpressionEditorPane extends VBox {
 
 	private Button createCommonButton(String comparator) {
 		Button button = new Button(comparator);
+		button.setTooltip(new Tooltip(comparator));
 		button.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override

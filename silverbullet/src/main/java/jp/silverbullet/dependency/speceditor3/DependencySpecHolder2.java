@@ -38,4 +38,10 @@ public class DependencySpecHolder2 {
 		}
 		return this.specs.get(id);
 	}
+
+	public void clean(DependencySpec2 spec) {
+		if (spec.isEmpty()) {
+			this.specs.remove(spec.getId());
+		}
+	}
 }

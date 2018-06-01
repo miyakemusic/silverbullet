@@ -48,11 +48,14 @@ public class DependencySpecEditorUi extends VBox {
 		TableColumn<DependencyTableRowData,String> targetElementCol = new TableColumn<>("Element");
 		TableColumn<DependencyTableRowData,String> valueCol = new TableColumn<>("Value");
 		TableColumn<DependencyTableRowData,String> conditionCol = new TableColumn<>("Condition");
-				
+		TableColumn<DependencyTableRowData,String> confirmationCol = new TableColumn<>("Confirmation");
+		
 		targetElementCol.setCellValueFactory(new PropertyValueFactory<DependencyTableRowData,String>("element"));
 		valueCol.setCellValueFactory(new PropertyValueFactory<DependencyTableRowData,String>("value"));
 		conditionCol.setCellValueFactory(new PropertyValueFactory<DependencyTableRowData,String>("condition"));
-	    tableView.getColumns().addAll(targetElementCol, valueCol, conditionCol);
+		confirmationCol.setCellValueFactory(new PropertyValueFactory<DependencyTableRowData,String>("confirmation"));
+		
+	    tableView.getColumns().addAll(targetElementCol, valueCol, conditionCol, confirmationCol);
 	    
 	    this.getChildren().add(tableView);
 	    
@@ -127,6 +130,18 @@ public class DependencySpecEditorUi extends VBox {
 		tableView.setItems(data);
 		
 		contextMenu.getItems().add(new SeparatorMenuItem());
+		
+		MenuItem confirmation = new MenuItem("Confirmation");
+		confirmation.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				toggleConfirmation(tableView, spec);
+			}
+		});
+		contextMenu.getItems().add(confirmation);
+		
+		contextMenu.getItems().add(new SeparatorMenuItem());
+		
 		MenuItem remove = new MenuItem("Remove");
 		remove.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -144,12 +159,27 @@ public class DependencySpecEditorUi extends VBox {
 		contextMenu.getItems().addAll(edit, remove);
 	}
 
+	protected void toggleConfirmation(TableView<DependencyTableRowData> tableView, DependencySpec2 spec) {
+//		String id = dependencyEditorModel.getSelectedProperty().getId();
+		DependencyTableRowData rowData = tableView.getSelectionModel().getSelectedItem();
+//		DependencyTargetElement element = dependencyEditorModel.convertElementFromPresentation(rowData.getElement());
+//		String selection = dependencyEditorModel.getSelectionId(rowData.getElement());
+//		String value = rowData.getValue();
+//		String condition = rowData.getCondition();
+//		DependencyExpression exp = dependencyEditorModel.getDependencySpecHolder().get(id).get(element, selection, value, condition);
+		DependencyExpression exp = rowData.getPointer();
+		exp.setConfirmationRequired(!exp.isConfirmationRequired());
+		this.update();
+	}
+
 	protected void editSpec(TableView<DependencyTableRowData> tableView) {
 		DependencyTableRowData rowData = tableView.getSelectionModel().getSelectedItem();
-		String selectionId = "";
+		
 		DependencyTargetConverter  converter = this.dependencyEditorModel.getRealTargetElement(rowData.getElement());
 		DependencyTargetElement e = converter.getElement();
+		String selectionId = converter.getSelectionId();
 		String defaultValue = rowData.getValue();
+		
 		String defaultCondition = rowData.getCondition();
 		
 		new SpecEditorCreator(e, selectionId, defaultValue, defaultCondition) {
@@ -186,17 +216,16 @@ public class DependencySpecEditorUi extends VBox {
 			}
 			DependencySpecHolder2 holder = dependencyEditorModel.getDependencySpecHolder();
 			DependencySpec2 spec = holder.get(dependencyEditorModel.getSelectedProperty().getId());
-			holder.add(spec);
 			
-			DependencyExpressionHolder detail = new DependencyExpressionHolder(e);
+			DependencyExpressionHolder detail = spec.getDependencyExpressionHolder(e, selectionId);//new DependencyExpressionHolder(e);
 			detail.addExpression().resultExpression(value).conditionExpression(condition);
 			
-			if (!selectionId.isEmpty()) {
-				spec.add(selectionId, detail);
-			}
-			else {
-				spec.add(detail);
-			}
+//			if (!selectionId.isEmpty()) {
+//				spec.add(selectionId, detail);
+//			}
+//			else {
+//				spec.add(detail);
+//			}
 	
 			updateList(spec);
 			dependencyEditorModel.fireModelUpdated();
@@ -207,6 +236,8 @@ public class DependencySpecEditorUi extends VBox {
 		spec.remove(tableView.getSelectionModel().getSelectedItem().getPointer());
 		updateList(spec);
 
+		dependencyEditorModel.getDependencySpecHolder().clean(spec);
+	
 		this.dependencyEditorModel.fireModelUpdated();
 	}
 
@@ -229,7 +260,7 @@ public class DependencySpecEditorUi extends VBox {
 						DependencyExpressionList list = h.getExpressions().get(k);
 						for (DependencyExpression exp : list.getDependencyExpressions()) {
 							String presentation = this.dependencyEditorModel.convertPresentationElement(key, e);
-							data.add(new DependencyTableRowData(presentation, k, exp.getExpression().getExpression(), exp));
+							data.add(new DependencyTableRowData(presentation, k, exp.getExpression().getExpression(),  exp.isConfirmationRequired(), exp));
 						}
 					}
 				}

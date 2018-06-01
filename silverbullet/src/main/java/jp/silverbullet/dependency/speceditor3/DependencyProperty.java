@@ -13,23 +13,25 @@ public class DependencyProperty {
 	private String value;
 	private List<String> triggerIds = new ArrayList<>();
 	private IdCollector idCollector = new IdCollector();
-	private List<DependencyProperty> otherSources = new ArrayList<>();
-	private DependencyProperty other;
+//	private List<DependencyProperty> otherSources = new ArrayList<>();
+	private DependencyProperty elseProperty;
 	private boolean otherSourceConsumed = false;
 	private SettingDisabledBehavior settingDisabledBehavior;
 	private DependencyExpression pointer;
+	private boolean consumed = false;
 	
 	public DependencyProperty(String id, String selectionId, DependencyTargetElement element, 
-			String expression, String value, DependencyExpression pointer) {
+			String condition2, String value, DependencyExpression pointer) {
 		super();
 		this.id = id;
 		this.selectionId = selectionId;
 		this.element = element;
-		this.condition = expression;
+		this.condition = condition2;
 		this.value = value;
+		this.pointer = pointer;
 		
 		triggerIds.addAll(idCollector.collectIds(value));
-		triggerIds.addAll(idCollector.collectIds(expression));
+		triggerIds.addAll(idCollector.collectIds(condition2));
 	}
 	
 	public DependencyProperty(String id, DependencyTargetElement element, 
@@ -81,17 +83,18 @@ public class DependencyProperty {
 		return triggerIds;
 	}
 
-	public void addOtherSource(DependencyProperty dp) {
-		this.otherSources .add(dp);
-	}
+//	public void addOtherSource(DependencyProperty dp) {
+//		this.otherSources .add(dp);
+//	}
 
-	public void setOther(DependencyProperty other) {
-		this.other = other;
+	public void setElse(DependencyProperty other) {
+		this.elseProperty = other;
 	}
 
 	public void cosumed() {
-		if (other != null) {
-			this.other.consumed(this);
+		consumed  = true;
+		if (elseProperty != null) {
+			this.elseProperty.consumed(this);
 		}
 	}
 
@@ -113,6 +116,18 @@ public class DependencyProperty {
 
 	public SettingDisabledBehavior getSettingDisabledBehavior() {
 		return settingDisabledBehavior;
+	}
+
+	public DependencyExpression getPointer() {
+		return pointer;
+	}
+
+	public boolean isConfirmationRequired() {
+		return this.pointer.isConfirmationRequired();
+	}
+
+	public boolean isConsumed() {
+		return consumed;
 	}
 	
 }

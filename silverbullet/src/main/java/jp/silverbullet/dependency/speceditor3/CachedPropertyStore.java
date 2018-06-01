@@ -20,7 +20,7 @@ public class CachedPropertyStore implements DepPropertyStore {
 		@Override
 		public void onValueChanged(String id, String value) {
 //			logs.add(new DependencyChangedLog(id, DependencyTargetElement.Value, value));
-			getHistory(id).add(new ChangedItemValue2(DependencyTargetElement.Value, value));
+			addValue(id, value);
 		}
 
 		@Override
@@ -151,5 +151,16 @@ public class CachedPropertyStore implements DepPropertyStore {
 
 	public void clearHistory() {
 		this.changedHistory.clear();
+	}
+
+	private void addValue(String id, String value) {
+		List<ChangedItemValue2> remove = new ArrayList<>();
+		for (ChangedItemValue2 v : getHistory(id)) {
+			if (v.getElement().equals(DependencyTargetElement.Value)) {
+				remove.add(v);
+			}
+		}
+		getHistory(id).removeAll(remove);
+		getHistory(id).add(new ChangedItemValue2(DependencyTargetElement.Value, value));
 	}
 }

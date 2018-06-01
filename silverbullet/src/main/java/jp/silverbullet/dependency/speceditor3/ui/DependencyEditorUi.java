@@ -26,8 +26,9 @@ public class DependencyEditorUi extends VBox {
 			}
 		});
 		
-		this.getChildren().add(new DependencyTreeUi(dependencyEditorModel));
 		this.getChildren().add(new GlobalMapUi(globalMap = new GlobalMap(dependencyEditorModel)));
+		this.getChildren().add(new DependencyTreeUi(dependencyEditorModel));
+		
 		this.getChildren().add(dependencySpecEditorUi = new DependencySpecEditorUi(dependencyEditorModel));
 		this.getChildren().add(new PropertySpecUi(dependencyEditorModel));
 		

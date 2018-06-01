@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.xml.bind.annotation.XmlRootElement;
+
+import com.sun.javafx.fxml.expression.Expression;
 @XmlRootElement
 public class DependencyExpressionHolder {
 	public enum SettingDisabledBehavior {
@@ -75,28 +77,35 @@ public class DependencyExpressionHolder {
 		return ret;
 	}
 
-	public List<DependencyProperty> getRelatedSpecs(String changedId, String listId,
+	public List<DependencyProperty> getRelatedSpecs(String targetId, String selectionId,
 			String triggerId, DependencyTargetElement targetElement2) {
 		List<DependencyProperty> ret = new ArrayList<>();
-		
+
+		DependencyProperty elseCondition = null;
 		for (String resultValue : getExpressions().keySet()) {
 			for (DependencyExpression condition : getExpressions().get(resultValue).getDependencyExpressions()) {
 				if (condition.isEmpty()) {
 					if (resultValue.contains("$"+triggerId + "." + targetElement2.name())) {
-						ret.add(new DependencyProperty(changedId, listId, targetElement2, "", resultValue, condition));
+						ret.add(new DependencyProperty(targetId, selectionId, targetElement2, "", resultValue, condition));
 					}
 				}
 				else if (condition.containsId(triggerId, getTargetElement()) 
-//						|| condition.getExpression().getExpression().contains(DependencyExpression.ELSE)
 						) {
-					ret.add(new DependencyProperty(changedId, listId, targetElement2, condition.getExpression().getExpression(), resultValue, condition));
+					ret.add(new DependencyProperty(targetId, selectionId, targetElement2, condition.getExpression().getExpression(), resultValue, condition));
 				}
 				else if (condition.getExpression().getExpression().contains(DependencyExpression.ELSE)) {
-					ret.add(new DependencyProperty(changedId, listId, targetElement2, condition.getExpression().getExpression(), resultValue, condition));					
+					elseCondition = new DependencyProperty(targetId, selectionId, targetElement2, condition.getExpression().getExpression(), resultValue, condition);					
+					//ret.add(elseCondition);
 				}
 			}
 		}
-		
+
+		if (!ret.isEmpty() && (elseCondition != null)) {
+			for (DependencyProperty depProp : ret) {
+				depProp.setElse(elseCondition);
+			}
+			ret.add(elseCondition);
+		}
 		return ret;
 	}
 
@@ -113,11 +122,20 @@ public class DependencyExpressionHolder {
 	}
 
 	public boolean remove(DependencyExpression pointer) {
+		String removedKey = "";
 		for (String key : this.expressions.keySet()) {
 			DependencyExpressionList list = this.expressions.get(key);
 			if (list.remove(pointer)) {
-				return true;
+				removedKey = key;
+				break;
 			}
+		}
+		
+		if (!removedKey.isEmpty()) {
+			if (expressions.get(removedKey).getDependencyExpressions().size() == 0) {
+				this.expressions.remove(removedKey);
+			}
+			return true;
 		}
 		return false;
 	}
@@ -131,5 +149,9 @@ public class DependencyExpressionHolder {
 			ret.addAll(list.getTriggerIds());
 		}
 		return ret;
+	}
+
+	public boolean isEmpty() {
+		return this.expressions.isEmpty();
 	}
 }

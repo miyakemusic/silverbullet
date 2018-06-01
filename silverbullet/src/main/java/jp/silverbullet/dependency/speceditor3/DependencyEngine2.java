@@ -25,36 +25,70 @@ public abstract class DependencyEngine2 {
 	public void requestChange(String id, String value) throws RequestRejectedException {
 		this.cachedPropertyStore = new CachedPropertyStore(getPropertiesStore());
 		
+		this.cachedPropertyStore.getProperty(id).setCurrentValue(value);
+		
 		DependencyBuilder3 builder = new DependencyBuilder3(id, getDependencyHolder());
 
-		List<ChangedProperty> ret = null;
+		List<DependencyProperty> confirmations = new ArrayList<>();
+		
+//		List<ChangedProperty> ret = null;
 		for (int layer = 0; layer < builder.getLayerCount(); layer++) {
 			List<DependencyProperty> specs = builder.getSpecs(layer);
 			
 			// removes unnecessary specs
-			if (ret != null) {
-				List<DependencyProperty> removed = new ArrayList<>();
-				for (DependencyProperty spec : specs) {
-					for (ChangedProperty changed : ret) {
-						if (spec.getTriggerIds().contains(changed.getId() + "." + changed.getElement())) {
-							removed.add(spec);
+//			if (ret != null) {
+//				List<DependencyProperty> removed = new ArrayList<>();
+//				for (DependencyProperty spec : specs) {
+//					for (ChangedProperty changed : ret) {
+//						if (spec.getTriggerIds().contains(changed.getId() + "." + changed.getElement())) {
+//							removed.add(spec);
+//						}
+//					}
+//				}
+//				ret.clear();
+//				specs = removed;
+//			}
+			/*ret =*/
+			doDependency(builder, specs);
+			
+			for (DependencyProperty spec : specs) {
+				if (spec.isConsumed() && spec.isConfirmationRequired()) {
+					confirmations.add(spec);
+				}
+			}
+		}
+		
+		if (!confirmations.isEmpty()) {
+			for (DependencyListener listener : this.listeners) {
+				String message = "";
+				for (DependencyProperty spec : confirmations ) {
+					List<ChangedItemValue2> items = this.getChagedItems().get(spec.getId());
+					if (items == null) {
+						continue;
+					}
+					for (ChangedItemValue2 v : items) {
+						if (v.getElement().equals(spec.getElement())) {
+							message += spec.getId() + "." + v.getElement().name() + "=" + v.getValue() +"\n";
 						}
 					}
 				}
-				ret.clear();
-				specs = removed;
+				if (listener.confirm(message)) {
+					this.cachedPropertyStore.commit();
+				}
+				else {
+					
+				}
 			}
-			ret = doDependency(id, value, builder, specs);
 		}
-		
-		this.cachedPropertyStore.commit();
+		else {
+			this.cachedPropertyStore.commit();
+		}
 	}
 	
-	private List<ChangedProperty> doDependency(String id, String value, DependencyBuilder3 builder, List<DependencyProperty> specs) throws RequestRejectedException {
-		SvProperty targetProperty = cachedPropertyStore.getProperty(id);
-		targetProperty.setCurrentValue(value);
+	private List<ChangedProperty> doDependency(DependencyBuilder3 builder, List<DependencyProperty> specs) throws RequestRejectedException {
+
 		
-		List<ChangedProperty> changed = new ArrayList<>();
+//		List<ChangedProperty> changed = new ArrayList<>();
 		
 		for (DependencyProperty spec : specs) {
 			if (satisfies(spec)) {
@@ -62,12 +96,12 @@ public abstract class DependencyEngine2 {
 				if (!spec.getSelectionId().equals(DependencySpec2.DefaultItem)){
 					Boolean v = !Boolean.valueOf(calcResult(spec));
 					prop.addListMask(spec.getSelectionId(), v);
-					changed.add(new ChangedProperty(prop.getId(), spec.getSelectionId(), spec.getElement()));
+//					changed.add(new ChangedProperty(prop.getId(), spec.getSelectionId(), spec.getElement(), spec.isConfirmationRequired()));
 					
 					// if masked item was current, it should be change
 					if (v && prop.getCurrentValue().equals(spec.getSelectionId())) {
 						prop.setCurrentValue(prop.getAvailableListDetail().get(0).getId());
-						changed.add(new ChangedProperty(prop.getId(), spec.getElement()));
+//						changed.add(new ChangedProperty(prop.getId(), spec.getElement(), spec.isConfirmationRequired()));
 					}
 				}
 				else {
@@ -104,13 +138,14 @@ public abstract class DependencyEngine2 {
 						}
 						prop.setCurrentValue(v);
 					}
-					changed.add(new ChangedProperty(prop.getId(), spec.getElement()));
+//					changed.add(new ChangedProperty(prop.getId(), spec.getElement(), spec.isConfirmationRequired()));
 				}
 				
 				spec.cosumed();
 			}
 		}
-		return changed;
+//		return changed;
+		return null;
 	}
 	
 	private String calcResult(DependencyProperty spec) {
@@ -171,16 +206,20 @@ class ChangedProperty {
 	private String id;
 	private String selectionId;
 	private DependencyTargetElement element;
+	private boolean confirmation;
 	
-	public ChangedProperty(String id, DependencyTargetElement element) {
-		this.id = id;
-		this.element = element;
-	}
-	
-	public ChangedProperty(String id, String selectionId, DependencyTargetElement element) {
+
+	public ChangedProperty(String id, String selectionId, DependencyTargetElement element, boolean confirmation) {
 		this.id = id;
 		this.selectionId = selectionId;
 		this.element = element;
+		this.confirmation = confirmation;
+	}
+
+	public ChangedProperty(String id, DependencyTargetElement element, boolean confirmationRequired) {
+		this.id = id;
+		this.element = element;
+		this.confirmation = confirmationRequired;
 	}
 
 	public String getId() {
@@ -205,6 +244,10 @@ class ChangedProperty {
 
 	public void setElement(DependencyTargetElement element) {
 		this.element = element;
+	}
+
+	public boolean isConfirmation() {
+		return confirmation;
 	}
 	
 }

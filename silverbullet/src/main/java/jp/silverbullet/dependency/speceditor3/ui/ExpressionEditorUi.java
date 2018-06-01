@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 import jp.silverbullet.SvProperty;
 import jp.silverbullet.dependency.speceditor3.DependencyExpression;
@@ -14,8 +13,6 @@ import jp.silverbullet.property.PropertyHolder;
 
 public class ExpressionEditorUi extends VBox {
 	
-	private TextArea textCondition;
-	private TextArea textValue;
 	protected String lastestId = "";
 	private ExpressionEditorPane value;
 	private ExpressionEditorPane condition;
@@ -61,7 +58,7 @@ public class ExpressionEditorUi extends VBox {
 				}
 				else if (property.isListProperty() && element.equals(DependencyTargetElement.Value)) {
 					for (ListDetailElement e : property.getListDetail()) {
-						ret.add(e.getId());
+						ret.add("%" + e.getId());
 					}
 				}
 				return ret;

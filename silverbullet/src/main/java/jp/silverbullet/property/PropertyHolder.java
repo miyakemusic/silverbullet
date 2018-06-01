@@ -112,7 +112,6 @@ public class PropertyHolder {
 	public void initialize() {
 		for (PropertyDef property : this.properties) {
 			try {
-	//			property.setArgumentDef(this.types.getDefinitions().get(property.getType()).list);
 				property.setArgumentDef(argDef);
 				property.addPropertyDefListener(listener);
 			}

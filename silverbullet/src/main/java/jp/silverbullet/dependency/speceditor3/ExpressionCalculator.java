@@ -20,7 +20,7 @@ public abstract class ExpressionCalculator {
 	}
 
 	String replaceWithRealValue(String expression) {
-		String ret = expression;
+		String ret = expression.replace("\n", "");
 		
 		for (String sel : idCollector.collectSelectionIds(expression)) {
 			ret = ret.replace("%" + sel, "\"%" + sel + "\"");

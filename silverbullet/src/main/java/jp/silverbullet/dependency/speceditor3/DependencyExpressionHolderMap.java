@@ -32,5 +32,13 @@ public class DependencyExpressionHolderMap {
 	public Set<String> keySet() {
 		return dependencyExpressionHolderMap.keySet();
 	}
+
+	public void remove(String key) {
+		this.dependencyExpressionHolderMap.remove(key);
+	}
+
+	public boolean isEmpty() {
+		return dependencyExpressionHolderMap.isEmpty();
+	}
 	
 }

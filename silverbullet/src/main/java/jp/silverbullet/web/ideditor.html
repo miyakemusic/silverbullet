@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<script type="text/javascript" src="jquery-3.3.1.min.js"></script> 
+<script type="text/javascript" src="jquery-ui.js"></script> 
+<script type="text/javascript" src="ideditor.js"></script>
+<script type="text/javascript" src="handsontable.full.js"></script>
+<script type="text/javascript" src="jquery.contextMenu.js"></script>
+
+<link rel="stylesheet" media="screen" href="handsontable.full.css">
+<link rel="stylesheet" type="text/css" href="jquery-ui.css">
+<link rel="stylesheet" type="text/css" href="jquery.contextMenu.css">
+
+<head>
+<meta charset="UTF-8">
+<title>ID editor</title>
+<style>
+  .ui-menu { width: 150px; }
+</style>
+</head>
+<body> 
+<span class="context-menu-one btn btn-neutral">right click me</span>
+<ul id="menu" class="contextMenu">
+<li><a href="#項目ID1">項目1</a></li>
+<li><a href="#項目ID2">項目2</a></li>
+<li><a href="#項目IDn">項目n</a></li>
+</ul>
+<div id="dialog" title="Basic dialog">
+  <p>This is the default dialog which is useful for displaying information. The dialog window can be moved, resized and closed with the 'x' icon.</p>
+</div>
+Properties<BR>
+<Button id="Add">Add</Button><br>
+<select id="propType"></select>
+<div id="currentId"></div>
+<div id="mainTable"></div>
+Choices<BR>
+<Button id="AddChoice">Add</Button><br>
+<div id="subTable"></div>
+</body>
+</html>

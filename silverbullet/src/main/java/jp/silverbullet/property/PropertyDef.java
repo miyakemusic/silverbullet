@@ -15,7 +15,6 @@ public class PropertyDef implements Cloneable {
 	public PropertyDef clone() {
 		try {
 			PropertyDef ret = (PropertyDef)super.clone();
-			//ret.id = "";
 			List<String> others = new ArrayList<String>();
 			others.addAll(this.others);
 			List<ListDetailElement> elements = new ArrayList<ListDetailElement>();
@@ -26,7 +25,6 @@ public class PropertyDef implements Cloneable {
 			ret.setListDetail(elements);
 			return ret;
 		} catch (CloneNotSupportedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
@@ -88,12 +86,7 @@ public class PropertyDef implements Cloneable {
 	
 	@XmlTransient
 	private Set<PropertyDefListener> listeners = new HashSet<>();
-//	public List<String> getArgumentDef() {
-//		return argumentDef;
-//	}
-//	@XmlTransient
-//	private List<String> argumentDef = new ArrayList<>();
-	
+
 	public void addPropertyDefListener(PropertyDefListener listener) {
 		this.listeners.add(listener);
 	}
@@ -103,7 +96,6 @@ public class PropertyDef implements Cloneable {
 	}
 	
 	public void replaceListId(int index, String value) {
-		String oldId = this.listDetail.get(index).getId();
 		this.listDetail.get(index).setId(value);
 		updateListItems();
 		fireEvent();
@@ -126,7 +118,14 @@ public class PropertyDef implements Cloneable {
 		updateListItems();
 		fireEvent();
 	}
-	private void updateListItems() {
+	
+	public void addListItem(ListDetailElement e) {
+		this.listDetail.add(e);
+		updateListItems();
+		fireEvent();
+	}
+	
+	public void updateListItems() {
 		int index = findArgumentIndex("choices");
 		String s = "";
 		for (ListDetailElement e: this.listDetail) {
@@ -153,15 +152,24 @@ public class PropertyDef implements Cloneable {
 		this.others.remove(index);
 		this.others.add(index, value);
 	}
-//	public void setArgumentDef(List<String> list) {
-//		this.argumentDef  = list;
-//	}
 	
 	public void setArgumentDef(ArgumentDefInterface argDef) {
 		this.argumetnDefInterface = argDef;
 	}
 	
 	public String getArgumentValue(String key) {
+//		if (key.equals("id")) {
+//			return this.id;
+//		}
+//		else if (key.equals("title")) {
+//			return this.title;
+//		}
+//		else if (key.equals("type")) {
+//			return this.type;
+//		}
+//		else if (key.equals("comment")) {
+//			return this.comment;
+//		}
 		int index = this.findArgumentIndex(key);
 		if (index >= 0) {
 			return this.others.get(index);

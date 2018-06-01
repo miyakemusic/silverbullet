@@ -727,6 +727,173 @@ class DependencySpecDetail2Test {
 		}
 		
 	}
+	
+	@Test
+	void testTwoElses() {
+		String idAllTest = "ID_ALL_TEST";
+		String idAllTestStart = "ID_ALL_TEST_START";
+		String idAllTestStop = "ID_ALL_TEST_STOP";
+		
+		String idOsaTest = "ID_OSA_TEST";
+		String idOsaTestStart = "ID_OSA_TEST_START";
+		String idOsaTestStop = "ID_OSA_TEST_STOP";
+		
+		String idOtdrTest = "ID_OTDR_TEST";
+		String idOtdrTestStart = "ID_OTDR_TEST_START";
+		String idOtdrTestStop = "ID_OTDR_TEST_STOP";
+		
+		DepPropertyStore store = createPropertyStore();
+		store.add(createListProperty(idAllTest, Arrays.asList(idAllTestStart, idAllTestStop), idAllTestStop));
+		store.add(createListProperty(idOsaTest, Arrays.asList(idOsaTestStart, idOsaTestStop), idOsaTestStop));
+		store.add(createListProperty(idOtdrTest, Arrays.asList(idOtdrTestStart, idOtdrTestStop), idOtdrTestStop));
+		
+		DependencySpecHolder2 holder = new DependencySpecHolder2();
+		
+		////////// idOsaTestStart ///////////
+		{
+			DependencySpec2 spec = new DependencySpec2(idOsaTest);
+			holder.add(spec);
+			DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.Value);
+			detail.addExpression().resultExpression("%" + idOsaTestStart).conditionExpression("$" + idAllTest + ".Value ==%" + idAllTestStart);
+			detail.addExpression().resultExpression("%" + idOsaTestStop).conditionElse();
+			spec.add(detail);
+		}
+		
+		////////// idOtdrTestStart ///////////
+		{
+			DependencySpec2 spec = new DependencySpec2(idOtdrTest);
+			holder.add(spec);
+			DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.Value);
+			detail.addExpression().resultExpression("%" + idOtdrTestStart).conditionExpression("$" + idAllTest + ".Value ==%" + idAllTestStart);
+			detail.addExpression().resultExpression("%" + idOtdrTestStop).conditionElse();
+			spec.add(detail);
+		}
+		
+//		DependencyBuilder3 builder = new DependencyBuilder3(idAllTest, holder);
+		
+		DependencyEngine2 engine = createEngine(holder, store);
+		
+		try {
+			engine.requestChange(idAllTest, idAllTestStart);
+			CachedPropertyStore cached = engine.getCachedPropertyStore();
+			
+			assertEquals(idAllTestStart, cached.getProperty(idAllTest).getCurrentValue());
+			assertEquals(idOsaTestStart, cached.getProperty(idOsaTest).getCurrentValue());
+			assertEquals(idOtdrTestStart, cached.getProperty(idOtdrTest).getCurrentValue());
+		} catch (RequestRejectedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	void testNoDependency() {
+		String idAllTest = "ID_ALL_TEST";
+		String idAllTestStart = "ID_ALL_TEST_START";
+		String idAllTestStop = "ID_ALL_TEST_STOP";
+				
+		DepPropertyStore store = createPropertyStore();
+		store.add(createListProperty(idAllTest, Arrays.asList(idAllTestStart, idAllTestStop), idAllTestStop));
+		
+		DependencySpecHolder2 holder = new DependencySpecHolder2();
+		DependencyEngine2 engine = createEngine(holder, store);
+		
+		try {
+			engine.requestChange(idAllTest, idAllTestStart);
+			CachedPropertyStore cached = engine.getCachedPropertyStore();
+			
+			assertEquals(idAllTestStart, cached.getProperty(idAllTest).getCurrentValue());
+			//assertEquals(idOtdrTestStart, cached.getProperty(idOtdrTest).getCurrentValue());
+		} catch (RequestRejectedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	void testMultiConditionWithElse() {
+		String idPulse = "ID_PULSEWIDTH";
+		String idPulse10ns = "ID_PULSEWIDTH_10NS";
+		String idPulse20ns = "ID_PULSEWIDTH_20NS";
+		String idPulse50ns = "ID_PULSEWIDTH_50NS";
+		String idPulse100ns = "ID_PULSEWIDTH_100NS";
+		String idPulse500ns = "ID_PULSEWIDTH_500NS";
+		
+		String idRange = "ID_RANGE";
+		String idRange5km = "ID_RANGE_5KM";
+		String idRange10km = "ID_RANGE_10KM";
+		String idRange50km = "ID_RANGE_50KM";
+		String idRange100km = "ID_RANGE_100KM";
+		String idRange200km = "ID_RANGE_200KM";
+		
+		DepPropertyStore store = createPropertyStore();
+		store.add(createListProperty(idPulse, Arrays.asList(idPulse10ns, idPulse20ns, idPulse50ns, idPulse100ns, idPulse500ns), idPulse10ns));
+		store.add(createListProperty(idRange, Arrays.asList(idRange5km, idRange10km, idRange50km, idRange100km, idRange200km), idRange5km));
+		
+		DependencySpecHolder2 holder = new DependencySpecHolder2();
+		
+		{
+			DependencySpec2 spec = new DependencySpec2(idPulse);
+			holder.add(spec);
+			
+			{////////// Pulse500ns is OK when 200km///////////
+				DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.ListItemEnabled);
+				detail.addExpression().resultExpression(DependencyExpression.True).conditionExpression("$" + idRange + ".Value ==%" + idRange200km);
+				detail.addExpression().resultExpression(DependencyExpression.False).conditionElse();
+				spec.add(idPulse500ns, detail);
+			}
+			{////////// Pulse100ns is OK when 100km and 200km///////////
+				DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.ListItemEnabled);
+				detail.addExpression().resultExpression(DependencyExpression.True).conditionExpression(
+						"($" + idRange + ".Value ==%" + idRange200km + ")||(" + 
+								"$" + idRange + ".Value ==%" + idRange100km + ")");
+				detail.addExpression().resultExpression(DependencyExpression.False).conditionElse();
+				spec.add(idPulse100ns, detail);
+			}
+			{////////// Pulse50ns is OK when 200km, 100km, 50km///////////
+				DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.ListItemEnabled);
+				detail.addExpression().resultExpression(DependencyExpression.True).conditionExpression("($" + idRange + ".Value ==%" + idRange200km + ")" + "||" + 
+						"($" + idRange + ".Value ==%" + idRange100km + ")" +"||" + "($" + idRange + ".Value ==%" + idRange50km + ")");
+				detail.addExpression().resultExpression(DependencyExpression.False).conditionElse();
+				spec.add(idPulse50ns, detail);
+			}
+		}
+		DependencyEngine2 engine = createEngine(holder, store);
+		
+		try {
+			engine.requestChange(idRange, idRange5km);
+			CachedPropertyStore cached = engine.getCachedPropertyStore();
+			
+			assertEquals(2, cached.getProperty(idPulse).getAvailableListDetail().size());
+			assertEquals(idPulse10ns, cached.getProperty(idPulse).getAvailableListDetail().get(0).getId());
+			assertEquals(idPulse20ns, cached.getProperty(idPulse).getAvailableListDetail().get(1).getId());
+			
+			engine.requestChange(idRange, idRange50km);
+			cached = engine.getCachedPropertyStore();
+			assertEquals(3, cached.getProperty(idPulse).getAvailableListDetail().size());
+			assertEquals(idPulse10ns, cached.getProperty(idPulse).getAvailableListDetail().get(0).getId());
+			assertEquals(idPulse20ns, cached.getProperty(idPulse).getAvailableListDetail().get(1).getId());
+			assertEquals(idPulse50ns, cached.getProperty(idPulse).getAvailableListDetail().get(2).getId());
+						
+			engine.requestChange(idRange, idRange100km);
+			cached = engine.getCachedPropertyStore();
+			assertEquals(4, cached.getProperty(idPulse).getAvailableListDetail().size());
+			assertEquals(idPulse10ns, cached.getProperty(idPulse).getAvailableListDetail().get(0).getId());
+			assertEquals(idPulse20ns, cached.getProperty(idPulse).getAvailableListDetail().get(1).getId());
+			assertEquals(idPulse50ns, cached.getProperty(idPulse).getAvailableListDetail().get(2).getId());
+			assertEquals(idPulse100ns, cached.getProperty(idPulse).getAvailableListDetail().get(3).getId());
+			
+			engine.requestChange(idRange, idRange200km);
+			cached = engine.getCachedPropertyStore();
+			assertEquals(5, cached.getProperty(idPulse).getAvailableListDetail().size());
+			assertEquals(idPulse10ns, cached.getProperty(idPulse).getAvailableListDetail().get(0).getId());
+			assertEquals(idPulse20ns, cached.getProperty(idPulse).getAvailableListDetail().get(1).getId());
+			assertEquals(idPulse50ns, cached.getProperty(idPulse).getAvailableListDetail().get(2).getId());
+			assertEquals(idPulse100ns, cached.getProperty(idPulse).getAvailableListDetail().get(3).getId());
+			assertEquals(idPulse500ns, cached.getProperty(idPulse).getAvailableListDetail().get(4).getId());
+			
+		} catch (RequestRejectedException e) {
+			e.printStackTrace();
+		}
+	}
 	private DependencyEngine2 createEngine(DependencySpecHolder2 holder, DepPropertyStore store) {
 		DependencyEngine2 engine = new DependencyEngine2() {
 			@Override

@@ -1,0 +1,17 @@
+ div.kacomaru {
+ 	border: 3px green solid;
+ 	background-color: #ccffcc;
+ 	float:left;
+ }
+ 
+ button.from {
+ 	background-color: green;
+ }
+ 
+ button.to {
+ 	background-color: yellow;
+ }
+ 
+ button.normal {
+ 	background-color: gray;
+ }

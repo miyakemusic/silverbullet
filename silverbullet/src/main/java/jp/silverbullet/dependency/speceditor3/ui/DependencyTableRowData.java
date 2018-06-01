@@ -8,13 +8,15 @@ public class DependencyTableRowData {
 	private StringProperty element;
 	private StringProperty value;
 	private StringProperty condition;
+	private StringProperty confirmation;
 	private DependencyExpression pointer;
 	
 	public DependencyTableRowData() {}
-	public DependencyTableRowData(String element, String value, String condition, DependencyExpression pointer) {
+	public DependencyTableRowData(String element, String value, String condition, boolean confirmation, DependencyExpression pointer) {
 		this.element = new SimpleStringProperty(element);
 		this.value = new SimpleStringProperty(value);
 		this.condition = new SimpleStringProperty(condition);
+		this.confirmation = new SimpleStringProperty(String.valueOf(confirmation));
 		this.pointer = pointer;
 	}
 	public String getElement() {
@@ -37,6 +39,12 @@ public class DependencyTableRowData {
 	}
 	public DependencyExpression getPointer() {
 		return pointer;
+	}
+	public String getConfirmation() {
+		return confirmation.get();
+	}
+	public void setConfirmation(StringProperty confirmation) {
+		this.confirmation = confirmation;
 	}
 	
 }
