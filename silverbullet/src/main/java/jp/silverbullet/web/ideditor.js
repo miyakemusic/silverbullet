@@ -10,17 +10,6 @@ $(function() {
 		var currentType;
 		var selectionId;
         
-//    $("#mainTable").contextMenu(
-//     { menu: '#menu', inSpeed : 1, outSpeed : 1 },
-//      function(action, el, pos) {
-//
-//     }
-//    );
-
-//        $('.context-menu-one').on('click', function(e){
-//            console.log('clicked', this);
-//        })    
-        
 		$("#Add").on('click', function() {
 			$.ajax({
 			   type: "GET", 
@@ -47,8 +36,7 @@ $(function() {
 		$.ajax({
 		   type: "GET", 
 		   url: "http://" + window.location.host + "/rest/id/typeNames",
-		   success: function(msg){
-//				var map = msg.definitions;			
+		   success: function(msg){		
 				var v = "";
 				
 				types = msg;
@@ -60,13 +48,6 @@ $(function() {
 
 				for (var key in msg) {
 					$('#propType').append($('<option>').html(msg[key]).val(msg[key]));
-					
-					v += key + ":";
-//					var params = map[key];
-//					for (var i in params.list) {
-//						var param = params.list[i];
-						//console.log(param);
-//					}
 				}
 				types.splice(0, 1);
 				updateMainTable();
@@ -79,11 +60,11 @@ $(function() {
 			   type: "GET", 
 			   url: "http://" + window.location.host + "/rest/id/properties?type=" + propType,
 			   success: function(msg){
-			   		headers = msg.header;
+			   		headers = msg.header;	
 			   		
-					$("#mainTable").handsontable({
+					$("#idTable").handsontable({
 	//				  width: 1200,
-					  height: 600,
+					  height: 400,
 					  manualColumnResize: true,
 					  startRows: 10,
 					  startCols: 10,
@@ -129,7 +110,7 @@ $(function() {
 				      }
 	//				  fillHandle: true //possible values: true, false, "horizontal", "vertical"
 					});
-					$("#mainTable").handsontable("loadData", msg.table);
+					$("#idTable").handsontable("loadData", msg.table);
 			   }
 			});	
 		}
@@ -148,7 +129,7 @@ $(function() {
 			   success: function(msg){
 					$("#subTable").handsontable({
 	//				  width: 1200,
-					  height: 600,
+					  height: 400,
 					  manualColumnResize: true,
 					  startRows: 10,
 					  startCols: 10,
@@ -208,12 +189,12 @@ $(function() {
 		}
 		
 		function getId(row) {
-			var id = $("#mainTable").handsontable('getInstance').getDataAtCell(row, 1);
+			var id = $("#idTable").handsontable('getInstance').getDataAtCell(row, 1);
 			return id;
 		}
 
 		function getType(row) {
-			var id = $("#mainTable").handsontable('getInstance').getDataAtCell(row, 2);
+			var id = $("#idTable").handsontable('getInstance').getDataAtCell(row, 2);
 			return id;
 		}
 				

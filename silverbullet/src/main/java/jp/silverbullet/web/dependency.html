@@ -4,6 +4,7 @@
 <script type="text/javascript" src="jquery-ui.js"></script> 
 <script type="text/javascript" src="handsontable.full.js"></script>
 <script type="text/javascript" src="dependency.js"></script>
+<script type="text/javascript" src="idtable.js"></script>
 
 <link rel="stylesheet" media="screen" href="handsontable.full.css">
 <link rel="stylesheet" type="text/css" href="jquery-ui.css">
@@ -23,15 +24,24 @@
 Value:<BR>
 <select id="valueBoolean"></select>
 <textarea id="valueText" rows=5 cols=50></textarea>
-<div><button value="true"><button value="false"></div>
+<div>
+	<button class="copyValue" value="true">true</button><button class="copyValue" value="false">false</button>
+	<button id="idSelector">ID Selector</button>
+</div>
 <br>
 Condition:<BR>
 <textarea id="conditionText" rows=5 cols=50></textarea>
 
 <br><br>
 <div id="mainTable"></div>
-
 <div id="triggerId"></div>
 </div>
+
+<div id="idSelectorDialog">
+<select id="propTypeDep"></select>
+<div id="idTableDep"></div>
+<div id="subTableDep"></div>
+</div>
+
 </body>
 </html>
