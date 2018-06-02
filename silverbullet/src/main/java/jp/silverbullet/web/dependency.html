@@ -23,18 +23,25 @@
 <select id="targetIdElement"></select><br>
 Value:<BR>
 <select id="valueBoolean"></select>
-<textarea id="valueText" rows=5 cols=50></textarea>
-<div>
-	<button class="copyValue" value="true">true</button><button class="copyValue" value="false">false</button>
-	<button id="idSelector">ID Selector</button>
-</div>
+<textarea id="valueText" rows=5 cols=100></textarea>
 <br>
 Condition:<BR>
-<textarea id="conditionText" rows=5 cols=50></textarea>
-
-<br><br>
-<div id="mainTable"></div>
-<div id="triggerId"></div>
+<textarea id="conditionText" rows=5 cols=100></textarea>
+<br>
+<div>
+	<button class="copyValue" value="true">true</button>
+	<button class="copyValue" value="false">false</button>
+	<button class="copyValue" value="==">==</button>
+	<button class="copyValue" value=">">></button>
+	<button class="copyValue" value=">=">>=</button>
+	<button class="copyValue" value="<"><</button>
+	<button class="copyValue" value="<="><=</button>
+	<button class="copyValue" value="!=">!=</button>
+	<button class="copyValue" value="*any">*any</button>
+	<button class="copyValue" value="*else">*else</button>
+	<button id="idSelector">ID Selector</button>
+	<button id="choiceSelector">Choice Selector</button>
+</div>
 </div>
 
 <div id="idSelectorDialog">
@@ -43,5 +50,12 @@ Condition:<BR>
 <div id="subTableDep"></div>
 </div>
 
+<div id="choiceDialog">
+<select id="choice"></select>
+</div>
+
+<div id="depListDialog">
+	<div id="depList"></div>
+</div>
 </body>
 </html>

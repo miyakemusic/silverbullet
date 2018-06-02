@@ -6,10 +6,30 @@ $(function() {
 	$(document).ready(function(){	
 		var fromId = "";
 		var manager;
+		var activeTextArea;
+		var map = new Map();
+		
+		$('#choiceDialog').dialog({
+			  autoOpen: false,
+			  title: 'Choice',
+			  closeOnEscape: false,
+			  modal: true,
+			  buttons: {
+			    "OK": function(){
+			      $(this).dialog('close');
+			    }
+			    ,
+			    "Cancel": function(){
+			      $(this).dialog('close');
+			    }
+			  },
+			width: 300,
+			height: 200
+		});	
 		
 		$('#depDialog').dialog({
 			  autoOpen: false,
-			  title: 'jQuery Dialog Demo',
+			  title: 'Dependency Editor',
 			  closeOnEscape: false,
 			  modal: true,
 			  buttons: {
@@ -36,11 +56,14 @@ $(function() {
 			      $(this).dialog('close');
 			      var id = manager.id;
 			      var subId = manager.subid;
-			      var text = id;
+			      var text;
 			      if (subId != "") {
-			      	text += "." + subId;
+			      	text = '$' + id + ".Value" + '==' + '%' + subId;
 			      }
-			      $('#conditionText').val($('#conditionText').val() + text);
+			      else {
+			      	text = '$' + id + '.Value';
+			      }
+			      $('#' + activeTextArea).val($('#' + activeTextArea).val() + text);
 			    }
 			    ,
 			    "Cancel": function(){
@@ -53,14 +76,26 @@ $(function() {
 		$('#valueBoolean').append($('<option>').html('false').val('false'));
 		$('#valueBoolean').hide();
 		
+		$('#valueText').on('click', function(e) {
+			activeTextArea = $(this).prop('id');
+		});
+		
+		$('#conditionText').on('click', function(e) {
+			activeTextArea = $(this).prop('id');
+		});
+		
 		$("#idSelector").on('click', function(e) {
 			manager = new IdTableManager('idTableDep', 'subTableDep', '', '', 'propTypeDep');
 			$('#idSelectorDialog').dialog("open");
 		});
 		
+		$("#choiceSelector").on('click', function(e) {
+			$('#choiceDialog').dialog("open");
+		});
+		
 		$('.copyValue').on('click', function(e){
-			var curValue = $('#valueText').val();
-			$('#valueText').val(curValue + $(this).val()); 
+			var curValue = $('#' + activeTextArea).val();
+			$('#' + activeTextArea).val(curValue + $(this).val()); 
 		});
 		
 		function updateMainTable() {
@@ -69,6 +104,7 @@ $(function() {
 			   url: "http://" + window.location.host + "/rest/id/properties?type=All",
 			   success: function(msg){
 					for (var index in msg.table) {
+						map.set(msg.table[index][1], msg.table[index]);
 						var row = msg.table[index];
 						$('#panel').append('<div id = "' + row[1] + "_panel" + '" class="kacomaru"><input class="button" id="' + row[1] + '" type="button" value="' + row[1] + '"/><br>' + 
 							row[2] + '<br>' + row[4] + '<br>' + row[3] + '</div>');
@@ -128,41 +164,23 @@ $(function() {
 			   		for (var i in msg.table) {
 			   			$('#targetIdElement').append($('<option>').html(msg.table[i][0]).val(msg.table[i][0]));
 			   		}
-
-					$("#mainTable").handsontable({
-					  width: 1000,
-					  height: 200,
-					  manualColumnResize: true,
-	//				  startRows: 3,
-					  startCols: 3,
-					  rowHeaders: true,
-					  colHeaders: msg.header,
-					  minSpareRows: 1,
-					  currentRowClassName: 'currentRow',
-					  contextMenu: true,
-					  colWidths: function(index) {
-					        return [200, 200, 100, 200, 200, 100, 200, 200, 200, 200][index];
-					  },
-					  afterSelection: function(r, c, r2, c2, preventScrolling, selectionLayerLevel){
-	      		      },
-	      		      beforeChange: function(change, source) {
-	      		      },
-	      		      afterChange: function(change, source) {
-                      },
-	      		      cells: function (row, col, prop) { 	
-				        var cellProperties = {};
-				        return cellProperties;
-				      }
-					});
-					$("#mainTable").handsontable("loadData", msg.table);
-
 										
 					$('#triggerId').text(from);
 					$('#depDialog').dialog("open");
 			   }
 			});
 			
-
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/id/selection?id=" + to,
+			   success: function(msg){
+					$('#choice' + ' > option').remove();
+					for (var i in msg) {
+						var val = msg[i].id;
+						$('#choice').append($('<option>').html(val).val(val));
+					}
+			   }
+			});
 		}
 		
 		updateMainTable();
