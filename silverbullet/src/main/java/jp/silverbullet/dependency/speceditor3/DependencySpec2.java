@@ -207,8 +207,8 @@ public class DependencySpec2 {
 		return ret;
 	}
 
-	public void add(DependencyTargetElement element, String value, String condition) {
-		this.getDependencyExpressionHolder(element).addExpression().resultExpression(value).conditionExpression(condition);
+	public void add(DependencyTargetElement element, String selectionId, String value, String condition) {
+		this.getDependencyExpressionHolder(element, selectionId).addExpression().resultExpression(value).conditionExpression(condition);
 	}
 
 	public void remove(DependencyTargetElement element, String value) {

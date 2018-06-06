@@ -15,7 +15,7 @@ $(function() {
 		
 		$('#depListDialog').dialog({
 			  autoOpen: false,
-			  title: 'List',
+			  title: 'Dependency Spec',
 			  closeOnEscape: false,
 			  modal: true,
 			  buttons: {
@@ -27,7 +27,7 @@ $(function() {
 			      $(this).dialog('close');
 			    }
 			  },
-			width: 800,
+			width: 1000,
 			height: 500
 		});	
 			
@@ -205,6 +205,8 @@ $(function() {
 						currentCondition = condition;
 					});
 					$('#triggerId').text(from);
+					$('#id').text(to);
+//					$('#depListDialog').dialog('option', 'title', to);
 					$('#depListDialog').dialog("open");	
 			   }
 			});

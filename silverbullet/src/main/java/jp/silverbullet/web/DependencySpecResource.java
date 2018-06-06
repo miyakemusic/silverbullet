@@ -18,6 +18,7 @@ import jp.silverbullet.dependency.speceditor3.DependencySpecTableGenerator;
 import jp.silverbullet.dependency.speceditor3.DependencyTargetElement;
 import jp.silverbullet.dependency.speceditor3.ui.DependencyEditorModel;
 import jp.silverbullet.dependency.speceditor3.ui.DependencyTableRowData;
+import jp.silverbullet.dependency.speceditor3.ui.DependencyTargetConverter;
 import jp.silverbullet.property.PropertyHolder;
 
 @Path("/dependencySpec")
@@ -69,8 +70,10 @@ public class DependencySpecResource {
 	public String addSpec(@QueryParam("id") final String id, @QueryParam("element") final String element, 
 			@QueryParam("value") final String value, @QueryParam("condition") final String condition) {
 		
+		DependencyTargetConverter converter = new DependencyTargetConverter(element);
+		
 		DependencySpec2 spec = BuilderFx.getModel().getBuilderModel().getDependencySpecHolder2().get(id);
-		spec.add(DependencyTargetElement.valueOf(element), value, condition);
+		spec.add(converter.getElement(), converter.getSelectionId(), value, condition);
 		return "OK";
 	}
 	
