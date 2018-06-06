@@ -154,4 +154,8 @@ public class DependencyExpressionHolder {
 	public boolean isEmpty() {
 		return this.expressions.isEmpty();
 	}
+
+	public void remove(String value) {
+		this.expressions.remove(value);
+	}
 }

@@ -8,7 +8,29 @@ $(function() {
 		var manager;
 		var activeTextArea;
 		var map = new Map();
+		var currentElement;
+		var currentValue;
+		var currentCondition;
+		var depList;
 		
+		$('#depListDialog').dialog({
+			  autoOpen: false,
+			  title: 'List',
+			  closeOnEscape: false,
+			  modal: true,
+			  buttons: {
+			    "OK": function(){
+			      $(this).dialog('close');
+			    }
+			    ,
+			    "Cancel": function(){
+			      $(this).dialog('close');
+			    }
+			  },
+			width: 800,
+			height: 500
+		});	
+			
 		$('#choiceDialog').dialog({
 			  autoOpen: false,
 			  title: 'Choice',
@@ -17,6 +39,7 @@ $(function() {
 			  buttons: {
 			    "OK": function(){
 			      $(this).dialog('close');
+			      $('#' + activeTextArea).val('%' + $('#choice').val());
 			    }
 			    ,
 			    "Cancel": function(){
@@ -35,6 +58,7 @@ $(function() {
 			  buttons: {
 			    "OK": function(){
 			      $(this).dialog('close');
+			      addDepSpec();
 			    }
 			    ,
 			    "Cancel": function(){
@@ -42,7 +66,7 @@ $(function() {
 			    }
 			  },
 			width: 800,
-			height: 600
+//			height: 600
 		});		
 		
 		$('#idSelectorDialog').dialog({
@@ -98,11 +122,27 @@ $(function() {
 			$('#' + activeTextArea).val(curValue + $(this).val()); 
 		});
 		
+		$("#addSpec").on('click', function(e) {
+			$('#valueText').val('');
+			$('#conditionText').val('');
+			$('#depDialog').dialog("open");
+		});
+		
+		$("#editSpec").on('click', function(e) {
+			$('#valueText').val(currentValue);
+			$('#conditionText').val(currentCondition);
+			$('#depDialog').dialog("open");
+		});
+		
+		$("#removeSpec").on('click', function(e) {
+			removeSpec();
+		});
+		
 		function updateMainTable() {
 			$.ajax({
 			   type: "GET", 
 			   url: "http://" + window.location.host + "/rest/id/properties?type=All",
-			   success: function(msg){
+			   success: function(msg) {
 					for (var index in msg.table) {
 						map.set(msg.table[index][1], msg.table[index]);
 						var row = msg.table[index];
@@ -125,22 +165,16 @@ $(function() {
 						$(id).mousedown(function() {
 							fromId = $(this).prop('id');
 							console.log("from id:" + fromId);
-				//			$(this).css("background-color", "green");
 						});
 						
 						$(id).mouseup(function() {
 							var toId = $(this).prop('id');
 							console.log("to id:" + toId);
 							modifySpec(fromId, toId);
-							
-				//			$('#' + fromId).css("background-color", "lightgray");
-				//			$('#' + toId).css("background-color", "lightgray");
 							fromId = "";
 						});					
 						
 						$(id).mousemove(function(e) {
-	//						$('#dragging').x(e.clientX).y(e.clientY);
-							
 						});
 						
 						$(id).mouseover(function() {
@@ -165,8 +199,13 @@ $(function() {
 			   			$('#targetIdElement').append($('<option>').html(msg.table[i][0]).val(msg.table[i][0]));
 			   		}
 										
+						depList = new DependencySpec(to, 'depList', function(element, value, condition) {
+						currentElement = element;
+						currentValue = value;
+						currentCondition = condition;
+					});
 					$('#triggerId').text(from);
-					$('#depDialog').dialog("open");
+					$('#depListDialog').dialog("open");	
 			   }
 			});
 			
@@ -181,8 +220,39 @@ $(function() {
 					}
 			   }
 			});
+			
+			
 		}
 		
 		updateMainTable();
+					
+		function addDepSpec() {
+			var id = $('#targetId').text();
+			var element = $('#targetIdElement').val();
+			var value = $('#valueText').val();
+			var condition= $('#conditionText').val();
+			
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/dependencySpec/addSpec?id=" + id + "&element=" + element + "&value=" + value + "&condition=" + condition,
+			   success: function(msg){
+				depList.update();
+			   }
+			});
+		}
+		
+		function removeSpec() {
+			var id = $('#targetId').text();
+			var element = currentElement;
+			var value = currentValue;
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/dependencySpec/removeSpec?id=" + id + "&element=" + element + "&value=" + value,
+			   success: function(msg){
+					depList.update();
+			   }
+			});
+		}
 	});
+
 });

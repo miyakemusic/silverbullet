@@ -3,6 +3,7 @@
 <script type="text/javascript" src="jquery-3.3.1.min.js"></script> 
 <script type="text/javascript" src="jquery-ui.js"></script> 
 <script type="text/javascript" src="handsontable.full.js"></script>
+<script type="text/javascript" src="deplist.js"></script>
 <script type="text/javascript" src="dependency.js"></script>
 <script type="text/javascript" src="idtable.js"></script>
 
@@ -15,46 +16,51 @@
 <title>Dependency editor</title>
 </head>
 <body> 
-<div id="panel">
-</div>
+<div id="panel"></div>
 
 <div id="depDialog">
-<div id="targetId"></div><br>
-<select id="targetIdElement"></select><br>
-Value:<BR>
-<select id="valueBoolean"></select>
-<textarea id="valueText" rows=5 cols=100></textarea>
-<br>
-Condition:<BR>
-<textarea id="conditionText" rows=5 cols=100></textarea>
-<br>
-<div>
-	<button class="copyValue" value="true">true</button>
-	<button class="copyValue" value="false">false</button>
-	<button class="copyValue" value="==">==</button>
-	<button class="copyValue" value=">">></button>
-	<button class="copyValue" value=">=">>=</button>
-	<button class="copyValue" value="<"><</button>
-	<button class="copyValue" value="<="><=</button>
-	<button class="copyValue" value="!=">!=</button>
-	<button class="copyValue" value="*any">*any</button>
-	<button class="copyValue" value="*else">*else</button>
-	<button id="idSelector">ID Selector</button>
-	<button id="choiceSelector">Choice Selector</button>
-</div>
+	<div id="targetId"></div><br>
+	<div id="newSpecDiv" class="kacomaru">
+		<select id="targetIdElement"></select><br>	
+		Value:<BR>
+		<select id="valueBoolean"></select>
+		<textarea id="valueText" rows=5 cols=100></textarea>
+		<br>
+		Condition:<BR>
+		<textarea id="conditionText" rows=5 cols=100></textarea>
+		<br>
+		<div>
+			<button class="copyValue" value="true">true</button>
+			<button class="copyValue" value="false">false</button>
+			<button class="copyValue" value="==">==</button>
+			<button class="copyValue" value=">">></button>
+			<button class="copyValue" value=">=">>=</button>
+			<button class="copyValue" value="<"><</button>
+			<button class="copyValue" value="<="><=</button>
+			<button class="copyValue" value="!=">!=</button>
+			<button class="copyValue" value="*any">*any</button>
+			<button class="copyValue" value="*else">*else</button>
+			<button class="copyValue" value="*script">*SCRIPT()</button>
+			<button id="idSelector">ID Selector</button>
+			<button id="choiceSelector">Choice Selector</button>
+		</div>
+	</div>
 </div>
 
 <div id="idSelectorDialog">
-<select id="propTypeDep"></select>
-<div id="idTableDep"></div>
-<div id="subTableDep"></div>
+	<select id="propTypeDep"></select>
+	<div id="idTableDep"></div>
+	<div id="subTableDep"></div>
 </div>
 
 <div id="choiceDialog">
-<select id="choice"></select>
+	<select id="choice"></select>
 </div>
 
 <div id="depListDialog">
+	<button id="addSpec">Add</button>
+	<button id="editSpec">Edit</button>
+	<button id="removeSpec">Remove</button>
 	<div id="depList"></div>
 </div>
 </body>

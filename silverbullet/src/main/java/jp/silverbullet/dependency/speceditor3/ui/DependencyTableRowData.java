@@ -1,14 +1,22 @@
 package jp.silverbullet.dependency.speceditor3.ui;
 
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import jp.silverbullet.dependency.speceditor3.DependencyExpression;
 
+@XmlRootElement()
 public class DependencyTableRowData {
 	private StringProperty element;
 	private StringProperty value;
 	private StringProperty condition;
 	private StringProperty confirmation;
+	
+	@JsonIgnore
 	private DependencyExpression pointer;
 	
 	public DependencyTableRowData() {}

@@ -19,10 +19,9 @@ import jp.silverbullet.MyDialogFx;
 import jp.silverbullet.SvProperty;
 import jp.silverbullet.dependency.speceditor3.DependencyExpression;
 import jp.silverbullet.dependency.speceditor3.DependencyExpressionHolder;
-import jp.silverbullet.dependency.speceditor3.DependencyExpressionHolderMap;
-import jp.silverbullet.dependency.speceditor3.DependencyExpressionList;
 import jp.silverbullet.dependency.speceditor3.DependencySpec2;
 import jp.silverbullet.dependency.speceditor3.DependencySpecHolder2;
+import jp.silverbullet.dependency.speceditor3.DependencySpecTableGenerator;
 import jp.silverbullet.dependency.speceditor3.DependencyTargetElement;
 import jp.silverbullet.property.ListDetailElement;
 import jp.silverbullet.property.PropertyHolder;
@@ -219,14 +218,7 @@ public class DependencySpecEditorUi extends VBox {
 			
 			DependencyExpressionHolder detail = spec.getDependencyExpressionHolder(e, selectionId);//new DependencyExpressionHolder(e);
 			detail.addExpression().resultExpression(value).conditionExpression(condition);
-			
-//			if (!selectionId.isEmpty()) {
-//				spec.add(selectionId, detail);
-//			}
-//			else {
-//				spec.add(detail);
-//			}
-	
+
 			updateList(spec);
 			dependencyEditorModel.fireModelUpdated();
 		}
@@ -252,21 +244,26 @@ public class DependencySpecEditorUi extends VBox {
 
 	private void updateList(DependencySpec2 spec) {
 		this.data.clear();
-		for (DependencyTargetElement e: spec.getDepExpHolderMap().keySet()) {
-			DependencyExpressionHolderMap map = spec.getDepExpHolderMap().get(e);
-			for (String key : map.keySet()) {
-				for (DependencyExpressionHolder h : map.get(key)) {
-					for (String k : h.getExpressions().keySet()) {
-						DependencyExpressionList list = h.getExpressions().get(k);
-						for (DependencyExpression exp : list.getDependencyExpressions()) {
-							String presentation = this.dependencyEditorModel.convertPresentationElement(key, e);
-							data.add(new DependencyTableRowData(presentation, k, exp.getExpression().getExpression(),  exp.isConfirmationRequired(), exp));
-						}
-					}
-				}
-			}
-			
-		}
+		this.data.addAll(createTable(spec));
+		
+//		for (DependencyTargetElement e: spec.getDepExpHolderMap().keySet()) {
+//			DependencyExpressionHolderMap map = spec.getDepExpHolderMap().get(e);
+//			for (String key : map.keySet()) {
+//				for (DependencyExpressionHolder h : map.get(key)) {
+//					for (String k : h.getExpressions().keySet()) {
+//						DependencyExpressionList list = h.getExpressions().get(k);
+//						for (DependencyExpression exp : list.getDependencyExpressions()) {
+//							String presentation = this.dependencyEditorModel.convertPresentationElement(key, e);
+//							data.add(new DependencyTableRowData(presentation, k, exp.getExpression().getExpression(),  exp.isConfirmationRequired(), exp));
+//						}
+//					}
+//				}
+//			}	
+//		}
+	}
+	
+	private List<DependencyTableRowData> createTable(DependencySpec2 spec) {
+		return new DependencySpecTableGenerator(dependencyEditorModel).get(spec);
 	}
 	
 	protected void showPopup(ContextMenu contextMenu,

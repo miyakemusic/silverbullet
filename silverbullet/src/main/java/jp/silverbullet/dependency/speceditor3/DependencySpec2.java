@@ -182,6 +182,10 @@ public class DependencySpec2 {
 		return depExpHolderMap.isEmpty();
 	}
 
+	public DependencyExpressionHolder getDependencyExpressionHolder(DependencyTargetElement e) {
+		return getDependencyExpressionHolder(e, null);
+	}
+	
 	public DependencyExpressionHolder getDependencyExpressionHolder(DependencyTargetElement e, String selectionId) {
 		if (selectionId == null || selectionId.isEmpty()) {
 			selectionId = DefaultItem;
@@ -201,6 +205,14 @@ public class DependencySpec2 {
 		DependencyExpressionHolder ret = this.depExpHolderMap.get(e).get(selectionId).get(0);
 		
 		return ret;
+	}
+
+	public void add(DependencyTargetElement element, String value, String condition) {
+		this.getDependencyExpressionHolder(element).addExpression().resultExpression(value).conditionExpression(condition);
+	}
+
+	public void remove(DependencyTargetElement element, String value) {
+		this.getDependencyExpressionHolder(element).remove(value);
 	}
 
 }
