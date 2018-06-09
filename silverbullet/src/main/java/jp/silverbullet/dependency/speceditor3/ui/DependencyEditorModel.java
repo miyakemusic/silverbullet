@@ -14,8 +14,8 @@ import jp.silverbullet.property.PropertyHolder;
 
 public class DependencyEditorModel {
 
-	private static final String VISIBLE = "visible";
-	private static final String ENABLED = "enabled";
+	public static final String VISIBLE = "visible";
+	public static final String ENABLED = "enabled";
 	private SvProperty property;
 	private DependencySpecHolder2 dependencySpecHolder2;
 	private PropertyHolder propertyHolder;
@@ -88,10 +88,10 @@ public class DependencyEditorModel {
 		SvProperty property = this.store.getProperty(id);
 		if (property.isListProperty()) {
 			for (ListDetailElement e: property.getListDetail()) {
-				ret.add(e.getId() + ".enabled");
+				ret.add(e.getId() + "." + ENABLED);
 			}
 			for (ListDetailElement e: property.getListDetail()) {
-				ret.add(e.getId() + VISIBLE);
+				ret.add(e.getId() + "." + VISIBLE);
 			}
 		}
 		else if (property.isNumericProperty()) {

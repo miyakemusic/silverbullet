@@ -4,16 +4,18 @@ import jp.silverbullet.dependency.speceditor3.DependencyTargetElement;
 
 public class DependencyTargetConverter {
 
+//	private static final String VISIBLE = "visible";
+//	private static final String ENABLED = "enabled";
 	private DependencyTargetElement element;
 	private String selectionId = "";
 	
 	public DependencyTargetConverter(String elementName) {
 		if (elementName.contains(".")) {
 			String[] tmp = elementName.split("\\.");
-			if (tmp[1].equals("enabled")) {
+			if (tmp[1].equals(DependencyEditorModel.ENABLED)) {
 				this.element = DependencyTargetElement.ListItemEnabled;
 			}
-			else if (tmp[1].equals("visible")) {
+			else if (tmp[1].equals(DependencyEditorModel.VISIBLE)) {
 				this.element = DependencyTargetElement.ListItemVisible;
 			}
 			this.selectionId = tmp[0];
@@ -31,4 +33,14 @@ public class DependencyTargetConverter {
 		return selectionId;
 	}
 
+	public static String convertToString(DependencyTargetElement element, String selectionId) {
+		String toElement = "";
+		if (element.equals(DependencyTargetElement.ListItemEnabled)) {
+			toElement = selectionId + "." + DependencyEditorModel.ENABLED;
+		}
+		else {
+			toElement = element.toString();
+		}
+		return toElement;
+	}
 }

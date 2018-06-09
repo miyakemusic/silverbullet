@@ -7,12 +7,11 @@ $(function() {
 		var fromId = "";
 		var manager;
 		var activeTextArea;
-		var map = new Map();
 		var currentElement;
 		var currentValue;
 		var currentCondition;
 		var depList;
-		
+
 		$('#depListDialog').dialog({
 			  autoOpen: false,
 			  title: 'Dependency Spec',
@@ -144,13 +143,15 @@ $(function() {
 			   url: "http://" + window.location.host + "/rest/id/properties?type=All",
 			   success: function(msg) {
 					for (var index in msg.table) {
-						map.set(msg.table[index][1], msg.table[index]);
 						var row = msg.table[index];
-						$('#panel').append('<div id = "' + row[1] + "_panel" + '" class="kacomaru"><input class="button" id="' + row[1] + '" type="button" value="' + row[1] + '"/><br>' + 
+						var idPanel = row[1] + "_panel";
+						$('#panel').append('<div id = "' + idPanel + '" class="kacomaru"><input class="button" id="' + row[1] + '" type="button" value="' + row[1] + '"/><br>' + 
 							row[2] + '<br>' + row[4] + '<br>' + row[3] + '</div>');
 						
 						var id = '#' + row[1];
-						$('#' + row[1] + "_panel").draggable();
+						idPanel = '#' + idPanel;
+						
+						$(idPanel).draggable();
 						$(id).draggable();
 						$(id).hover(
 							function(){
@@ -161,6 +162,10 @@ $(function() {
 								$('#dragging').remove();
 							}
 						);
+						
+						$(idPanel).click(function() {
+							drawLines($(this).prop('id'));
+						});
 						
 						$(id).mousedown(function() {
 							fromId = $(this).prop('id');
@@ -199,7 +204,7 @@ $(function() {
 			   			$('#targetIdElement').append($('<option>').html(msg.table[i][0]).val(msg.table[i][0]));
 			   		}
 										
-						depList = new DependencySpec(to, 'depList', function(element, value, condition) {
+					depList = new DependencySpec(to, 'depList', function(element, value, condition) {
 						currentElement = element;
 						currentValue = value;
 						currentCondition = condition;
@@ -255,6 +260,48 @@ $(function() {
 			   }
 			});
 		}
+		
+		function drawLines(idPanel) {
+			var id = idPanel.replace('_panel', '').replace('#', '');
+			var element = currentElement;
+			var value = currentValue;
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/dependencySpec/target?id=" + id,
+			   success: function(msg){
+			   		$('#message').html('');
+			   		var canvas = $('canvas').get(0);
+			   		
+					if (canvas.getContext){ // 未サポートブラウザでの実行を抑止
+					  var ctx = canvas.getContext('2d');
+					  	ctx.clearRect(0, 0, 1000, 600);
+				   		ctx.beginPath();
+	
+						for (var i in msg) {
+							var from = msg[i].from.id + "(" + msg[i].from.element + ")";
+							var to = msg[i].to.id + "(" + msg[i].to.element + ")";
+							$('#message').html($('#message').html() + "<BR>" + from + ":" + to);
+							
+							var pos = $('#' + msg[i].from.id + '_panel').position();
+							var width = $('#' + msg[i].from.id + '_panel').width();
+							var height = $('#' + msg[i].from.id + '_panel').height();
+							
+							var pos2 = $('#' + msg[i].to.id + '_panel').position();
+							var width2 = $('#' + msg[i].to.id + '_panel').width();
+							var height2 = $('#' + msg[i].to.id + '_panel').height();
+							
+							ctx.moveTo(pos.left + width, pos.top + height/2 );
+							ctx.lineTo(pos2.left, pos2.top + height2/2 );
+							
+							ctx.stroke();
+						}
+						ctx.closePath();
+					}
+
+			   }
+			});
+		}
+		
 	});
 
 });

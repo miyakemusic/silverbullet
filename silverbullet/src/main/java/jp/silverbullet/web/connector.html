@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<script type="text/javascript" src="jquery-3.3.1.min.js"></script> 
+<script type="text/javascript" src="jquery-ui.js"></script> 
+<script type="text/javascript" src="jsplumb.min.js"></script> 
+
+<script type="text/javascript">
+$(function() {
+  var connection = [
+    ['window1', 'window2'],
+    ['window2', 'window3'],
+    ['window1', 'window4'],
+    ['window4', 'window5'],
+    ['window1', 'window6'],
+    ['window6', 'window7'],
+    ['window7', 'window8']
+  ];
+  
+  window.jsPlumbDemo = {
+    init : function() {
+      var stateMachineConnector = {
+        connector:["Bezier", { curviness:70 }],
+        paintStyle:{lineWidth:3,strokeStyle:"#FFCC99",outlineWidth:1,outlineColor:"#FF9999"},
+        hoverPaintStyle:{strokeStyle:"#FF9999"},
+        endpoint:"Rectangle",
+        endpointStyle:{ fillStyle:"#FFCC99",lineWidth:1 },
+        anchor:["Right", "Left"],
+		overlays:[ 
+		    "Arrow", 
+		    [ "Label", { label:"foo", location:0.25, id:"myLabel" } ]
+		  ]
+      };
+
+      for (var i = 0; i < connection.length; i++) {
+          jsPlumb.connect({
+            source:connection[i][0],
+            target:connection[i][1]
+          }, stateMachineConnector);
+      }
+
+      jsPlumb.draggable(jsPlumb.getSelector(".window"), { containment:"#flow_area"});
+    }
+  };
+
+  jsPlumb.ready(jsPlumbDemo.init);
+});
+</script>
+
+<link rel="stylesheet" type="text/css" href="jquery-ui.css">
+<link rel="stylesheet" type="text/css" href="mycss.css">
+
+<head>
+<meta charset="UTF-8">
+<title>Dependency editor</title>
+</head>
+<body> 
+  <div id="flow_area">
+    <div class="window" id="window1">Window1</div>
+    <div class="window" id="window2">Window2</div>
+    <div class="window" id="window3">Window3</div>
+    <div class="window" id="window4">Window4</div>
+    <div class="window" id="window5">Window5</div>
+    <div class="window" id="window6">Window6</div>
+    <div class="window" id="window7">Window7</div>
+    <div class="window" id="window8">Window8</div>
+  </div>
+</body>
+</html>

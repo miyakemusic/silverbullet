@@ -15,3 +15,12 @@
  button.normal {
  	background-color: gray;
  }
+ #container {
+  position: relative;
+}
+#container canvas, #panel {
+  position: absolute;
+}
+canvas {
+  border: 1px solid black;
+}

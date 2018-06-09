@@ -214,5 +214,4 @@ public class DependencySpec2 {
 	public void remove(DependencyTargetElement element, String value) {
 		this.getDependencyExpressionHolder(element).remove(value);
 	}
-
 }

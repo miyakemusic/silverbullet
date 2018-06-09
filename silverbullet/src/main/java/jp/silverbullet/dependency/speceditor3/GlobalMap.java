@@ -7,12 +7,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 import jp.silverbullet.dependency.speceditor3.ui.DependencyEditorModel;
 import jp.silverbullet.dependency.speceditor3.ui.GlobalMapListener;
 import jp.silverbullet.property.PropertyHolder;
 
 public class GlobalMap {
 	private Map<String, DNode> map = new HashMap<>();
+	@JsonIgnore
 	private Set<GlobalMapListener> listeners = new HashSet<GlobalMapListener>();
 	private int maxLevelInde = 0;
 	private DependencyEditorModel dependecyEditorModel;

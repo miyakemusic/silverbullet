@@ -16,7 +16,7 @@ public class DependencyBuilder3 {
 	private void analyze(DependencyNode node, DependencySpecHolder2 specHolder, List<DependencyProperty> specs, String id, List<String> experienced, int layer) {
 		for (DependencyProperty depProp : specs) {
 			DependencyNode subNode = new DependencyNode(depProp, node, layer);
-//			if (depProp.getId().equals(id)) {
+
 			if (experienced.contains(depProp.getId())) {
 				subNode.setRecursive(true);
 			}
