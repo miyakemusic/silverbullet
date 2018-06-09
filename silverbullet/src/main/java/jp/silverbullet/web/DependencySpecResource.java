@@ -7,6 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.ws.rs.Encoded;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -75,7 +76,7 @@ public class DependencySpecResource {
 	@Path("/addSpec")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String addSpec(@QueryParam("id") final String id, @QueryParam("element") final String element, 
-			@QueryParam("value") final String value, @QueryParam("condition") final String condition) {
+			@QueryParam("value") @Encoded final String value, @QueryParam("condition") @Encoded final String condition) {
 		
 		DependencyTargetConverter converter = new DependencyTargetConverter(element);
 		
@@ -92,7 +93,9 @@ public class DependencySpecResource {
 			@QueryParam("value") final String value) {
 		
 		DependencySpec2 spec = BuilderFx.getModel().getBuilderModel().getDependencySpecHolder2().get(id);
-		spec.remove(DependencyTargetElement.valueOf(element), value);
+		DependencyTargetConverter converter = new DependencyTargetConverter(element);
+		spec.remove(converter.getElement(), converter.getSelectionId(), value);
+//		spec.remove(DependencyTargetElement.valueOf(element), value);
 		return "OK";
 	}
 	

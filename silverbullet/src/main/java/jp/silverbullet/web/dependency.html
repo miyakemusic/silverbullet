@@ -3,9 +3,12 @@
 <script type="text/javascript" src="jquery-3.3.1.min.js"></script> 
 <script type="text/javascript" src="jquery-ui.js"></script> 
 <script type="text/javascript" src="handsontable.full.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gojs/1.8.21/go-debug.js"></script>
+<script type="text/javascript" src="diagram.js"></script>
 <script type="text/javascript" src="deplist.js"></script>
 <script type="text/javascript" src="dependency.js"></script>
 <script type="text/javascript" src="idtable.js"></script>
+
 
 <link rel="stylesheet" media="screen" href="handsontable.full.css">
 <link rel="stylesheet" type="text/css" href="jquery-ui.css">
@@ -16,12 +19,17 @@
 <title>Dependency editor</title>
 </head>
 <body> 
+<!--  
 <div id="container">
 	<canvas width="1000" height="600"></canvas>
 	<div id="panel"></div>
+	<div id="message"></div>
 </div>
-<div id="message"></div>
-	
+-->
+<div id="myDiagramDiv" style="width:1000px; height:300px; background-color: #DAE4E4;"></div>
+<div id="panel" style="width:800px; height:200px; background-color: lightBlue;"></div>
+
+</body>	
 <div id="depDialog">
 	<div id="targetId"></div><br>
 	<div id="newSpecDiv" class="kacomaru">
@@ -67,6 +75,7 @@
 	<button id="editSpec">Edit</button>
 	<button id="removeSpec">Remove</button>
 	<div id="depList"></div>
+	
 </div>
 </body>
 </html>

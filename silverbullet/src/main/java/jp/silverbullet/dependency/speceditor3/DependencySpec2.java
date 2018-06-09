@@ -211,6 +211,10 @@ public class DependencySpec2 {
 		this.getDependencyExpressionHolder(element, selectionId).addExpression().resultExpression(value).conditionExpression(condition);
 	}
 
+	public void remove(DependencyTargetElement element, String selectionId, String value) {
+		this.getDependencyExpressionHolder(element, selectionId).remove(value);
+	}
+	
 	public void remove(DependencyTargetElement element, String value) {
 		this.getDependencyExpressionHolder(element).remove(value);
 	}

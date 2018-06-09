@@ -3,47 +3,119 @@
 <script type="text/javascript" src="jquery-3.3.1.min.js"></script> 
 <script type="text/javascript" src="jquery-ui.js"></script> 
 <script type="text/javascript" src="jsplumb.min.js"></script> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gojs/1.8.21/go-debug.js"></script>
 
-<script type="text/javascript">
-$(function() {
-  var connection = [
-    ['window1', 'window2'],
-    ['window2', 'window3'],
-    ['window1', 'window4'],
-    ['window4', 'window5'],
-    ['window1', 'window6'],
-    ['window6', 'window7'],
-    ['window7', 'window8']
-  ];
-  
-  window.jsPlumbDemo = {
-    init : function() {
-      var stateMachineConnector = {
-        connector:["Bezier", { curviness:70 }],
-        paintStyle:{lineWidth:3,strokeStyle:"#FFCC99",outlineWidth:1,outlineColor:"#FF9999"},
-        hoverPaintStyle:{strokeStyle:"#FF9999"},
-        endpoint:"Rectangle",
-        endpointStyle:{ fillStyle:"#FFCC99",lineWidth:1 },
-        anchor:["Right", "Left"],
-		overlays:[ 
-		    "Arrow", 
-		    [ "Label", { label:"foo", location:0.25, id:"myLabel" } ]
-		  ]
-      };
+<script id="code">
+  function init() {
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
 
-      for (var i = 0; i < connection.length; i++) {
-          jsPlumb.connect({
-            source:connection[i][0],
-            target:connection[i][1]
-          }, stateMachineConnector);
-      }
+    // Must name or refer to the DIV HTML element
+    myDiagram =
+      $(go.Diagram, "myDiagramDiv",
+        { // automatically scale the diagram to fit the viewport's size
+          initialAutoScale: go.Diagram.Uniform,
+          // start everything in the middle of the viewport
+          initialContentAlignment: go.Spot.Center,
+          // disable user copying of parts
+          allowCopy: false,
+          // position all of the nodes and route all of the links
+          layout:
+            $(go.LayeredDigraphLayout,
+              { direction: 90,
+                layerSpacing: 10,
+                columnSpacing: 15,
+                setsPortSpots: false })
+      });
 
-      jsPlumb.draggable(jsPlumb.getSelector(".window"), { containment:"#flow_area"});
-    }
-  };
+    // replace the default Node template in the nodeTemplateMap
+    myDiagram.nodeTemplate =
+      $(go.Node, "Vertical",  // the whole node panel
+        $(go.TextBlock,  // the text label
+          new go.Binding("text", "key"))//,
+//        $(go.Picture,  // the icon showing the logo
+          // You should set the desiredSize (or width and height)
+          // whenever you know what size the Picture should be.
+//          { desiredSize: new go.Size(75, 50) },
+//          new go.Binding("source", "key", convertKeyImage))
+      );
 
-  jsPlumb.ready(jsPlumbDemo.init);
-});
+    // replace the default Link template in the linkTemplateMap
+    myDiagram.linkTemplate =
+      $(go.Link,  // the whole link panel
+        { curve: go.Link.Bezier, toShortLength: 2 },
+        $(go.Shape,  // the link shape
+          { strokeWidth: 1.5 }),
+        $(go.Shape,  // the arrowhead
+          { toArrow: "Standard", stroke: null })
+      );
+
+    // the array of link data objects: the relationships between the nodes
+    var linkDataArray = [
+      { from: "CAR", to: "ARI" },
+      { from: "ARI", to: "CIN" },
+      { from: "ARI", to: "GB" },
+      { from: "DEN", to: "GB" },
+      { from: "DEN", to: "CIN" },
+      { from: "DEN", to: "NE" },
+      { from: "GB", to: "WAS" },
+      { from: "WAS", to: "STL" },
+      { from: "CIN", to: "STL" },
+      { from: "STL", to: "SEA" },
+      { from: "SEA", to: "SF" },
+      { from: "SEA", to: "MIN" },
+      { from: "NE", to: "NYG" },
+      { from: "NE", to: "KC" },
+      { from: "MIN", to: "DET" },
+      { from: "MIN", to: "KC" },
+      { from: "KC", to: "HOU" },
+      { from: "KC", to: "BUF" },
+      { from: "KC", to: "BAL" },
+      { from: "KC", to: "OAK" },
+      { from: "BUF", to: "NYJ" },
+      { from: "BAL", to: "PIT" },
+      { from: "DET", to: "NO" },
+      { from: "DET", to: "PHI" },
+      { from: "DET", to: "CHI" },
+      { from: "HOU", to: "JAC" },
+      { from: "HOU", to: "TEN" },
+      { from: "PIT", to: "IND" },
+      { from: "PIT", to: "SD" },
+      { from: "OAK", to: "NYJ" },
+      { from: "OAK", to: "SD" },
+      { from: "NO", to: "ATL" },
+      { from: "NO", to: "NYG" },
+      { from: "PHI", to: "NYG" },
+      { from: "CHI", to: "TB" },
+      { from: "NYJ", to: "IND" },
+      { from: "NYJ", to: "CLE" },
+      { from: "IND", to: "TB" },
+      { from: "TB", to: "ATL" },
+      { from: "SD", to: "CLE" },
+      { from: "ATL", to: "DAL" },
+      { from: "ATL", to: "JAC" },
+      { from: "CLE", to: "TEN" },
+ //     { from: "DAL", to: "MIA" },
+ //     { from: "MIA", to: "TEN" },
+      { from: "MIYAKE", to: "TAISUKE" }
+    ];
+
+    // create the model and assign it to the Diagram
+    myDiagram.model =
+      $(go.GraphLinksModel,
+        { // automatically create node data objects for each "from" or "to" reference
+          // (set this property before setting the linkDataArray)
+          archetypeNodeData: {},
+          // process all of the link relationship data
+          linkDataArray: linkDataArray
+        });
+  }
+
+  function convertKeyImage(key) {
+    if (!key) key = "NE";
+    return "https://www.nwoods.com/go/beatpaths/" + key + "_logo-75x50.png";
+  }
+
 </script>
 
 <link rel="stylesheet" type="text/css" href="jquery-ui.css">
@@ -53,16 +125,8 @@ $(function() {
 <meta charset="UTF-8">
 <title>Dependency editor</title>
 </head>
-<body> 
-  <div id="flow_area">
-    <div class="window" id="window1">Window1</div>
-    <div class="window" id="window2">Window2</div>
-    <div class="window" id="window3">Window3</div>
-    <div class="window" id="window4">Window4</div>
-    <div class="window" id="window5">Window5</div>
-    <div class="window" id="window6">Window6</div>
-    <div class="window" id="window7">Window7</div>
-    <div class="window" id="window8">Window8</div>
-  </div>
+<body onload="init()"> 
+<div id="myDiagramDiv"
+     style="width:1000px; height:600px; background-color: #DAE4E4;"></div>
 </body>
 </html>

@@ -12,6 +12,8 @@ $(function() {
 		var currentCondition;
 		var depList;
 
+		var diagram = new DependencyDiagram('myDiagramDiv');
+
 		$('#depListDialog').dialog({
 			  autoOpen: false,
 			  title: 'Dependency Spec',
@@ -262,9 +264,13 @@ $(function() {
 		}
 		
 		function drawLines(idPanel) {
+			
 			var id = idPanel.replace('_panel', '').replace('#', '');
 			var element = currentElement;
 			var value = currentValue;
+			
+			diagram.update(id);
+			
 			$.ajax({
 			   type: "GET", 
 			   url: "http://" + window.location.host + "/rest/dependencySpec/target?id=" + id,
@@ -272,7 +278,7 @@ $(function() {
 			   		$('#message').html('');
 			   		var canvas = $('canvas').get(0);
 			   		
-					if (canvas.getContext){ // 未サポートブラウザでの実行を抑止
+					if (canvas.getContext){
 					  var ctx = canvas.getContext('2d');
 					  	ctx.clearRect(0, 0, 1000, 600);
 				   		ctx.beginPath();
