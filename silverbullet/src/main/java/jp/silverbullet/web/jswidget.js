@@ -1,13 +1,11 @@
 class JsWidget {
-	constructor(id, type, unique, parent) {
-		this.id = id;
-		this.type = type;
-		this.unique = unique;
+	constructor(info, parent) {
+		this.info = info;
 		
-		this.baseId = 'base' + unique;
-		this.titleId = 'title' + unique;
-		this.unitId = 'unit' + unique;
-		this.mainId = 'main' + unique;
+		this.baseId = 'base-' + info.unique;
+		this.titleId = 'title-' + info.unique;
+		this.unitId = 'unit-' + info.unique;
+		this.mainId = 'main-' + info.unique;
 		
 		this.parent = parent;
 		
@@ -16,27 +14,74 @@ class JsWidget {
 		this.update();
 	}
 	
+	get baseId() {
+		return this._baseId;
+	}
+	
+	set baseId(baseId) {
+		this._baseId = baseId;
+	}
+	
 	createBase() {
+		var style = '';
 		var title = '<span id=' + this.titleId + '></span>';
 		var unit = '<span id=' + this.unitId + '></span>';
 		var main = '';
-		if (this.type == 'COMBOBOX') {
+		if (this.info.widgetType == 'COMBOBOX') {
 			main = '<SELECT id=' + this.mainId + '></SELECT></div>';
 		}
-		else if (this.type == 'TEXTFIELD') {
+		else if (this.info.widgetType == 'TEXTFIELD') {
 			main = '<input type="text" id=' + this.mainId + '>';
 		}
-		else if (this.type == 'PANEL') {
-	//		main = '<div id=' + this.unique + '></div>';
+		else if (this.info.widgetType == 'PANEL') {
+			style = 'class="kacomaru"';
 		}
 			
-		$('#' + this.parent).append('<div id=' + this.baseId + '>' + title + main + unit + '</div>');
+		$('#' + this.parent).append('<div id=' + this.baseId + ' ' + style + '>' + title + main + unit + '</div>');
+		$('#' + this.baseId).draggable({
+			start : function (event , ui){
+				console.log("start event start" );
+				console.log(event , ui);
+			} ,
+			drag : function (event , ui) {
+				console.log("drag event start" );
+				console.log(event , ui);
+			} ,
+			stop : function (event , ui){
+				console.log("stop event start" );
+				console.log(event , ui);
+			}
+		});
+		
+	    $('#' + this.baseId).droppable({
+	      drop: function( event, ui ) {
+			
+	      }
+	    });
+	    
+//	    if (this.info.widgetType == 'PANEL') {
+	    	$('#' + this.baseId).mouseenter(function(e){
+		    	if (e.target.baseId == this.baseId) {
+					$(this).addClass('selected');
+				}
+			}).mouseout(function(e){
+				$(this).removeClass('selected');
+				console.log('mouseout');
+			});
+//	   	}
+    	
+		if (this.info.width != 0) {
+			$('#' + this.baseId).width(this.info.width);
+		}
+		if (this.info.height != 0) {
+			$('#' + this.baseId).height(this.info.height);
+		}
 	}
 	
 	update() {
-		if (this.id == null) return;
+		if (this.info.id == null) return;
 		
-		var id = this.id;
+		var id = this.info.id;
 		var titleId = this.titleId;
 		var unitId = this.unitId;
 		var mainId = this.mainId;

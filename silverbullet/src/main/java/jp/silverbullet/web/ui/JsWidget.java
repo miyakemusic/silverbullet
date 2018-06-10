@@ -6,7 +6,7 @@ import java.util.List;
 
 public class JsWidget {
 
-	public static final String Panel = "PANEL";
+	public static final String PANEL = "PANEL";
 	public static final String COMBOBOX = "COMBOBOX";
 	public static final String TEXTFIELD = "TEXTFIELD";
 	

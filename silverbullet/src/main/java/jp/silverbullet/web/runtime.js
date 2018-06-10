@@ -32,64 +32,25 @@ $(function() {
 		   type: "GET", 
 		   url: "http://" + window.location.host + "/rest/runtime/getLayout",
 		   success: function(msg){
-//		   		$('#root').append('<div id=' + msg.unique + '></div>');
-//		   		$('#' + msg.unique).height(msg.height).width(msg.width);
-		   		for (var i in msg.children) {
-		   			var child = msg.children[i];
-		   			//createWidget(msg.unique, child, child.widgetType)
-		   			var widget = new JsWidget(child.id, child.widgetType, child.unique, 'root');
-		   			if (map.get(child.id) == null) {
-		   				map.set(child.id, []);
-		   			}
-		   			map.get(child.id).push(widget);
-		   		}
+				createWidget('root', msg);
 		   }
 		});	
 		
-		function createWidget(parent, child, type) {
-			var text = '<span id=' + child.unique+'_title' + '></span>';
+		function createWidget(parent, pane) {
+			var widget = new JsWidget(pane, parent);
+			pushWidget(pane.id, widget);
 			
-			if (type == 'COMBOBOX') {
-				text += '<SELECT id=' + child.unique + '></SELECT></div>';
+			for (var i in pane.children) {
+				var child = pane.children[i];
+				createWidget(widget.baseId, child);
 			}
-			else if (type == 'TEXTFIELD') {
-				text += '<input type="text" id=' + child.unique + '>';
-			}
-			
-			text += '<span id=' + child.unique + '_unit'+ '></span>';
-			
-			text = '<div id=' + child.unique + '_panel' + '>' + text + '</div>';
-			$('#' + parent).append(text);
-			$('#' + child.unique + '_panel').draggable();
-			
-			$.ajax({
-			   	type: "GET", 
-			   	url: "http://" + window.location.host + "/rest/runtime/property?id=" + child.id,
-			   	success: function(msg){
-			   		$('#' + child.unique+'_title').text(msg.title);
-			   		$('#' + child.unique+'_unit').text(msg.unit);
-			   		if (type == 'COMBOBOX') {
-				   		for (var i in msg.elements) {
-				   			var element = msg.elements[i];
-				   			$('#' + child.unique).append($('<option>', {
-							    value: element.id,
-							    text: element.title
-							}));
-				   		}
-				   		$('#' + child.unique).val(msg.currentValue);
-				   		$('#' + child.unique).on('change', function() {
-							requestChange(msg.id, $('#' + child.unique).val());
-						})
-			   		}
-			   		else if (type == 'TEXTFIELD') {
-				   		$('#' + child.unique).val(msg.currentValue);
-				   		$('#' + child.unique).on('change', function() {
-							requestChange(msg.id, $('#' + child.unique).val());
-						})
-			   		}
-
-			   	}
-			});
+		}
+		
+		function pushWidget(id, widget) {
+			if (map.get(id) == null) {
+   				map.set(id, []);
+   			}
+   			map.get(id).push(widget);
 		}
 		
 		function requestChange(id, value) {
