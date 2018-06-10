@@ -7,6 +7,7 @@ import java.util.Map;
 import jp.silverbullet.SvProperty;
 import jp.silverbullet.dependency.engine.DependencyListener;
 import jp.silverbullet.dependency.engine.RequestRejectedException;
+import jp.silverbullet.web.WebSocketBroadcaster;
 
 public abstract class DependencyEngine2 {
 	protected abstract DepPropertyStore getPropertiesStore();
@@ -83,6 +84,8 @@ public abstract class DependencyEngine2 {
 		else {
 			this.cachedPropertyStore.commit();
 		}
+		
+		WebSocketBroadcaster.getInstance().sendMessage(this.getChangedIds().toString().replace("[", "").replace("]", "").replaceAll(" ", ""));
 	}
 	
 	private List<ChangedProperty> doDependency(DependencyBuilder3 builder, List<DependencyProperty> specs) throws RequestRejectedException {

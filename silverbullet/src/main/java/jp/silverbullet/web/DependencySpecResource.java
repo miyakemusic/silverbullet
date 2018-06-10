@@ -1,5 +1,8 @@
 package jp.silverbullet.web;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -81,7 +84,12 @@ public class DependencySpecResource {
 		DependencyTargetConverter converter = new DependencyTargetConverter(element);
 		
 		DependencySpec2 spec = BuilderFx.getModel().getBuilderModel().getDependencySpecHolder2().get(id);
-		spec.add(converter.getElement(), converter.getSelectionId(), value, condition);
+		try {
+			spec.add(converter.getElement(), converter.getSelectionId(), URLDecoder.decode(value, "UTF-8"), URLDecoder.decode(condition, "UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return "OK";
 	}
 	

@@ -1,6 +1,7 @@
 package jp.silverbullet.web.ui;
 
 public class LayoutDemo {
+	private static LayoutDemo instance;
 	public JsWidget root;
 	public LayoutDemo() {
 		root = new JsWidget();
@@ -20,6 +21,12 @@ public class LayoutDemo {
 	}
 	public JsWidget getRoot() {
 		return root;
+	}
+	public static LayoutDemo getInstance() {
+		if (instance == null) {
+			instance = new LayoutDemo();
+		}
+		return instance;
 	}
 	
 }

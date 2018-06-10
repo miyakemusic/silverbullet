@@ -243,11 +243,16 @@ $(function() {
 			
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/dependencySpec/addSpec?id=" + id + "&element=" + element + "&value=" + value + "&condition=" + condition,
+			   url: "http://" + window.location.host + "/rest/dependencySpec/addSpec?id=" + id + "&element=" + element + "&value=" + encode(value) + "&condition=" + encode(condition),
 			   success: function(msg){
 				depList.update();
 			   }
 			});
+		}
+		
+		function encode(s) {
+			var ret = encodeURI(s).replace('+', '%2B');
+			return ret;
 		}
 		
 		function removeSpec() {
@@ -256,7 +261,7 @@ $(function() {
 			var value = currentValue;
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/dependencySpec/removeSpec?id=" + id + "&element=" + element + "&value=" + value,
+			   url: "http://" + window.location.host + "/rest/dependencySpec/removeSpec?id=" + id + "&element=" + element + "&value=" + encode(value),
 			   success: function(msg){
 					depList.update();
 			   }
