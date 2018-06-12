@@ -1,5 +1,7 @@
 package jp.silverbullet.web;
 
+import java.util.List;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -57,5 +59,13 @@ public class RuntimeResource {
 	@Produces(MediaType.APPLICATION_JSON) 
 	public JsWidget getLayout(@QueryParam("ui") String ui) {
 		return LayoutDemo.getInstance().getRoot();
+	}
+	
+	@GET
+	@Path("/addWidget")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public String addWidget(@QueryParam("id") List<String> ids, @QueryParam("div") String div) {
+		LayoutDemo.getInstance().addWidget(div, ids);
+		return "OK";
 	}
 }

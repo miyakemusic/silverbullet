@@ -1,6 +1,17 @@
 $(function() {	
 	$(document).ready(function() {
 		var map = new Map();
+		var selectedDiv;
+		
+		var dialog = new IdSelectDialog('control', function(ids) {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/runtime/addWidget?id=" + ids + "&div=" + selectedDiv,
+			   success: function(msg){
+					createWidget('root', msg);
+			   }
+			});	
+		});
 		
 		////////// WebSocket //////////
 		var connection  = new WebSocket("ws://localhost:8081/websocket");
@@ -37,7 +48,9 @@ $(function() {
 		});	
 		
 		function createWidget(parent, pane) {
-			var widget = new JsWidget(pane, parent);
+			var widget = new JsWidget(pane, parent, function(id) {
+				selectedDiv = id;
+			});
 			pushWidget(pane.id, widget);
 			
 			for (var i in pane.children) {
@@ -62,5 +75,8 @@ $(function() {
 			   }
 			});	
 		}	
+		$('#addId').click(function(e) {
+			dialog.showModal();
+		});
 	});
 })

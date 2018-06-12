@@ -1,5 +1,5 @@
 class JsWidget {
-	constructor(info, parent) {
+	constructor(info, parent, selected) {
 		this.info = info;
 		
 		this.baseId = 'base-' + info.unique;
@@ -9,7 +9,7 @@ class JsWidget {
 		
 		this.parent = parent;
 		
-		this.createBase();		
+		this.createBase(selected);		
 		
 		this.update();
 	}
@@ -22,7 +22,7 @@ class JsWidget {
 		this._baseId = baseId;
 	}
 	
-	createBase() {
+	createBase(selected) {
 		var style = '';
 		var title = '<span id=' + this.titleId + '></span>';
 		var unit = '<span id=' + this.unitId + '></span>';
@@ -34,10 +34,11 @@ class JsWidget {
 			main = '<input type="text" id=' + this.mainId + '>';
 		}
 		else if (this.info.widgetType == 'PANEL') {
-			style = 'class="kacomaru"';
+			style = 'class="kacomaru" ';
 		}
 			
-		$('#' + this.parent).append('<div id=' + this.baseId + ' ' + style + '>' + title + main + unit + '</div>');
+		$('#' + this.parent).append('<div id=' + this.baseId + ' ' + style + '>' + title + main + unit + '</div>');	
+		
 		$('#' + this.baseId).draggable({
 			start : function (event , ui){
 				console.log("start event start" );
@@ -58,15 +59,22 @@ class JsWidget {
 			
 	      }
 	    });
+	    var baseId = this.baseId;
 	    
 //	    if (this.info.widgetType == 'PANEL') {
 	    	$('#' + this.baseId).mouseenter(function(e){
 		    	if (e.target.baseId == this.baseId) {
-					$(this).addClass('selected');
+//					$(this).addClass('selected');
 				}
 			}).mouseout(function(e){
-				$(this).removeClass('selected');
+//				$(this).removeClass('selected');
 				console.log('mouseout');
+			}).click(function(e){
+				$('div').removeClass('selected');
+				$(this).addClass('selected');
+				console.log(baseId);
+				e.stopPropagation();
+				selected(baseId);
 			});
 //	   	}
     	

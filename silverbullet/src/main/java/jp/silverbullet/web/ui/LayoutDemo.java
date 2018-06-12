@@ -1,5 +1,10 @@
 package jp.silverbullet.web.ui;
 
+import java.util.List;
+
+import jp.silverbullet.BuilderFx;
+import jp.silverbullet.SvProperty;
+
 public class LayoutDemo {
 	private static LayoutDemo instance;
 	public JsWidget root;
@@ -49,6 +54,56 @@ public class LayoutDemo {
 			instance = new LayoutDemo();
 		}
 		return instance;
+	}
+
+	public void addWidget(String div, List<String> ids) {
+		int unique = extractUnique(div);
+		JsWidget panel = null;
+		if (unique == root.getUnique()) {
+			panel  = root;
+		}
+		else {
+			panel =  findDiv(root, div);
+		}
+		
+		for (String id : ids) {
+			String type = BuilderFx.getModel().getBuilderModel().getProperty(id).getType();
+			JsWidget widget = new JsWidget();
+			widget.setId(id);
+			
+			if (type.equals(SvProperty.DOUBLE_PROPERTY)) {
+				widget.setWidgetType(JsWidget.TEXTFIELD);
+			}
+			else if (type.equals(SvProperty.LIST_PROPERTY)) {
+				widget.setWidgetType(JsWidget.COMBOBOX);
+			}
+			else if (type.equals(SvProperty.BOOLEAN_PROPERTY)) {
+				widget.setWidgetType(JsWidget.TEXTFIELD);
+			}
+			else if (type.equals(SvProperty.ACTION_PROPERTY)) {
+				widget.setWidgetType(JsWidget.BUTTON);
+			}
+			
+			panel.addChild(widget);
+		}
+	}
+	
+	private JsWidget findDiv(JsWidget parent, String div) {
+		int unique = extractUnique(div);
+		for (JsWidget jsWidget : parent.getChildren()) {
+			if (jsWidget.getUnique() == unique) {
+				return jsWidget;
+			}
+			JsWidget ret = findDiv(jsWidget, div);
+			if (ret != null) {
+				return ret;
+			}
+		}
+		return null;
+	}
+	private int extractUnique(String div) {
+		int unique = Integer.valueOf(div.split("-")[1]);
+		return unique;
 	}
 	
 }

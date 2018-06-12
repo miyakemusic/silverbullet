@@ -9,6 +9,7 @@ public class JsWidget {
 	public static final String PANEL = "PANEL";
 	public static final String COMBOBOX = "COMBOBOX";
 	public static final String TEXTFIELD = "TEXTFIELD";
+	public static final String BUTTON = "BUTTON";
 	
 	private String id;
 	private String widgetType;
