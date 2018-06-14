@@ -63,9 +63,26 @@ public class RuntimeResource {
 	
 	@GET
 	@Path("/addWidget")
-	@Produces(MediaType.APPLICATION_JSON) 
+	@Produces(MediaType.TEXT_PLAIN) 
 	public String addWidget(@QueryParam("id") List<String> ids, @QueryParam("div") String div) {
 		LayoutDemo.getInstance().addWidget(div, ids);
+		return "OK";
+	}
+	
+	@GET
+	@Path("/move")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String move(@QueryParam("div") String div, @QueryParam("x") String x, @QueryParam("y") String y) {
+		System.out.println(x + "," + y);
+		LayoutDemo.getInstance().move(div, x, y);
+		return "OK";
+	}
+	
+	@GET
+	@Path("/resize")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String resize(@QueryParam("div") String div, @QueryParam("width") String width, @QueryParam("height") String height) {
+		LayoutDemo.getInstance().resize(div, width, height);
 		return "OK";
 	}
 }

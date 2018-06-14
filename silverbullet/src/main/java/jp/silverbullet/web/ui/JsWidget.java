@@ -13,10 +13,10 @@ public class JsWidget {
 	
 	private String id;
 	private String widgetType;
-	private double width;
-	private double height;
-	private double top;
-	private double left;
+	private String width;
+	private String height;
+	private String top;
+	private String left;
 	private JsWidget[] children = null;
 	private int unique;
 	
@@ -36,10 +36,10 @@ public class JsWidget {
 	public void setWidgetType(String widgetType) {
 		this.widgetType = widgetType;
 	}
-	public double getHeight() {
+	public String getHeight() {
 		return height;
 	}
-	public void setHeight(double height) {
+	public void setHeight(String height) {
 		this.height = height;
 	}
 
@@ -50,23 +50,23 @@ public class JsWidget {
 		this.children = children;
 	}
 	
-	public double getWidth() {
+	public String getWidth() {
 		return width;
 	}
-	public void setWidth(double width) {
+	public void setWidth(String width) {
 		this.width = width;
 	}
 	
-	public double getTop() {
+	public String getTop() {
 		return top;
 	}
-	public void setTop(double top) {
+	public void setTop(String top) {
 		this.top = top;
 	}
-	public double getLeft() {
+	public String getLeft() {
 		return left;
 	}
-	public void setLeft(double left) {
+	public void setLeft(String left) {
 		this.left = left;
 	}
 	

@@ -8,7 +8,8 @@ $(function() {
 			   type: "GET", 
 			   url: "http://" + window.location.host + "/rest/runtime/addWidget?id=" + ids + "&div=" + selectedDiv,
 			   success: function(msg){
-					createWidget('root', msg);
+//					createWidget('root', msg);
+					updateUI();
 			   }
 			});	
 		});
@@ -22,12 +23,12 @@ $(function() {
 		
 		// Log errors
 		connection.onerror = function (error) {
-		  console.log('WebSocket Error ' + error);
+		  //console.log('WebSocket Error ' + error);
 		};
 		
 		// Log messages from the server
 		connection.onmessage = function (e) {
-		  console.log('Server: ' + e.data);
+		  //console.log('Server: ' + e.data);
 		  
 		  var ids = e.data.split(',');
 		  for (var i in ids) {
@@ -39,13 +40,18 @@ $(function() {
 		};
 		/////////////////////////////////////////////
 		
-		$.ajax({
-		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/runtime/getLayout",
-		   success: function(msg){
-				createWidget('root', msg);
-		   }
-		});	
+		updateUI();
+		
+		function updateUI() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/runtime/getLayout",
+			   success: function(msg){
+			   		$('#root').empty();
+					createWidget('root', msg);
+			   }
+			});	
+		}
 		
 		function createWidget(parent, pane) {
 			var widget = new JsWidget(pane, parent, function(id) {

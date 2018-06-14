@@ -2,7 +2,7 @@ class IdTableManager {
 	constructor(idTable, subTable, addButton, addChoiceButton, propertyTypeCombo) {
 		var types;
 		var headers;
-		var currentSelections;
+		var currentSelections = [];
 		var currentId;
 		var currentType;
 		var selectionId;
@@ -209,7 +209,7 @@ class IdTableManager {
 				
 		function getSelections(row) {
 			var arr = [];
-			for (i in currentSelections) {
+			for (var i in currentSelections) {
 				arr.push(currentSelections[i].id);
 			}
 			return arr;

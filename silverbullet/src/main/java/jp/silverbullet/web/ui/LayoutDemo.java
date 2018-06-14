@@ -11,18 +11,18 @@ public class LayoutDemo {
 	public LayoutDemo() {
 		root = new JsWidget();
 		root.setWidgetType(JsWidget.PANEL);
-		root.setWidth(800);
-		root.setHeight(400);
+		root.setWidth("800");
+		root.setHeight("400");
 		
 		JsWidget panel2 = createPanel();
 		root.addChild(panel2);
-		panel2.setWidth(400);
-		panel2.setHeight(200);
+		panel2.setWidth("400");
+		panel2.setHeight("200");
 
 		JsWidget panel3 = createPanel();
 		panel2.addChild(panel3);
-		panel3.setWidth(200);
-		panel3.setHeight(100);
+		panel3.setWidth("200");
+		panel3.setHeight("100");
 		
 		root.addChild(createWidget("ID_BAND", JsWidget.COMBOBOX));
 		root.addChild(createWidget("ID_STARTWAVELENGTH", JsWidget.TEXTFIELD));
@@ -59,19 +59,15 @@ public class LayoutDemo {
 	public void addWidget(String div, List<String> ids) {
 		int unique = extractUnique(div);
 		JsWidget panel = null;
-		if (unique == root.getUnique()) {
-			panel  = root;
-		}
-		else {
-			panel =  findDiv(root, div);
-		}
+		panel = getDiv(div, unique);
 		
 		for (String id : ids) {
-			String type = BuilderFx.getModel().getBuilderModel().getProperty(id).getType();
+			SvProperty property = BuilderFx.getModel().getBuilderModel().getProperty(id);
+			String type = property.getType();
 			JsWidget widget = new JsWidget();
 			widget.setId(id);
 			
-			if (type.equals(SvProperty.DOUBLE_PROPERTY)) {
+			if (type.equals(SvProperty.DOUBLE_PROPERTY) || type.equals(SvProperty.TEXT_PROPERTY)) {
 				widget.setWidgetType(JsWidget.TEXTFIELD);
 			}
 			else if (type.equals(SvProperty.LIST_PROPERTY)) {
@@ -87,14 +83,23 @@ public class LayoutDemo {
 			panel.addChild(widget);
 		}
 	}
+	private JsWidget getDiv(String div, int unique) {
+		JsWidget panel;
+		if (unique == root.getUnique()) {
+			panel  = root;
+		}
+		else {
+			panel =  findDiv(root, unique);
+		}
+		return panel;
+	}
 	
-	private JsWidget findDiv(JsWidget parent, String div) {
-		int unique = extractUnique(div);
+	private JsWidget findDiv(JsWidget parent, int unique) {
 		for (JsWidget jsWidget : parent.getChildren()) {
 			if (jsWidget.getUnique() == unique) {
 				return jsWidget;
 			}
-			JsWidget ret = findDiv(jsWidget, div);
+			JsWidget ret = findDiv(jsWidget, unique);
 			if (ret != null) {
 				return ret;
 			}
@@ -104,6 +109,16 @@ public class LayoutDemo {
 	private int extractUnique(String div) {
 		int unique = Integer.valueOf(div.split("-")[1]);
 		return unique;
+	}
+	public void move(String div, String x, String y) {
+		int unique = extractUnique(div);
+		this.getDiv(div, unique).setLeft(x);
+		this.getDiv(div, unique).setTop(y);
+	}
+	public void resize(String div, String width, String height) {
+		int unique = extractUnique(div);
+		this.getDiv(div, unique).setWidth(width);
+		this.getDiv(div, unique).setHeight(height);
 	}
 	
 }
