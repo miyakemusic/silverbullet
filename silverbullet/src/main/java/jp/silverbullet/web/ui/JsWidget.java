@@ -1,7 +1,6 @@
 package jp.silverbullet.web.ui;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class JsWidget {
@@ -17,7 +16,7 @@ public class JsWidget {
 	private String height;
 	private String top;
 	private String left;
-	private JsWidget[] children = null;
+	private List<JsWidget> children = new ArrayList<>();
 	private int unique;
 	
 	public JsWidget() {
@@ -43,10 +42,10 @@ public class JsWidget {
 		this.height = height;
 	}
 
-	public JsWidget[] getChildren() {
+	public List<JsWidget> getChildren() {
 		return children;
 	}
-	public void setChildren(JsWidget[] children) {
+	public void setChildren(List<JsWidget> children) {
 		this.children = children;
 	}
 	
@@ -75,14 +74,15 @@ public class JsWidget {
 	}
 
 	public void addChild(JsWidget child) {
-		if (this.children == null) {
-			this.children = new JsWidget[1];
-			this.children[0] = child;
-		}
-		else {
-			List<JsWidget> tmp = new ArrayList<JsWidget>(Arrays.asList(this.children));
-			tmp.add(child);
-			this.children = tmp.toArray(new JsWidget[0]);
-		}
+		this.children.add(child);
+//		if (this.children == null) {
+//			this.children = new JsWidget[1];
+//			this.children[0] = child;
+//		}
+//		else {
+//			List<JsWidget> tmp = new ArrayList<JsWidget>(Arrays.asList(this.children));
+//			tmp.add(child);
+//			this.children = tmp.toArray(new JsWidget[0]);
+//		}
 	}
 }

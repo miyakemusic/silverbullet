@@ -84,5 +84,20 @@ $(function() {
 		$('#addId').click(function(e) {
 			dialog.showModal();
 		});
+		
+		$('#addPanel').click(function(e) {
+			addPanel();
+		});
+		
+		function addPanel() {
+			var div = selectedDiv;
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/runtime/addPanel?div=" + div,
+			   success: function(msg){
+
+			   }
+			});	
+		}
 	});
 })

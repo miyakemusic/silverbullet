@@ -25,6 +25,8 @@ class JsWidget {
 	setPosition(event) {
 		var x = $('#' + this.baseId).position().left; //event.clientX
 		var y = $('#' + this.baseId).position().top; // event.clientY
+		
+		var o = $('#' + this.baseId);
 		$.ajax({
 		   type: "GET", 
 		   url: "http://" + window.location.host + "/rest/runtime/move?div="+this.baseId + "&x=" + x + "&y=" + y,
@@ -46,11 +48,31 @@ class JsWidget {
 		});	
 	}
 	
+	order() {
+		var all = $('#' + this.baseId).find('.base');
+		for (var i in all) {
+			if (all[i].id == $('#' + this.baseId).id) {
+				continue;
+			}
+			var y = $('#' + all[i].id).position().top;
+			
+			var thisY= $('#' + this.baseId).position().top;
+			
+			if (y < thisY) {
+				$('#' + $(this).id).before($('#' + this.baseId));
+			}
+		}
+	}
+	
 	createBase(selected) {
-		var style = '';
-		var title = '<span id=' + this.titleId + '></span>';
+		var style = 'class="base"';
+		var title = '<span class="title" id=' + this.titleId + '></span>'; //<span id=' + this.titleId + '></span>';
 		var unit = '<span id=' + this.unitId + '></span>';
 		var main = '';
+		
+		$('.title').css('display', 'inline-block');
+		$('.title').css('width', '200px');
+		
 		if (this.info.widgetType == 'COMBOBOX') {
 			main = '<SELECT id=' + this.mainId + '></SELECT></div>';
 		}
@@ -58,7 +80,9 @@ class JsWidget {
 			main = '<input type="text" id=' + this.mainId + '>';
 		}
 		else if (this.info.widgetType == 'PANEL') {
-			style = 'class="kacomaru" ';
+			style = 'class="base panel"';
+			title = '';
+			unit = '';
 		}
 			
 		$('#' + this.parent).append('<div id=' + this.baseId + ' ' + style + '>' + title + main + unit + '</div>');	
@@ -70,52 +94,55 @@ class JsWidget {
 //			$('#' + this.baseId).text(this.info.left + "," + this.info.top);
 		}
 		
-		var me = this;
-		$('#' + this.baseId).draggable({
-			start : function (event , ui){
-				//console.log("start event start" );
-				//console.log(event , ui);
-			} ,
-			drag : function (event , ui) {
-				//console.log("drag event start" );
-				//console.log(event , ui);
-//				$('#' + me.baseId).text($('#' + me.baseId).position().left + ',' + $('#' + me.baseId).position().top);
-			} ,
-			stop : function (event , ui){
-				//console.log("stop event start" );
-				console.log(event , ui);
-				me.setPosition(event);
-			}
-		});
-		$('#' + this.baseId).resizable({
-	      resize: function( event, ui ) {
-	      	me.setSize();
-	      }
-	    });
-	    $('#' + this.baseId).droppable({
-	      drop: function( event, ui ) {
-			
-	      }
-	    });
 	    var baseId = this.baseId;
 	    
-//	    if (this.info.widgetType == 'PANEL') {
-	    	$('#' + this.baseId).mouseenter(function(e){
-		    	if (e.target.baseId == this.baseId) {
-//					$(this).addClass('selected');
+	    if (this.info.widgetType == 'PANEL') {
+			var me = this;
+			$('#' + this.baseId).draggable({
+				start : function (event , ui){
+					//console.log("start event start" );
+					//console.log(event , ui);
+				} ,
+				drag : function (event , ui) {
+					//console.log("drag event start" );
+					//console.log(event , ui);
+					
+//					$('#' + me.baseId).text($('#' + me.baseId).position().left + ',' + $('#' + me.baseId).position().top);
+				} ,
+				stop : function (event , ui){
+					//console.log("stop event start" );
+					console.log(event , ui);
+		//			me.order();
+					me.setPosition(event);
 				}
-			}).mouseout(function(e){
-//				$(this).removeClass('selected');
-				//console.log('mouseout');
-			}).click(function(e){
-				$('div').removeClass('selected');
-				$(this).addClass('selected');
-				//console.log(baseId);
-				e.stopPropagation();
-				selected(baseId);
 			});
-//	   	}
+			$('#' + this.baseId).resizable({
+		      resize: function( event, ui ) {
+		      	me.setSize();
+		      }
+		    });
+		    $('#' + this.baseId).droppable({
+		      drop: function( event, ui ) {
+				
+		      }
+		    });
+	   	}
     	
+    	$('#' + this.baseId).mouseenter(function(e){
+//	    	if (e.target.baseId == this.baseId) {
+//				$(this).addClass('selected');
+//			}
+		}).mouseout(function(e){
+//			$(this).removeClass('selected');
+			//console.log('mouseout');
+		}).click(function(e){
+			$('.base').removeClass('selected');
+			$(this).addClass('selected');
+			//console.log(baseId);
+			e.stopPropagation();
+			selected(baseId);
+		});
+
 		if (this.info.width != 0) {
 			$('#' + this.baseId).width(this.info.width);
 		}

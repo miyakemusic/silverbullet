@@ -14,7 +14,7 @@ import jp.silverbullet.SvProperty;
 import jp.silverbullet.dependency.engine.RequestRejectedException;
 import jp.silverbullet.web.ui.JsProperty;
 import jp.silverbullet.web.ui.JsWidget;
-import jp.silverbullet.web.ui.LayoutDemo;
+import jp.silverbullet.web.ui.UiLayout;
 
 @Path("/runtime")
 public class RuntimeResource {
@@ -58,14 +58,14 @@ public class RuntimeResource {
 	@Path("/getLayout")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public JsWidget getLayout(@QueryParam("ui") String ui) {
-		return LayoutDemo.getInstance().getRoot();
+		return UiLayout.getInstance().getRoot();
 	}
 	
 	@GET
 	@Path("/addWidget")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String addWidget(@QueryParam("id") List<String> ids, @QueryParam("div") String div) {
-		LayoutDemo.getInstance().addWidget(div, ids);
+		UiLayout.getInstance().addWidget(div, ids);
 		return "OK";
 	}
 	
@@ -74,7 +74,15 @@ public class RuntimeResource {
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String move(@QueryParam("div") String div, @QueryParam("x") String x, @QueryParam("y") String y) {
 		System.out.println(x + "," + y);
-		LayoutDemo.getInstance().move(div, x, y);
+		UiLayout.getInstance().move(div, x, y);
+		return "OK";
+	}
+
+	@GET
+	@Path("/addPanel")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String move(@QueryParam("div") String div) {
+		UiLayout.getInstance().addPanel(div);
 		return "OK";
 	}
 	
@@ -82,7 +90,7 @@ public class RuntimeResource {
 	@Path("/resize")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String resize(@QueryParam("div") String div, @QueryParam("width") String width, @QueryParam("height") String height) {
-		LayoutDemo.getInstance().resize(div, width, height);
+		UiLayout.getInstance().resize(div, width, height);
 		return "OK";
 	}
 }

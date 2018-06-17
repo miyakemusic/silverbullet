@@ -1,14 +1,71 @@
 package jp.silverbullet.web.ui;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
+
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import jp.silverbullet.BuilderFx;
 import jp.silverbullet.SvProperty;
 
-public class LayoutDemo {
-	private static LayoutDemo instance;
+public class UiLayout {
+	@JsonIgnore
+	private static UiLayout instance;
 	public JsWidget root;
-	public LayoutDemo() {
+	
+	public static void write(UiLayout object) {
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			String s = mapper.writeValueAsString(object);
+			Files.write(Paths.get("layout.json"), Arrays.asList(s));
+		} catch (JsonGenerationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private void save() {
+		write(this);
+	}
+	
+	
+	public void read(String filename) {
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			UiLayout object = mapper.readValue(new File(filename), UiLayout.class);
+			root = object.root;
+		} catch (JsonParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private UiLayout() {
+		if (Files.exists(Paths.get("layout.json"))) {
+			read("layout.json");
+			return;
+		}
+		
 		root = new JsWidget();
 		root.setWidgetType(JsWidget.PANEL);
 		root.setWidth("800");
@@ -49,9 +106,9 @@ public class LayoutDemo {
 	public JsWidget getRoot() {
 		return root;
 	}
-	public static LayoutDemo getInstance() {
+	public static UiLayout getInstance() {
 		if (instance == null) {
-			instance = new LayoutDemo();
+			instance = new UiLayout();
 		}
 		return instance;
 	}
@@ -59,7 +116,7 @@ public class LayoutDemo {
 	public void addWidget(String div, List<String> ids) {
 		int unique = extractUnique(div);
 		JsWidget panel = null;
-		panel = getDiv(div, unique);
+		panel = getDiv(unique);
 		
 		for (String id : ids) {
 			SvProperty property = BuilderFx.getModel().getBuilderModel().getProperty(id);
@@ -82,8 +139,9 @@ public class LayoutDemo {
 			
 			panel.addChild(widget);
 		}
+		save();
 	}
-	private JsWidget getDiv(String div, int unique) {
+	private JsWidget getDiv(int unique) {
 		JsWidget panel;
 		if (unique == root.getUnique()) {
 			panel  = root;
@@ -112,13 +170,27 @@ public class LayoutDemo {
 	}
 	public void move(String div, String x, String y) {
 		int unique = extractUnique(div);
-		this.getDiv(div, unique).setLeft(x);
-		this.getDiv(div, unique).setTop(y);
+		JsWidget widget = this.getDiv(unique);
+		widget.setLeft(x);
+		widget.setTop(y);
+		
+		save();
 	}
 	public void resize(String div, String width, String height) {
 		int unique = extractUnique(div);
-		this.getDiv(div, unique).setWidth(width);
-		this.getDiv(div, unique).setHeight(height);
+		JsWidget widget = this.getDiv(unique);
+		widget.setWidth(width);
+		widget.setHeight(height);
+		
+		save();
+	}
+
+	public void addPanel(String div) {
+		int unique = extractUnique(div);
+		JsWidget panel = createPanel();
+		panel.setWidth("300");
+		panel.setHeight("200");
+		this.getDiv(unique).addChild(panel);
 	}
 	
 }

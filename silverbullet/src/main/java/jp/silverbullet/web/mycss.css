@@ -1,13 +1,14 @@
-div.kacomaru {
+div.panel {
  	border: 1px green solid;
  	background-color: #ccffcc;
- 	float:left;
+ }
+div.base {
+
  }
  
 div.selected {
  	border: 1px green solid;
  	background-color: green;
- 	float:left;
  }
   
  button.from {
