@@ -5,17 +5,23 @@ import java.util.List;
 
 public class JsWidget {
 
+	public static final String FLOWLAYOUT = "Flow Layout";
+	public static final String ABSOLUTELAYOUT = "Absolute Layout";
+	public static final String VERTICALLAYOUT = "Vertical Layout";
+	
 	public static final String PANEL = "PANEL";
 	public static final String COMBOBOX = "COMBOBOX";
+	public static final String RADIOBUTTON = "RADIOBUTTON";
 	public static final String TEXTFIELD = "TEXTFIELD";
 	public static final String BUTTON = "BUTTON";
 	
-	private String id;
-	private String widgetType;
-	private String width;
-	private String height;
-	private String top;
-	private String left;
+	private String id = "";
+	private String widgetType = "";
+	private String width = "";
+	private String height = "";
+	private String top = "";
+	private String left = "";
+	private String layout = "";
 	private List<JsWidget> children = new ArrayList<>();
 	private int unique;
 	
@@ -75,14 +81,13 @@ public class JsWidget {
 
 	public void addChild(JsWidget child) {
 		this.children.add(child);
-//		if (this.children == null) {
-//			this.children = new JsWidget[1];
-//			this.children[0] = child;
-//		}
-//		else {
-//			List<JsWidget> tmp = new ArrayList<JsWidget>(Arrays.asList(this.children));
-//			tmp.add(child);
-//			this.children = tmp.toArray(new JsWidget[0]);
-//		}
+	}
+	
+	public String getLayout() {
+		return layout;
+	}
+
+	public void setLayout(String layout) {
+		this.layout = layout;
 	}
 }

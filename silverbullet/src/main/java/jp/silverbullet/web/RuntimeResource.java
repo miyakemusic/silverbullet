@@ -1,5 +1,6 @@
 package jp.silverbullet.web;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.GET;
@@ -23,6 +24,7 @@ public class RuntimeResource {
 	@Path("/getProperty")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public JsProperty getProperty(@QueryParam("id") String id) {
+		System.out.println(id);
 		return convertProperty(BuilderFx.getModel().getBuilderModel().getProperty(id));
 	}
 	
@@ -55,9 +57,9 @@ public class RuntimeResource {
 	}
 	
 	@GET
-	@Path("/getLayout")
+	@Path("/getDesign")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public JsWidget getLayout(@QueryParam("ui") String ui) {
+	public JsWidget getDesign(@QueryParam("ui") String ui) {
 		return UiLayout.getInstance().getRoot();
 	}
 	
@@ -66,6 +68,14 @@ public class RuntimeResource {
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String addWidget(@QueryParam("id") List<String> ids, @QueryParam("div") String div) {
 		UiLayout.getInstance().addWidget(div, ids);
+		return "OK";
+	}
+	
+	@GET
+	@Path("/remove")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String remove(@QueryParam("div") String div) {
+		UiLayout.getInstance().remove(div);
 		return "OK";
 	}
 	
@@ -87,10 +97,25 @@ public class RuntimeResource {
 	}
 	
 	@GET
+	@Path("/setLayout")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String move(@QueryParam("div") String div, @QueryParam("layout") String layout) {
+		UiLayout.getInstance().setLayout(div, layout);
+		return "OK";
+	}
+	
+	@GET
 	@Path("/resize")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String resize(@QueryParam("div") String div, @QueryParam("width") String width, @QueryParam("height") String height) {
 		UiLayout.getInstance().resize(div, width, height);
 		return "OK";
+	}
+	
+	@GET
+	@Path("/layoutTypes")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public List<String> getLayoutTypes() {
+		return Arrays.asList(JsWidget.ABSOLUTELAYOUT, JsWidget.FLOWLAYOUT, JsWidget.VERTICALLAYOUT);
 	}
 }

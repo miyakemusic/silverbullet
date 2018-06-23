@@ -1,33 +1,20 @@
 div.panel {
- 	border: 1px green solid;
- 	background-color: #ccffcc;
+ 	border: 1px black solid;
+ 	background-color: lightgray;
  }
-div.base {
-
- }
+div.base * {
+	font-size:13px;
+	padding:1;
+}
  
 div.selected {
- 	border: 1px green solid;
- 	background-color: green;
- }
-  
- button.from {
- 	background-color: green;
- }
- 
- button.to {
- 	background-color: yellow;
- }
- 
- button.normal {
+ 	border: 1px black solid;
  	background-color: gray;
  }
- #container {
-  position: relative;
+  
+.handsontable td {
+  font-size: 11px;
 }
-#container canvas, #panel {
-  position: absolute;
-}
-canvas {
-  border: 1px solid black;
+.handsontable th {
+  font-size: 11px;
 }

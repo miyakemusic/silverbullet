@@ -32,24 +32,8 @@ public abstract class DependencyEngine2 {
 
 		List<DependencyProperty> confirmations = new ArrayList<>();
 		
-//		List<ChangedProperty> ret = null;
 		for (int layer = 0; layer < builder.getLayerCount(); layer++) {
 			List<DependencyProperty> specs = builder.getSpecs(layer);
-			
-			// removes unnecessary specs
-//			if (ret != null) {
-//				List<DependencyProperty> removed = new ArrayList<>();
-//				for (DependencyProperty spec : specs) {
-//					for (ChangedProperty changed : ret) {
-//						if (spec.getTriggerIds().contains(changed.getId() + "." + changed.getElement())) {
-//							removed.add(spec);
-//						}
-//					}
-//				}
-//				ret.clear();
-//				specs = removed;
-//			}
-			/*ret =*/
 			doDependency(builder, specs);
 			
 			for (DependencyProperty spec : specs) {

@@ -1,4 +1,4 @@
-package jp.silverbullet.web;
+package jp.silverbullet.web.obsolute;
 
 import jp.silverbullet.uidesigner.pane.SvPanelModel;
 import jp.silverbullet.uidesigner.pane.UiElement;

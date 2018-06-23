@@ -17,6 +17,11 @@ import jp.silverbullet.uidesigner.pane.SvPanelModel;
 import jp.silverbullet.uidesigner.pane.UiElement;
 import jp.silverbullet.uidesigner.widgets.Description;
 import jp.silverbullet.uidesigner.widgets.WidgetFactoryFx;
+import jp.silverbullet.web.obsolute.HtmlDi;
+import jp.silverbullet.web.obsolute.HtmlOptionInfo;
+import jp.silverbullet.web.obsolute.HtmlPane;
+import jp.silverbullet.web.obsolute.HtmlUtil;
+import jp.silverbullet.web.obsolute.HtmlWidgetFactory;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

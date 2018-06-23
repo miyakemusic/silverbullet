@@ -1,14 +1,28 @@
 $(function() {	
 	$(document).ready(function() {
+//		$( "#radioset" ).buttonset();
+		
+		$('#layout').change(function() {
+			changeLayout($("#layout").val());
+		});
+		$.ajax({
+		   type: "GET", 
+		   url: "http://" + window.location.host + "/rest/runtime/layoutTypes",
+		   success: function(msg){
+				for (var i in msg) {
+					$("#layout").append($("<option>").val(msg[i]).text(msg[i]));
+				}
+		   }
+		});	
+					
 		var map = new Map();
 		var selectedDiv;
-		
+
 		var dialog = new IdSelectDialog('control', function(ids) {
 			$.ajax({
 			   type: "GET", 
 			   url: "http://" + window.location.host + "/rest/runtime/addWidget?id=" + ids + "&div=" + selectedDiv,
 			   success: function(msg){
-//					createWidget('root', msg);
 					updateUI();
 			   }
 			});	
@@ -29,12 +43,18 @@ $(function() {
 		// Log messages from the server
 		connection.onmessage = function (e) {
 		  //console.log('Server: ' + e.data);
-		  
+
 		  var ids = e.data.split(',');
 		  for (var i in ids) {
 		  	var widgets = map.get(ids[i]);
 		  	for (var j in widgets) {
-		  		widgets[j].update();
+		  		if (e == 'layoutChanged') {
+		  			widgets[j].updateLayout();
+			    }
+				else {
+					widgets[j].updateValue();
+				}
+		  		
 		  	}
 		  }
 		};
@@ -45,23 +65,29 @@ $(function() {
 		function updateUI() {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/runtime/getLayout",
+			   url: "http://" + window.location.host + "/rest/runtime/getDesign",
 			   success: function(msg){
 			   		$('#root').empty();
-					createWidget('root', msg);
+					createWidget('root', msg, 'Absolute Layout');
 			   }
 			});	
 		}
 		
-		function createWidget(parent, pane) {
-			var widget = new JsWidget(pane, parent, function(id) {
-				selectedDiv = id;
-			});
-			pushWidget(pane.id, widget);
-			
+		function createWidget(parent, pane, parentLayout) {
+			var widget = new JsWidget(pane, parent, parentLayout, 
+				function(id) {
+					selectedDiv = id;
+				},
+				function(layout) {
+					$('#layout').val(layout);
+				}
+			);
+			if (pane.id != undefined && pane.id != '') {
+				pushWidget(pane.id, widget);
+			}
 			for (var i in pane.children) {
 				var child = pane.children[i];
-				createWidget(widget.baseId, child);
+				createWidget(widget.baseId, child, pane.layout);
 			}
 		}
 		
@@ -81,6 +107,17 @@ $(function() {
 			   }
 			});	
 		}	
+		
+		function removeWidget() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/runtime/remove?div=" + selectedDiv,
+			   success: function(msg){
+					updateUI();
+			   }
+			});	
+		}
+		
 		$('#addId').click(function(e) {
 			dialog.showModal();
 		});
@@ -89,13 +126,27 @@ $(function() {
 			addPanel();
 		});
 		
+		$('#remove').click(function(e) {
+			removeWidget();
+		});
+		
 		function addPanel() {
 			var div = selectedDiv;
 			$.ajax({
 			   type: "GET", 
 			   url: "http://" + window.location.host + "/rest/runtime/addPanel?div=" + div,
 			   success: function(msg){
-
+					updateUI();
+			   }
+			});	
+		}
+		function changeLayout(layout) {
+			var div = selectedDiv;
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/runtime/setLayout?div=" + div + '&layout=' + layout,
+			   success: function(msg){
+					updateUI();
 			   }
 			});	
 		}

@@ -1,4 +1,4 @@
-package jp.silverbullet.web;
+package jp.silverbullet.web.obsolute;
 
 public abstract class HtmlSimpleWidget extends HtmlWidget {
 

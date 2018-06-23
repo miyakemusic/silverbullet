@@ -1,24 +1,40 @@
 <!DOCTYPE html>
 <html>
-<script type="text/javascript" src="jquery-3.3.1.min.js"></script> 
-<script type="text/javascript" src="jquery-ui.js"></script> 
+
+<script type="text/javascript" src="jquery.js"></script> 
+<script type="text/javascript" src="lib/jquery-ui.js"></script>
+<link rel="stylesheet" href="lib/jquery-ui.css">
+<link rel="stylesheet" href="lib/jquery-ui.theme.css">
+
+<script type="text/javascript" src="jsradio.js"></script>  
 <script type="text/javascript" src="jswidget.js"></script> 
+
+
 <script type="text/javascript" src="handsontable.full.js"></script>
 <script type="text/javascript" src="idtable.js"></script> 
 <script type="text/javascript" src="idselectdialog.js"></script> 
 <script type="text/javascript" src="runtime.js"></script> 
 
-<link rel="stylesheet" type="text/css" href="mycss.css">
-<link rel="stylesheet" type="text/css" href="jquery-ui.css">
-<link rel="stylesheet" media="screen" href="handsontable.full.css">
+<link rel="stylesheet" type="text/css" href="mycss.css"> 
+<link rel="stylesheet" media="screen" href="handsontable.full.css"> 
+
 
 <head>
 <meta charset="UTF-8">
 <title>Runtime</title>
 </head>
 <body> 
-<div id='control'><button id="addId">Add</button><button id="addPanel">Add Panel</button></div>
+<div id='control'><button id="addId">Add</button><button id="addPanel">Add Panel</button><button id="remove">Remove</button><select id='layout'></select></div>
 
 <div id="root"></div>
+
+<h2 class="demoHeaders">Checkboxradio</h2>
+<form style="margin-top: 1em;">
+	<div id="radioset">
+		<input type="radio" id="radio1" name="radio"><label for="radio1">Choice 1</label>
+		<input type="radio" id="radio2" name="radio" checked="checked"><label for="radio2">Choice 2</label>
+		<input type="radio" id="radio3" name="radio"><label for="radio3">Choice 3</label>
+	</div>
+</form>
 </body>
 </html>

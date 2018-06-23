@@ -4,6 +4,8 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.webapp.WebAppContext;
 
+import jp.silverbullet.web.ui.UiLayout;
+
 public class BuilderServer {
 	
 	public BuilderServer(final int port) {
@@ -22,6 +24,8 @@ public class BuilderServer {
 		String resource = this.getClass().getPackage().getName().replace(".", "/");
         String xmlPath = "";
         String resourcePath = "";
+        
+        UiLayout.getInstance().initialize();
         
         try {
 	        xmlPath = this.getClass().

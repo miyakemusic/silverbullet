@@ -149,7 +149,9 @@ public class PropertyDef implements Cloneable {
 		fireEvent();
 	}
 	public void updateArgument(int index, String value) {
-		this.others.remove(index);
+		if (this.others.size() > index) {
+			this.others.remove(index);
+		}
 		this.others.add(index, value);
 	}
 	

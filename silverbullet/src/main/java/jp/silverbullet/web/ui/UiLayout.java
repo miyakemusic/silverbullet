@@ -15,6 +15,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import jp.silverbullet.BuilderFx;
 import jp.silverbullet.SvProperty;
+import jp.silverbullet.web.WebSocketBroadcaster;
 
 public class UiLayout {
 	@JsonIgnore
@@ -40,6 +41,7 @@ public class UiLayout {
 	
 	private void save() {
 		write(this);
+		WebSocketBroadcaster.getInstance().sendMessage("layoutChanged");
 	}
 	
 	
@@ -61,6 +63,10 @@ public class UiLayout {
 	}
 	
 	private UiLayout() {
+
+	}
+	
+	public void initialize() {
 		if (Files.exists(Paths.get("layout.json"))) {
 			read("layout.json");
 			return;
@@ -71,32 +77,32 @@ public class UiLayout {
 		root.setWidth("800");
 		root.setHeight("400");
 		
-		JsWidget panel2 = createPanel();
-		root.addChild(panel2);
-		panel2.setWidth("400");
-		panel2.setHeight("200");
-
-		JsWidget panel3 = createPanel();
-		panel2.addChild(panel3);
-		panel3.setWidth("200");
-		panel3.setHeight("100");
-		
-		root.addChild(createWidget("ID_BAND", JsWidget.COMBOBOX));
-		root.addChild(createWidget("ID_STARTWAVELENGTH", JsWidget.TEXTFIELD));
-		root.addChild(createWidget("ID_STOPWAVELENGTH", JsWidget.TEXTFIELD));
-		
-		JsWidget panel = createPanel();
-		root.addChild(panel);
-		panel.addChild(createWidget("ID_CENTERWAVELENGTH", JsWidget.TEXTFIELD));
-		panel.addChild(createWidget("ID_SPANWAVELENGTH", JsWidget.TEXTFIELD));
-		
-
+//		JsWidget panel2 = createPanel();
+//		root.addChild(panel2);
+//		panel2.setWidth("400");
+//		panel2.setHeight("200");
+//
+//		JsWidget panel3 = createPanel();
+//		panel2.addChild(panel3);
+//		panel3.setWidth("200");
+//		panel3.setHeight("100");
+//		
+//		root.addChild(createWidget("ID_BAND", JsWidget.COMBOBOX));
+//		root.addChild(createWidget("ID_STARTWAVELENGTH", JsWidget.TEXTFIELD));
+//		root.addChild(createWidget("ID_STOPWAVELENGTH", JsWidget.TEXTFIELD));
+//		
+//		JsWidget panel = createPanel();
+//		root.addChild(panel);
+//		panel.addChild(createWidget("ID_CENTERWAVELENGTH", JsWidget.TEXTFIELD));
+//		panel.addChild(createWidget("ID_SPANWAVELENGTH", JsWidget.TEXTFIELD));
 	}
+	
 	private JsWidget createPanel() {
 		JsWidget widget = new JsWidget();
 		widget.setWidgetType(JsWidget.PANEL);
 		return widget;
 	}
+	
 	private JsWidget createWidget(String id, String widgetType) {
 		JsWidget widget = new JsWidget();
 		widget.setId(id);
@@ -128,7 +134,12 @@ public class UiLayout {
 				widget.setWidgetType(JsWidget.TEXTFIELD);
 			}
 			else if (type.equals(SvProperty.LIST_PROPERTY)) {
-				widget.setWidgetType(JsWidget.COMBOBOX);
+				if (property.getListDetail().size() < 3) {
+					widget.setWidgetType(JsWidget.RADIOBUTTON);
+				}
+				else {
+					widget.setWidgetType(JsWidget.COMBOBOX);
+				}
 			}
 			else if (type.equals(SvProperty.BOOLEAN_PROPERTY)) {
 				widget.setWidgetType(JsWidget.TEXTFIELD);
@@ -141,6 +152,7 @@ public class UiLayout {
 		}
 		save();
 	}
+	
 	private JsWidget getDiv(int unique) {
 		JsWidget panel;
 		if (unique == root.getUnique()) {
@@ -164,10 +176,12 @@ public class UiLayout {
 		}
 		return null;
 	}
+	
 	private int extractUnique(String div) {
 		int unique = Integer.valueOf(div.split("-")[1]);
 		return unique;
 	}
+	
 	public void move(String div, String x, String y) {
 		int unique = extractUnique(div);
 		JsWidget widget = this.getDiv(unique);
@@ -176,6 +190,7 @@ public class UiLayout {
 		
 		save();
 	}
+	
 	public void resize(String div, String width, String height) {
 		int unique = extractUnique(div);
 		JsWidget widget = this.getDiv(unique);
@@ -192,5 +207,35 @@ public class UiLayout {
 		panel.setHeight("200");
 		this.getDiv(unique).addChild(panel);
 	}
+
+	public void setLayout(String div, String layout) {
+		JsWidget panel = getWidget(div);
+		panel.setLayout(layout);
+		this.save();
+	}
+
+	private JsWidget getWidget(String div) {
+		int unique = extractUnique(div);
+		JsWidget panel =  this.getDiv(unique);
+		return panel;
+	}
+
+	public void remove(String div) {
+		removeDiv(root, extractUnique(div));
+		save();
+	}
 	
+	private boolean removeDiv(JsWidget parent, int unique) {
+		for (JsWidget jsWidget : parent.getChildren()) {
+			if (jsWidget.getUnique() == unique) {
+				parent.getChildren().remove(jsWidget);
+				return true;
+			}
+			boolean ret = removeDiv(jsWidget, unique);
+			if (ret == true) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
