@@ -145,7 +145,7 @@ public class UiLayout {
 				widget.setWidgetType(JsWidget.TEXTFIELD);
 			}
 			else if (type.equals(SvProperty.ACTION_PROPERTY)) {
-				widget.setWidgetType(JsWidget.BUTTON);
+				widget.setWidgetType(JsWidget.ACTIONBUTTON);
 			}
 			
 			panel.addChild(widget);
@@ -237,5 +237,11 @@ public class UiLayout {
 			}
 		}
 		return false;
+	}
+
+	public void setWidgetType(String div, String widgetType) {
+		JsWidget panel = getWidget(div);
+		panel.setWidgetType(widgetType);
+		this.save();
 	}
 }

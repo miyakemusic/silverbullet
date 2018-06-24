@@ -99,10 +99,67 @@ class JsTextInput {
 		$('#' + this.baseId).append('<span class="title" id=' + this.titleId + '></span>');
 		this.textId = 'text' + this.baseId;
 		$('#' + this.baseId).append('<input type="text" id=' + this.textId + '>');
-//		$('input').addClass("ui-corner-all");
-		
+	
 		$('#' + this.baseId).append('<label id="' + this.unitId + '"></unit>');
 		
 		this.updateValue(property);	
+	}
+}
+class JsToggleButton {
+	constructor(baseId, change) {
+		this.baseId = baseId;
+		this.change = change;
+	}
+	
+	updateValue(property) {
+		$('#' + this.titleId).text(property.title);
+		for (var i = 0; i < property.elements.length; i++) {
+			if (property.elements[i].id == property.currentValue) {
+				$('#' + this.buttonId).text(property.elements[i].title);
+				if (i < property.elements.length-1) {
+					
+					this.nextId = property.elements[i+1].id;
+				}
+				else {
+					this.nextId = property.elements[0].id;
+				}
+				break;
+			}
+		}
+		
+	}
+	
+	updateLayout(property) {
+		this.buttonId = 'button' + this.baseId;
+		this.titleId = 'title' + this.baseId;
+		var html = '<fieldset><legend id=' + this.titleId + '>' + property.title + '</legend><button id="' + this.buttonId + '"></button></fieldset>';
+		$('#' + this.baseId).append(html);
+		$('#' + this.buttonId).button();
+		
+		var me = this;
+		$('#' + this.buttonId).click(function() {
+			me.change(me.nextId);
+		});
+		
+		this.updateValue(property);
+	}
+}
+class JsActionButton {
+	constructor(baseId, change) {
+		this.baseId = baseId;
+		this.change = change;
+	}
+	
+	updateValue(property) {
+		$('#' + this.buttonId).text(property.title);
+	}
+	
+	updateLayout(property) {
+		this.buttonId = 'button' + this.baseId;
+		this.titleId = 'title' + this.baseId;
+		var html = '<button id="' + this.buttonId + '"></button>';
+		$('#' + this.baseId).append(html);
+		$('#' + this.buttonId).button();
+		this.updateValue(property);
 	}
 }

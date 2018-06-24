@@ -13,7 +13,8 @@ public class JsWidget {
 	public static final String COMBOBOX = "COMBOBOX";
 	public static final String RADIOBUTTON = "RADIOBUTTON";
 	public static final String TEXTFIELD = "TEXTFIELD";
-	public static final String BUTTON = "BUTTON";
+	public static final String TOGGLEBUTTON = "TOGGLEBUTTON";
+	public static final String ACTIONBUTTON = "ACTIONBUTTON";
 	
 	private String id = "";
 	private String widgetType = "";

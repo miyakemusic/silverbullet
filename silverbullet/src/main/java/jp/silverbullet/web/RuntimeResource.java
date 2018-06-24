@@ -118,4 +118,19 @@ public class RuntimeResource {
 	public List<String> getLayoutTypes() {
 		return Arrays.asList(JsWidget.ABSOLUTELAYOUT, JsWidget.FLOWLAYOUT, JsWidget.VERTICALLAYOUT);
 	}
+	
+	@GET
+	@Path("allWidgetTypes")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public List<String> getAllWidgeTypes() {
+		return Arrays.asList(JsWidget.TOGGLEBUTTON, JsWidget.ACTIONBUTTON, JsWidget.COMBOBOX, JsWidget.RADIOBUTTON, JsWidget.TEXTFIELD);
+	}
+	
+	@GET
+	@Path("setWidgetType")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String setWidgetType(@QueryParam("div") String div, @QueryParam("widgetType") String widgetType) {
+		UiLayout.getInstance().setWidgetType(div, widgetType);
+		return "OK";
+	}
 }

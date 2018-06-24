@@ -1,9 +1,23 @@
 $(function() {	
-	$(document).ready(function() {
-//		$( "#radioset" ).buttonset();
-		
+	$(document).ready(function() {		
 		$('#layout').change(function() {
 			changeLayout($("#layout").val());
+		});
+		$('#widgetType').change(function() {
+			changeWidgetType($("#widgetType").val());
+		});
+		$('#edit').change(function() {
+			var enable;
+			var checked = $('#edit').prop('checked');
+			if (checked == true) {
+				enable = 'enable';
+			}
+			else {
+				enable = 'disable';
+			}
+			for (var i in allWidgets) {
+			    allWidgets[i].editable(enable);
+			};
 		});
 		$.ajax({
 		   type: "GET", 
@@ -14,8 +28,19 @@ $(function() {
 				}
 		   }
 		});	
-					
+		$.ajax({
+		   type: "GET", 
+		   url: "http://" + window.location.host + "/rest/runtime/allWidgetTypes",
+		   success: function(msg){
+				for (var i in msg) {
+					$("#widgetType").append($("<option>").val(msg[i]).text(msg[i]));
+				}
+		   }
+		});				
 		var map = new Map();
+		var widgetMap = new Map();
+		var allWidgets = [];
+		
 		var selectedDiv;
 
 		var dialog = new IdSelectDialog('control', function(ids) {
@@ -63,6 +88,10 @@ $(function() {
 		updateUI();
 		
 		function updateUI() {
+			allWidgets = [];
+			map.clear();
+			widgetMap.clear();
+			
 			$.ajax({
 			   type: "GET", 
 			   url: "http://" + window.location.host + "/rest/runtime/getDesign",
@@ -77,13 +106,20 @@ $(function() {
 			var widget = new JsWidget(pane, parent, parentLayout, 
 				function(id) {
 					selectedDiv = id;
+					var obj = widgetMap.get(id);
+					if (obj != undefined) {
+						$('#widgetType').val(obj.widgetType);
+					}
 				},
 				function(layout) {
 					$('#layout').val(layout);
 				}
 			);
+			widget.editable("disable");
+			allWidgets.push(widget);
+			   			
 			if (pane.id != undefined && pane.id != '') {
-				pushWidget(pane.id, widget);
+				pushWidget(pane, widget);
 			}
 			for (var i in pane.children) {
 				var child = pane.children[i];
@@ -91,11 +127,12 @@ $(function() {
 			}
 		}
 		
-		function pushWidget(id, widget) {
-			if (map.get(id) == null) {
-   				map.set(id, []);
+		function pushWidget(pane, widget) {
+			if (map.get(pane.id) == null) {
+   				map.set(pane.id, []);
    			}
-   			map.get(id).push(widget);
+   			map.get(pane.id).push(widget);
+   			widgetMap.set(widget.baseId, pane);
 		}
 		
 		function requestChange(id, value) {
@@ -145,6 +182,16 @@ $(function() {
 			$.ajax({
 			   type: "GET", 
 			   url: "http://" + window.location.host + "/rest/runtime/setLayout?div=" + div + '&layout=' + layout,
+			   success: function(msg){
+					updateUI();
+			   }
+			});	
+		}
+		function changeWidgetType(widgetType) {
+			var div = selectedDiv;
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/runtime/setWidgetType?div=" + div + '&widgetType=' + widgetType,
 			   success: function(msg){
 					updateUI();
 			   }

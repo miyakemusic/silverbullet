@@ -3,12 +3,10 @@ class JsWidget {
 		this.info = info;
 		
 		this.baseId = 'base-' + info.unique;
-		this.titleId = 'title-' + info.unique;
-		this.unitId = 'unit-' + info.unique;
-		this.mainId = 'main-' + info.unique;
-		
+		this.selected = selected;
 		this.parent = parent;
 		this.parentLayout = parentLayout;
+		this.layout = layout;
 		
 		this.createBase(selected, layout);		
 		
@@ -69,6 +67,16 @@ class JsWidget {
 				me.requestChange(me.info.id, id);
 			});
 		}
+		else if (this.info.widgetType == 'TOGGLEBUTTON') {
+			this.subWidget = new JsToggleButton(this.baseId, function(id) {
+				me.requestChange(me.info.id, id);
+			});
+		}
+		else if (this.info.widgetType == 'ACTIONBUTTON') {
+			this.subWidget = new JsActionButton(this.baseId, function(id) {
+				me.requestChange(me.info.id, id);
+			});
+		}
 		else if (this.info.widgetType == 'PANEL') {
 			$('#' + this.baseId).addClass('panel');
 		}
@@ -78,57 +86,6 @@ class JsWidget {
 			$('#' + this.baseId).css('top', this.info.top + 'px');
 		}
 						
-	    var baseId = this.baseId;
-	    
-	    if (this.info.widgetType == 'PANEL') {
-	    				
-			var me = this;
-			$('#' + this.baseId).draggable({
-				start : function (event , ui){
-					//console.log("start event start" );
-					//console.log(event , ui);
-				} ,
-				drag : function (event , ui) {
-					//console.log("drag event start" );
-					//console.log(event , ui);
-					
-//					$('#' + me.baseId).text($('#' + me.baseId).position().left + ',' + $('#' + me.baseId).position().top);
-//					$('#' + me.baseId).css('font-size', '8px');
-				} ,
-				stop : function (event , ui){
-					//console.log("stop event start" );
-					console.log(event , ui);
-					me.setPosition(event);
-				}
-			});
-			$('#' + this.baseId).resizable({
-		      resize: function( event, ui ) {
-		      	me.setSize();
-		      }
-		    });
-		    $('#' + this.baseId).droppable({
-		      drop: function( event, ui ) {
-				
-		      }
-		    });
-	   	}
-    	
-    	$('#' + this.baseId).mouseenter(function(e){
-//	    	if (e.target.baseId == this.baseId) {
-//				$(this).addClass('selected');
-//			}
-		}).mouseout(function(e){
-//			$(this).removeClass('selected');
-			//console.log('mouseout');
-		}).click(function(e){
-			$('.base').removeClass('selected');
-			$(this).addClass('selected');
-			//console.log(baseId);
-			e.stopPropagation();
-			selected(baseId);
-			layout(me.info.layout);
-		});
-
 		if (this.info.width != 0) {
 			$('#' + this.baseId).width(this.info.width);
 		}
@@ -162,7 +119,6 @@ class JsWidget {
 		if ((this.info.id == null) || (this.info.id == '')) return;
 				
 		var id = this.info.id;
-		var mainId = this.mainId;
 		var me = this;
 		
 		if (id == '') {
@@ -196,6 +152,7 @@ class JsWidget {
 			$('#' + this.baseId + '>.title').css({'display':'inline-block', 'width':'40%'});	
 		}
 	}
+	
 	requestChange(id, value) {
 		$.ajax({
 		   type: "GET", 
@@ -204,5 +161,58 @@ class JsWidget {
 
 		   }
 		});	
+	}
+	
+	editable(enabled) {
+	    var baseId = this.baseId;
+	    var me = this;
+	    if (this.info.widgetType == 'PANEL') {			
+			$('#' + this.baseId).draggable({
+				start : function (event , ui){
+					//console.log("start event start" );
+					//console.log(event , ui);
+				} ,
+				drag : function (event , ui) {
+					//console.log("drag event start" );
+					//console.log(event , ui);
+					
+//					$('#' + me.baseId).text($('#' + me.baseId).position().left + ',' + $('#' + me.baseId).position().top);
+//					$('#' + me.baseId).css('font-size', '8px');
+				} ,
+				stop : function (event , ui){
+					//console.log("stop event start" );
+					console.log(event , ui);
+					me.setPosition(event);
+				} 
+			});
+			
+			$('#' + this.baseId).draggable(enabled);
+			
+			$('#' + this.baseId).resizable({
+		      resize: function( event, ui ) {
+		      	me.setSize();
+		      }
+		    });
+		    $('#' + this.baseId).droppable({
+		      drop: function( event, ui ) {
+				
+		      }
+		    });
+		    
+		    $('#' + this.baseId).resizable(enabled);
+	   	}
+    	
+    	if (enabled == 'enable') {
+	    	$('#' + this.baseId).click(function(e){
+				$('.base').removeClass('selected');
+				$(this).addClass('selected');
+				e.stopPropagation();
+				me.selected(baseId);
+				me.layout(me.info.layout);
+			});
+		}
+		else {
+			$('#' + this.baseId).off('click');
+		}
 	}
 }
