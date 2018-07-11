@@ -53,6 +53,7 @@ public class SvProperty implements Cloneable {
 	public static final String LIST_PROPERTY = "ListProperty";
 	public static final String OSA_TABLE_PROPERTY = "OsaTableProperty";
 	public static final String TABLE_PROPERTY = "TableProperty";
+	public static final String CHART_PROPERTY = "ChartProperty";
 	public static final String SWEEP_BAND_PROPERTY = "SweepBandProperty";
 	public static final String TRACE_LIST_PROPERTY = "TraceListProperty";
 	public static final String DOUBLE_FREEWORD_NONE_PROPERTY = "DoubleFreeWordNoneProperty";

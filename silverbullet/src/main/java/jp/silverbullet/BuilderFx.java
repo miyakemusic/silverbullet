@@ -16,6 +16,7 @@ import java.util.Set;
 import javax.xml.bind.JAXBException;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -31,6 +32,8 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import jp.silverbullet.dependency.analyzer.DependencyFrameFx;
@@ -68,6 +71,7 @@ import jp.silverbullet.uidesigner.pane.SvPanelModelImpl;
 import jp.silverbullet.uidesigner.pane.UiElement;
 import jp.silverbullet.uidesigner.widgets.WidgetFactoryFx;
 import jp.silverbullet.web.BuilderServer;
+import jp.silverbullet.web.BuilderServerListener;
 import jp.silverbullet.handlers.HandlerProperty;
 import jp.silverbullet.handlers.HandlerPropertyFx;
 import javafx.stage.Modality;
@@ -339,13 +343,7 @@ public abstract class BuilderFx extends Application {
         startWebServer();
        
         handleMessage();
-        
-//        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-//			@Override
-//			public void handle(WindowEvent arg0) {
-//				System.exit(0);
-//			}
-//        });
+
 	}
 
 	abstract protected String getBackupFilename();
@@ -424,7 +422,25 @@ public abstract class BuilderFx extends Application {
 	}
 
 	protected void startWebServer() {
-		webServer = new BuilderServer(8081);
+		webServer = new BuilderServer(8081, new BuilderServerListener() {
+
+			@Override
+			public void onStarted() {
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+				        WebView browser = new WebView();
+				        WebEngine webEngine = browser.getEngine();
+				       //webEngine.load("http://localhost:8081/runtime.html");
+				        webEngine.load("http://yahoo.co.jp");
+				        browser.setPrefHeight(500);
+				        browser.setPrefWidth(700);
+				        root.getChildren().add(browser);
+					}	
+				});
+			}
+			
+		});
 	}
 
 	protected void startRemoteCommandServer() {

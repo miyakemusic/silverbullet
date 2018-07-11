@@ -1,5 +1,6 @@
 $(function() {	
 	$(document).ready(function() {		
+		var enableEdit = 'disable';
 		$('#layout').change(function() {
 			changeLayout($("#layout").val());
 		});
@@ -7,18 +8,34 @@ $(function() {
 			changeWidgetType($("#widgetType").val());
 		});
 		$('#edit').change(function() {
-			var enable;
 			var checked = $('#edit').prop('checked');
 			if (checked == true) {
-				enable = 'enable';
+				enableEdit = 'enable';
 			}
 			else {
-				enable = 'disable';
+				enableEdit = 'disable';
 			}
 			for (var i in allWidgets) {
-			    allWidgets[i].editable(enable);
+			    allWidgets[i].editable(enableEdit);
 			};
 		});
+		
+		$('#styleClass').keydown(function(e) {
+		    if (e.keyCode == 13) {
+		        setStyleClass($('#styleClass').val());
+		    }
+		});
+		$('#css').keydown(function(e) {
+		    if (e.keyCode == 13) {
+		        setCss($('#css').val());
+		    }
+		});
+		$('#id').keydown(function(e) {
+		    if (e.keyCode == 13) {
+		        setGuid($('#id').val());
+		    }
+		});
+						
 		$.ajax({
 		   type: "GET", 
 		   url: "http://" + window.location.host + "/rest/runtime/layoutTypes",
@@ -104,18 +121,20 @@ $(function() {
 		
 		function createWidget(parent, pane, parentLayout) {
 			var widget = new JsWidget(pane, parent, parentLayout, 
-				function(id) {
+				function(id, info) {
 					selectedDiv = id;
 					var obj = widgetMap.get(id);
 					if (obj != undefined) {
 						$('#widgetType').val(obj.widgetType);
 					}
-				},
-				function(layout) {
-					$('#layout').val(layout);
+					
+					$('#layout').val(info.layout);
+					$('#styleClass').val(info.styleClass);
+					$('#css').val(info.css);
+					$('#id').val(info.id);
 				}
 			);
-			widget.editable("disable");
+			widget.editable(enableEdit);
 			allWidgets.push(widget);
 			   			
 			if (pane.id != undefined && pane.id != '') {
@@ -155,6 +174,33 @@ $(function() {
 			});	
 		}
 		
+		function setStyleClass(style) {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/runtime/setStyle?div=" + selectedDiv + "&style=" + style,
+			   success: function(msg){
+					updateUI();
+			   }
+			});			
+		}
+		function setCss(css) {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/runtime/setCss?div=" + selectedDiv + "&css=" + css,
+			   success: function(msg){
+					updateUI();
+			   }
+			});			
+		}		
+		function setGuid(guid) {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/runtime/setGuid?div=" + selectedDiv + "&guid=" + guid,
+			   success: function(msg){
+					updateUI();
+			   }
+			});			
+		}
 		$('#addId').click(function(e) {
 			dialog.showModal();
 		});

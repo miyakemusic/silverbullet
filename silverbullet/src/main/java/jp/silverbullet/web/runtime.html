@@ -6,6 +6,8 @@
 <link rel="stylesheet" href="lib/jquery-ui.css">
 <link rel="stylesheet" href="lib/jquery-ui.theme.css">
 
+<script type="text/javascript" src="lib/Chart.js"></script>
+
 <script type="text/javascript" src="jsradio.js"></script>  
 <script type="text/javascript" src="jswidget.js"></script> 
 
@@ -25,17 +27,12 @@
 </head>
 <body> 
 <div id='control'><button id="addId">Add</button><button id="addPanel">Add Panel</button><button id="remove">Remove</button><select id='layout'></select><select id="widgetType"></select></div>
+<snap>Style Class<input type="text" id="styleClass"></span>
+<span>CSS<input type="text" id="css"></snap>
+<span>ID<input type="text" id="id"></snap>
 <input type="checkbox" id="edit">Edit
 
 <div id="root"></div>
 
-<h2 class="demoHeaders">Checkboxradio</h2>
-<form style="margin-top: 1em;">
-	<div id="radioset">
-		<input type="radio" id="radio1" name="radio"><label for="radio1">Choice 1</label>
-		<input type="radio" id="radio2" name="radio" checked="checked"><label for="radio2">Choice 2</label>
-		<input type="radio" id="radio3" name="radio"><label for="radio3">Choice 3</label>
-	</div>
-</form>
 </body>
 </html>

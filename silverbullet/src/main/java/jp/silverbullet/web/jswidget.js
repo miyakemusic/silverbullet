@@ -1,14 +1,13 @@
 class JsWidget {
-	constructor(info, parent, parentLayout, selected, layout) {
+	constructor(info, parent, parentLayout, selected) {
 		this.info = info;
 		
 		this.baseId = 'base-' + info.unique;
 		this.selected = selected;
 		this.parent = parent;
 		this.parentLayout = parentLayout;
-		this.layout = layout;
-		
-		this.createBase(selected, layout);		
+
+		this.createBase(selected);		
 		
 		this.updateLayout();
 	}
@@ -45,11 +44,14 @@ class JsWidget {
 
 		   }
 		});	
+		
+		if (this.subWidget != null) {
+			this.subWidget.resize();
+		}
 	}
 		
-	createBase(selected, layout) {			
+	createBase(selected) {			
 		$('#' + this.parent).append('<div id=' + this.baseId + '></div>');	
-		$('#' + this.baseId).addClass('base');
 		
 		var me = this;
 		if (this.info.widgetType == 'COMBOBOX') {
@@ -67,6 +69,11 @@ class JsWidget {
 				me.requestChange(me.info.id, id);
 			});
 		}
+		else if (this.info.widgetType == 'CHECKBOX') {
+			this.subWidget = new JsCheckBox(this.baseId, function(id) {
+				me.requestChange(me.info.id, id);
+			});
+		}
 		else if (this.info.widgetType == 'TOGGLEBUTTON') {
 			this.subWidget = new JsToggleButton(this.baseId, function(id) {
 				me.requestChange(me.info.id, id);
@@ -74,6 +81,16 @@ class JsWidget {
 		}
 		else if (this.info.widgetType == 'ACTIONBUTTON') {
 			this.subWidget = new JsActionButton(this.baseId, function(id) {
+				me.requestChange(me.info.id, id);
+			});
+		}
+		else if (this.info.widgetType == 'CHART') {
+			this.subWidget = new JsChart(this.baseId, function(id) {
+				me.requestChange(me.info.id, id);
+			});
+		}
+		else if (this.info.widgetType == 'TABLE') {
+			this.subWidget = new JsTable(this.baseId, function(id) {
 				me.requestChange(me.info.id, id);
 			});
 		}
@@ -93,6 +110,13 @@ class JsWidget {
 			$('#' + this.baseId).height(this.info.height);
 		}
 		
+		$('#' + this.baseId).addClass('base');
+		if (this.info.styleClass != null) {
+			$('#' + this.baseId).addClass(this.info.styleClass);
+		}
+		if (this.info.css != null && this.info.css != '') {
+			$('#' + this.baseId).css(this.info.css.split(',')[0] , this.info.css.split(',')[1]);
+		}
 		this.setCss();
 	}
 	
@@ -166,7 +190,8 @@ class JsWidget {
 	editable(enabled) {
 	    var baseId = this.baseId;
 	    var me = this;
-	    if (this.info.widgetType == 'PANEL') {			
+	    if (this.info.widgetType == 'PANEL' || this.info.widgetType == 'TABLE' || this.info.widgetType == 'CHART') {			
+//		if (true) {
 			$('#' + this.baseId).draggable({
 				start : function (event , ui){
 					//console.log("start event start" );
@@ -175,10 +200,7 @@ class JsWidget {
 				drag : function (event , ui) {
 					//console.log("drag event start" );
 					//console.log(event , ui);
-					
-//					$('#' + me.baseId).text($('#' + me.baseId).position().left + ',' + $('#' + me.baseId).position().top);
-//					$('#' + me.baseId).css('font-size', '8px');
-				} ,
+									} ,
 				stop : function (event , ui){
 					//console.log("stop event start" );
 					console.log(event , ui);
@@ -189,7 +211,7 @@ class JsWidget {
 			$('#' + this.baseId).draggable(enabled);
 			
 			$('#' + this.baseId).resizable({
-		      resize: function( event, ui ) {
+		      stop: function( event, ui ) {
 		      	me.setSize();
 		      }
 		    });
@@ -207,11 +229,11 @@ class JsWidget {
 				$('.base').removeClass('selected');
 				$(this).addClass('selected');
 				e.stopPropagation();
-				me.selected(baseId);
-				me.layout(me.info.layout);
+				me.selected(baseId, me.info);
 			});
 		}
 		else {
+			$('.base').removeClass('selected');
 			$('#' + this.baseId).off('click');
 		}
 	}

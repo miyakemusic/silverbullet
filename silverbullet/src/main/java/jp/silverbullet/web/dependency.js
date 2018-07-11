@@ -140,6 +140,7 @@ $(function() {
 		});
 		
 		function updateMainTable() {
+			
 			$.ajax({
 			   type: "GET", 
 			   url: "http://" + window.location.host + "/rest/id/properties?type=All",
@@ -147,23 +148,28 @@ $(function() {
 					for (var index in msg.table) {
 						var row = msg.table[index];
 						var idPanel = row[1] + "_panel";
-						$('#panel').append('<div id = "' + idPanel + '" class="kacomaru"><input class="button" id="' + row[1] + '" type="button" value="' + row[1] + '"/><br>' + 
-							row[2] + '<br>' + row[4] + '<br>' + row[3] + '</div>');
-						
+//						$('#panel').append('<span id = "' + idPanel + '" class="depPane">' + 
+//							'<input class="button" id="' + row[1] + '" type="button" value="' + row[1] + '"/>' + 
+//							row[2] + '<br>' + row[4] + '<br>' + row[3] + '</span>');
+
+						$('#panel').append('<div id = "' + idPanel + '" class="depPane">' + 
+							'<input class="small" id="' + row[1] + '" type="button" value="' + row[1] + '"/>' + '<br>'+
+							row[2] + '<br>' + row[4] + '<br>' + row[3] + '</div>');						
+
 						var id = '#' + row[1];
 						idPanel = '#' + idPanel;
-						
-						$(idPanel).draggable();
-						$(id).draggable();
-						$(id).hover(
-							function(){
-								$(this).append('<div id="dragging">Changes</div>');
-								$('#dragging').draggable();
-							},
-							function(){
-								$('#dragging').remove();
-							}
-						);
+//						$(idPanel).css({'position':'relative', 'display':'inline'});
+//						$(idPanel).draggable();
+//						$(id).draggable();
+//						$(id).hover(
+//							function(){
+//								$(this).append('<div id="dragging">Changes</div>');
+//								$('#dragging').draggable();
+//							},
+//							function(){
+//								$('#dragging').remove();
+//							}
+//						);
 						
 						$(idPanel).click(function() {
 							drawLines($(this).prop('id'));

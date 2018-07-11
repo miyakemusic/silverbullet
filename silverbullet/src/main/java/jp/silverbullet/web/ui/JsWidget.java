@@ -15,6 +15,10 @@ public class JsWidget {
 	public static final String TEXTFIELD = "TEXTFIELD";
 	public static final String TOGGLEBUTTON = "TOGGLEBUTTON";
 	public static final String ACTIONBUTTON = "ACTIONBUTTON";
+	public static final String CHART = "CHART";
+	public static final String TABLE = "TABLE";
+	public static final String CHECKBOX = "CHECKBOX";
+	public static final String GUI_DIALOG = "GUI_DIALOG";
 	
 	private String id = "";
 	private String widgetType = "";
@@ -25,6 +29,8 @@ public class JsWidget {
 	private String layout = "";
 	private List<JsWidget> children = new ArrayList<>();
 	private int unique;
+	private String styleClass;
+	private String css;
 	
 	public JsWidget() {
 		this.unique = this.hashCode();
@@ -91,4 +97,21 @@ public class JsWidget {
 	public void setLayout(String layout) {
 		this.layout = layout;
 	}
+
+	public void setStyleClass(String style) {
+		this.styleClass = style;
+	}
+
+	public String getStyleClass() {
+		return styleClass;
+	}
+
+	public String getCss() {
+		return css;
+	}
+
+	public void setCss(String css) {
+		this.css = css;
+	}
+	
 }

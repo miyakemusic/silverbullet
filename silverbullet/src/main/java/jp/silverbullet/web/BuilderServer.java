@@ -8,7 +8,22 @@ import jp.silverbullet.web.ui.UiLayout;
 
 public class BuilderServer {
 	
-	public BuilderServer(final int port) {
+	public static void main(String[] arg) {
+		new BuilderServer(8081, new BuilderServerListener() {
+
+			@Override
+			public void onStarted() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
+	}
+
+	private BuilderServerListener listener;
+	
+	public BuilderServer(final int port, BuilderServerListener listener) {
+		this.listener = listener;
 		new Thread() {
 			@Override
 			public void run() {
@@ -34,6 +49,7 @@ public class BuilderServer {
 	  	       getClassLoader().getResource(resource).toExternalForm();
         }
         catch (Exception e) {
+        	e.printStackTrace();
         	xmlPath = xml;
         	resourcePath = resource;
         }
@@ -57,7 +73,7 @@ public class BuilderServer {
 
         try {
             server.start();
-             		
+            listener.onStarted();
             server.join();
             while (System.in.available() == 0) {
                 Thread.sleep(5000);

@@ -46,6 +46,8 @@ public class UiLayout {
 	
 	
 	public void read(String filename) {
+		this.root = UiLayout.createRoot();
+		
 		ObjectMapper mapper = new ObjectMapper();
 		try {
 			UiLayout object = mapper.readValue(new File(filename), UiLayout.class);
@@ -62,6 +64,14 @@ public class UiLayout {
 		}
 	}
 	
+	private static JsWidget createRoot() {
+		JsWidget root = new JsWidget();
+		root.setWidgetType(JsWidget.PANEL);
+		root.setWidth("800");
+		root.setHeight("400");
+		return root;
+	}
+
 	private UiLayout() {
 
 	}
@@ -72,10 +82,7 @@ public class UiLayout {
 			return;
 		}
 		
-		root = new JsWidget();
-		root.setWidgetType(JsWidget.PANEL);
-		root.setWidth("800");
-		root.setHeight("400");
+		root = createRoot();
 		
 //		JsWidget panel2 = createPanel();
 //		root.addChild(panel2);
@@ -130,7 +137,7 @@ public class UiLayout {
 			JsWidget widget = new JsWidget();
 			widget.setId(id);
 			
-			if (type.equals(SvProperty.DOUBLE_PROPERTY) || type.equals(SvProperty.TEXT_PROPERTY)) {
+			if (type.equals(SvProperty.DOUBLE_PROPERTY) || type.equals(SvProperty.TEXT_PROPERTY) || type.equals(SvProperty.LONG_PROPERTY)) {
 				widget.setWidgetType(JsWidget.TEXTFIELD);
 			}
 			else if (type.equals(SvProperty.LIST_PROPERTY)) {
@@ -142,12 +149,17 @@ public class UiLayout {
 				}
 			}
 			else if (type.equals(SvProperty.BOOLEAN_PROPERTY)) {
-				widget.setWidgetType(JsWidget.TEXTFIELD);
+				widget.setWidgetType(JsWidget.CHECKBOX);
 			}
 			else if (type.equals(SvProperty.ACTION_PROPERTY)) {
 				widget.setWidgetType(JsWidget.ACTIONBUTTON);
 			}
-			
+			else if (type.equals(SvProperty.CHART_PROPERTY)) {
+				widget.setWidgetType(JsWidget.CHART);
+			}	
+			else if (type.equals(SvProperty.TABLE_PROPERTY)) {
+				widget.setWidgetType(JsWidget.TABLE);
+			}	
 			panel.addChild(widget);
 		}
 		save();
@@ -243,5 +255,17 @@ public class UiLayout {
 		JsWidget panel = getWidget(div);
 		panel.setWidgetType(widgetType);
 		this.save();
+	}
+
+	public void setSyle(String div, String style) {
+		JsWidget panel = getWidget(div);
+		panel.setStyleClass(style);
+		this.save();
+	}
+
+	public void setCss(String div, String css) {
+		JsWidget panel = getWidget(div);
+		panel.setCss(css);
+		this.save();	
 	}
 }

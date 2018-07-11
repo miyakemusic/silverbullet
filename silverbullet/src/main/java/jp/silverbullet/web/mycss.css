@@ -2,16 +2,47 @@ div.panel {
  	border: 1px black solid;
  	background-color: lightgray;
  }
+
 div.base * {
 	font-size:13px;
-	padding:1;
+	margin:auto;
 }
  
+div.margin * {
+//	font-size:20px;
+	margin:1px;
+}
+
 div.selected {
  	border: 1px black solid;
  	background-color: gray;
  }
-  
+ 
+div.depPane {
+ 	border: 1px black solid;
+ 	background-color: lightgray;
+ 	font-size:10px;
+ 	display: inline-block;
+ }
+ 
+div.big * {
+ 	font-size:20px;
+}
+div.medium * {
+ 	font-size:16px;
+}
+div.small * {
+ 	font-size:12px;
+} 
+div.noborder {
+	border: 0px;
+}
+
+ input.small {
+ 	font-size:10px;
+ //	background-color: blue;
+ }
+ 
 .handsontable td {
   font-size: 11px;
 }

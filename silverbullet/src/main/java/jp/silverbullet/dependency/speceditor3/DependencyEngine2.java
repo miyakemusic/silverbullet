@@ -74,9 +74,6 @@ public abstract class DependencyEngine2 {
 	
 	private List<ChangedProperty> doDependency(DependencyBuilder3 builder, List<DependencyProperty> specs) throws RequestRejectedException {
 
-		
-//		List<ChangedProperty> changed = new ArrayList<>();
-		
 		for (DependencyProperty spec : specs) {
 			if (satisfies(spec)) {
 				SvProperty prop = getProperty(spec.getId());

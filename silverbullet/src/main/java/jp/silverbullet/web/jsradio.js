@@ -46,10 +46,12 @@ class JsComboBox {
 	constructor(baseId, change) {
 		this.baseId = baseId;
 		this.change = change;
+		this.unitId = 'unit' + this.baseId;
 	}
 	
 	updateValue(property) {
 		$('#' + this.comboId).val(property.currentValue).selectmenu('refresh');
+		$('#' + this.unitId).text(property.unit);
 	}
 	
 	updateLayout(property) {
@@ -57,9 +59,9 @@ class JsComboBox {
 		$('#' + this.baseId).append('<span class="title" id=' + this.titleId + '></span>');
 		$('#' + this.titleId).text(property.title);
 		
-//		$('#' + this.baseId + '>.title').css({'display':'inline-block', 'width':'40%'});	
 		this.comboId = 'combo' + this.baseId;
 		$('#' + this.baseId).append('<SELECT id=' + this.comboId + '></SELECT>');
+		$('#' + this.baseId).append('<span id="' + this.unitId + '"></span>');
  		$('#' + this.comboId).selectmenu();
       		   		
 		for (var i in property.elements) {
@@ -95,6 +97,7 @@ class JsTextInput {
 	updateLayout(property) {
 		this.titleId = 'title' + this.baseId;
 		this.unitId = 'unit' + this.baseId;
+		this.textId = 'text' + this.baseId;
 		
 		$('#' + this.baseId).append('<span class="title" id=' + this.titleId + '></span>');
 		this.textId = 'text' + this.baseId;
@@ -102,9 +105,15 @@ class JsTextInput {
 	
 		$('#' + this.baseId).append('<label id="' + this.unitId + '"></unit>');
 		
+		var me = this;
+		$('#' + this.textId).change(function() {
+			me.change($(this).val());
+		});
+		
 		this.updateValue(property);	
 	}
 }
+
 class JsToggleButton {
 	constructor(baseId, change) {
 		this.baseId = baseId;
@@ -113,16 +122,19 @@ class JsToggleButton {
 	
 	updateValue(property) {
 		$('#' + this.titleId).text(property.title);
+		var nextTitle;
 		for (var i = 0; i < property.elements.length; i++) {
 			if (property.elements[i].id == property.currentValue) {
-				$('#' + this.buttonId).text(property.elements[i].title);
-				if (i < property.elements.length-1) {
-					
+//				$('#' + this.buttonId).text(property.elements[i].title);
+				if (i < property.elements.length-1) {	
 					this.nextId = property.elements[i+1].id;
+					nextTitle = property.elements[i+1].title;
 				}
 				else {
 					this.nextId = property.elements[0].id;
+					nextTitle = property.elements[0].title;
 				}
+				$('#' + this.buttonId).text(nextTitle);
 				break;
 			}
 		}
@@ -162,4 +174,140 @@ class JsActionButton {
 		$('#' + this.buttonId).button();
 		this.updateValue(property);
 	}
+}
+
+class JsCheckBox {
+	constructor(baseId, change) {
+		this.baseId = baseId;
+		this.change = change;
+	}
+	
+	updateValue(property) {
+		$('#' + this.titleId).text(property.title);
+		$('#' + this.checkId).val(property.currentValue);
+	}
+	
+	updateLayout(property) {
+		this.checkId = 'check' + this.baseId;
+		this.titleId = 'title' + this.baseId;
+		
+		var html = '<input type="checkbox" id="' + this.checkId + '"' + ' name="' + this.checkId + '"><label for="' + this.checkId + '" id=' + this.titleId + '></label>';
+		$('#' + this.baseId).append(html);
+		$('#' + this.checkId).checkboxradio();
+		this.updateValue(property);
+	}
+}
+
+class JsChart {
+	constructor(baseId, change) {
+		this.baseId = baseId;
+		this.change = change;
+	}
+	
+	updateValue(property) {
+		if (property.currentValue == '') {
+			return;
+		}
+		
+		var datasets = [];
+		var dataset = [];
+//		dataset.label = "data";
+		var data = [];
+		
+		var trace = JSON.parse(property.currentValue);
+		for (var i = 0; i < trace.y.length; i++) {
+			var e = Object();
+			e.x = i;
+			e.y = trace.y[i];
+			data.push(e);
+		}
+		
+		var scatterChartData = {
+			datasets: [{
+				label: property.title, //'My First dataset',
+				data: data,
+				showLine: true,
+				showPoint: false,
+				fill: false,
+				borderWidth: 1,
+				pointRadius: 0,
+				borderColor: '#ff0000'
+			}]
+		};
+		var ctx = document.getElementById('chart').getContext('2d');
+		Chart.Scatter(ctx, {
+			data: scatterChartData,
+			options: {
+				title: {
+					display: true,
+					text: property.title
+				},
+				animation: false,
+			}
+		});
+	}
+	
+	updateLayout(property) {
+		var html = '<canvas id="chart" height="200" width="400"></canvas>';
+		$('#' + this.baseId).append(html);
+		
+		this.updateValue(property);
+	}
+}
+
+class JsTable {
+	constructor(baseId, change) {
+		this.baseId = baseId;
+		this.change = change;
+	}
+	
+	updateValue(property) {
+		if (property.currentValue == '') {
+			return;
+		}
+		var table = JSON.parse(property.currentValue);
+		
+		if (this.headers != table.headers) {
+			this.createTable(table.headers);
+		}
+		this.headers = table.headers;
+	
+		var me = this;
+				
+		this.hot.updateSettings({
+		    height: $('#' + me.baseId).height()
+		});	
+
+		this.hot.loadData(table.data);
+	}
+	
+	updateLayout(property) {
+		this.tableid = 'table'+this.baseId;
+		$('#' + this.baseId).append('<div id="' + this.tableid + '"></div>');
+
+		this.updateValue(property);
+	}
+	
+	resize() {
+		var me = this;
+		this.hot.updateSettings({
+		    height: $('#' + me.baseId).height()
+		});		
+	}
+	
+	createTable(headers) {
+		var height = $('#' + this.baseId).prop('height');
+		$('#' + this.tableid).handsontable({
+		  colHeaders: headers,
+		  rowHeaders: true,
+		  minSpareRows: 1,
+		  afterSelection: function(r, c, r2, c2, preventScrolling, selectionLayerLevel){
+	      },
+	      afterChange: function(change, source) {
+		  }
+		});	
+	
+		this.hot = $('#' + this.tableid).handsontable('getInstance');	
+	}
+	
 }

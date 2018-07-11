@@ -1,7 +1,9 @@
 package jp.silverbullet.web;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -13,6 +15,7 @@ import javafx.application.Platform;
 import jp.silverbullet.BuilderFx;
 import jp.silverbullet.SvProperty;
 import jp.silverbullet.dependency.engine.RequestRejectedException;
+import jp.silverbullet.property.ChartContent;
 import jp.silverbullet.web.ui.JsProperty;
 import jp.silverbullet.web.ui.JsWidget;
 import jp.silverbullet.web.ui.UiLayout;
@@ -25,7 +28,12 @@ public class RuntimeResource {
 	@Produces(MediaType.APPLICATION_JSON) 
 	public JsProperty getProperty(@QueryParam("id") String id) {
 		System.out.println(id);
-		return convertProperty(BuilderFx.getModel().getBuilderModel().getProperty(id));
+		SvProperty property = BuilderFx.getModel().getBuilderModel().getProperty(id);
+		JsProperty ret = convertProperty(property);
+		if (property.getType().equals(SvProperty.CHART_PROPERTY)) {
+			
+		}
+		return ret;
 	}
 	
 	private JsProperty convertProperty(SvProperty property) {
@@ -103,7 +111,22 @@ public class RuntimeResource {
 		UiLayout.getInstance().setLayout(div, layout);
 		return "OK";
 	}
-	
+
+	@GET
+	@Path("/setStyle")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String setStyle(@QueryParam("div") String div, @QueryParam("style") String style) {
+		UiLayout.getInstance().setSyle(div, style);
+		return "OK";
+	}
+
+	@GET
+	@Path("/setCss")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String setCss(@QueryParam("div") String div, @QueryParam("css") String css) {
+		UiLayout.getInstance().setCss(div, css);
+		return "OK";
+	}
 	@GET
 	@Path("/resize")
 	@Produces(MediaType.TEXT_PLAIN) 
@@ -123,7 +146,8 @@ public class RuntimeResource {
 	@Path("allWidgetTypes")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<String> getAllWidgeTypes() {
-		return Arrays.asList(JsWidget.TOGGLEBUTTON, JsWidget.ACTIONBUTTON, JsWidget.COMBOBOX, JsWidget.RADIOBUTTON, JsWidget.TEXTFIELD);
+		return Arrays.asList(JsWidget.TOGGLEBUTTON, JsWidget.ACTIONBUTTON, JsWidget.COMBOBOX, JsWidget.RADIOBUTTON, JsWidget.TEXTFIELD,
+				JsWidget.CHART, JsWidget.CHECKBOX, JsWidget.GUI_DIALOG);
 	}
 	
 	@GET
