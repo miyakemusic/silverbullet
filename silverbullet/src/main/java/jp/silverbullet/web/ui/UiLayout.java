@@ -69,6 +69,7 @@ public class UiLayout {
 		root.setWidgetType(JsWidget.PANEL);
 		root.setWidth("800");
 		root.setHeight("400");
+
 		return root;
 	}
 
@@ -110,12 +111,6 @@ public class UiLayout {
 		return widget;
 	}
 	
-	private JsWidget createWidget(String id, String widgetType) {
-		JsWidget widget = new JsWidget();
-		widget.setId(id);
-		widget.setWidgetType(widgetType);
-		return widget;
-	}
 	public JsWidget getRoot() {
 		return root;
 	}
@@ -190,7 +185,8 @@ public class UiLayout {
 	}
 	
 	private int extractUnique(String div) {
-		int unique = Integer.valueOf(div.split("-")[1]);
+		String[] tmp = div.split("-");
+		int unique = Integer.valueOf(tmp[tmp.length-1]);
 		return unique;
 	}
 	
@@ -220,6 +216,15 @@ public class UiLayout {
 		this.getDiv(unique).addChild(panel);
 	}
 
+	public void addTab(String div) {
+		int unique = extractUnique(div);
+		JsWidget panel = new JsWidget();
+		panel.setWidgetType(JsWidget.TAB);
+		panel.setWidth("300");
+		panel.setHeight("200");
+		this.getDiv(unique).addChild(panel);
+	}
+	
 	public void setLayout(String div, String layout) {
 		JsWidget panel = getWidget(div);
 		panel.setLayout(layout);
@@ -267,5 +272,47 @@ public class UiLayout {
 		JsWidget panel = getWidget(div);
 		panel.setCss(css);
 		this.save();	
+	}
+
+	public void setId(String div, String id) {
+		JsWidget panel = getWidget(div);
+		panel.setId(id);
+		this.save();
+	}
+
+	public void addDialog(String div, String id) {
+		int unique = extractUnique(div);
+		JsWidget panel = getDiv(unique);
+		JsWidget dialog = new JsWidget();
+		dialog.setId(id);
+		dialog.setWidgetType(JsWidget.GUI_DIALOG);
+		panel.addChild(dialog);
+		this.save();
+	}
+	
+	private JsWidget findPanel(JsWidget parent, String id) {
+		for (JsWidget jsWidget : parent.getChildren()) {
+			if (jsWidget.getId().equals(id)) {
+				return jsWidget;
+			}
+			JsWidget ret = findPanel(jsWidget, id);
+			if (ret != null) {
+				return ret;
+			}
+		}
+		return null;
+	}
+	public JsWidget getSubTree(String id) {
+		return this.findPanel(this.root, id);
+	}
+
+	public void clear() {
+		this.root = UiLayout.createRoot();
+	}
+
+	public void setPresentation(String div, String presentation) {
+		JsWidget panel = getWidget(div);
+		panel.setPresentation(presentation);
+		this.save();
 	}
 }

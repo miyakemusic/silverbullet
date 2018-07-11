@@ -8,6 +8,7 @@
 
 <script type="text/javascript" src="lib/Chart.js"></script>
 
+<script type="text/javascript" src="layoutbuilder.js"></script>  
 <script type="text/javascript" src="jsradio.js"></script>  
 <script type="text/javascript" src="jswidget.js"></script> 
 
@@ -15,9 +16,9 @@
 <script type="text/javascript" src="handsontable.full.js"></script>
 <script type="text/javascript" src="idtable.js"></script> 
 <script type="text/javascript" src="idselectdialog.js"></script> 
-<script type="text/javascript" src="runtime.js"></script> 
+<script type="text/javascript" src="runtime2.js"></script> 
 
-<link rel="stylesheet" type="text/css" href="mycss.css"> 
+<link rel="stylesheet" type="text/css" href="mycss.css">
 <link rel="stylesheet" media="screen" href="handsontable.full.css"> 
 
 
@@ -26,13 +27,21 @@
 <title>Runtime</title>
 </head>
 <body> 
-<div id='control'><button id="addId">Add</button><button id="addPanel">Add Panel</button><button id="remove">Remove</button><select id='layout'></select><select id="widgetType"></select></div>
+<div id='control'><button id="addId">Add</button><button id="addPanel">Add Panel</button><button id="remove">Remove</button><button id="addDialog">Add Dialog</button><select id='layout'></select><select id="widgetType"></select></div>
+<button id="addTab">Add Tab</button>
 <snap>Style Class<input type="text" id="styleClass"></span>
-<span>CSS<input type="text" id="css"></snap>
-<span>ID<input type="text" id="id"></snap>
+<span>CSS<input type="text" id="css"></span>
+<span>ID<input type="text" id="id"></span>
+<span>Presentation<input type="text" id="presentation"></span>
 <input type="checkbox" id="edit">Edit
-
+<button id="update">update</button><button id="clear">clear</button>
+<span id="uid"></span>
+<div id="info"></div>
 <div id="root"></div>
+
+<div id="dialog">
+	<input type="text" id="dialogPanelId">
+</div>
 
 </body>
 </html>

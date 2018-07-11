@@ -67,8 +67,13 @@ public class RuntimeResource {
 	@GET
 	@Path("/getDesign")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public JsWidget getDesign(@QueryParam("ui") String ui) {
-		return UiLayout.getInstance().getRoot();
+	public JsWidget getDesign(@QueryParam("root") String root) {
+		if (root == null || root.isEmpty()) {
+			return UiLayout.getInstance().getRoot();
+		}
+		else {
+			return UiLayout.getInstance().getSubTree(root);
+		}
 	}
 	
 	@GET
@@ -76,6 +81,14 @@ public class RuntimeResource {
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String addWidget(@QueryParam("id") List<String> ids, @QueryParam("div") String div) {
 		UiLayout.getInstance().addWidget(div, ids);
+		return "OK";
+	}
+
+	@GET
+	@Path("/addDialog")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String addDialog(@QueryParam("div") String div, @QueryParam("id") String id) {
+		UiLayout.getInstance().addDialog(div, id);
 		return "OK";
 	}
 	
@@ -99,8 +112,24 @@ public class RuntimeResource {
 	@GET
 	@Path("/addPanel")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String move(@QueryParam("div") String div) {
+	public String addPanel(@QueryParam("div") String div) {
 		UiLayout.getInstance().addPanel(div);
+		return "OK";
+	}
+
+	@GET
+	@Path("/addTab")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String addTab(@QueryParam("div") String div) {
+		UiLayout.getInstance().addTab(div);
+		return "OK";
+	}
+	
+	@GET
+	@Path("/clearLayout")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String clearLayout() {
+		UiLayout.getInstance().clear();
 		return "OK";
 	}
 	
@@ -147,7 +176,7 @@ public class RuntimeResource {
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<String> getAllWidgeTypes() {
 		return Arrays.asList(JsWidget.TOGGLEBUTTON, JsWidget.ACTIONBUTTON, JsWidget.COMBOBOX, JsWidget.RADIOBUTTON, JsWidget.TEXTFIELD,
-				JsWidget.CHART, JsWidget.CHECKBOX, JsWidget.GUI_DIALOG);
+				JsWidget.CHART, JsWidget.CHECKBOX, JsWidget.GUI_DIALOG, JsWidget.PANEL, JsWidget.TAB);
 	}
 	
 	@GET
@@ -155,6 +184,22 @@ public class RuntimeResource {
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setWidgetType(@QueryParam("div") String div, @QueryParam("widgetType") String widgetType) {
 		UiLayout.getInstance().setWidgetType(div, widgetType);
+		return "OK";
+	}
+	
+	@GET
+	@Path("setId")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String setId(@QueryParam("div") String div, @QueryParam("id") String id) {
+		UiLayout.getInstance().setId(div, id);
+		return "OK";
+	}
+	
+	@GET
+	@Path("setPresentation")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String setPresentation(@QueryParam("div") String div, @QueryParam("presentation") String presentation) {
+		UiLayout.getInstance().setPresentation(div, presentation);
 		return "OK";
 	}
 }

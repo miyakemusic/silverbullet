@@ -259,6 +259,7 @@ class JsTable {
 	constructor(baseId, change) {
 		this.baseId = baseId;
 		this.change = change;
+		this.headers = [];
 	}
 	
 	updateValue(property) {
@@ -267,7 +268,7 @@ class JsTable {
 		}
 		var table = JSON.parse(property.currentValue);
 		
-		if (this.headers != table.headers) {
+		if (this.headers.length != table.headers.length) {
 			this.createTable(table.headers);
 		}
 		this.headers = table.headers;
@@ -284,7 +285,11 @@ class JsTable {
 	updateLayout(property) {
 		this.tableid = 'table'+this.baseId;
 		$('#' + this.baseId).append('<div id="' + this.tableid + '"></div>');
+//		$('#' + this.baseId).css('margin', '0px');
 
+		var headers = ['COL#1', 'COL#2', 'COL#3', 'COL#4'];
+		this.createTable(headers);
+		
 		this.updateValue(property);
 	}
 	
@@ -296,18 +301,60 @@ class JsTable {
 	}
 	
 	createTable(headers) {
-		var height = $('#' + this.baseId).prop('height');
+//		var height = $('#' + this.baseId).prop('height');
 		$('#' + this.tableid).handsontable({
+		  manualColumnResize: true,
+//		  width: 700,
+//		  height: 400,
+//		  startRows: 3,
+//		  startCols: 10,
 		  colHeaders: headers,
 		  rowHeaders: true,
-		  minSpareRows: 1,
-		  afterSelection: function(r, c, r2, c2, preventScrolling, selectionLayerLevel){
-	      },
-	      afterChange: function(change, source) {
-		  }
+		  minSpareRows: 1
 		});	
 	
 		this.hot = $('#' + this.tableid).handsontable('getInstance');	
 	}
-	
+}
+
+class JsDialogButton {
+	constructor(baseId, change) {
+		this.baseId = baseId;
+		this.buttonId = 'button' + this.baseId;
+		this.dialogId = 'dialog' + this.baseId;
+		
+		this.contentId = 'content' + this.baseId;
+		this.change = change;
+	}
+		
+	updateLayout(info) {
+		var root = info.id;
+		$('#' + this.baseId).append('<Button id="' + this.buttonId + '">' + info.presentation + '</Button>');
+		$('#' + this.buttonId).button();
+		$('#' + this.baseId).append('<div id="' + this.dialogId + '"><div id="' + this.contentId + '"></div></div>');
+							
+		$('#' + this.dialogId).dialog({
+			  autoOpen: false,
+			  title: 'Dialog',
+			  closeOnEscape: false,
+			  modal: true,
+			  buttons: {
+			    "OK": function(){
+			      $(this).dialog('close');
+			    }
+			    ,
+			    "Cancel": function(){
+			      $(this).dialog('close');
+			    }
+			  },
+			width: 400,
+			height: 300
+		});	
+		
+		var me = this;
+		$('#' + this.buttonId).click(function() {
+			var layout = new LayoutBuilder(me.contentId, root);
+			$('#' + me.dialogId).dialog('open');
+		});
+	}
 }

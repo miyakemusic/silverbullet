@@ -5,12 +5,45 @@ div.panel {
 
 div.base * {
 	font-size:13px;
-	margin:auto;
+	table-layout: fixed;
 }
  
 div.margin * {
-//	font-size:20px;
 	margin:1px;
+}
+
+div.Root {
+	position:relative;
+	display:block;
+	top:0;
+	left:0;
+}
+
+div.FlowLayout {
+	position:relative;
+	display:inline;
+}
+div.FlowLayout span.title {
+	display:inline;	
+}
+
+div.AbsoluteLayout {
+	position:absolute;
+	display:none;
+}
+div.AbsoluteLayout span.title {
+	display:inline-block;
+	width:40%;
+}
+
+div.VerticalLayout {
+	position:relative;
+	display:block;	
+			
+}
+div.VerticalLayout span.title {
+	display:inline-block;
+	width:40%;
 }
 
 div.selected {
@@ -18,6 +51,23 @@ div.selected {
  	background-color: gray;
  }
  
+div.itemBox > div.base {
+	font-size:13px;
+ 	margin:1px;
+	position:relative;
+	display:block;	
+}
+
+div.itemBox span.title {
+	display:inline-block;
+	width:40%;
+}
+
+div.itemBox input {
+	height:20px;
+}
+
+
 div.depPane {
  	border: 1px black solid;
  	background-color: lightgray;
@@ -40,7 +90,6 @@ div.noborder {
 
  input.small {
  	font-size:10px;
- //	background-color: blue;
  }
  
 .handsontable td {

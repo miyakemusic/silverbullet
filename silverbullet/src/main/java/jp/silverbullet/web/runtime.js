@@ -1,12 +1,33 @@
 $(function() {	
-	$(document).ready(function() {		
+	$(document).ready(function() {	
+		$('#dialog').dialog({
+			  autoOpen: false,
+			  title: 'GUI ID',
+			  closeOnEscape: false,
+			  modal: true,
+			  buttons: {
+			    "OK": function(){
+			      $(this).dialog('close');
+			      addDialog($('#dialogPanelId').val());
+			    }
+			    ,
+			    "Cancel": function(){
+			      $(this).dialog('close');
+			    }
+			  },
+			width: 400,
+			height: 300
+		});	
+						
 		var enableEdit = 'disable';
 		$('#layout').change(function() {
 			changeLayout($("#layout").val());
 		});
+		
 		$('#widgetType').change(function() {
 			changeWidgetType($("#widgetType").val());
 		});
+		
 		$('#edit').change(function() {
 			var checked = $('#edit').prop('checked');
 			if (checked == true) {
@@ -25,11 +46,13 @@ $(function() {
 		        setStyleClass($('#styleClass').val());
 		    }
 		});
+		
 		$('#css').keydown(function(e) {
 		    if (e.keyCode == 13) {
 		        setCss($('#css').val());
 		    }
 		});
+		
 		$('#id').keydown(function(e) {
 		    if (e.keyCode == 13) {
 		        setGuid($('#id').val());
@@ -45,6 +68,7 @@ $(function() {
 				}
 		   }
 		});	
+		
 		$.ajax({
 		   type: "GET", 
 		   url: "http://" + window.location.host + "/rest/runtime/allWidgetTypes",
@@ -114,13 +138,15 @@ $(function() {
 			   url: "http://" + window.location.host + "/rest/runtime/getDesign",
 			   success: function(msg){
 			   		$('#root').empty();
-					createWidget('root', msg, 'Absolute Layout');
+					var root = createWidget('root', msg);
+					$('#' + root.baseId).removeClass('Absolute');
+					$('#' + root.baseId).addClass('Root');
 			   }
 			});	
 		}
 		
-		function createWidget(parent, pane, parentLayout) {
-			var widget = new JsWidget(pane, parent, parentLayout, 
+		function createWidget(parent, pane) {
+			var widget = new JsWidget(pane, parent,  
 				function(id, info) {
 					selectedDiv = id;
 					var obj = widgetMap.get(id);
@@ -132,6 +158,7 @@ $(function() {
 					$('#styleClass').val(info.styleClass);
 					$('#css').val(info.css);
 					$('#id').val(info.id);
+					$('#info').text(info.left + "," + info.top + "," + info.widgetType + ","+ info.layout) ;
 				}
 			);
 			widget.editable(enableEdit);
@@ -142,8 +169,9 @@ $(function() {
 			}
 			for (var i in pane.children) {
 				var child = pane.children[i];
-				createWidget(widget.baseId, child, pane.layout);
+				createWidget(widget.baseId, child);
 			}
+			return widget;
 		}
 		
 		function pushWidget(pane, widget) {
@@ -183,6 +211,7 @@ $(function() {
 			   }
 			});			
 		}
+		
 		function setCss(css) {
 			$.ajax({
 			   type: "GET", 
@@ -192,10 +221,11 @@ $(function() {
 			   }
 			});			
 		}		
-		function setGuid(guid) {
+		
+		function setGuid(id) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/runtime/setGuid?div=" + selectedDiv + "&guid=" + guid,
+			   url: "http://" + window.location.host + "/rest/runtime/setId?div=" + selectedDiv + "&id=" + id,
 			   success: function(msg){
 					updateUI();
 			   }
@@ -212,7 +242,26 @@ $(function() {
 		$('#remove').click(function(e) {
 			removeWidget();
 		});
+		$('#addDialog').click(function(e) {
+			$('#dialog').dialog("open");
+		});
+		$('#update').click(function(e) {
+			updateUI();
+		});
+		$('#clear').click(function(e) {
+			clearLayout();
+		});	
 		
+		function clearLayout() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/runtime/clearLayout",
+			   success: function(msg){
+					updateUI();
+			   }
+			});	
+		}
+			
 		function addPanel() {
 			var div = selectedDiv;
 			$.ajax({
@@ -238,6 +287,17 @@ $(function() {
 			$.ajax({
 			   type: "GET", 
 			   url: "http://" + window.location.host + "/rest/runtime/setWidgetType?div=" + div + '&widgetType=' + widgetType,
+			   success: function(msg){
+					updateUI();
+			   }
+			});	
+		}
+				
+		function addDialog(id) {
+			var div = selectedDiv;
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/runtime/addDialog?div=" + div + '&id=' + id,
 			   success: function(msg){
 					updateUI();
 			   }

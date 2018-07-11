@@ -19,8 +19,10 @@ public class JsWidget {
 	public static final String TABLE = "TABLE";
 	public static final String CHECKBOX = "CHECKBOX";
 	public static final String GUI_DIALOG = "GUI_DIALOG";
+	public static final String TAB = "TAB";
 	
 	private String id = "";
+	private String presentation = "";
 	private String widgetType = "";
 	private String width = "";
 	private String height = "";
@@ -113,5 +115,14 @@ public class JsWidget {
 	public void setCss(String css) {
 		this.css = css;
 	}
+
+	public String getPresentation() {
+		return presentation;
+	}
+
+	public void setPresentation(String presentation) {
+		this.presentation = presentation;
+	}
+
 	
 }
