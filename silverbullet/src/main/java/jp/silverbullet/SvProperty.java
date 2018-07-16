@@ -365,4 +365,8 @@ public class SvProperty implements Cloneable {
 		return this.property.getType().equals(IMAGE_PROPERTY);
 	}
 
+	public boolean isChartProperty() {
+		return this.property.getType().equals(CHART_PROPERTY);
+	}
+
 }

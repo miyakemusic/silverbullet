@@ -2,7 +2,6 @@ class JsWidget {
 	constructor(info, parent, selected) {
 		this.info = info;
 		
-		
 		this.baseId = parent + "-" + info.unique;
 		if ($('#tab-' + this.baseId).size() == 1) {
 			this.baseId = 'tab-' + this.baseId;
@@ -66,10 +65,7 @@ class JsWidget {
 		
 	createBase(selected) {			
 		$('#' + this.parent).append('<div id=' + this.baseId + '></div>');	
-		$('#' + this.baseId).addClass('base');
-		if (this.info.styleClass != null) {
-			$('#' + this.baseId).addClass(this.info.styleClass);
-		}
+
 		var me = this;
 		if (this.info.widgetType == 'COMBOBOX') {
 			this.subWidget = new JsComboBox(this.baseId, function(id) {
@@ -92,7 +88,7 @@ class JsWidget {
 			});
 		}
 		else if (this.info.widgetType == 'TOGGLEBUTTON') {
-			this.subWidget = new JsToggleButton(this.baseId, function(id) {
+			this.subWidget = new JsToggleButton(this.baseId, this.info, function(id) {
 				me.requestChange(me.info.id, id);
 			});
 		}
@@ -102,7 +98,7 @@ class JsWidget {
 			});
 		}
 		else if (this.info.widgetType == 'CHART') {
-			this.subWidget = new JsChart(this.baseId, function(id) {
+			this.subWidget = new JsChart(this.baseId, this.info, function(id) {
 				me.requestChange(me.info.id, id);
 			});
 		}
@@ -125,28 +121,25 @@ class JsWidget {
 			}
 		}
 		else if (this.info.widgetType == 'TAB') {
-			var tab = '<ul>';
-			var content = '';
-			for (var i = 0; i < this.info.children.length; i++) {
-				var contentId = 'tab-' + this.baseId + "-" + this.info.children[i].unique;
-				tab += '<li><a href="#' + contentId + '">Tab' + i + '</a></li>';
-				content += '<div id="' + contentId + '"></div>';
-				console.log(contentId);
-			}
-			tab +="</ul>"
-			
-			$('#' + this.baseId).append('<div id="tabid">' + tab + content + '</div>');
-			//$('#' + this.baseId).append('<div id="tabid"> <ul><li><a href="#t1">Tab1</a></li><li><a href="#t2">Tab2</a></li><li><a href="#t3">Tab3</a></li></ul> <div id="t1">t1</div><div id="t2">t2</div><div id="t3">t3</div></div>');
-
-			$('#tabid').draggable();
-			$('#tabid').resizable();
-			$('#tabid').tabs();
+			this.subWidget = new JsTabPanel(this.baseId, this.info, function(id) {
+				me.requestChange(me.info.id, id);
+			});
 		}
 		else if (this.info.widgetType == 'GUI_DIALOG') {
-			this.subWidget = new JsDialogButton(this.baseId, function(id) {
+			this.subWidget = new JsDialogButton(this.baseId, this.info, function(id) {
 				me.requestChange(me.info.id, id);
 			});
 		}	
+		else if (this.info.widgetType == 'LABEL') {
+			this.subWidget = new JsLabel(this.baseId, this.info, function(id) {
+				me.requestChange(me.info.id, id);
+			});
+		}	
+				
+		$('#' + this.baseId).addClass('base');
+		if (this.info.styleClass != null) {
+			$('#' + this.baseId).addClass(this.info.styleClass);
+		}
 		
 		this.applyLayout();
 	}
@@ -155,6 +148,8 @@ class JsWidget {
 		if ($('#' + this.baseId).parent().hasClass('Flow')) {
 			$('#' + this.baseId).css({'position':'relative', 'display':'inline'});
 			$('#' + this.baseId + '>.title').css({'display':'inline'});
+			$('#' + this.baseId + '*').css({'margin':'2px'});
+			$('#' + this.baseId + '*').css({'padding':'1px'});
 		}
 		else if ($('#' + this.baseId).parent().hasClass('Absolute')) {
 			$('#' + this.baseId).css({'position':'absolute', 'display':'inline-block'});
@@ -163,7 +158,9 @@ class JsWidget {
 		}
 		else if ($('#' + this.baseId).parent().hasClass('Vertical')) {
 			$('#' + this.baseId).css({'position':'relative', 'display':'block'});	
-			$('#' + this.baseId + '>.title').css({'display':'inline-block', 'width':'40%'});	
+			$('#' + this.baseId + '>.title').css({'display':'inline-block', 'width':'40%'});
+			$('#' + this.baseId + '>.currentValue').css({'display':'inline-block', 'width':'40%'});
+			$('#' + this.baseId + '>.unit').css({'display':'inline-block', 'width':'10%'});	
 		}
 						
 		this.applySize();
@@ -196,16 +193,17 @@ class JsWidget {
 		if (id == '') {
 			console.log('id=' + id);
 		}
-		
-		$.ajax({
-		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/runtime/getProperty?id=" + id,
-		   success: function(property){
-		   		if (me.subWidget != null) {
-		   			me.subWidget.updateValue(property);
-		   		}
-		   }
-		});
+		else {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/runtime/getProperty?id=" + id,
+			   success: function(property){
+			   		if (me.subWidget != null) {
+			   			me.subWidget.updateValue(property);
+			   		}
+			   }
+			});
+		}
 	}
 	
 	updateLayout() {
@@ -213,25 +211,28 @@ class JsWidget {
 				
 		var id = this.info.id;
 		var me = this;
-		
-		if (id == '') {
-			console.log('id=' + id);
-		}
+
 		if (this.info.widgetType == 'GUI_DIALOG') {
 			this.subWidget.updateLayout(this.info);
 			return;
 		}
+	
 		
-		$.ajax({
-		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/runtime/getProperty?id=" + id,
-		   success: function(property){
-		   		if (me.subWidget != null) {
-		   			me.subWidget.updateLayout(property);
-		   			me.applyLayout();
-		   		}
-		   }
-		});	
+		if (id == '') {
+			console.log('id=' + id);
+		}	
+		else {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/runtime/getProperty?id=" + id,
+			   success: function(property){
+			   		if (me.subWidget != null) {
+			   			me.subWidget.updateLayout(property);
+			   			me.applyLayout();
+			   		}
+			   }
+			});	
+		}
 	}
 	
 	requestChange(id, value) {
@@ -247,8 +248,9 @@ class JsWidget {
 	editable(enabled) {
 	    var baseId = this.baseId;
 	    var me = this;
-	    if (this.info.widgetType == 'PANEL' || this.info.widgetType == 'TABLE' || this.info.widgetType == 'CHART') {	
-	    	if (this.info.widgetType == 'PANEL') {		
+	    if (this.info.widgetType == 'PANEL' || this.info.widgetType == 'TABLE' || this.info.widgetType == 'CHART'
+	    	|| this.info.widgetType == 'TAB') {	
+	    	if (this.info.widgetType == 'PANEL' || this.info.widgetType == 'TAB') {		
 				$('#' + this.baseId).draggable({
 					start : function (event , ui){
 						//console.log("start event start" );
@@ -260,7 +262,7 @@ class JsWidget {
 										} ,
 					stop : function (event , ui){
 						//console.log("stop event start" );
-						console.log(event , ui);
+						//console.log(event , ui);
 						me.setPosition(event);
 					} 
 				});

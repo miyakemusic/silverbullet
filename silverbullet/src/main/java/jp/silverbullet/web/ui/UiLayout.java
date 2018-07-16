@@ -284,7 +284,7 @@ public class UiLayout {
 		int unique = extractUnique(div);
 		JsWidget panel = getDiv(unique);
 		JsWidget dialog = new JsWidget();
-		dialog.setId(id);
+		dialog.setCustom(id);
 		dialog.setWidgetType(JsWidget.GUI_DIALOG);
 		panel.addChild(dialog);
 		this.save();
@@ -313,6 +313,19 @@ public class UiLayout {
 	public void setPresentation(String div, String presentation) {
 		JsWidget panel = getWidget(div);
 		panel.setPresentation(presentation);
+		this.save();
+	}
+
+	public void setCustom(String div, String custom) {
+		JsWidget panel = getWidget(div);
+		panel.setCustom(custom);
+		this.save();
+	}
+
+	public void cutPaste(String newBaseDiv, String itemDiv) {
+		JsWidget item = this.getWidget(itemDiv);
+		this.remove(itemDiv);
+		this.getWidget(newBaseDiv).addChild(item);
 		this.save();
 	}
 }

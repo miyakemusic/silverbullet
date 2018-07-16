@@ -13,18 +13,15 @@ import jp.silverbullet.property.PropertyHolderListener;
 public class SvPropertyStore {
 	private Map<String, SvProperty> map = new HashMap<String, SvProperty>();
 	private List<String> types = new ArrayList<String>();
+	private PropertyHolder propertiesHolder;
 	
 	public SvPropertyStore(PropertyHolder propertiesHolder) {		
 		registerProperties(propertiesHolder);
 	}
 	private void registerProperties(PropertyHolder propertiesHolder) {
+		this.propertiesHolder = propertiesHolder;
 		for (PropertyDef prop : propertiesHolder.getProperties()) {
-			stripString(prop);
-			map.put(prop.getId(), new SvProperty(prop));
-			
-			if (!types.contains(prop.getType())) {
-				types.add(prop.getType());
-			}
+			addProperty(prop);
 		}
 		propertiesHolder.addPropertyHolderListener(new PropertyHolderListener() {
 			@Override
@@ -48,6 +45,14 @@ public class SvPropertyStore {
 				map.remove(oldId);
 			}
 		});
+	}
+	private void addProperty(PropertyDef prop) {
+		stripString(prop);
+		map.put(prop.getId(), new SvProperty(prop));
+		
+		if (!types.contains(prop.getType())) {
+			types.add(prop.getType());
+		}
 	}
 	private void stripString(PropertyDef prop) {
 		prop.setTitle(stripTr(prop.getTitle()));
@@ -75,6 +80,9 @@ public class SvPropertyStore {
 	
 	public SvProperty getProperty(String id) {
 		SvProperty ret = this.map.get(id);
+		if (ret == null) {
+			addProperty(this.propertiesHolder.getProperty(id));
+		}
 		return ret;
 	}
 	public List<String> getAllTypes() {

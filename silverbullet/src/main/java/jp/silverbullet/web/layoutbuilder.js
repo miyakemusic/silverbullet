@@ -21,10 +21,18 @@ class LayoutBuilder {
 		   success: function(msg){
 		   		$('#' + me.base).empty();
 		   		me.createWidget(me.base, msg);
+		   		me.updateAllWidgetsValue();
 		   }
 		});	
 	}
 	
+	updateAllWidgetsValue() {
+	  	for (var j in this.allWidgets) {
+	  		var widget = this.allWidgets[j];
+			widget.updateValue();
+	  	}			
+	}
+		
 	onPropertyUpdate(ids) {
 		for (var i in ids) {
 			var widgets = this.map.get(ids[i]);
@@ -196,6 +204,53 @@ class LayoutBuilder {
 				me.updateUI();
 		   }
 		});			
+	}
+	
+	setCustom(custom) {
+		var div = this.selectedDiv;
+		var me = this;
+		$.ajax({
+		   type: "GET", 
+		   url: "http://" + window.location.host + "/rest/runtime/setCustom?div=" + div + "&custom=" + custom,
+		   success: function(msg){
+				me.updateUI();
+		   }
+		});			
+	}
+	
+	addDialog(id) {
+		var div = this.selectedDiv;
+		var me = this;
+		$.ajax({
+		   type: "GET", 
+		   url: "http://" + window.location.host + "/rest/runtime/addDialog?div=" + div + '&id=' + id,
+		   success: function(msg){
+				me.updateUI();
+		   }
+		});	
+	}
+		
+	cut() {
+		this.copiedDiv = this.selectedDiv;
+	}
+	
+	paste() {
+		var newBaseDiv = this.getRealId(this.selectedDiv);
+		var itemDiv = this.getRealId(this.copiedDiv);
+		var me = this;
+		$.ajax({
+		   type: "GET", 
+		   url: "http://" + window.location.host + "/rest/runtime/cutPaste?newBaseDiv=" + newBaseDiv + '&itemDiv=' + itemDiv,
+		   success: function(msg){
+				me.updateUI();
+		   }
+		});			
+	}
+	
+	getRealId(div) {
+		var tmp = div.split('-');
+		var ret = tmp[tmp.length-1];
+		return ret;
 	}
 	
 	get selectedDiv() {

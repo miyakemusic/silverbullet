@@ -1,5 +1,6 @@
 package jp.silverbullet.web;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +11,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import javafx.application.Platform;
 import jp.silverbullet.BuilderFx;
@@ -26,23 +31,57 @@ public class RuntimeResource {
 	@GET
 	@Path("/getProperty")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public JsProperty getProperty(@QueryParam("id") String id) {
+	public JsProperty getProperty(@QueryParam("id") String id, @QueryParam("ext") String ext) {
 		System.out.println(id);
 		SvProperty property = BuilderFx.getModel().getBuilderModel().getProperty(id);
-		JsProperty ret = convertProperty(property);
+		JsProperty ret = convertProperty(property, ext);
 		if (property.getType().equals(SvProperty.CHART_PROPERTY)) {
 			
 		}
 		return ret;
 	}
 	
-	private JsProperty convertProperty(SvProperty property) {
+	private JsProperty convertProperty(SvProperty property, String ext) {
 		JsProperty ret = new JsProperty();
 		ret.setId(property.getId());
 		ret.setTitle(property.getTitle());
 		ret.setUnit(property.getUnit());
 		ret.setElements(property.getAvailableListDetail());
-		ret.setCurrentValue(property.getCurrentValue());
+		
+		if (property.isChartProperty()) {
+			if (ext == null) {
+				ret.setCurrentValue("REQUEST_AGAIN");
+			}
+			else {
+				try {
+					if (property.getCurrentValue().isEmpty()) {
+						return ret;
+					}
+					ChartContent chartContent = new ObjectMapper().readValue(property.getCurrentValue(), ChartContent.class);
+					int point = Integer.valueOf(ext);
+					int allSize = chartContent.getY().length;
+					double step = (double)allSize / (double)point;
+					String[] y = new String[point];
+					for (int i = 0; i < point; i++) {
+						y[i] = chartContent.getY()[(int)((double)i*step)];
+					}
+					chartContent.setY(y);
+					ret.setCurrentValue(new ObjectMapper().writeValueAsString(chartContent));
+				} catch (JsonParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (JsonMappingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		else {
+			ret.setCurrentValue(property.getCurrentValue());
+		}
 		return ret;
 	}
 	
@@ -176,7 +215,7 @@ public class RuntimeResource {
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<String> getAllWidgeTypes() {
 		return Arrays.asList(JsWidget.TOGGLEBUTTON, JsWidget.ACTIONBUTTON, JsWidget.COMBOBOX, JsWidget.RADIOBUTTON, JsWidget.TEXTFIELD,
-				JsWidget.CHART, JsWidget.CHECKBOX, JsWidget.GUI_DIALOG, JsWidget.PANEL, JsWidget.TAB);
+				JsWidget.CHART, JsWidget.CHECKBOX, JsWidget.GUI_DIALOG, JsWidget.PANEL, JsWidget.TAB, JsWidget.LABEL);
 	}
 	
 	@GET
@@ -200,6 +239,22 @@ public class RuntimeResource {
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setPresentation(@QueryParam("div") String div, @QueryParam("presentation") String presentation) {
 		UiLayout.getInstance().setPresentation(div, presentation);
+		return "OK";
+	}
+
+	@GET
+	@Path("setCustom")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String setCustom(@QueryParam("div") String div, @QueryParam("custom") String custom) {
+		UiLayout.getInstance().setCustom(div, custom);
+		return "OK";
+	}
+	
+	@GET
+	@Path("cutPaste")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String cutPaste(@QueryParam("newBaseDiv") String newBaseDiv, @QueryParam("itemDiv") String itemDiv) {
+		UiLayout.getInstance().cutPaste(newBaseDiv, itemDiv);
 		return "OK";
 	}
 }

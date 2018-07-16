@@ -1,24 +1,7 @@
 $(function() {	
-	$(document).ready(function() {	
-		$('#dialog').dialog({
-			  autoOpen: false,
-			  title: 'GUI ID',
-			  closeOnEscape: false,
-			  modal: true,
-			  buttons: {
-			    "OK": function(){
-			      $(this).dialog('close');
-			      addDialog($('#dialogPanelId').val());
-			    }
-			    ,
-			    "Cancel": function(){
-			      $(this).dialog('close');
-			    }
-			  },
-			width: 400,
-			height: 300
-		});	
-					
+	$(document).ready(function() {				
+		$( "#menu" ).menu();
+			
 		var layout = new LayoutBuilder('root', '', function(widgetType, baseId, info) {
 			$('#widgetType').val(widgetType);
 			$('#layout').val(info.layout);
@@ -26,6 +9,7 @@ $(function() {
 			$('#css').val(info.css);
 			$('#id').val(info.id);
 			$('#presentation').val(info.presentation);
+			$('#custom').val(info.custom);
 			$('#uid').text(baseId);
 		});
 	
@@ -38,7 +22,26 @@ $(function() {
 			   }
 			});	
 		});	
-		
+	
+		$('#dialog').dialog({
+			  autoOpen: false,
+			  title: 'GUI ID',
+			  closeOnEscape: false,
+			  modal: true,
+			  buttons: {
+			    "OK": function(){
+			      $(this).dialog('close');
+			      layout.addDialog($('#dialogPanelId').val());
+			    }
+			    ,
+			    "Cancel": function(){
+			      $(this).dialog('close');
+			    }
+			  },
+			width: 400,
+			height: 300
+		});	
+			
 		$('#edit').change(function() {
 			var checked = $('#edit').prop('checked');
 			if (checked == true) {
@@ -148,6 +151,20 @@ $(function() {
 		    if (e.keyCode == 13) {
 		        layout.setPresentation($('#presentation').val());
 		    }
+		});
+		$('#custom').keydown(function(e) {
+		    if (e.keyCode == 13) {
+		        layout.setCustom($('#custom').val());
+		    }
+		});
+		$('#addDialog').click(function(e) {
+			$('#dialog').dialog("open");
+		});
+		$('#cut').click(function(e) {
+			layout.cut();
+		});
+		$('#paste').click(function(e) {
+			layout.paste();
 		});
 	});
 });

@@ -12,6 +12,42 @@ div.margin * {
 	margin:1px;
 }
 
+.tabs-top { 
+    padding: 0px; 
+} 
+.tabs-top .ui-tabs-nav { 
+    background: transparent; 
+    border-width: 0px 0px 1px 0px; 
+    -moz-border-radius: 0px; 
+    -webkit-border-radius: 0px; 
+    border-radius: 0px; 
+} 
+.tabs-top .ui-tabs-panel { 
+    margin: 0em 0.2em 0.2em 0.2em; 
+}
+
+.tabs-bottom {
+	position:relative;
+	padding-bottom:3em;
+}
+
+.tabs-bottom > .ui-tabs-nav {
+	position:absolute;
+	left:0.25em;
+	right:0.25em;
+	bottom:0.25em;
+	padding:0em 0.2em 0.2em;
+}
+
+.tabs-bottom > .ui-tabs-nav li {
+	top:-1px;
+	border-top:none;
+	border-bottom:1px solid #ccc !important;
+	-moz-border-radius:0px 0px 4px 4px;
+	-webkit-border-radius: 0px 0px 4px 4px;
+	border-radius:0px 0px 4px 4px;
+}
+
 div.Root {
 	position:relative;
 	display:block;
@@ -23,7 +59,7 @@ div.FlowLayout {
 	position:relative;
 	display:inline;
 }
-div.FlowLayout span.title {
+div.FlowLayout .title {
 	display:inline;	
 }
 
@@ -31,7 +67,7 @@ div.AbsoluteLayout {
 	position:absolute;
 	display:none;
 }
-div.AbsoluteLayout span.title {
+div.AbsoluteLayout .title {
 	display:inline-block;
 	width:40%;
 }
@@ -41,9 +77,23 @@ div.VerticalLayout {
 	display:block;	
 			
 }
-div.VerticalLayout span.title {
+div.VerticalLayout .title {
 	display:inline-block;
 	width:40%;
+}
+
+div.VerticalLayout .currentValue {
+	display:inline-block;
+	width:50%;
+}
+
+div.VerticalLayout .unit {
+	display:inline-block;
+	width:10%;
+}
+div.TabContent{
+	width:100%;
+	height:100%;
 }
 
 div.selected {
@@ -52,21 +102,44 @@ div.selected {
  }
  
 div.itemBox > div.base {
-	font-size:13px;
+	font-size:16px;
  	margin:1px;
 	position:relative;
 	display:block;	
+	width:98%;
+	height:60px;
+	align:center;
 }
 
-div.itemBox span.title {
+div.itemBox .title {
+	font-size:16px;
 	display:inline-block;
 	width:40%;
 }
-
-div.itemBox input {
-	height:20px;
+div.itemBox .currentValue {
+	font-size:16px;
+	display:inline-block;
+	width:40%;
+}
+div.itemBox .unit {
+	font-size:16px;
+	display:inline-block;
+	width:10%;
+}
+div.itemBox button {
+	height:100%;
+	width:100%;
 }
 
+div.fbTitle {
+	font-size:16px;
+}
+
+div.fbValue {
+	font-size:16px;
+	font-weight:bold;
+	color:red;
+}
 
 div.depPane {
  	border: 1px black solid;
@@ -75,6 +148,32 @@ div.depPane {
  	display: inline-block;
  }
  
+div.BigGrid .ui-button-text {
+	vertical-align:text-bottom;
+	font-size:18px;
+}
+
+div.BigGrid .ui-button {
+	
+	width:120px;
+	height:120px;
+	margin:10px;
+	padding: 2px;
+	font-size:18px;
+}
+div.BigGrid fieldset {
+	margin:2px;
+	padding: 2px;
+}
+div.BigGrid legend {
+	font-size:18px;
+}
+div.BigGrid input {
+	margin:2px;
+	padding: 2px;
+	font-size:18px;
+}
+
 div.big * {
  	font-size:20px;
 }

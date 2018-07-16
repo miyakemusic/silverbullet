@@ -141,8 +141,16 @@ $(function() {
 					var root = createWidget('root', msg);
 					$('#' + root.baseId).removeClass('Absolute');
 					$('#' + root.baseId).addClass('Root');
+					updateAllWidgetsValue();
 			   }
 			});	
+		}
+		
+		function updateAllWidgetsValue() {
+		  	for (var j in map) {
+		  		var widget = map[j];
+				widget.updateValue();
+		  	}			
 		}
 		
 		function createWidget(parent, pane) {

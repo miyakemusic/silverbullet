@@ -11,7 +11,7 @@ public class JsProperty {
 	private String unit;
 	private List<ListDetailElement> elements = new ArrayList<>();
 	private String currentValue;
-	
+
 	public String getId() {
 		return id;
 	}
@@ -41,7 +41,5 @@ public class JsProperty {
 	}
 	public void setCurrentValue(String currentValue) {
 		this.currentValue = currentValue;
-	}
-	
-	
+	}	
 }

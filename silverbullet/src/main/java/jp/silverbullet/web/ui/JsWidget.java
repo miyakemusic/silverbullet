@@ -20,6 +20,7 @@ public class JsWidget {
 	public static final String CHECKBOX = "CHECKBOX";
 	public static final String GUI_DIALOG = "GUI_DIALOG";
 	public static final String TAB = "TAB";
+	public static final String LABEL = "LABEL";
 	
 	private String id = "";
 	private String presentation = "";
@@ -33,6 +34,7 @@ public class JsWidget {
 	private int unique;
 	private String styleClass;
 	private String css;
+	private String custom;
 	
 	public JsWidget() {
 		this.unique = this.hashCode();
@@ -122,6 +124,14 @@ public class JsWidget {
 
 	public void setPresentation(String presentation) {
 		this.presentation = presentation;
+	}
+
+	public String getCustom() {
+		return custom;
+	}
+
+	public void setCustom(String custom) {
+		this.custom = custom;
 	}
 
 	

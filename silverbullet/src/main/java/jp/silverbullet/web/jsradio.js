@@ -60,8 +60,9 @@ class JsComboBox {
 		$('#' + this.titleId).text(property.title);
 		
 		this.comboId = 'combo' + this.baseId;
-		$('#' + this.baseId).append('<SELECT id=' + this.comboId + '></SELECT>');
-		$('#' + this.baseId).append('<span id="' + this.unitId + '"></span>');
+//		$('#' + this.baseId).append('<SELECT id="' + this.comboId + '" class="currentValue"></SELECT>');
+		$('#' + this.baseId).append('<SELECT id="' + this.comboId + '"></SELECT>');
+		$('#' + this.baseId).append('<span id="' + this.unitId + '" class="unit"></span>');
  		$('#' + this.comboId).selectmenu();
       		   		
 		for (var i in property.elements) {
@@ -99,11 +100,11 @@ class JsTextInput {
 		this.unitId = 'unit' + this.baseId;
 		this.textId = 'text' + this.baseId;
 		
-		$('#' + this.baseId).append('<span class="title" id=' + this.titleId + '></span>');
+		$('#' + this.baseId).append('<span class="title" id="' + this.titleId + '"></span>');
 		this.textId = 'text' + this.baseId;
-		$('#' + this.baseId).append('<input type="text" id=' + this.textId + '>');
+		$('#' + this.baseId).append('<input type="text" class="currentValue" id="' + this.textId + '">');
 	
-		$('#' + this.baseId).append('<label id="' + this.unitId + '"></unit>');
+		$('#' + this.baseId).append('<label id="' + this.unitId + '" class="unit"></unit>');
 		
 		var me = this;
 		$('#' + this.textId).change(function() {
@@ -114,10 +115,37 @@ class JsTextInput {
 	}
 }
 
-class JsToggleButton {
-	constructor(baseId, change) {
+class JsLabel {
+	constructor(baseId, info, change) {
 		this.baseId = baseId;
 		this.change = change;
+	}
+	
+	updateValue(property) {
+		$('#' + this.titleId).text(property.title);
+		$('#' + this.valueId).text(property.currentValue);
+		$('#' + this.unitId).text(property.unit);
+	}
+	
+	updateLayout(property) {
+		this.titleId = 'title' + this.baseId;
+		this.valueId = 'value' + this.baseId;
+		this.unitId = 'unit' + this.baseId;
+		
+		var html = '<span id="' + this.titleId + '" class="title"></span>:<span id="' + this.valueId + '" class="currentValue"></span><span id="' + this.unitId + '" class="unit"></span>';
+		$('#' + this.baseId).append(html);
+		this.updateValue(property);
+	}
+}
+
+class JsToggleButton {
+	constructor(baseId, info, change) {
+		this.baseId = baseId;
+		this.change = change;
+		if (info.custom != null && info.custom != "") {
+			this.custom = JSON.parse(info.custom);
+		}
+
 	}
 	
 	updateValue(property) {
@@ -134,7 +162,7 @@ class JsToggleButton {
 					this.nextId = property.elements[0].id;
 					nextTitle = property.elements[0].title;
 				}
-				$('#' + this.buttonId).text(nextTitle);
+				$('#' + this.buttonId).html('<div class="fbTitle">' + property.title + '</div>' + '<div class="fbValue">' + nextTitle + property.unit + '</div>');
 				break;
 			}
 		}
@@ -144,7 +172,13 @@ class JsToggleButton {
 	updateLayout(property) {
 		this.buttonId = 'button' + this.baseId;
 		this.titleId = 'title' + this.baseId;
-		var html = '<fieldset><legend id=' + this.titleId + '>' + property.title + '</legend><button id="' + this.buttonId + '"></button></fieldset>';
+		var html;
+		if (this.custom != undefined && this.custom.frame == true) {
+			html = '<fieldset><legend id=' + this.titleId + '>' + property.title + '</legend><button id="' + this.buttonId + '"></button></fieldset>';
+		}
+		else {
+			html = '<button id="' + this.buttonId + '"></button>';
+		}
 		$('#' + this.baseId).append(html);
 		$('#' + this.buttonId).button();
 		
@@ -199,16 +233,35 @@ class JsCheckBox {
 }
 
 class JsChart {
-	constructor(baseId, change) {
+	constructor(baseId, info, change) {
 		this.baseId = baseId;
 		this.change = change;
+		this.info = info;
 	}
 	
 	updateValue(property) {
-		if (property.currentValue == '') {
-			return;
+		var me = this;
+		if (property.currentValue == 'REQUEST_AGAIN') {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/runtime/getProperty?id=" + me.info.id + '&ext=501',
+			   success: function(property){
+			   		if (property.currentValue != null) {
+						me.updateChart(property);
+					}
+			   }
+			});
 		}
+	}
+	
+	updateLayout(property) {
+		var html = '<canvas id="chart" height="200" width="400"></canvas>';
+		$('#' + this.baseId).append(html);
 		
+		this.updateValue(property);
+	}
+	
+	updateChart(property) {
 		var datasets = [];
 		var dataset = [];
 //		dataset.label = "data";
@@ -224,7 +277,7 @@ class JsChart {
 		
 		var scatterChartData = {
 			datasets: [{
-				label: property.title, //'My First dataset',
+				//label: property.title, //'My First dataset',
 				data: data,
 				showLine: true,
 				showPoint: false,
@@ -238,20 +291,14 @@ class JsChart {
 		Chart.Scatter(ctx, {
 			data: scatterChartData,
 			options: {
-				title: {
-					display: true,
-					text: property.title
-				},
+//				title: {
+//					display: false,
+//					text: property.title
+//				},
 				animation: false,
+				legend: { display: false },
 			}
 		});
-	}
-	
-	updateLayout(property) {
-		var html = '<canvas id="chart" height="200" width="400"></canvas>';
-		$('#' + this.baseId).append(html);
-		
-		this.updateValue(property);
 	}
 }
 
@@ -318,17 +365,19 @@ class JsTable {
 }
 
 class JsDialogButton {
-	constructor(baseId, change) {
+	constructor(baseId, info, change) {
 		this.baseId = baseId;
 		this.buttonId = 'button' + this.baseId;
 		this.dialogId = 'dialog' + this.baseId;
 		
 		this.contentId = 'content' + this.baseId;
 		this.change = change;
+		
+		this.updateLayout(info);
 	}
 		
 	updateLayout(info) {
-		var root = info.id;
+		var root = info.custom;
 		$('#' + this.baseId).append('<Button id="' + this.buttonId + '">' + info.presentation + '</Button>');
 		$('#' + this.buttonId).button();
 		$('#' + this.baseId).append('<div id="' + this.dialogId + '"><div id="' + this.contentId + '"></div></div>');
@@ -356,5 +405,70 @@ class JsDialogButton {
 			var layout = new LayoutBuilder(me.contentId, root);
 			$('#' + me.dialogId).dialog('open');
 		});
+	}
+}
+
+class JsTabPanel {
+	constructor(baseId, info, change) {
+		this.baseId = baseId;
+		this.change = change;
+		this.info = info;
+		this.map = new Map();
+		this.tabMap = new Map();
+		
+		this.parent = $('#' + this.baseId).parent().attr('id');
+		$('#' + this.baseId).remove();			
+		var tab = '<ul>';
+		var content = '';
+		for (var i = 0; i < this.info.children.length; i++) {
+			var child = this.info.children[i];
+
+			var contentId = 'tab-' + this.baseId + "-" + child.unique;
+			var tabTitleId = 'title' + contentId;
+			if (child.custom != undefined && child.custom != '') {
+				try {
+					var custom = JSON.parse(child.custom);
+					this.map[custom.id] = tabTitleId;
+					this.tabMap[custom.id] = i;
+				}
+				catch (e) {
+					tabTitleId = child.presentation;
+				}
+			}
+			var tabTitle = '<span id="' + tabTitleId + '"></span>';//this.info.children[i].presentation;
+			tab += '<li><a href="#' + contentId + '">' + tabTitle + '</a></li>';
+			content += '<div id="' + contentId + '" class="panel TabContent"></div>';
+		}
+		tab +="</ul>"
+		
+		$('#' + this.parent).append('<div id="' + this.baseId + '">' + tab + content + '</div>');
+		$('#' + this.baseId).tabs();
+
+		console.log("tab:" + this.baseId);
+		
+	}
+	
+	updateValue(property) {
+		var index = this.tabMap[property.currentValue];
+		if (index != undefined) {
+			$('#' + this.baseId).tabs("option", "active", index);
+		}
+		
+//		for (var index = 0 ; index < property.elements.length; index++) {
+//			if (property.elements[index].id == property.currentValue) {
+//				//$('#' + this.baseId).tabs({active: index});
+//				$('#' + this.baseId).tabs("option", "active", index+1);
+//				break;
+//			}
+//		}
+	}
+	
+	updateLayout(property) {
+		for (var index = 0 ; index < property.elements.length; index++) {
+			var titleId = this.map[property.elements[index].id];
+			if (titleId != undefined) {
+				$('#' + titleId).text(property.elements[index].title);
+			}
+		}
 	}
 }
