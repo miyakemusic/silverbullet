@@ -110,7 +110,7 @@ public abstract class DependencyEngine {
 	}
 
 	protected void fireResult() {
-		WebSocketBroadcaster.getInstance().sendMessage(this.getChangedIds().toString().replace("[", "").replace("]", ""));
+//		WebSocketBroadcaster.getInstance().sendMessage(this.getChangedIds().toString().replace("[", "").replace("]", ""));
 		for (DependencyListener listener : dependencyListeners){
 			listener.onResult(this.tentativeStore.getChangedHistory());
 		}
@@ -140,7 +140,6 @@ public abstract class DependencyEngine {
 		conditionSatisfied = isConditionSatisfied(specDetail, value);
 		
 		if (!conditionSatisfied) {
-			
 			return;
 		}
 		

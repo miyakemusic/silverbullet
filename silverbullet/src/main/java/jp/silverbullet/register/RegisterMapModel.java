@@ -18,7 +18,6 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javafx.application.Platform;
-import jp.silverbullet.BuilderFx;
 import jp.silverbullet.BuilderModel;
 import jp.silverbullet.handlers.InterruptHandler;
 import jp.silverbullet.handlers.RegisterAccess;
@@ -30,7 +29,7 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 	private long minAddress;
 	private long maxAddress;
 	private BuilderModel builderModel;
-	private RegisterMapListener listener;
+	private Set<RegisterMapListener> listeners = new HashSet<>();
 	private Set<InterruptHandler> interruptHandlers = new HashSet<>();
 	private SvSimulator currentDevice;
 	private SvSimulator simulator;
@@ -147,40 +146,67 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 		BitSet current = this.mapValue.get(address);
 		final int regIndex = getIndex(address);
 		
-		List<RegisterBit> bits = this.map.get(address).getBits().getBits();
-		int offset = 0;
-		int blockNumber = bits.size() -1;
-		for (int i = bits.size()-1; i >= 0; i--) {
-			RegisterBit bit = bits.get(i);
-			int width = this.getBitWidth(bit.getBit());
-			boolean changed = false;
-			int value = 0;
-			for (int j = 0; j < width; j++) {
-				int index = offset + j;
-				if (mask.get(index)) {
-					if (current.get(index) != data.get(index)) {
-						current.set(index, data.get(index));
-						changed = true;
-					}
-					if (data.get(index)) {
-						value += Math.pow(2, j);
-					}
+		SvRegister register = this.map.get(address);
+
+		Set<RegisterBit> changed = new HashSet<>();
+		for (int i = 0; i < RegisterBitArray.REGISTER_WIDTH; i++) {
+			if (mask.get(i)) {
+				if (current.get(i) != data.get(i)) {
+					current.set(i, data.get(i));
+					RegisterBit bit = register.getBits().getRegisterBit(i);
+					changed.add(bit);
 				}
 			}
-			if (changed) {
-				final int num = blockNumber;
-				final int val = value;
-				Platform.runLater(new Runnable() {
-					@Override
-					public void run() {
-						fireUpdate(regIndex, num, val);
-					}
-				});
-				
-			}
-			blockNumber--;
-			offset += width;
 		}
+		RegisterUpdates updates = new RegisterUpdates();
+		updates.setAddress((int)address);
+		updates.setName(register.getName());
+		
+		for (RegisterBit bit : changed) {
+			int val = new BitSetToIntConverter().convert(current.get(bit.getStartBit(), bit.getEndBit() + 1));
+			BitUpdates info = new BitUpdates(bit.getName(), val);
+			updates.getBits().add(info);
+		}
+//		mask.stream().forEach(i -> {
+//			current.set(i, true);
+//        });
+//		 for (int i = mask.nextSetBit(0); i >= 0; i = mask.nextSetBit(i+1)) {
+//		     current.set(i, true);//data.get(i);
+//		 }
+		fireUpdate(regIndex, 0, 0, address, current, updates);
+//		int offset = 0;
+//		int blockNumber = bits.size() -1;
+//		for (int i = bits.size()-1; i >= 0; i--) {
+//			RegisterBit bit = bits.get(i);
+//			int width = this.getBitWidth(bit.getBit());
+//			boolean changed = false;
+//			int value = 0;
+//			for (int j = 0; j < width; j++) {
+//				int index = offset + j;
+//				if (mask.get(index)) {
+//					if (current.get(index) != data.get(index)) {
+//						current.set(index, data.get(index));
+//						changed = true;
+//					}
+//					if (data.get(index)) {
+//						value += Math.pow(2, j);
+//					}
+//				}
+//			}
+//			if (changed) {
+//				final int num = blockNumber;
+//				final int val = value;
+//				Platform.runLater(new Runnable() {
+//					@Override
+//					public void run() {
+//						fireUpdate(regIndex, num, val, address, current);
+//					}
+//				});
+//				
+//			}
+//			blockNumber--;
+//			offset += width;
+//		}
 	}
 
 	private int getIndex(long address) {
@@ -213,8 +239,8 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 		return RegisterValueCalculator.getValue(bits, current);
 	}
 
-	public void setOnChange(RegisterMapListener listener) {
-		this.listener = listener;
+	public void addListener(RegisterMapListener listener) {
+		this.listeners.add( listener );
 	}
 
 	public String getAddress(int regIndex) {
@@ -229,8 +255,8 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 		}
 		lock.readLock().unlock();
 		
-		if (this.listener != null) {
-			this.listener.onInterrupt();
+		for (RegisterMapListener listener :this.listeners) {
+			listener.onInterrupt();
 		}
 		monitor.interrupt();
 	}
@@ -249,24 +275,25 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 		lock.writeLock().unlock();
 	}
 	
-	public void setValue(int regIndex, int block, int value) {
-		String bits = getBits(regIndex, block);
-		BitSet current = getCurrentValue(regIndex);
-		RangeGetter range = new RangeGetter(bits);
-		if (range.isRange()) {
-			for (int index = range.getStart(); index <= range.getStop(); index++) {
-				long v = (value >> (index-range.getStart())) & 0x01;
-				current.set(index, v == 1);
-			}
-			fireUpdate(regIndex, block, value);
-		}
-		else {
-			String tmp = bits.replace("[", "").replace("]", "");
-			current.set(Integer.valueOf(tmp), value == 1 ? true : false);
-			fireUpdate(regIndex, block, value);
-		}
-		monitor.writeIo(this.getAddAt(regIndex), current, getBitSet(this.getAddAt(regIndex), block));
-	}
+//	public void setValue(int regIndex, int block, int value) {
+//		long address = this.getAddAt(regIndex);
+//		String bits = getBits(regIndex, block);
+//		BitSet current = getCurrentValue(regIndex);
+//		RangeGetter range = new RangeGetter(bits);
+//		if (range.isRange()) {
+//			for (int index = range.getStart(); index <= range.getStop(); index++) {
+//				long v = (value >> (index-range.getStart())) & 0x01;
+//				current.set(index, v == 1);
+//			}
+//			fireUpdate(regIndex, block, value, address, current);
+//		}
+//		else {
+//			String tmp = bits.replace("[", "").replace("]", "");
+//			current.set(Integer.valueOf(tmp), value == 1 ? true : false);
+//			fireUpdate(regIndex, block, value, address, current);
+//		}
+//		monitor.writeIo(this.getAddAt(regIndex), current, getBitSet(this.getAddAt(regIndex), block));
+//	}
 
 	private BitSet getBitSet(long address, int block) {
 		List<RegisterBit> bits = this.map.get(address).getBits().getBits();
@@ -309,12 +336,10 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 		monitor.updateIo(address, data, mask);
 	}
 
-	protected void fireUpdate(int regIndex, int num, int val) {
-		if (listener == null) {
-			return;
+	protected void fireUpdate(int regIndex, int num, int val, long address, BitSet bitSet, RegisterUpdates updates) {
+		for (RegisterMapListener listener :this.listeners) {
+			listener.onDataUpdate(regIndex, num, val, address, bitSet, updates);
 		}
-		
-		listener.onDataUpdate(regIndex, num, val);
 	}
 
 	@Override
@@ -331,16 +356,15 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 		    dis.close();
 		    
 		    long address = this.getAddAt(regIndex);
-//		    FileBasedBlock data = new FileBasedBlock(file.getAbsolutePath(), fileData);
-//		    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-//		    ObjectOutputStream dos = new ObjectOutputStream(bos);
-//		    dos.writeObject(data);
 		    this.blockData.put(address, fileData);
 		    this.blockNameMap.put(address, file.getAbsolutePath());
 		    monitor.updateBlock(address, fileData);
-		    //currentDevice.writeBlock(this.getAddAt(regIndex), bos.toByteArray());
 
-		    this.fireUpdate(regIndex, block, -1);
+		    RegisterUpdates updates = new RegisterUpdates();
+		    updates.setAddress((int)address);
+		    updates.setName(this.map.get(address).getName());
+		    
+		    this.fireUpdate(regIndex, block, -1, address, new BitSet(), updates);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -411,5 +435,9 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 	public void onUpdateBlockData(long address, byte[] data) {
 		this.blockData.put(address, data);
 		this.monitor.updateBlock(address, data);
+	}
+
+	public Map<Long, BitSet> getMapValue() {
+		return this.mapValue;
 	}
 }

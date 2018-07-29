@@ -68,6 +68,11 @@ $(function() {
 		initWebSocket();
 		
 		function initWebSocket() {
+			new MyWebSocket(function(msg) {
+				var ids = msg.split(',');
+	      		layout.onPropertyUpdate(ids);
+			}
+			, 'VALUES');
 			////////// WebSocket //////////
 			var connection  = new WebSocket("ws://localhost:8081/websocket");
 			// When the connection is open, send some data to the server

@@ -1,6 +1,7 @@
 package jp.silverbullet.register;
 
 import java.io.File;
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,7 @@ public class RegisterMapUi extends VBox implements RegisterMapListener {
 	public RegisterMapUi(final RegisterMapModel model) {
 		this.model = model;
 //		this.model.setSimulatorClass("SvOsaSimulator");
-		model.setOnChange(this);
+		model.addListener(this);
 		model.update();
 		ScrollPane pane = new ScrollPane();
 		pane.setMinHeight(600);
@@ -104,7 +105,7 @@ public class RegisterMapUi extends VBox implements RegisterMapListener {
 								button.setOnAction(new EventHandler<ActionEvent>() {
 									@Override
 									public void handle(ActionEvent arg0) {
-										model.setValue(ii, jj, button.isSelected() ? 1 : 0);
+									//	model.setValue(ii, jj, button.isSelected() ? 1 : 0);
 									}
 								});
 								control = button;
@@ -127,7 +128,7 @@ public class RegisterMapUi extends VBox implements RegisterMapListener {
 										if (arg0.getButton().equals(MouseButton.PRIMARY)) {
 											try {
 												String text = MyMessageBox.showInput(button.getText(), hbox);
-												model.setValue(ii, jj, Integer.valueOf(text));
+									//			model.setValue(ii, jj, Integer.valueOf(text));
 											} catch (Exception e) {
 												// TODO Auto-generated catch block
 												e.printStackTrace();
@@ -232,35 +233,36 @@ public class RegisterMapUi extends VBox implements RegisterMapListener {
 	}
 
 	@Override
-	public void onDataUpdate(int regIndex, int blockNumber, int value3) {
-		for (Control control : buttons.values()) {
-			if (control.getStyle().contains("-fx-base:red;")) {
-				control.setStyle(control.getStyle().replace("-fx-base:red;", ""));
-			}
-		}
-		Control control = this.buttons.get(regIndex + "x" +  blockNumber);
+	public void onDataUpdate(int regIndex, int blockNumber, int value3, long address, BitSet bitSet, RegisterUpdates updates) {
 		
-		String text = model.getValue(regIndex, blockNumber);
-		if (text.startsWith("File:")) {
-			((Button)control).setText(String.valueOf(text));
-		}
-		else {
-			int value = Integer.valueOf(text);
-				
-			if (control == null) {
-				return;
-			}
-			if (control instanceof Button) {
-				((Button)control).setText(String.valueOf(value));
-			}
-			else if (control instanceof ToggleButton) {
-				((ToggleButton)control).setText(String.valueOf(value));
-			}
-			else if (control instanceof Label) {
-				((Label)control).setText(String.valueOf(value));
-			}
-		}
-		control.setStyle(control.getStyle() + "-fx-base:red;");
+//		for (Control control : buttons.values()) {
+//			if (control.getStyle().contains("-fx-base:red;")) {
+//				control.setStyle(control.getStyle().replace("-fx-base:red;", ""));
+//			}
+//		}
+//		Control control = this.buttons.get(regIndex + "x" +  blockNumber);
+//		
+//		String text = model.getValue(regIndex, blockNumber);
+//		if (text.startsWith("File:")) {
+//			((Button)control).setText(String.valueOf(text));
+//		}
+//		else {
+//			int value = Integer.valueOf(text);
+//				
+//			if (control == null) {
+//				return;
+//			}
+//			if (control instanceof Button) {
+//				((Button)control).setText(String.valueOf(value));
+//			}
+//			else if (control instanceof ToggleButton) {
+//				((ToggleButton)control).setText(String.valueOf(value));
+//			}
+//			else if (control instanceof Label) {
+//				((Label)control).setText(String.valueOf(value));
+//			}
+//		}
+//		control.setStyle(control.getStyle() + "-fx-base:red;");
 	}
 
 	@Override
@@ -288,6 +290,4 @@ public class RegisterMapUi extends VBox implements RegisterMapListener {
 			
 		}.start();
 	}
-
-
 }

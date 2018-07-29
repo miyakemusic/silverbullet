@@ -13,15 +13,27 @@ public class RegisterBit {
 	private String description = "";
 	private String definition = "";
 	private String propertyFormula = "";
+	private int size;
 	public RegisterBit(){}
 	
 	public RegisterBit(String name, int bitFrom, int bitTo, ReadWriteType type, String description, String definition2) {
 		super();
-		this.bit = "[" + bitTo + ":" + bitFrom + "]";
+//	this.bit = "[" + bitTo + ":" + bitFrom + "]";
+		this.bit = bitTo + ":" + bitFrom;
 		this.type = type;
 		this.description = description;
 		this.name = name;
 		this.definition = definition2;
+		calcSize();
+	}
+
+	public void calcSize() {
+		if (this.bit.contains(":")) {
+			this.size = Integer.valueOf(this.bit.split(":")[0]) - Integer.valueOf(this.bit.split(":")[1])+1; 
+		}
+		else {
+			this.size = 1;
+		}
 	}
 
 	public ReadWriteType getType() {
@@ -54,6 +66,7 @@ public class RegisterBit {
 
 	public void setBit(String bit) {
 		this.bit = bit;
+		calcSize();
 	}
 
 	public String getPropertyFormula() {
@@ -87,5 +100,46 @@ public class RegisterBit {
 
 	public boolean isSingle() {
 		return !this.bit.contains(":");
+	}
+
+	public int getSize() {
+		return size;
+	}
+
+	public void setSize(int size) {
+		this.size = size;
+		int startBit = 0;
+		if (this.bit.contains(":")) {
+			startBit = Integer.valueOf(this.bit.split(":")[1]);
+		}
+		else {
+			startBit = Integer.valueOf(bit);
+		}
+		int endBit = startBit + size - 1;
+		if (size == 1) {
+			this.bit = String.valueOf(startBit);
+		}
+		else {
+			this.bit = endBit + ":" + startBit;
+		}
+	}
+
+	public int getStartBit() {
+		return getBitRange(1);
+	}
+	
+	public int getEndBit() {
+		return getBitRange(0);
+	}
+	
+	private int getBitRange(int index) {
+		String startBit;
+		if (this.bit.contains(":")) {
+			startBit = this.bit.split(":")[index];
+		}
+		else {
+			startBit = this.bit;
+		}
+		return Integer.valueOf(startBit);
 	}
 }

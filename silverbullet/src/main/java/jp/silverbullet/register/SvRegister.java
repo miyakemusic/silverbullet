@@ -1,5 +1,7 @@
 package jp.silverbullet.register;
 
+import jp.silverbullet.register.RegisterBit.ReadWriteType;
+
 public class SvRegister {
 
 	private String name;
@@ -55,6 +57,17 @@ public class SvRegister {
 
 	public boolean isBlock() {
 		return this.address.contains("-");
+	}
+
+	public void addBit(String name, ReadWriteType rw, String description2, String definition2) {
+		//for (RegisterBit bit : this.bits.getBits()) {
+			
+		//}
+		this.bits.add(name, rw, description2, definition2);
+	}
+
+	public int getDecAddress() {
+		return Integer.parseInt(this.getAddress().replace("0x", ""), 16);
 	}
 	
 	

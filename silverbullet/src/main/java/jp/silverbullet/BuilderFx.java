@@ -72,6 +72,7 @@ import jp.silverbullet.uidesigner.pane.UiElement;
 import jp.silverbullet.uidesigner.widgets.WidgetFactoryFx;
 import jp.silverbullet.web.BuilderServer;
 import jp.silverbullet.web.BuilderServerListener;
+import jp.silverbullet.web.WebClientManager;
 import jp.silverbullet.handlers.HandlerProperty;
 import jp.silverbullet.handlers.HandlerPropertyFx;
 import javafx.stage.Modality;
@@ -86,7 +87,7 @@ public abstract class BuilderFx extends Application {
 	private BuilderModel builderModel;// = new BuilderModelImpl();
 	private static DesignerModel designerModel;// = new DesignerModelImpl(builderModel);
 	private TestRecorder testRecorder;// = new TestRecorder(builderModel);
-	private RegisterMapModel registerMapModel;// = new RegisterMapModel(builderModel);
+	private static RegisterMapModel registerMapModel;// = new RegisterMapModel(builderModel);
 
 	public static DesignerModel getModel() {
 		return designerModel;
@@ -328,6 +329,12 @@ public abstract class BuilderFx extends Application {
 				// TODO Auto-generated method stub
 				
 			}
+
+			@Override
+			public void onCompleted(String wenmessage) {
+				// TODO Auto-generated method stub
+				
+			}
         });
         
         //builderModel.setDeviceDriver(testRecorder);
@@ -422,6 +429,7 @@ public abstract class BuilderFx extends Application {
 	}
 
 	protected void startWebServer() {
+		new WebClientManager();
 		webServer = new BuilderServer(8081, new BuilderServerListener() {
 
 			@Override
@@ -827,6 +835,10 @@ public abstract class BuilderFx extends Application {
 
 	public static void main(String[] args) {
 		launch(args);
+	}
+
+	public static RegisterMapModel getRegisterMapModel() {
+		return registerMapModel;
 	}
 
 }

@@ -42,19 +42,7 @@ public class RegisterAccess {
 		this.driver.removeInterruptHandler(interruptHandler);
 	}
 	
-	public void writeIo(long address, final boolean value, int bit) {
-//		int i = value ? 1 : 0;
-//		final Integer v = i << bit;
-
-//		Converter converter = new Converter() {
-//			@Override
-//			protected void handle(DataOutputStream out) throws IOException {
-//				out.writeInt(v);
-//			}
-//		};
-		
-//		byte[] d = converter.getData();
-		
+	public void writeIo(long address, final boolean value, int bit) {	
 		BitSet data =new BitSet(32);
 		data.set(bit, value);
 		BitSet mask = new BitSet(32);

@@ -1,6 +1,7 @@
 package jp.silverbullet.register;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -16,6 +17,10 @@ public class RegisterProperty {
 		return register;
 	}
 
+	public void sort() {
+		Collections.sort(this.registers, new AddressComparator());
+	}
+	
 	public List<SvRegister> getRegisters() {
 		return registers;
 	}
@@ -33,6 +38,22 @@ public class RegisterProperty {
 			this.registers.add(reg);
 		}
 	}
-	
-	
+
+	public SvRegister getRegisterByName(String regName) {
+		for (SvRegister register : this.registers) {
+			if (register.getName().equals(regName)) {
+				return register;
+			}
+		}
+		return null;
+	}
+
+	public SvRegister getRegisterByAddress(long address) {
+		for (SvRegister register : this.registers) {
+			if (register.getDecAddress() == address) {
+				return register;
+			}
+		}
+		return null;
+	}
 }

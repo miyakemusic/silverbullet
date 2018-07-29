@@ -1,3 +1,25 @@
+.regtable table, td, th{
+	border:1px solid;
+	table-layout:fixed;
+	width:100%;
+}
+
+.bittable td, th {
+	border:1px solid;
+	width:100%;
+	table-layout:fixed;
+}
+.col1 {
+	width: 40px;
+}
+.col2 {
+	width: 200px;
+}
+
+td.unused {
+	background-color: lightgray;
+}
+
 div.panel {
  	border: 1px black solid;
  	background-color: lightgray;
@@ -185,6 +207,10 @@ div.small * {
 } 
 div.noborder {
 	border: 0px;
+}
+
+button.changed {
+	background-color: red;
 }
 
  input.small {

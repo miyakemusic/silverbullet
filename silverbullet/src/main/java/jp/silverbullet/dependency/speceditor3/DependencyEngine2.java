@@ -69,7 +69,10 @@ public abstract class DependencyEngine2 {
 			this.cachedPropertyStore.commit();
 		}
 		
-		WebSocketBroadcaster.getInstance().sendMessage(this.getChangedIds().toString().replace("[", "").replace("]", "").replaceAll(" ", ""));
+		for (DependencyListener listener : this.listeners) {
+			listener.onCompleted(this.getChangedIds().toString().replace("[", "").replace("]", "").replaceAll(" ", ""));
+		}
+//		WebSocketBroadcaster.getInstance().sendMessage(this.getChangedIds().toString().replace("[", "").replace("]", "").replaceAll(" ", ""));
 	}
 	
 	private List<ChangedProperty> doDependency(DependencyBuilder3 builder, List<DependencyProperty> specs) throws RequestRejectedException {

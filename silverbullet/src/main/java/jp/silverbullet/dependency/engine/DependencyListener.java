@@ -11,4 +11,6 @@ public interface DependencyListener {
 
 	void onResult(Map<String, List<ChangedItemValue>> changedHistory);
 
+	void onCompleted(String message);
+
 }
