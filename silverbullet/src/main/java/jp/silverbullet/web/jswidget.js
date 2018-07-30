@@ -3,7 +3,10 @@ class JsWidget {
 		this.info = info;
 		
 		this.baseId = parent + "-" + info.unique;
-		if ($('#tab-' + this.baseId).size() == 1) {
+		
+		var obj = $('#tab-' + this.baseId);
+		//if ($('#tab-' + this.baseId).size() == 1) {
+		if ($('#tab-' + this.baseId).length == 1) {
 			this.baseId = 'tab-' + this.baseId;
 		}
 		

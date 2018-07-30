@@ -4,10 +4,24 @@
 <script type="text/javascript" src="jquery-ui.js"></script> 
 <script type="text/javascript" src="handsontable.full.js"></script>
 <script type="text/javascript" src="idtable.js"></script>
-
+<script type="text/javascript" src="ideditorclass.js"></script>
+<script type="text/javascript" src="idtable.js"></script> 
+<script type="text/javascript" src="idselectdialog.js"></script>
+<script type="text/javascript" src="layoutbuilder.js"></script>
+<script type="text/javascript" src="jsradio.js"></script>  
+<script type="text/javascript" src="jswidget.js"></script> 
+<script type="text/javascript" src="designer.js"></script>
+<script type="text/javascript">
+$(function() {
+	$(document).ready(function(){
+		new DesignerClass('main');
+	});
+})
+</script>
 <link rel="stylesheet" media="screen" href="handsontable.full.css">
 <link rel="stylesheet" type="text/css" href="jquery-ui.css">
 <link rel="stylesheet" type="text/css" href="jquery.contextMenu.css">
+<link rel="stylesheet" type="text/css" href="mycss.css">
 <head>
 <meta charset="UTF-8">
 <title>Users</title>
@@ -17,5 +31,7 @@
 <div><a href='dependency.html'>Dependency</a></div>
 <div><a href='register.html'>Registers</a></div>
 <div><a href='runtime.html'>Runtime</a></div>
+
+<div id='main'></div>
 </body>
 </html>
