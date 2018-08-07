@@ -1,4 +1,5 @@
 class MyWebSocket {
+	
 	constructor(callback, type) {
 		this.type = type;
 		////////// WebSocket //////////
@@ -21,6 +22,8 @@ class MyWebSocket {
 		  		callback(obj.value);
 		  	}
 	    };
+	    
 		/////////////////////////////////////////////	
 	}
+
 }

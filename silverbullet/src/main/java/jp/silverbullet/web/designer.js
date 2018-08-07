@@ -1,5 +1,7 @@
 class DesignerClass {
 	constructor(div) {
+		var customDef;
+		
 		var prefix = 'designer';
 		var idToolbar = prefix + 'toolBar';
 		var idAdd = prefix + 'add';
@@ -10,18 +12,17 @@ class DesignerClass {
 		var idWidgetType = prefix + 'widgetType';
 		$('#' + div).append('<div id="' + idToolbar + '"></div>');
 		$('#' + idToolbar).append('<button id="' + idAdd + '">Add Id</button>');
-		
-		$('#' + idToolbar).append('<button id="' + idAdd + '">Add</button>');
 		$('#' + idToolbar).append('<button id="' + idAddPanel + '">Add Panel</button>');
 		$('#' + idToolbar).append('<button id="' + idRemove + '">Remove</button>');
 		$('#' + idToolbar).append('<button id="' + idAddDialog + '">Add Dialog</button>');
 		$('#' + idToolbar).append('<select id="' + idLayout + '"></select>');
 		$('#' + idToolbar).append('<select id="' + idWidgetType + '"></select>');
 		
-		
 		var idToolbar2 = prefix + 'toolBar2';
 		var idAddTab = prefix + 'addTab';
 		var idStyleClass = prefix + 'styleClass';
+		var idStyleClasses = prefix + 'styleClasses';
+		var idAddStyleClass = prefix + 'addStyleClasses';
 		var idCss = prefix + 'css';
 		var idId = prefix + 'id';
 		var idCustom = prefix + 'custom';
@@ -36,10 +37,13 @@ class DesignerClass {
 		var idRoot = prefix + 'root';
 		var idDialog = prefix + 'dialog';
 		var idDialogPanel = prefix + 'dialogPanel';
+		var idCustomPropTable = prefix + 'customPropTable';
 		
 		$('#' + div).append('<div id="' + idToolbar2 + '"></div>');
 		$('#' + idToolbar2).append('<button id="' + idAddTab + '">Add Tab</button>');
 		$('#' + idToolbar2).append('<span>Style Class<input type="text" id="' + idStyleClass + '"></span>');
+		$('#' + idToolbar2).append('Class<select id="' + idStyleClasses + '"></select>');
+		$('#' + idToolbar2).append('<button id="' + idAddStyleClass + '">Add Style Class</button>');
 		$('#' + idToolbar2).append('<span>CSS<input type="text" id="' + idCss + '"></span>');
 		$('#' + idToolbar2).append('<span>ID<input type="text" id="' + idId + '"></span>');
 		$('#' + idToolbar2).append('<span>Custom<input type="text" id="' + idCustom + '"></span>');
@@ -51,10 +55,15 @@ class DesignerClass {
 		$('#' + idToolbar2).append('<button id="' + idPaste + '">Paste</button>');
 		$('#' + idToolbar2).append('<div id="' + idUid + '"></div>');
 		$('#' + idToolbar2).append('<div id="' + idInfo + '"></div>');
-		$('#' + idToolbar2).append('<div id="' + idRoot + '"></div>');
-		$('#' + idToolbar2).append('<div id="' + idDialog + '"><input type="text" id="' + idDialogPanel + '"></div>');
+		
+		var idMainDiv = prefix + 'main';
+		$('#' + div).append('<div id="' + idMainDiv + '"></div>');
+		$('#' + idMainDiv).append('<div id="' + idRoot + '"></div>');
+		$('#' + idMainDiv).append('<div id="' + idDialog + '"><input type="text" id="' + idDialogPanel + '"></div>');
+		$('#' + idMainDiv).append('<table id="' + idCustomPropTable + '"></table>');
 
 		var me = this;
+		var copiedDiv;
 		
 		var layout = new LayoutBuilder(idRoot, '', function(widgetType, baseId, info) {
 			$('#' + idWidgetType).val(widgetType);
@@ -65,9 +74,10 @@ class DesignerClass {
 			$('#' + idPresentation).val(info.presentation);
 			$('#' + idCustom).val(info.custom);
 			$('#' + idUid).text(baseId);
+			updateCustomPropTable(widgetType, info.custom);
 		});
 	
-		var dialog = new IdSelectDialog('control', function(ids) {
+		var dialog = new IdSelectDialog(div, function(ids) {
 			$.ajax({
 			   type: "GET", 
 			   url: "http://" + window.location.host + "/rest/runtime/addWidget?id=" + ids + "&div=" + layout.selectedDiv,
@@ -108,14 +118,14 @@ class DesignerClass {
 		});
 		
 		$('#' + idLayout).change(function() {
-			layout.changeLayout($("#" + idLayout).val());
+			changeLayout($(this).val());
 		});
 		
 		$('#' + idWidgetType).change(function() {
-			layout.changeWidgetType($("#" + idWidgetType).val());
+			changeWidgetType($("#" + idWidgetType).val());
 		});
 		
-		$('#' + idAddId).click(function(e) {
+		$('#' + idAdd).click(function(e) {
 			dialog.showModal();
 		});
 				
@@ -127,25 +137,6 @@ class DesignerClass {
 	      		layout.onPropertyUpdate(ids);
 			}
 			, 'VALUES');
-			////////// WebSocket //////////
-			var connection  = new WebSocket("ws://localhost:8081/websocket");
-			// When the connection is open, send some data to the server
-			connection.onopen = function () {
-	//		  connection.send('Ping'); // Send the message 'Ping' to the server
-			};
-			
-			// Log errors
-			connection.onerror = function (error) {
-			  //console.log('WebSocket Error ' + error);
-			};
-			
-			// Log messages from the server
-			connection.onmessage = function (e) {
-			  var ids = e.data.split(',');
-		      layout.onPropertyUpdate(ids);
-		    };
-			/////////////////////////////////////////////		
-		
 		}
 	
 		$.ajax({
@@ -167,63 +158,240 @@ class DesignerClass {
 				}
 		   }
 		});				
-	
+
+		$.ajax({
+		   type: "GET", 
+		   url: "http://" + window.location.host + "/rest/runtime/getStyleClasses",
+		   success: function(msg){
+				for (var i in msg) {
+					$("#" + idStyleClasses).append($("<option>").val(msg[i]).text(msg[i]));
+				}
+		   }
+		});		
+		
+		$.ajax({
+		   type: "GET", 
+		   url: "http://" + window.location.host + "/rest/runtime/getCustromDefinition",
+		   success: function(msg){
+		       customDef = msg;
+		       
+				for (var i in msg) {
+					var list = msg[i];
+					for (var j in list) {
+						var o = list[j];
+						console.log(o);
+					}
+				}
+		   }
+		});			
 		
 		$('#' + idUpdate).click(function(e) {
 			layout.updateUI();
 		});
 		
 		$('#' + idAddPanel).click(function(e) {
-			layout.addPanel();
+			addPanel();
 		});
 		
 		$('#' + idClear).click(function(e) {
-			layout.clearLayout();
+			clearLayout();
 		});	
 		
 		$('#' + idRemove).click(function(e) {
-			layout.removeWidget();
+			removeWidget();
 		});
 		
 		$('#' + idAddTab).click(function(e) {
-			layout.addTab();
+			addTab();
 		});
 		
 		$('#' + idStyleClass).keydown(function(e) {
 		    if (e.keyCode == 13) {
-		        layout.setStyleClass($('#' + idStyleClass).val());
+		        setStyleClass($('#' + idStyleClass).val());
 		    }
 		});
 		
 		$('#' + idCss).keydown(function(e) {
 		    if (e.keyCode == 13) {
-		        layout.setCss($('#' + idCss).val());
+		        setCss($('#' + idCss).val());
 		    }
 		});
 		
 		$('#' + idId).keydown(function(e) {
 		    if (e.keyCode == 13) {
-		        layout.setGuid($('#' + idId).val());
+		        setGuid($('#' + idId).val());
 		    }
 		});
 		$('#' + idPresentation).keydown(function(e) {
 		    if (e.keyCode == 13) {
-		        layout.setPresentation($('#' + idPresentation).val());
+		        setPresentation($('#' + idPresentation).val());
 		    }
 		});
 		$('#' + idCustom).keydown(function(e) {
 		    if (e.keyCode == 13) {
-		        layout.setCustom($('#' + idCustom).val());
+		        setCustom($('#' + idCustom).val());
 		    }
 		});
 		$('#' + idAddDialog).click(function(e) {
 			$('#' + idDialog).dialog("open");
 		});
 		$('#' + idCut).click(function(e) {
-			layout.cut();
+			cut();
 		});
 		$('#' + idPaste).click(function(e) {
-			layout.paste();
+			paste();
 		});
+		$('#' + idAddStyleClass).click(function(e) {
+			appendStyleClass();
+		});	
+	
+		function appendStyleClass() {
+			setStyleClass($('#' + idStyleClass).val() + ' ' + $('#' + idStyleClasses).val());
+		}
+		
+		function addTab() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/runtime/addTab?div=" + layout.getSelectedDiv(),
+			   success: function(msg){
+					layout.updateUI();
+			   }
+			});	
+		}	
+		
+		function clearLayout() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/runtime/clearLayout",
+			   success: function(msg){
+					layout.updateUI();
+			   }
+			});	
+		}
+		
+		function changeLayout(layoutType) {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/runtime/setLayout?div=" + layout.getSelectedDiv() + '&layout=' + layoutType,
+			   success: function(msg){
+					layout.updateUI();
+			   }
+			});	
+		}
+		
+		function changeWidgetType(widgetType) {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/runtime/setWidgetType?div=" + layout.getSelectedDiv() + '&widgetType=' + widgetType,
+			   success: function(msg){
+					layout.updateUI();
+			   }
+			});	
+		}
+		
+		function removeWidget() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/runtime/remove?div=" + layout.getSelectedDiv(),
+			   success: function(msg){
+					layout.updateUI();
+			   }
+			});	
+		}
+				
+		function addDialog(id) {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/runtime/addDialog?div=" + layout.getSelectedDiv() + '&id=' + id,
+			   success: function(msg){
+					layout.updateUI();
+			   }
+			});	
+		}
+	
+		function setStyleClass(style) {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/runtime/setStyle?div=" + layout.getSelectedDiv() + "&style=" + style,
+			   success: function(msg){
+					layout.updateUI();
+			   }
+			});			
+		}
+		
+		function setCss(css) {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/runtime/setCss?div=" + layout.getSelectedDiv() + "&css=" + css,
+			   success: function(msg){
+					layout.updateUI();
+			   }
+			});			
+		}	
+			
+		function setGuid(id) {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/runtime/setId?div=" + layout.getSelectedDiv() + "&id=" + id,
+			   success: function(msg){
+					layout.updateUI();
+			   }
+			});			
+		}
+	
+		function setPresentation(presentation) {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/runtime/setPresentation?div=" + layout.getSelectedDiv() + "&presentation=" + presentation,
+			   success: function(msg){
+					layout.updateUI();
+			   }
+			});			
+		}
+	
+		function setCustom(custom) {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/runtime/setCustom?div=" + layout.getSelectedDiv() + "&custom=" + custom,
+			   success: function(msg){
+					layout.updateUI();
+			   }
+			});			
+		}
+	
+		function cut() {
+			copiedDiv = layout.getSelectedDiv();
+		}
+	
+		function paste() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/runtime/cutPaste?newBaseDiv=" + layout.getSelectedDiv() + '&itemDiv=' + copiedDiv,
+			   success: function(msg){
+					layout.updateUI();
+			   }
+			});			
+		}	
+	
+		function addPanel() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/runtime/addPanel?div=" + layout.getSelectedDiv(),
+			   success: function(msg){
+					layout.updateUI();
+			   }
+			});	
+		}	
+		
+		function updateCustomPropTable(widgetType, custom) {
+			$('#' + idCustomPropTable).empty();
+			var list = customDef[widgetType];
+			
+			for (var i in list) {
+				var pair = list[i];
+				
+				$('#' + idCustomPropTable).append('<tr><td>' + pair.key + '</td><td>' + pair.value + '</td></tr>');
+			}
+		}
 	}
 }

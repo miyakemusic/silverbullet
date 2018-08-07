@@ -86,171 +86,19 @@ class LayoutBuilder {
 	get enableEdit() {
 		return this._enableEdit;
 	}
-	
-	addPanel() {
-		var div = this.selectedDiv;
-		var me = this;
-		$.ajax({
-		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/runtime/addPanel?div=" + div,
-		   success: function(msg){
-				me.updateUI();
-		   }
-		});	
-	}	
-	
-	addTab() {
-		var div = this.selectedDiv;
-		var me = this;
-		$.ajax({
-		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/runtime/addTab?div=" + div,
-		   success: function(msg){
-				me.updateUI();
-		   }
-		});	
-	}	
-	
-	clearLayout() {
-		var me = this;
-		$.ajax({
-		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/runtime/clearLayout",
-		   success: function(msg){
-				me.updateUI();
-		   }
-		});	
-	}
-	
-	changeLayout(layout) {
-		var div = this.selectedDiv;
-		var me = this;
-		$.ajax({
-		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/runtime/setLayout?div=" + div + '&layout=' + layout,
-		   success: function(msg){
-				me.updateUI();
-		   }
-		});	
-	}
-	
-	changeWidgetType(widgetType) {
-		var div = this.selectedDiv;
-		var me = this;
-		$.ajax({
-		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/runtime/setWidgetType?div=" + div + '&widgetType=' + widgetType,
-		   success: function(msg){
-				me.updateUI();
-		   }
-		});	
-	}
-	
-	removeWidget() {
-		var div = this.selectedDiv;
-		var me = this;
-		$.ajax({
-		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/runtime/remove?div=" + div,
-		   success: function(msg){
-				me.updateUI();
-		   }
-		});	
-	}
-	
-	setStyleClass(style) {
-		var div = this.selectedDiv;
-		var me = this;
-		$.ajax({
-		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/runtime/setStyle?div=" + div + "&style=" + style,
-		   success: function(msg){
-				me.updateUI();
-		   }
-		});			
-	}
-	
-	setCss(css) {
-		var div = this.selectedDiv;
-		var me = this;
-		$.ajax({
-		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/runtime/setCss?div=" + div + "&css=" + css,
-		   success: function(msg){
-				me.updateUI();
-		   }
-		});			
-	}		
-	
-	setGuid(id) {
-		var div = this.selectedDiv;
-		var me = this;
-		$.ajax({
-		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/runtime/setId?div=" + div + "&id=" + id,
-		   success: function(msg){
-				me.updateUI();
-		   }
-		});			
-	}
-	
-	setPresentation(presentation) {
-		var div = this.selectedDiv;
-		var me = this;
-		$.ajax({
-		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/runtime/setPresentation?div=" + div + "&presentation=" + presentation,
-		   success: function(msg){
-				me.updateUI();
-		   }
-		});			
-	}
-	
-	setCustom(custom) {
-		var div = this.selectedDiv;
-		var me = this;
-		$.ajax({
-		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/runtime/setCustom?div=" + div + "&custom=" + custom,
-		   success: function(msg){
-				me.updateUI();
-		   }
-		});			
-	}
-	
-	addDialog(id) {
-		var div = this.selectedDiv;
-		var me = this;
-		$.ajax({
-		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/runtime/addDialog?div=" + div + '&id=' + id,
-		   success: function(msg){
-				me.updateUI();
-		   }
-		});	
-	}
-		
-	cut() {
-		this.copiedDiv = this.selectedDiv;
-	}
-	
-	paste() {
-		var newBaseDiv = this.getRealId(this.selectedDiv);
-		var itemDiv = this.getRealId(this.copiedDiv);
-		var me = this;
-		$.ajax({
-		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/runtime/cutPaste?newBaseDiv=" + newBaseDiv + '&itemDiv=' + itemDiv,
-		   success: function(msg){
-				me.updateUI();
-		   }
-		});			
-	}
-	
+					
 	getRealId(div) {
 		var tmp = div.split('-');
 		var ret = tmp[tmp.length-1];
 		return ret;
+	}
+	
+	getSelectedDiv() {
+		return this.getRealId(this.selectedDiv);
+	}
+	
+	getCopiedDiv() {
+		return this.getRealId(this.copiedDiv);
 	}
 	
 	get selectedDiv() {

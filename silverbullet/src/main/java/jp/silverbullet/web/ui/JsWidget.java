@@ -3,6 +3,8 @@ package jp.silverbullet.web.ui;
 import java.util.ArrayList;
 import java.util.List;
 
+import jp.silverbullet.web.Pair;
+
 public class JsWidget {
 
 	public static final String FLOWLAYOUT = "Flow Layout";
@@ -133,6 +135,5 @@ public class JsWidget {
 	public void setCustom(String custom) {
 		this.custom = custom;
 	}
-
 	
 }

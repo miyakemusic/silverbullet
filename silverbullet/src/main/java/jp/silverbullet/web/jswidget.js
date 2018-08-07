@@ -3,16 +3,16 @@ class JsWidget {
 		this.info = info;
 		
 		this.baseId = parent + "-" + info.unique;
+		this.selected = selected;
+		this.parent = parent;
 		
-		var obj = $('#tab-' + this.baseId);
-		//if ($('#tab-' + this.baseId).size() == 1) {
 		if ($('#tab-' + this.baseId).length == 1) {
 			this.baseId = 'tab-' + this.baseId;
 		}
-		
-		this.selected = selected;
-		this.parent = parent;
-
+		else {
+			$('#' + this.parent).append('<div id=' + this.baseId + '></div>');
+		}
+			
 		this.createBase(selected);		
 		
 		this.updateLayout();
@@ -67,8 +67,6 @@ class JsWidget {
 	}
 		
 	createBase(selected) {			
-		$('#' + this.parent).append('<div id=' + this.baseId + '></div>');	
-
 		var me = this;
 		if (this.info.widgetType == 'COMBOBOX') {
 			this.subWidget = new JsComboBox(this.baseId, function(id) {

@@ -2,7 +2,6 @@ package jp.silverbullet.web;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +20,7 @@ import jp.silverbullet.BuilderFx;
 import jp.silverbullet.SvProperty;
 import jp.silverbullet.dependency.engine.RequestRejectedException;
 import jp.silverbullet.property.ChartContent;
+import jp.silverbullet.web.ui.CustomProperties;
 import jp.silverbullet.web.ui.JsProperty;
 import jp.silverbullet.web.ui.JsWidget;
 import jp.silverbullet.web.ui.UiLayout;
@@ -256,5 +256,19 @@ public class RuntimeResource {
 	public String cutPaste(@QueryParam("newBaseDiv") String newBaseDiv, @QueryParam("itemDiv") String itemDiv) {
 		UiLayout.getInstance().cutPaste(newBaseDiv, itemDiv);
 		return "OK";
+	}
+	
+	@GET
+	@Path("getStyleClasses")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public List<String> getStyleClasses(@QueryParam("type") String type) {
+		return Arrays.asList("tabs-top", "tabs-bottom", "itemBox", "BigGrid", "noborder", "big", "medium", "small");
+	}
+	
+	@GET
+	@Path("getCustromDefinition")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public Map<String, List<Pair>> getCustromDefinition() {
+		return CustomProperties.getInstance().getMap();
 	}
 }
