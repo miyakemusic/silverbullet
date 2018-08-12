@@ -142,10 +142,7 @@ class JsToggleButton {
 	constructor(baseId, info, change) {
 		this.baseId = baseId;
 		this.change = change;
-		if (info.custom != null && info.custom != "") {
-			this.custom = JSON.parse(info.custom);
-		}
-
+		this.custom = info.custom;
 	}
 	
 	updateValue(property) {
@@ -173,7 +170,7 @@ class JsToggleButton {
 		this.buttonId = 'button' + this.baseId;
 		this.titleId = 'title' + this.baseId;
 		var html;
-		if (this.custom != undefined && this.custom.frame == true) {
+		if (this.custom["frame"] == true) {
 			html = '<fieldset><legend id=' + this.titleId + '>' + property.title + '</legend><button id="' + this.buttonId + '"></button></fieldset>';
 		}
 		else {
@@ -377,8 +374,8 @@ class JsDialogButton {
 	}
 		
 	updateLayout(info) {
-		var root = info.custom;
-		$('#' + this.baseId).append('<Button id="' + this.buttonId + '">' + info.presentation + '</Button>');
+		var root = info.custom["target_gui_id"];
+		$('#' + this.baseId).append('<Button id="' + this.buttonId + '">' + info.custom['caption'] + '</Button>');
 		$('#' + this.buttonId).button();
 		$('#' + this.baseId).append('<div id="' + this.dialogId + '"><div id="' + this.contentId + '"></div></div>');
 							
@@ -413,8 +410,10 @@ class JsTabPanel {
 		this.baseId = baseId;
 		this.change = change;
 		this.info = info;
-		this.map = new Map();
-		this.tabMap = new Map();
+		this.tabTitleMap = new Map();
+		this.tabIndexMap = new Map();
+		
+		var relid = 'tab_relation_id';
 		
 		this.parent = $('#' + this.baseId).parent().attr('id');
 		$('#' + this.baseId).remove();			
@@ -425,21 +424,22 @@ class JsTabPanel {
 
 			var contentId = 'tab-' + this.baseId + "-" + child.unique;
 			var tabTitleId = 'title' + contentId;
-			if (child.custom != undefined && child.custom != '') {
-				try {
-					var custom = JSON.parse(child.custom);
-					this.map[custom.id] = tabTitleId;
-					this.tabMap[custom.id] = i;
-				}
-				catch (e) {
-					tabTitleId = child.presentation;
-				}
+			try {
+				var custom = child.custom;
+				
+				var relation = custom[relid];
+				this.tabTitleMap[relation] = tabTitleId;
+				this.tabIndexMap[relation] = i;
 			}
-			var tabTitle = '<span id="' + tabTitleId + '"></span>';//this.info.children[i].presentation;
+			catch (e) {
+				tabTitleId = child.presentation;
+			}
+
+			var tabTitle = '<span id="' + tabTitleId + '"></span>';
 			tab += '<li><a href="#' + contentId + '">' + tabTitle + '</a></li>';
 			content += '<div id="' + contentId + '" class="panel TabContent"></div>';
 		}
-		tab +="</ul>"
+		tab +="</ul>";
 		
 		$('#' + this.parent).append('<div id="' + this.baseId + '">' + tab + content + '</div>');
 		$('#' + this.baseId).tabs();
@@ -449,23 +449,15 @@ class JsTabPanel {
 	}
 	
 	updateValue(property) {
-		var index = this.tabMap[property.currentValue];
+		var index = this.tabIndexMap[property.currentValue];
 		if (index != undefined) {
 			$('#' + this.baseId).tabs("option", "active", index);
 		}
-		
-//		for (var index = 0 ; index < property.elements.length; index++) {
-//			if (property.elements[index].id == property.currentValue) {
-//				//$('#' + this.baseId).tabs({active: index});
-//				$('#' + this.baseId).tabs("option", "active", index+1);
-//				break;
-//			}
-//		}
 	}
 	
 	updateLayout(property) {
 		for (var index = 0 ; index < property.elements.length; index++) {
-			var titleId = this.map[property.elements[index].id];
+			var titleId = this.tabTitleMap[property.elements[index].id];
 			if (titleId != undefined) {
 				$('#' + titleId).text(property.elements[index].title);
 			}

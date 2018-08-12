@@ -246,7 +246,7 @@ public class RuntimeResource {
 	@Path("setCustom")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setCustom(@QueryParam("div") String div, @QueryParam("custom") String custom) {
-		UiLayout.getInstance().setCustom(div, custom);
+		//UiLayout.getInstance().setCustom(div, custom);
 		return "OK";
 	}
 	
@@ -270,5 +270,14 @@ public class RuntimeResource {
 	@Produces(MediaType.APPLICATION_JSON) 
 	public Map<String, List<Pair>> getCustromDefinition() {
 		return CustomProperties.getInstance().getMap();
+	}	
+	
+	@GET
+	@Path("setCustomElement")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String setCustomElement(@QueryParam("div") String div, @QueryParam("customId") String customId, @QueryParam("customValue") String customValue) {
+		UiLayout.getInstance().setCustomElement(div, customId, customValue);
+		return "OK";
 	}
+	
 }
