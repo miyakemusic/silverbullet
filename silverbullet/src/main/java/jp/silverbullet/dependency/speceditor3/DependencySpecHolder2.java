@@ -14,11 +14,11 @@ public class DependencySpecHolder2 {
 		specs.put(spec.getId(), spec);
 	}
 
-	public List<DependencyProperty> findSpecsToBeChangedSpecBy(String id) {
+	public List<DependencyProperty> findSpecsToBeChangedSpecBy(String id, DependencyTargetElement dependencyTargetElement) {
 		List<DependencyProperty> ret = new ArrayList<>();
 		
 		for (DependencySpec2 spec : specs.values()) {
-			ret.addAll(spec.findToBeChangedBy(id));
+			ret.addAll(spec.findToBeChangedBy(id, dependencyTargetElement));
 		}
 		return ret;
 	}

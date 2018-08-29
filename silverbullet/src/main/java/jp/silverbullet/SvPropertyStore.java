@@ -81,6 +81,7 @@ public class SvPropertyStore {
 	public SvProperty getProperty(String id) {
 		SvProperty ret = this.map.get(id);
 		if (ret == null) {
+			System.out.println("Cannot find " + id);
 			addProperty(this.propertiesHolder.getProperty(id));
 		}
 		return ret;

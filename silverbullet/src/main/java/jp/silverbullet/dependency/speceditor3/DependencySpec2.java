@@ -54,16 +54,23 @@ public class DependencySpec2 {
 		return getSpecs(targetElement, DefaultItem);
 	}
 
-	public List<DependencyProperty> findToBeChangedBy(String triggerId) {
+	public List<DependencyProperty> findToBeChangedBy(String triggerId, DependencyTargetElement dependencyTargetElement) {
 		List<DependencyProperty> ret = new ArrayList<>();
 		if (id.equals(triggerId)) {
 			return ret;
 		}
-		for (DependencyExpressionHolderMap expressionHolderMap : this.depExpHolderMap.values())  {
+		for (DependencyTargetElement targetElement : this.depExpHolderMap.keySet()) {
+			DependencyExpressionHolderMap expressionHolderMap = this.depExpHolderMap.get(targetElement);
+			
+//		for (DependencyExpressionHolderMap expressionHolderMap : this.depExpHolderMap.values())  {
 			for (String selectionId : expressionHolderMap.keySet()) {
 				List<DependencyExpressionHolder> expressionHolders = expressionHolderMap.get(selectionId);
 				for (DependencyExpressionHolder expressionHolder : expressionHolders) {
+					if (dependencyTargetElement != expressionHolder.getTargetElement()) {
+						System.out.println();
+					}
 					List<DependencyProperty> props = expressionHolder.getRelatedSpecs(id, selectionId, triggerId, expressionHolder.getTargetElement());
+					//List<DependencyProperty> props = expressionHolder.getRelatedSpecs(id, selectionId, triggerId, dependencyTargetElement);
 					for (DependencyProperty p : props) {
 						p.setSettingDisabledBehavior(expressionHolder.getSettingDisabledBehavior());
 					}
@@ -72,28 +79,6 @@ public class DependencySpec2 {
 			}
 		}
 		
-		// Connects else condition
-//		DependencyProperty other = null;
-//		for (DependencyProperty dp : ret) {
-//			if (dp.getCondition().equals(DependencyExpression.ELSE)) {
-//				other = dp;
-//			}
-//		}
-//		if (other != null) {
-//			boolean elseValid = true;
-//			for (DependencyProperty dp : ret) {
-//				if (dp.equals(other)) {
-//					continue;
-//				}
-//				dp.setOther(other);
-//				elseValid = true;
-//			}
-//			/// moves to tail
-//			ret.remove(other); 
-//			if (elseValid) { // if else condition is alone, that's invalid.
-//				ret.add(other);
-//			}
-//		}
 		return ret;
 	}
 
@@ -218,4 +203,5 @@ public class DependencySpec2 {
 	public void remove(DependencyTargetElement element, String value) {
 		this.getDependencyExpressionHolder(element).remove(value);
 	}
+
 }

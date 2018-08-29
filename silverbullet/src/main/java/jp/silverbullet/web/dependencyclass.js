@@ -2,13 +2,14 @@ class DependencyClass {
 	constructor(div) {
 	
 		$('#' + div).append('<div id="myDiagramDiv" style="width:1000px; height:300px; background-color: #DAE4E4;"></div>');
-		$('#' + div).append('<div id="panel" style="width:1000px; height:200px; background-color: lightBlue;"></div>');
-		
+		$('#' + div).append('<div id="panel" style="width:1000px; height:100px; background-color: lightBlue;"></div>');
+		$('#' + div).append('<div id="specSummary"></div>');
+				
 		$('#' + div).append('<div id="depDialog"></div>');
 		
 		$('#depDialog').append('<div id="targetId"></div>');
 		
-		$('#depDialog').append('div id="newSpecDiv" class="kacomaru" ' + 
+		$('#depDialog').append('<div id="newSpecDiv">' + 
 			'<select id="targetIdElement"></select><br>	' +
 			'Value:<BR>' +
 			'<select id="valueBoolean"></select>' +
@@ -50,14 +51,6 @@ class DependencyClass {
 			'<button id="removeSpec">Remove</button>' +
 			'<div id="depList"></div>' +
 		'</div>');
-
-//		var fromId = "";
-//		var manager;
-//		var activeTextArea;
-//		var currentElement;
-//		var currentValue;
-//		var currentCondition;
-//		var depList;
 
 		var diagram = new DependencyDiagram('myDiagramDiv');
 
@@ -192,14 +185,11 @@ class DependencyClass {
 			
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/id/properties?type=All",
+			   url: "http://" + window.location.host + "/rest/dependencySpec/ids",
 			   success: function(msg) {
 					for (var index in msg.table) {
 						var row = msg.table[index];
 						var idPanel = row[1] + "_panel";
-//						$('#panel').append('<span id = "' + idPanel + '" class="depPane">' + 
-//							'<input class="button" id="' + row[1] + '" type="button" value="' + row[1] + '"/>' + 
-//							row[2] + '<br>' + row[4] + '<br>' + row[3] + '</span>');
 
 						$('#panel').append('<div id = "' + idPanel + '" class="depPane">' + 
 							'<input class="small" id="' + row[1] + '" type="button" value="' + row[1] + '"/>' + '<br>'+
@@ -235,6 +225,7 @@ class DependencyClass {
 					}
 			   }
 			});	
+	
 		}
 		
 		function modifySpec(from, to) {
@@ -309,49 +300,50 @@ class DependencyClass {
 			});
 		}
 		
-		function drawLines(idPanel) {
-			
+		function drawLines(idPanel) {	
 			var id = idPanel.replace('_panel', '').replace('#', '');
 			var element = me.currentElement;
 			var value = me.currentValue;
 			
 			diagram.update(id);
 			
+			updateSummarySpec(id);			
+		}
+		
+		function updateSummarySpec(id) {	
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/dependencySpec/target?id=" + id,
-			   success: function(msg){
-			   		$('#message').html('');
-			   		var canvas = $('canvas').get(0);
+			   url: "http://" + window.location.host + "/rest/dependencySpec/relationSpecs?id=" + id,
+			   success: function(msg) {
+			   		$('#specSummary').empty();
 			   		
-					if (canvas.getContext){
-					  var ctx = canvas.getContext('2d');
-					  	ctx.clearRect(0, 0, 1000, 600);
-				   		ctx.beginPath();
-	
-						for (var i in msg) {
-							var from = msg[i].from.id + "(" + msg[i].from.element + ")";
-							var to = msg[i].to.id + "(" + msg[i].to.element + ")";
-							$('#message').html($('#message').html() + "<BR>" + from + ":" + to);
-							
-							var pos = $('#' + msg[i].from.id + '_panel').position();
-							var width = $('#' + msg[i].from.id + '_panel').width();
-							var height = $('#' + msg[i].from.id + '_panel').height();
-							
-							var pos2 = $('#' + msg[i].to.id + '_panel').position();
-							var width2 = $('#' + msg[i].to.id + '_panel').width();
-							var height2 = $('#' + msg[i].to.id + '_panel').height();
-							
-							ctx.moveTo(pos.left + width, pos.top + height/2 );
-							ctx.lineTo(pos2.left, pos2.top + height2/2 );
-							
-							ctx.stroke();
-						}
-						ctx.closePath();
-					}
+			   		var index = 0;
+			   		for (var id in msg) {
+			   			var specs = msg[id];
+			   			$('#specSummary').append('<b>' + id + '</b>');
+			   			var tableId = 'specSummaryTable' + index;
+			   			index++;
+			   			
+			   			$('#specSummary').append('<table id="' + tableId + '"><thead></thead><tbody></tbody></table>');
+			   			$('#' + tableId).addClass('smalltable');
+			   			
+			   			$('#' + tableId).css("table-layout","fixed");
+			   					   			
+			   			$('#' + tableId).append('<colgroup><col style="width:10%;"></colgroup>');
+						$('#' + tableId).append('<colgroup><col style="width:50%;"></colgroup>');
+						$('#' + tableId).append('<colgroup><col style="width:40%;"></colgroup>');
+			   			
+			   			$('#' + tableId + ' > thead').append('<tr><th>Element</th><th>Value</th><th>Condition</th></tr>');
 
+			   			for (var j = 0; j < specs.length; j++) {
+			   				var spec = specs[j];
+			   				$('#' + tableId + ' > tbody').append('<tr><td><div>' + spec.element + '</div></td><td><div>' + spec.value + '</div></td><td><div>' + spec.condition + '</div></td></tr>');
+			   			}
+			   			
+			
+			   		}
 			   }
-			});
+			});		
 		}
 	}
 }

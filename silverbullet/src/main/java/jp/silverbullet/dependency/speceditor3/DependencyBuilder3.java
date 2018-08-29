@@ -3,11 +3,13 @@ package jp.silverbullet.dependency.speceditor3;
 import java.util.ArrayList;
 import java.util.List;
 
+import jp.silverbullet.dependency.speceditor2.DependencySpecDetail;
+
 public class DependencyBuilder3 {
 	private DependencyNode tree = new DependencyNode(null, null, -1);
 	
 	public DependencyBuilder3(String id, DependencySpecHolder2 specHolder) {
-		List<DependencyProperty> specs = specHolder.findSpecsToBeChangedSpecBy(id);
+		List<DependencyProperty> specs = specHolder.findSpecsToBeChangedSpecBy(id, DependencyTargetElement.Value);
 		List<String> experienced = new ArrayList<String>();
 		experienced.add(id);
 		analyze(tree, specHolder, specs, id, experienced, 0);
@@ -25,7 +27,7 @@ public class DependencyBuilder3 {
 				List<String> subExperienced = new ArrayList<>();
 				subExperienced.add(depProp.getId());
 				subExperienced.addAll(experienced);
-				analyze(subNode, specHolder, specHolder.findSpecsToBeChangedSpecBy(depProp.getId()), id, subExperienced, layer+1);
+				analyze(subNode, specHolder, specHolder.findSpecsToBeChangedSpecBy(depProp.getId(), depProp.getElement()), id, subExperienced, layer+1);
 			}
 		}
 	}

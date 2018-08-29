@@ -27,6 +27,55 @@ import jp.silverbullet.spec.SpecElement;
 class DependencySpecDetail2Test {
 
 	@Test
+	void testEnable() {
+		String idFirst = "ID_FIRST";
+		String idSecond = "ID_SECOND";	
+		String idEnableChanger = "ID_ENABLED";
+		DepPropertyStore store = createPropertyStore();
+		store.add(createDoubleProperty(idFirst, 100, "nm", 0, 9999, 3));
+		store.add(createDoubleProperty(idSecond, 200, "nm", 0, 9999, 3));
+		store.add(createDoubleProperty(idEnableChanger, 100, "nm", 0, 9999, 3));
+		
+		DependencySpecHolder2 holder = new DependencySpecHolder2();
+		
+		{
+			DependencySpec2 spec = new DependencySpec2(idSecond);
+			holder.add(spec);
+			DependencyExpressionHolder value = new DependencyExpressionHolder(DependencyTargetElement.Value);
+			value.addExpression().resultExpression("$"+idFirst + ".Value * 2");
+			spec.add(value);	
+		}
+		{
+			DependencySpec2 spec = new DependencySpec2(idFirst);
+			holder.add(spec);
+			DependencyExpressionHolder enabled = new DependencyExpressionHolder(DependencyTargetElement.Enabled);
+			enabled.addExpression().resultExpression(DependencyExpression.False).conditionExpression("$" + idEnableChanger + ".Value > 100");
+			spec.add(enabled);	
+		}
+		
+		DependencyEngine2 engine = createEngine(holder, store);
+		
+		try {
+			engine.requestChange(idFirst, "200");
+			CachedPropertyStore cached = engine.getCachedPropertyStore();
+			assertEquals("400.000", cached.getProperty(idSecond).getCurrentValue());
+			cached.commit();
+			
+			store.getProperty(idSecond).setCurrentValue("200");
+			
+			engine.requestChange(idEnableChanger, "300");
+			cached = engine.getCachedPropertyStore();
+			
+			assertEquals(false, cached.getProperty(idFirst).isEnabled());
+			assertEquals("200.000", cached.getProperty(idSecond).getCurrentValue());
+			cached.commit();
+		}
+		catch (Exception e) {
+			
+		}
+	}
+	
+	@Test
 	void test() {	
 		String idBand = "ID_OSA_BAND";
 		String idBandC = "ID_OSA_BAND_C";
@@ -614,19 +663,23 @@ class DependencySpecDetail2Test {
 			e.printStackTrace();
 		}
 	}
+	
 	@Test
 	void testStartStopCenterSpan() {
 		String idStartWavelength = "ID_OSA_START_WAVELENGTH";
 		String idStopWavelength = "ID_OSA_STOP_WAVELENGTH";
 		String idCenterWavelength = "ID_OSA_CENTER_WAVELENGTH";
 		String idSpanWavelength = "ID_OSA_SPAN_WAVELENGTH";
-
+		String idBand = "ID_OSA_BAND";
+		String idBandC = "ID_OSA_BAND_C";
+		String idBandManual = "ID_OSA_BAND_MANUAL";
 		
 		DepPropertyStore store = createPropertyStore();
 		store.add(createDoubleProperty(idStartWavelength, 1250, "nm", 0, 9999, 3));
 		store.add(createDoubleProperty(idStopWavelength, 1650, "nm", 0, 9999, 3));
 		store.add(createDoubleProperty(idCenterWavelength, 1450, "nm", 0, 9999, 3));
 		store.add(createDoubleProperty(idSpanWavelength, 400, "nm", 0, 9999, 3));
+		store.add(createListProperty(idBand, Arrays.asList(idBandC, idBandManual), idBandManual));
 
 		DependencySpecHolder2 holder = new DependencySpecHolder2();
 				
@@ -636,6 +689,7 @@ class DependencySpecDetail2Test {
 			holder.add(spec);
 			DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.Value);
 			detail.addExpression().resultExpression("$"+idCenterWavelength + ".Value - " + "$"+idSpanWavelength +".Value/2");
+			detail.addExpression().resultExpression("1530").conditionIdValue(idBand).equals().conditionSelectionId(idBandC);
 			spec.add(detail);
 		}
 		////////// Stop Wavelength///////////
@@ -644,6 +698,7 @@ class DependencySpecDetail2Test {
 			holder.add(spec);
 			DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.Value);
 			detail.addExpression().resultExpression("$"+idCenterWavelength + ".Value + " + "$"+idSpanWavelength +".Value/2");
+			detail.addExpression().resultExpression("1565").conditionIdValue(idBand).equals().conditionSelectionId(idBandC);
 			spec.add(detail);
 		}
 		////////// Center Wavelength///////////
@@ -653,6 +708,12 @@ class DependencySpecDetail2Test {
 			DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.Value);
 			detail.addExpression().resultExpression("("+"$"+idStartWavelength + ".Value + " + "$"+idStopWavelength +".Value)/2");
 			spec.add(detail);
+			
+			// Enabledの変更なのにStart/Stopの値を変えようとするバグがある
+			DependencyExpressionHolder enabled = new DependencyExpressionHolder(DependencyTargetElement.Enabled);
+			enabled.addExpression().resultExpression(DependencyExpression.True).conditionIdValue(idBand).equals().conditionSelectionId(idBandManual);
+			enabled.addExpression().resultExpression(DependencyExpression.False).conditionElse();
+			spec.add(enabled);
 		}
 		////////// Span Wavelength///////////
 		{
@@ -662,6 +723,7 @@ class DependencySpecDetail2Test {
 			detail.addExpression().resultExpression("$"+idStopWavelength + ".Value - " + "$"+idStartWavelength +".Value");
 			spec.add(detail);
 		}
+
 		{
 			DependencyBuilder3 builder = new DependencyBuilder3(idStartWavelength, holder);
 			assertEquals(4, builder.getLayerCount());
@@ -670,14 +732,6 @@ class DependencySpecDetail2Test {
 			assertEquals(2, layer0.size());
 			assertEquals(idCenterWavelength, layer0.get(0).getId());
 			assertEquals(idSpanWavelength, layer0.get(1).getId());
-			
-//			List<DependencyProperty> layer1 = builder.getSpecs(1);
-//			assertEquals(idStopWavelength, layer1.get(0).getId());
-//			assertEquals(idStopWavelength, layer1.get(1).getId());
-//			
-//			List<DependencyProperty> layer2 = builder.getSpecs(2);
-//			assertEquals(idSpanWavelength, layer2.get(0).getId());
-//			assertEquals(idCenterWavelength, layer2.get(1).getId());
 		}
 		{
 			DependencyBuilder3 builder = new DependencyBuilder3(idStopWavelength, holder);
@@ -717,16 +771,22 @@ class DependencySpecDetail2Test {
 			assertEquals("1500.000", cached.getProperty(idStopWavelength).getCurrentValue());
 			assertEquals("1450.000", cached.getProperty(idCenterWavelength).getCurrentValue());
 			assertEquals("100.000", cached.getProperty(idSpanWavelength).getCurrentValue());
-//			assertTrue(store.getProperty(idStartWavelength).getCurrentValue().equals("2050.000"));
-//
-//			engine.requestChange(idModel, idModel21A);
-//			assertTrue(store.getProperty(idStartWavelength).getCurrentValue().equals("100.000"));
-			
+			cached.commit();
+
+			// Enabledの変更なのにStart/Stopの値を変えようとするバグがある
+			engine.requestChange(idBand, idBandC);
+			cached = engine.getCachedPropertyStore();
+			assertEquals("1530.000", cached.getProperty(idStartWavelength).getCurrentValue());
+			assertEquals("1565.000", cached.getProperty(idStopWavelength).getCurrentValue());
+			assertEquals("1547.500", cached.getProperty(idCenterWavelength).getCurrentValue());
+			assertEquals("35.000", cached.getProperty(idSpanWavelength).getCurrentValue());
+			cached.commit();	
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
 		}
 		
 	}
+
 	
 	@Test
 	void testTwoElses() {

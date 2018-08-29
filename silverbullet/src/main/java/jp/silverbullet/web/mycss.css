@@ -9,6 +9,25 @@
 	width:100%;
 	table-layout:fixed;
 }
+
+.smalltable {
+	border:1px solid;
+	table-layout:fixed;
+	border-collapse:collapse;
+	width: 100%;
+}
+
+.smalltable td {
+	border:1px solid;
+	font-size:10px;
+	overflow:hidden;
+}
+.smalltable th {
+	border:1px solid;
+	font-size:10px;
+	font-weight:bold;
+}
+
 .col1 {
 	width: 40px;
 }

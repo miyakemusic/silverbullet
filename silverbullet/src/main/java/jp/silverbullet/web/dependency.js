@@ -143,7 +143,7 @@ $(function() {
 			
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/id/properties?type=All",
+			   url: "http://" + window.location.host + "/rest/dependencySpec/ids?type=All",
 			   success: function(msg) {
 					for (var index in msg.table) {
 						var row = msg.table[index];
