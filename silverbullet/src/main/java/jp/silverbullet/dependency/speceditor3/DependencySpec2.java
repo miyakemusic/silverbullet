@@ -69,8 +69,8 @@ public class DependencySpec2 {
 					if (dependencyTargetElement != expressionHolder.getTargetElement()) {
 						System.out.println();
 					}
-					List<DependencyProperty> props = expressionHolder.getRelatedSpecs(id, selectionId, triggerId, expressionHolder.getTargetElement());
-					//List<DependencyProperty> props = expressionHolder.getRelatedSpecs(id, selectionId, triggerId, dependencyTargetElement);
+					//List<DependencyProperty> props = expressionHolder.getRelatedSpecs(id, selectionId, triggerId, expressionHolder.getTargetElement());
+					List<DependencyProperty> props = expressionHolder.getRelatedSpecs(id, selectionId, triggerId, dependencyTargetElement, expressionHolder.getTargetElement());
 					for (DependencyProperty p : props) {
 						p.setSettingDisabledBehavior(expressionHolder.getSettingDisabledBehavior());
 					}

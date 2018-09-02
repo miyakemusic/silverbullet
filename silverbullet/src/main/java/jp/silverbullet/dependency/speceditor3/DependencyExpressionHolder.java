@@ -78,23 +78,23 @@ public class DependencyExpressionHolder {
 	}
 
 	public List<DependencyProperty> getRelatedSpecs(String targetId, String selectionId,
-			String triggerId, DependencyTargetElement targetElement2) {
+			String triggerId, DependencyTargetElement triggerElement, DependencyTargetElement targetElement) {
 		List<DependencyProperty> ret = new ArrayList<>();
 
 		DependencyProperty elseCondition = null;
 		for (String resultValue : getExpressions().keySet()) {
 			for (DependencyExpression condition : getExpressions().get(resultValue).getDependencyExpressions()) {
 				if (condition.isEmpty()) {
-					if (resultValue.contains("$"+triggerId + "." + targetElement2.name())) {
-						ret.add(new DependencyProperty(targetId, selectionId, targetElement2, "", resultValue, condition));
+					if (resultValue.contains("$"+triggerId + "." + triggerElement.name())) {
+						ret.add(new DependencyProperty(targetId, selectionId, targetElement, "", resultValue, condition));
 					}
 				}
 				else if (condition.containsId(triggerId, getTargetElement()) 
 						) {
-					ret.add(new DependencyProperty(targetId, selectionId, targetElement2, condition.getExpression().getExpression(), resultValue, condition));
+					ret.add(new DependencyProperty(targetId, selectionId, targetElement, condition.getExpression().getExpression(), resultValue, condition));
 				}
 				else if (condition.getExpression().getExpression().contains(DependencyExpression.ELSE)) {
-					elseCondition = new DependencyProperty(targetId, selectionId, targetElement2, condition.getExpression().getExpression(), resultValue, condition);					
+					elseCondition = new DependencyProperty(targetId, selectionId, targetElement, condition.getExpression().getExpression(), resultValue, condition);					
 					//ret.add(elseCondition);
 				}
 			}

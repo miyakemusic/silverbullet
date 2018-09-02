@@ -27,7 +27,7 @@ class RegisterClass {
 			$('#regTable').append('<colgroup><col style="width:55%"></colgroup>');
 			
 //			$("#regTable > thead").append('<tr><th style="width: 10px;">Address</th><th style="width: 10px;">Name</th><th>Description</th><th>Spec.</th></tr>');
-			$("#regTable > thead").append('<tr><th>">Address</th><th>Name</th><th>Description</th><th>Spec.</th></tr>');
+			$("#regTable > thead").append('<tr><th>Address</th><th>Name</th><th>Description</th><th>Spec.</th></tr>');
 			
 			var sign = '_';
 			for (var i = 0; i < obj.registers.length; i++) {

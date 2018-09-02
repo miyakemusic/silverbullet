@@ -2,6 +2,7 @@
 	border:1px solid;
 	table-layout:fixed;
 	width:100%;
+	font-size:10px;
 }
 
 .bittable td, th {
