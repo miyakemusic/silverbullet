@@ -15,5 +15,6 @@ public class StringArray {
 	public StringArray(List<String> arr) {
 		this.list = arr;
 	}
+
 	public List<String> list = new ArrayList<String>();
 }

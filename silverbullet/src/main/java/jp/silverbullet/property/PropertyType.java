@@ -47,4 +47,10 @@ public class PropertyType {
 	public boolean containsType(String type) {
 		return this.definitions.keySet().contains(type);
 	}
+
+	public void addDefinition(String type, List<String> list) {
+		StringArray arr = new StringArray();
+		arr.list.addAll(list);
+		this.definitions.put(type, arr);
+	}
 }

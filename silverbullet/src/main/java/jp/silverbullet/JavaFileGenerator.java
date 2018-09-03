@@ -91,7 +91,7 @@ public class JavaFileGenerator {
 			else if (prop.getType().equals("ListProperty") || prop.getType().equals("ServerStateProperty") || 
 					prop.getType().equals("MessageProperty")) {
 				String methodName = this.getMethodName(prop.getId());
-				source.add("    enum Enum" + methodName + "{");
+				source.add("    public enum Enum" + methodName + "{");
 				for (ListDetailElement e : prop.getListDetail()) {
 					source.add("        " + e.getId() + ",");
 				}

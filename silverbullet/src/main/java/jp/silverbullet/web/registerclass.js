@@ -4,7 +4,29 @@ class RegisterClass {
 		$('#' + div).append('<button id="commit">Commit</button><select id="spec"><option value="spec">Specification</option><option value="map">Map</option></select>');
 		$('#' + div).append('<div id="mainDiv" class="regtable"></div>');
 		
+		initWebSocket();
 		getListAsync();
+		
+				
+		function initWebSocket() {
+			new MyWebSocket(function(msg) {
+				var obj = JSON.parse(msg);
+				var address = obj.address;
+				var regName = obj.name;
+				for (var i = 0; i < obj.bits.length; i++) {
+					var bit = obj.bits[i];
+					var bitName = bit.name;
+					var bitVal = bit.val;
+					
+					var buttonId = '#' + createButtonId(regName, bitName);
+					$(buttonId).html(bitVal);
+					
+					$('.regButton').removeClass('changed');
+					$(buttonId).addClass('changed');
+				}
+			}
+			, 'REGVAL');
+		}
 		
 		function getListAsync() {
 			$.ajax({

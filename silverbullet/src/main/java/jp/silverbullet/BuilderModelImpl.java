@@ -2,7 +2,9 @@ package jp.silverbullet;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.List;
 
 import javafx.application.Platform;
@@ -16,6 +18,7 @@ import jp.silverbullet.dependency.speceditor3.DependencyEngine2;
 import jp.silverbullet.dependency.speceditor3.DependencySpecHolder2;
 import jp.silverbullet.property.PropertyHolder;
 import jp.silverbullet.property.PropertyType;
+import jp.silverbullet.property.StringArray;
 import jp.silverbullet.property.editor.PropertyListModel2;
 import jp.silverbullet.register.RegisterProperty;
 import jp.silverbullet.remote.SvTexHolder;
@@ -93,7 +96,7 @@ public class BuilderModelImpl implements BuilderModel {
 				@Override
 				public void run() {
 					try {
-						dependency.requestChange(id, value);
+						dependency2.requestChange(id, value);
 					} catch (RequestRejectedException e) {
 						e.printStackTrace();
 					}
@@ -300,21 +303,31 @@ public class BuilderModelImpl implements BuilderModel {
 	
 	@Override
 	public void loadDefault() {
-		XmlPersistent<PropertyType> per = new XmlPersistent<>();
-		try {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("defaultprottype.xml")));
-			
-			String xml = "";
-			String s = "";
-	         while((s = reader.readLine()) != null) {
-	        	 xml = xml + s;
-	         } 
-	         PropertyType propType = per.loadFromXml(xml, PropertyType.class);
-			this.propertiesHolder.setTypes(propType);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		XmlPersistent<PropertyType> per = new XmlPersistent<>();
+//		try {
+//			InputStream is = getClass().getClassLoader().getResourceAsStream("defaultprottype.xml");
+//			BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("defaultprottype.xml")));
+//			
+//			String xml = "";
+//			String s = "";
+//	         while((s = reader.readLine()) != null) {
+//	        	 xml = xml + s;
+//	         } 
+//	         PropertyType propType = per.loadFromXml(xml, PropertyType.class);
+//			this.propertiesHolder.addTypes(propType);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		
+		this.propertiesHolder.getTypes().getDefinitions().put("ListProperty", new StringArray(Arrays.asList("unit", "choices", "defaultKey", "persistent")));
+		this.propertiesHolder.getTypes().getDefinitions().put("ImageProperty", new StringArray(Arrays.asList("persistent")));
+		this.propertiesHolder.getTypes().getDefinitions().put("TextProperty", new StringArray(Arrays.asList("defaultValue", "maxLength", "persistent")));
+		this.propertiesHolder.getTypes().getDefinitions().put("BooleanProperty", new StringArray(Arrays.asList("defaultValue", "persistent")));
+		this.propertiesHolder.getTypes().getDefinitions().put("LongProperty", new StringArray(Arrays.asList("unit", "defaultValue", "min", "max", "persistent")));
+		this.propertiesHolder.getTypes().getDefinitions().put("ChartProperty", new StringArray());
+		this.propertiesHolder.getTypes().getDefinitions().put("TableProperty", new StringArray());
+	
 	}
 	
 	private SpecElement loadSpec(String filename) {

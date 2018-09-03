@@ -740,9 +740,8 @@ public abstract class BuilderFx extends Application {
 			Zip.unzip(filename, DESIGNER_TMP);
 			designerModel.load(DESIGNER_TMP);
 		}
-		else {
-			builderModel.loadDefault();
-		}
+		builderModel.loadDefault();
+		
 		updateTabs();
 	}
 
