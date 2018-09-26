@@ -37,7 +37,7 @@ public class JsWidget {
 	private String styleClass;
 	private String css;
 	private String custom;
-	
+	private Integer index = 0;
 	public JsWidget() {
 		this.unique = this.hashCode();
 	}
@@ -134,6 +134,14 @@ public class JsWidget {
 
 	public void setCustom(String custom) {
 		this.custom = custom;
+	}
+
+	public Integer getIndex() {
+		return index;
+	}
+
+	public void setIndex(Integer index) {
+		this.index = index;
 	}
 	
 }

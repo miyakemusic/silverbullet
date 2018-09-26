@@ -67,7 +67,7 @@ public class DependencySpec2 {
 				List<DependencyExpressionHolder> expressionHolders = expressionHolderMap.get(selectionId);
 				for (DependencyExpressionHolder expressionHolder : expressionHolders) {
 					if (dependencyTargetElement != expressionHolder.getTargetElement()) {
-						System.out.println();
+				//		System.out.println("DependencySpec2");
 					}
 					//List<DependencyProperty> props = expressionHolder.getRelatedSpecs(id, selectionId, triggerId, expressionHolder.getTargetElement());
 					List<DependencyProperty> props = expressionHolder.getRelatedSpecs(id, selectionId, triggerId, dependencyTargetElement, expressionHolder.getTargetElement());

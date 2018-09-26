@@ -68,13 +68,23 @@ public class SvProperty implements Cloneable {
 	private Map<String, Boolean> listMask = new HashMap<String, Boolean>();
 	private boolean enabled = true;
 	private Boolean visible = true;
+	private int index = 0;
 	
 	@XmlTransient
 	private boolean listenerTouching = false;
 //	private ReadWriteLock lock = new ReentrantReadWriteLock();
 	
-	public SvProperty(PropertyDef property) {
+	public SvProperty(PropertyDef prop) {
+		initialize(prop, 0);
+	}
+	
+	public SvProperty(PropertyDef prop, int index) {
+		initialize(prop, index);
+	}
+
+	private void initialize(PropertyDef property, int index2) {
 		this.property = property;
+		this.index = index2;
 		if (this.isListProperty()) {
 			try {
 				this.currentValue = property.getArgumentValue("defaultKey");
@@ -86,10 +96,9 @@ public class SvProperty implements Cloneable {
 		else {
 			this.setCurrentValue(property.getArgumentValue("defaultValue"));
 		}
-//		this.min = property.getArgumentValue("min");
-//		this.max = property.getArgumentValue("max");
 	}
 
+	
 	public String getCurrentValue() {
 //		lock.readLock();
 		return currentValue;
@@ -367,6 +376,14 @@ public class SvProperty implements Cloneable {
 
 	public boolean isChartProperty() {
 		return this.property.getType().equals(CHART_PROPERTY);
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
 	}
 
 }

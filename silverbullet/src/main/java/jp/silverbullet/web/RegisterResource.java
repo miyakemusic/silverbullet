@@ -58,7 +58,7 @@ public class RegisterResource {
 		boolean sortRequired = false;
 		
 		for (KeyValue kv : changes) {
-			System.out.println(kv.getKey() + " = " + kv.getValue());
+//			System.out.println(kv.getKey() + " = " + kv.getValue());
 			String[] tmp = kv.getKey().split("_");
 			String param = tmp[0];
 			int row = Integer.valueOf(tmp[1]);

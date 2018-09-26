@@ -48,16 +48,33 @@ public class SvPropertyStore {
 	}
 	private void addProperty(PropertyDef prop) {
 		stripString(prop);
-		map.put(prop.getId(), new SvProperty(prop));
 		
+		for (int i = 0; i < prop.getSize(); i++) {
+			map.put(prop.getId() + "@" + i, new SvProperty(prop, i));
+		}
 		if (!types.contains(prop.getType())) {
 			types.add(prop.getType());
 		}
 	}
+	
+	public SvProperty getProperty(String id) {
+		SvProperty ret = this.map.get(id + "@" + "0");
+		if (ret == null) {
+			System.out.println("Cannot find " + id);
+//			addProperty(this.propertiesHolder.getProperty(id));
+		}
+		return ret;
+	}
+	
 	private void stripString(PropertyDef prop) {
+		try {
 		prop.setTitle(stripTr(prop.getTitle()));
 		for (ListDetailElement e : prop.getListDetail()) {
 			e.setTitle(stripTr(e.getTitle()));
+		}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -77,15 +94,7 @@ public class SvPropertyStore {
 	public List<SvProperty> getAllProperties() {
 		return new ArrayList<SvProperty>(this.map.values());
 	}
-	
-	public SvProperty getProperty(String id) {
-		SvProperty ret = this.map.get(id);
-		if (ret == null) {
-			System.out.println("Cannot find " + id);
-			addProperty(this.propertiesHolder.getProperty(id));
-		}
-		return ret;
-	}
+
 	public List<String> getAllTypes() {
 		return this.types;
 	}

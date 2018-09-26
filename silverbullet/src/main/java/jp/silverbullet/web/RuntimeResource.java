@@ -17,6 +17,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import javafx.application.Platform;
 import jp.silverbullet.BuilderFx;
+import jp.silverbullet.Sequencer;
 import jp.silverbullet.SvProperty;
 import jp.silverbullet.dependency.engine.RequestRejectedException;
 import jp.silverbullet.property.ChartContent;
@@ -32,7 +33,6 @@ public class RuntimeResource {
 	@Path("/getProperty")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public JsProperty getProperty(@QueryParam("id") String id, @QueryParam("ext") String ext) {
-		System.out.println(id);
 		SvProperty property = BuilderFx.getModel().getBuilderModel().getProperty(id);
 		JsProperty ret = convertProperty(property, ext);
 		if (property.getType().equals(SvProperty.CHART_PROPERTY)) {
@@ -47,6 +47,7 @@ public class RuntimeResource {
 		ret.setTitle(property.getTitle());
 		ret.setUnit(property.getUnit());
 		ret.setElements(property.getAvailableListDetail());
+		ret.setEnabled(property.isEnabled());
 		
 		if (property.isChartProperty()) {
 			if (ext == null) {
@@ -85,22 +86,40 @@ public class RuntimeResource {
 		return ret;
 	}
 	
+	private List<String> debugDepLog;
 	@GET
 	@Path("/setValue")
-	public String setCurrentValue(@QueryParam("id") String id, @QueryParam("value") String value) {
+	@Produces(MediaType.APPLICATION_JSON) 
+	public List<String> setCurrentValue(@QueryParam("id") String id, @QueryParam("value") String value) {
+		Object object = new Object();
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
+				Sequencer sequencer = null;
 				try {
-					BuilderFx.getModel().getBuilderModel().getSequencer().requestChange(id, value);
+					sequencer = BuilderFx.getModel().getBuilderModel().getSequencer();
+					sequencer.requestChange(id, value);
 				} catch (RequestRejectedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+				} finally {
+					debugDepLog = sequencer.getDebugDepLog();
+					synchronized(object) {
+						object.notify();
+					}				
 				}
 			}
 		});
-			
-		return "OK";
+		
+		try {
+			synchronized(object) {
+				object.wait();
+			}
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return debugDepLog;
 	}
 	
 	@GET
@@ -143,7 +162,7 @@ public class RuntimeResource {
 	@Path("/move")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String move(@QueryParam("div") String div, @QueryParam("x") String x, @QueryParam("y") String y) {
-		System.out.println(x + "," + y);
+//		System.out.println(x + "," + y);
 		UiLayout.getInstance().move(div, x, y);
 		return "OK";
 	}

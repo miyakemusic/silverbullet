@@ -4,6 +4,8 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import jp.silverbullet.SvProperty;
 import jp.silverbullet.dependency.engine.DependencyInterface;
 import jp.silverbullet.dependency.engine.RequestRejectedException;
@@ -26,13 +28,18 @@ public class SvSliderFx extends SvPropertyWidgetFx {
 	
 	public SvSliderFx(final SvProperty prop, final DependencyInterface depdencyInterface, Description description) {
 		super(prop, depdencyInterface);
-
-		this.getChildren().add(title = new Label(prop.getTitle() + ":"));
-		this.getChildren().add(new Label(prop.getMin()));
-		slider = new Slider();
-		this.getChildren().add(slider);
-		this.getChildren().add(new Label(prop.getMax()));
+		VBox vbox = new VBox();
+		vbox.getChildren().add(title = new Label(prop.getTitle() + ":" + prop.getCurrentValue()));
+		this.getChildren().add(vbox);
+		HBox hbox = new HBox();
+		vbox.getChildren().add(hbox);
 		
+		
+		hbox.getChildren().add(new Label(prop.getMin()));
+		slider = new Slider();
+		hbox.getChildren().add(slider);
+		hbox.getChildren().add(new Label(prop.getMax()));
+
 		slider.setPrefWidth(300);
 		slider.setMin(Double.valueOf(prop.getMin()));
 		slider.setMax(Double.valueOf(prop.getMax()));
@@ -45,6 +52,8 @@ public class SvSliderFx extends SvPropertyWidgetFx {
 		slider.valueProperty().removeListener(listener);
 		slider.setValue(Double.valueOf(getProperty().getCurrentValue()));
 		slider.valueProperty().addListener(listener);
+		title.setText(getProperty().getTitle() + ":" + getProperty().getCurrentValue());
+//		title.setText(value);
 	}
 
 	@Override

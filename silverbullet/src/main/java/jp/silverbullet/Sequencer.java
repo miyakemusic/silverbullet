@@ -2,6 +2,7 @@ package jp.silverbullet;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import javafx.application.Platform;
 import jp.silverbullet.dependency.engine.DependencyInterface;
 import jp.silverbullet.dependency.engine.DependencyListener;
 import jp.silverbullet.dependency.engine.RequestRejectedException;
+import jp.silverbullet.dependency.speceditor3.ChangedItemValue2;
 import jp.silverbullet.dependency.speceditor3.DependencyEngine2;
 import jp.silverbullet.handlers.AbstractSvHandler;
 import jp.silverbullet.handlers.CommonSvHandler;
@@ -32,6 +34,9 @@ public abstract class Sequencer implements DependencyInterface {
 	private long myThreadId;
 	private Set<SequencerListener> listeners = new HashSet<SequencerListener>();
 	
+	LinkedHashMap<String, List<ChangedItemValue2>> history = new LinkedHashMap<>();
+	private List<String> debugDepLog;
+	
 	public Sequencer() {
 //		this.dependency = dependency2;
 		myThreadId = Thread.currentThread().getId();
@@ -43,9 +48,12 @@ public abstract class Sequencer implements DependencyInterface {
 		fireRequestChange(id, value);
 		
 		// resolves dependencies
-		getDependency().requestChange(id, value);
 		
-		List<String> changedIds = getDependency().getChangedIds();
+		DependencyEngine2 engine = getDependency();
+		engine.requestChange(id, value);
+		debugDepLog = engine.getDebugLog();
+		
+		List<String> changedIds = engine.getChangedIds();
 
 		Set<HandlerProperty> toRunHandlers = new LinkedHashSet<>();
 		for (HandlerProperty handler : getHandlerPropertyHolder().getHandlers()) {
@@ -69,6 +77,8 @@ public abstract class Sequencer implements DependencyInterface {
 					try {
 						fireChangeFromSystem(id, value);
 						getDependency().requestChange(id, value);
+						debugDepLog.addAll(getDependency().getDebugLog());
+						
 					} catch (RequestRejectedException e) {
 						e.printStackTrace();
 					}					
@@ -109,8 +119,12 @@ public abstract class Sequencer implements DependencyInterface {
 			new CommonSvHandler(model, handler).execute(/*getRelatedChanges(handler.getIds(), getDependency().getChagedItems()),*/
 					getDependency().getChagedItems());
 		}
+		
 	}
 
+	public List<String> getDebugDepLog() {
+		return debugDepLog;
+	}
 	protected void fireChangeFromSystem(String id, String value) {
 		for (SequencerListener listener : this.listeners) {
 			listener.onChangedBySystem(id, value);

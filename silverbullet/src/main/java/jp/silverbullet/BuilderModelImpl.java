@@ -1,9 +1,5 @@
 package jp.silverbullet;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 
@@ -12,12 +8,10 @@ import jp.silverbullet.dependency.engine.DependencyEngine;
 import jp.silverbullet.dependency.engine.DependencyInterface;
 import jp.silverbullet.dependency.engine.RequestRejectedException;
 import jp.silverbullet.dependency.speceditor2.DependencySpecHolder;
-import jp.silverbullet.dependency.speceditor3.CachedPropertyStore;
 import jp.silverbullet.dependency.speceditor3.DepPropertyStore;
 import jp.silverbullet.dependency.speceditor3.DependencyEngine2;
 import jp.silverbullet.dependency.speceditor3.DependencySpecHolder2;
 import jp.silverbullet.property.PropertyHolder;
-import jp.silverbullet.property.PropertyType;
 import jp.silverbullet.property.StringArray;
 import jp.silverbullet.property.editor.PropertyListModel2;
 import jp.silverbullet.register.RegisterProperty;
@@ -189,7 +183,6 @@ public class BuilderModelImpl implements BuilderModel {
 
 	@Override
 	public List<String> getSelectedIds() {
-		PropertyListModel2 model = new PropertyListModel2(this.propertiesHolder);
 		return selectedId;
 	}
 

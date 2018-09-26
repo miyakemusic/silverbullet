@@ -20,17 +20,20 @@ public class PropertyListModel2 extends AbstractTableModel {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static final String TITLE = "title";
-	private static final String COMMENT = "comment";
-	private static final String TYPE = "type";
-	private static final String ID = "id";
-	private static final String NO = "No.";
+	public static final String TITLE = "title";
+	public static final String COMMENT = "comment";
+	public static final String TYPE = "type";
+	public static final String ID = "id";
+	public static final String NO = "No.";
+	public static final String SIZE = "Size";
+	public static final String GROUP = "Group";
+	
 	private PropertyHolder holder;
 	private String filterProperty = "";
 	private List<String> titles = new ArrayList<>();
 	private List<PropertyDef> properties = new ArrayList<>();
 	private String filterKeyWord = "";
-	private static final List<String> commonTitles = Arrays.asList(NO, ID, TYPE, COMMENT, TITLE);
+	private static final List<String> commonTitles = Arrays.asList(NO, ID, TYPE, COMMENT, TITLE, SIZE, GROUP);
 	private PropertyHolderListener listener = new PropertyHolderListener() {
 
 		@Override
@@ -105,6 +108,12 @@ public class PropertyListModel2 extends AbstractTableModel {
 		else if (key.equals(TITLE)) {
 			prop.setTitle(value);
 		}
+		else if (key.equals(SIZE)) {
+			prop.setSize(Integer.valueOf(value));
+		}
+		else if (key.equals(GROUP)) {
+			prop.setGroup(value);
+		}
 		else {
 			int index = holder.getTypes().getIndex(prop.getType(), key);
 			prop.updateArgument(index, value);
@@ -140,6 +149,12 @@ public class PropertyListModel2 extends AbstractTableModel {
 		}
 		else if (key.equals(NO)) {
 			return String.valueOf(row + 1);
+		}
+		else if (key.equals(SIZE)) {
+			return prop.getSize();
+		}
+		else if (key.equals(GROUP)) {
+			return prop.getGroup();
 		}
 		else {
 			int index = holder.getTypes().getIndex(prop.getType(), key);

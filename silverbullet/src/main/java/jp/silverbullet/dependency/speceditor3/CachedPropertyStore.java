@@ -13,42 +13,38 @@ import jp.silverbullet.SvPropertyListener;
 public class CachedPropertyStore implements DepPropertyStore {
 	private Map<String, SvProperty> cached = new HashMap<>();
 	private DepPropertyStore original;
-//	private List<DependencyChangedLog> logs = new ArrayList<>();
+	private List<String> debugLog = new ArrayList<>();
 	private Map<String, List<ChangedItemValue2>> changedHistory = new LinkedHashMap<>();
 	
 	private SvPropertyListener listener = new SvPropertyListener() {
 		@Override
 		public void onValueChanged(String id, String value) {
-//			logs.add(new DependencyChangedLog(id, DependencyTargetElement.Value, value));
-			addValue(id, value);
+			appendChange(id, new ChangedItemValue2(DependencyTargetElement.Value, value));
 		}
 
 		@Override
 		public void onEnableChanged(String id, boolean b) {
-//			logs.add(new DependencyChangedLog(id, DependencyTargetElement.Enabled, new Boolean(b).toString()));
-			getHistory(id).add(new ChangedItemValue2(DependencyTargetElement.Enabled, String.valueOf(b)));
+			appendChange(id, new ChangedItemValue2(DependencyTargetElement.Enabled, String.valueOf(b)));
 		}
 
 		@Override
 		public void onFlagChanged(String id, Flag flag) {
 			if (flag.equals(Flag.MAX)) {
-				getHistory(id).add(new ChangedItemValue2(DependencyTargetElement.Max, flag.toString()));
+				appendChange(id, new ChangedItemValue2(DependencyTargetElement.Max, flag.toString()));
 			}
 			else if (flag.equals(Flag.MIN)) {
-				getHistory(id).add(new ChangedItemValue2(DependencyTargetElement.Min, flag.toString()));
+				appendChange(id, new ChangedItemValue2(DependencyTargetElement.Min, flag.toString()));
 			}
 		}
 
 		@Override
 		public void onVisibleChanged(String id, Boolean b) {
-//			logs.add(new DependencyChangedLog(id, DependencyTargetElement.Visible, new Boolean(b).toString()));
-			getHistory(id).add(new ChangedItemValue2(DependencyTargetElement.Visible, String.valueOf(b)));
+			appendChange(id, new ChangedItemValue2(DependencyTargetElement.Visible, String.valueOf(b)));
 		}
 
 		@Override
 		public void onListMaskChanged(String id, String value) {
-//			logs.add(new DependencyChangedLog(id, DependencyTargetElement.ListItemEnabled, value));
-			getHistory(id).add(new ChangedItemValue2(DependencyTargetElement.ListItemEnabled, value));
+			appendChange(id, new ChangedItemValue2(DependencyTargetElement.ListItemEnabled, value));
 		}
 
 		@Override
@@ -63,6 +59,15 @@ public class CachedPropertyStore implements DepPropertyStore {
 		original = originalStore;
 	}
 	
+	protected void appendChange(String id, ChangedItemValue2 changedItemValue2) {
+		getHistory(id).add(changedItemValue2);
+		this.debugLog.add(id + ":" + changedItemValue2.toString());
+	}
+
+	public List<String> getDebugLog() {
+		return debugLog;
+	}
+
 	protected List<ChangedItemValue2> getHistory(String id) {
 		if (!this.changedHistory.containsKey(id)) {
 			this.changedHistory.put(id, new ArrayList<ChangedItemValue2>());

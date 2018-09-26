@@ -11,7 +11,14 @@ public class JsProperty {
 	private String unit;
 	private List<ListDetailElement> elements = new ArrayList<>();
 	private String currentValue;
-
+	private boolean enabled;
+	
+	public boolean isEnabled() {
+		return enabled;
+	}
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
 	public String getId() {
 		return id;
 	}

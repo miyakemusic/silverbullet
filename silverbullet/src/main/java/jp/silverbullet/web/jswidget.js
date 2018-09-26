@@ -1,5 +1,5 @@
 class JsWidget {
-	constructor(info, parent, selected) {
+	constructor(info, parent, selected, dependency) {
 		this.info = info;
 		
 		this.baseId = parent + "-" + info.unique;
@@ -13,7 +13,7 @@ class JsWidget {
 			$('#' + this.parent).append('<div id=' + this.baseId + '></div>');
 		}
 			
-		this.createBase(selected);		
+		this.createBase(dependency);		
 		
 		this.updateLayout();
 	}
@@ -66,46 +66,46 @@ class JsWidget {
 		}
 	}
 		
-	createBase(selected) {			
+	createBase(dependency) {			
 		var me = this;
 		if (this.info.widgetType == 'COMBOBOX') {
 			this.subWidget = new JsComboBox(this.baseId, function(id) {
-				me.requestChange(me.info.id, id);
+				me.requestChange(me.info.id, id, dependency);
 			});
 		}
 		else if (this.info.widgetType == 'RADIOBUTTON') {
 			this.subWidget = new JsRadio(this.baseId, function(id) {
-				me.requestChange(me.info.id, id);
+				me.requestChange(me.info.id, id, dependency);
 			});
 		}
 		else if (this.info.widgetType == 'TEXTFIELD') {
 			this.subWidget = new JsTextInput(this.baseId, function(id) {
-				me.requestChange(me.info.id, id);
+				me.requestChange(me.info.id, id, dependency);
 			});
 		}
 		else if (this.info.widgetType == 'CHECKBOX') {
 			this.subWidget = new JsCheckBox(this.baseId, function(id) {
-				me.requestChange(me.info.id, id);
+				me.requestChange(me.info.id, id, dependency);
 			});
 		}
 		else if (this.info.widgetType == 'TOGGLEBUTTON') {
 			this.subWidget = new JsToggleButton(this.baseId, this.info, function(id) {
-				me.requestChange(me.info.id, id);
+				me.requestChange(me.info.id, id, dependency);
 			});
 		}
 		else if (this.info.widgetType == 'ACTIONBUTTON') {
 			this.subWidget = new JsActionButton(this.baseId, function(id) {
-				me.requestChange(me.info.id, id);
+				me.requestChange(me.info.id, id, dependency);
 			});
 		}
 		else if (this.info.widgetType == 'CHART') {
 			this.subWidget = new JsChart(this.baseId, this.info, function(id) {
-				me.requestChange(me.info.id, id);
+				me.requestChange(me.info.id, id, dependency);
 			});
 		}
 		else if (this.info.widgetType == 'TABLE') {
 			this.subWidget = new JsTable(this.baseId, function(id) {
-				me.requestChange(me.info.id, id);
+				me.requestChange(me.info.id, id, dependency);
 			});
 		}
 		else if (this.info.widgetType == 'PANEL') {
@@ -123,17 +123,17 @@ class JsWidget {
 		}
 		else if (this.info.widgetType == 'TAB') {
 			this.subWidget = new JsTabPanel(this.baseId, this.info, function(id) {
-				me.requestChange(me.info.id, id);
+				me.requestChange(me.info.id, id, dependency);
 			});
 		}
 		else if (this.info.widgetType == 'GUI_DIALOG') {
 			this.subWidget = new JsDialogButton(this.baseId, this.info, function(id) {
-				me.requestChange(me.info.id, id);
+				me.requestChange(me.info.id, id, dependency);
 			});
 		}	
 		else if (this.info.widgetType == 'LABEL') {
 			this.subWidget = new JsLabel(this.baseId, this.info, function(id) {
-				me.requestChange(me.info.id, id);
+				me.requestChange(me.info.id, id, dependency);
 			});
 		}	
 				
@@ -200,6 +200,7 @@ class JsWidget {
 			   url: "http://" + window.location.host + "/rest/runtime/getProperty?id=" + id,
 			   success: function(property){
 			   		if (me.subWidget != null) {
+			   			$('#' + me.baseId + ' > ').prop('disabled', !property.enabled);
 			   			me.subWidget.updateValue(property);
 			   		}
 			   }
@@ -236,12 +237,12 @@ class JsWidget {
 		}
 	}
 	
-	requestChange(id, value) {
+	requestChange(id, value, dependency) {
 		$.ajax({
 		   type: "GET", 
 		   url: "http://" + window.location.host + "/rest/runtime/setValue?id="+id + "&value=" + value,
 		   success: function(msg){
-
+				dependency(msg);
 		   }
 		});	
 	}

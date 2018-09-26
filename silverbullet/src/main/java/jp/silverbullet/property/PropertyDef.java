@@ -67,6 +67,19 @@ public class PropertyDef implements Cloneable {
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
+	
+	public int getSize() {
+		return size;
+	}
+	public String getGroup() {
+		return group;
+	}
+	public void setSize(int size) {
+		this.size = size;
+	}
+	public void setGroup(String group) {
+		this.group = group;
+	}
 	public List<String> getOthers() {
 		return others;
 	}
@@ -78,6 +91,9 @@ public class PropertyDef implements Cloneable {
 	private String type = "ListProperty";
 	private String title = "Untitled";
 	private String comment = "";
+	private int size = 1;
+	private String group = "";
+	
 	private List<String> others = new ArrayList<String>();
 	private List<ListDetailElement> listDetail = new ArrayList<>();
 	

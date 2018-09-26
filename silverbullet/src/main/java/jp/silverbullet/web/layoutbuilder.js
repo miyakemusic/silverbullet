@@ -1,10 +1,11 @@
 class LayoutBuilder {
-	constructor (base, root, callback) {
+	constructor (base, root, callback, debugCallback) {
 		this.root = root;
 		this.base = base;
 		this.map = new Map();
 		this.widgetMap = new Map();
 		this.callback = callback;
+		this.debugCallback = debugCallback;
 		this.updateUI();
 	}
 	
@@ -54,14 +55,16 @@ class LayoutBuilder {
 					widgetType = obj.widgetType;
 				}
 				me.callback(widgetType, div, info);
+			},
+			function(msg) {
+				me.debugCallback(msg);
 			}
 		);
 		widget.editable(this.enableEdit);
 		this.allWidgets.push(widget);
 		   			
-//		if (pane.id != undefined && pane.id != '') {
-			this.pushWidget(pane, widget);
-//		}
+		this.pushWidget(pane, widget);
+
 		for (var i in pane.children) {
 			var child = pane.children[i];
 			this.createWidget(widget.baseId, child, pane.layout);

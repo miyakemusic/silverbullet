@@ -10,6 +10,8 @@ class DesignerClass {
 		var idAddDialog = prefix + 'addDialog';
 		var idLayout = prefix + 'layout';
 		var idWidgetType = prefix + 'widgetType';
+		var idDependencyLog = prefix + 'dependency';
+		
 		$('#' + div).append('<div id="' + idToolbar + '"></div>');
 		$('#' + idToolbar).append('<button id="' + idAdd + '">Add Id</button>');
 		$('#' + idToolbar).append('<button id="' + idAddPanel + '">Add Panel</button>');
@@ -17,6 +19,7 @@ class DesignerClass {
 		$('#' + idToolbar).append('<button id="' + idAddDialog + '">Add Dialog</button>');
 		$('#' + idToolbar).append('<select id="' + idLayout + '"></select>');
 		$('#' + idToolbar).append('<select id="' + idWidgetType + '"></select>');
+		$('#' + idToolbar).append('<button id="' + idDependencyLog + '">Dependency</button>');
 		
 		var idToolbar2 = prefix + 'toolBar2';
 		var idAddTab = prefix + 'addTab';
@@ -38,6 +41,9 @@ class DesignerClass {
 		var idDialog = prefix + 'dialog';
 		var idDialogPanel = prefix + 'dialogPanel';
 		var idCustomPropTable = prefix + 'customPropTable';
+		var idDependencyDialog = prefix + 'dependencyDialog';
+		var idDependencyDialogPanel = prefix + 'dependencyDialogPanel';
+		var idIndex = prefix + 'index';
 		
 		$('#' + div).append('<div id="' + idToolbar2 + '"></div>');
 		$('#' + idToolbar2).append('<button id="' + idAddTab + '">Add Tab</button>');
@@ -46,6 +52,7 @@ class DesignerClass {
 		$('#' + idToolbar2).append('<button id="' + idAddStyleClass + '">Add Style Class</button>');
 		$('#' + idToolbar2).append('<span>CSS<input type="text" id="' + idCss + '"></span>');
 		$('#' + idToolbar2).append('<span>ID<input type="text" id="' + idId + '"></span>');
+		$('#' + idToolbar2).append('<span>Index:<input type="text" id="' + idIndex + '"></span>');
 		$('#' + idToolbar2).append('<span>Custom<input type="text" id="' + idCustom + '"></span>');
 		$('#' + idToolbar2).append('<span>Presentation<input type="text" id="' + idPresentation + '"></span>');
 		$('#' + idToolbar2).append('<input type="checkbox" id="' + idEdit + '">Edit');
@@ -60,22 +67,34 @@ class DesignerClass {
 		$('#' + div).append('<div id="' + idMainDiv + '"></div>');
 		$('#' + idMainDiv).append('<div id="' + idRoot + '"></div>');
 		$('#' + idMainDiv).append('<div id="' + idDialog + '"><input type="text" id="' + idDialogPanel + '"></div>');
+		$('#' + idMainDiv).append('<div id="' + idDependencyDialog + '"><div id="' + idDependencyDialogPanel + '"></div></div>');
+
 		$('#' + idMainDiv).append('<table id="' + idCustomPropTable + '"></table>');
 
 		var me = this;
 		var copiedDiv;
 		
-		var layout = new LayoutBuilder(idRoot, '', function(widgetType, baseId, info) {
-			$('#' + idWidgetType).val(widgetType);
-			$('#' + idLayout).val(info.layout);
-			$('#' + idStyleClass).val(info.styleClass);
-			$('#' + idCss).val(info.css);
-			$('#' + idId).val(info.id);
-			$('#' + idPresentation).val(info.presentation);
-			$('#' + idCustom).val(info.custom);
-			$('#' + idUid).text(baseId);
-			updateCustomPropTable(widgetType, info.custom);
-		});
+		var layout = new LayoutBuilder(idRoot, '', 
+			function(widgetType, baseId, info) {
+				$('#' + idWidgetType).val(widgetType);
+				$('#' + idLayout).val(info.layout);
+				$('#' + idStyleClass).val(info.styleClass);
+				$('#' + idCss).val(info.css);
+				$('#' + idId).val(info.id);
+				$('#' + idPresentation).val(info.presentation);
+				$('#' + idCustom).val(info.custom);
+				$('#' + idUid).text(baseId);
+				$('#' + idIndex).val(info.index);
+				updateCustomPropTable(widgetType, info.custom);
+			},
+			function(msg) {
+				var str = '';
+				for (var i = 0; i < msg.length; i++) {
+					str += i + ':' + msg[i] + '<br>';
+				}
+				$('#' + idDependencyDialogPanel).html(str);
+			}
+		);
 	
 		var dialog = new IdSelectDialog(div, function(ids) {
 			$.ajax({
@@ -106,6 +125,24 @@ class DesignerClass {
 			height: 300
 		});	
 			
+		$('#' + idDependencyDialog).dialog({
+			  autoOpen: false,
+			  title: 'Dependency Log',
+			  closeOnEscape: false,
+			  modal: false,
+			  buttons: {
+			    "OK": function(){
+			      $(this).dialog('close');
+			    }
+			    ,
+			    "Cancel": function(){
+			      $(this).dialog('close');
+			    }
+			  },
+			width: 400,
+			height: 300
+		});	
+		
 		$('#' + idEdit).change(function() {
 			var checked = $('#' + idEdit).prop('checked');
 			if (checked == true) {
@@ -244,7 +281,10 @@ class DesignerClass {
 		$('#' + idAddStyleClass).click(function(e) {
 			appendStyleClass();
 		});	
-	
+		$('#' + idDependencyLog).click(function(e) {
+			$('#' + idDependencyDialog).dialog("open");
+		});
+		
 		function appendStyleClass() {
 			setStyleClass($('#' + idStyleClass).val() + ' ' + $('#' + idStyleClasses).val());
 		}

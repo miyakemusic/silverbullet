@@ -22,6 +22,8 @@ public class IdResource {
 	private static final String TYPE = "Type";
 	private static final String ID = "ID";
 	private static final String COMMENT = "Comment";
+	private static final String SIZE = "Size";
+	private static final String GROUP = "Group";
 	
 	@GET
 	@Path("/selection")
@@ -40,7 +42,8 @@ public class IdResource {
 		keys.add(TYPE);
 		keys.add(CAPTION);
 		keys.add(COMMENT);
-		
+		keys.add(SIZE);
+		keys.add(GROUP);
 		keys.addAll(BuilderFx.getModel().getBuilderModel().getPropertyHolder().getTypes().getArguments(type));
 		ret.setHeader(keys);
 		for (PropertyDef prop : BuilderFx.getModel().getBuilderModel().getPropertyHolder().getProperties()) {
@@ -59,6 +62,12 @@ public class IdResource {
 					}
 					else if (key.equals(COMMENT)) {
 						args.add(prop.getComment());
+					}
+					else if (key.equals(SIZE)) {
+						args.add(String.valueOf(prop.getSize()));
+					}
+					else if (key.equals(GROUP)) {
+						args.add(prop.getGroup());
 					}
 					else {
 						args.add(prop.getArgumentValue(key));
@@ -104,13 +113,13 @@ public class IdResource {
 		
 		for (ListDetailElement e: prop.getListDetail()) {
 			if (e.getId().equals(selectionId)) {
-				if (paramName.equals("id")) {
+				if (paramName.equals(PropertyListModel2.ID)) {
 					e.setId(value);
 				}
-				else if (paramName.equals("comment")) {
+				else if (paramName.equals(PropertyListModel2.COMMENT)) {
 					e.setComment(value);
 				}
-				else if (paramName.equals("title")) {
+				else if (paramName.equals(PropertyListModel2.TITLE)) {
 					e.setTitle(value);
 				}
 				
@@ -177,22 +186,22 @@ public class IdResource {
 
 		PropertyDef prop = BuilderFx.getModel().getBuilderModel().getPropertyHolder().getProperty(id);
 		
-		if (paramName.equals("id")) {
+		if (paramName.equals(PropertyListModel2.ID)) {
 			prop.setId(value);
 		}
-		else if (paramName.equals("type")) {
+		else if (paramName.equals(PropertyListModel2.TYPE)) {
 			prop.setType(value);
 		}
-		else if (paramName.equals("title")) {
+		else if (paramName.equals(PropertyListModel2.TITLE)) {
 			prop.setTitle(value);
 		}
-		else if (paramName.equals("comment")) {
+		else if (paramName.equals(PropertyListModel2.COMMENT)) {
 			prop.setComment(value);
 		}
 		else {
 			prop.updateArgument(paramName, value);
 		}
-		System.out.println("updateValue " + id + "," + paramName + "," + value);
+	//	System.out.println("updateValue " + id + "," + paramName + "," + value);
 		return "";
 	}
 	

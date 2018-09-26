@@ -18,4 +18,10 @@ public class ChangedItemValue2 {
 		return value;
 	}
 
+	@Override
+	public String toString() {
+		return element.toString() + ":" + value;
+	}
+
+	
 }

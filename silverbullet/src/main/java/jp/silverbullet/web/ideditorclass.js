@@ -20,6 +20,8 @@ class IdEditorClass {
     	
 		$('#' + div).append('<select id="' + idPropType + '"></select>');
 		$('#' + div).append('<div id="' + idCurrentId + '"></div>');
+		$('#' + idCurrentId).text('ID');
+		
 		$('#' + div).append('<div id="' + idTable + '"></div>');
 
 		$('#' + div).append('<Button id="' + idAddChoice + '">Add</Button>');
