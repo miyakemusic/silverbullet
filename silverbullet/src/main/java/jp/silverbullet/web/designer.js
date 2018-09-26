@@ -71,6 +71,7 @@ class DesignerClass {
 
 		$('#' + idMainDiv).append('<table id="' + idCustomPropTable + '"></table>');
 
+
 		var me = this;
 		var copiedDiv;
 		
