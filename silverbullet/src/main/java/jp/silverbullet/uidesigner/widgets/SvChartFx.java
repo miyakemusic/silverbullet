@@ -13,7 +13,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.shape.Line;
 import jp.silverbullet.SvProperty;
-import jp.silverbullet.dependency.engine.DependencyInterface;
+import jp.silverbullet.dependency.DependencyInterface;
 import jp.silverbullet.uidesigner.SvRowData;
 import jp.silverbullet.uidesigner.TableContent;
 

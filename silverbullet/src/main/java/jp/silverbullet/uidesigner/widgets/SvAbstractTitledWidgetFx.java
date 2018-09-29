@@ -6,7 +6,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import jp.silverbullet.SvProperty;
-import jp.silverbullet.dependency.engine.DependencyInterface;
+import jp.silverbullet.dependency.DependencyInterface;
 
 public abstract class SvAbstractTitledWidgetFx extends SvPropertyWidgetFx {
 	

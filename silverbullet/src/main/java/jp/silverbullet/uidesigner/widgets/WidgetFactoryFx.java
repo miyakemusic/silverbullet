@@ -1,7 +1,7 @@
 package jp.silverbullet.uidesigner.widgets;
 
 import jp.silverbullet.SvProperty;
-import jp.silverbullet.dependency.engine.DependencyInterface;
+import jp.silverbullet.dependency.DependencyInterface;
 import jp.silverbullet.uidesigner.pane.SvCommonDialog;
 import jp.silverbullet.uidesigner.pane.SvPanelModel;
 import jp.silverbullet.uidesigner.pane.UiElement;

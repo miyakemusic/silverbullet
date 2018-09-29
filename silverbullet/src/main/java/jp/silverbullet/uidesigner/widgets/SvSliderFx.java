@@ -7,8 +7,8 @@ import javafx.scene.control.Slider;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import jp.silverbullet.SvProperty;
-import jp.silverbullet.dependency.engine.DependencyInterface;
-import jp.silverbullet.dependency.engine.RequestRejectedException;
+import jp.silverbullet.dependency.DependencyInterface;
+import jp.silverbullet.dependency.RequestRejectedException;
 
 public class SvSliderFx extends SvPropertyWidgetFx {
 

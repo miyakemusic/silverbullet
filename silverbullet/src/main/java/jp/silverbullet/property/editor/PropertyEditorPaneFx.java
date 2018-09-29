@@ -35,7 +35,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
-import jp.silverbullet.MyDialogFx;
+import jp.silverbullet.javafx.MyDialogFx;
 import jp.silverbullet.property.PropertyHolder;
 import jp.silverbullet.register.MyMessageBox;
 

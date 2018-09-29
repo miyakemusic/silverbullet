@@ -14,16 +14,16 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import jp.silverbullet.BuilderModel;
-import jp.silverbullet.ChangedItemValue;
 import jp.silverbullet.IdValues;
 import jp.silverbullet.SequencerListener;
 import jp.silverbullet.SvProperty;
 import jp.silverbullet.SvPropertyStore;
 import jp.silverbullet.XmlPersistent;
-import jp.silverbullet.dependency.engine.DependencyEngine;
-import jp.silverbullet.dependency.engine.DependencyListener;
-import jp.silverbullet.dependency.engine.RequestRejectedException;
+import jp.silverbullet.dependency.DependencyListener;
+import jp.silverbullet.dependency.RequestRejectedException;
 import jp.silverbullet.register.RegisterMonitor;
+import jp.silverbullet.trash.unknown.ChangedItemValue;
+import jp.silverbullet.trashdependency.engine.DependencyEngine;
 
 import javax.xml.bind.JAXBException;
 

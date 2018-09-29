@@ -16,9 +16,9 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import jp.silverbullet.MyDialogFx;
 import jp.silverbullet.property.editor.PropertyEditorPaneFx;
 import jp.silverbullet.handlers.HandlerProperty;
+import jp.silverbullet.javafx.MyDialogFx;
 
 public class RemoteEditorFx extends VBox {
 	public RemoteEditorFx(final RemoteEditorModel model) {

@@ -53,14 +53,15 @@ class DesignerClass {
 		$('#' + idToolbar2).append('<span>CSS<input type="text" id="' + idCss + '"></span>');
 		$('#' + idToolbar2).append('<span>ID<input type="text" id="' + idId + '"></span>');
 		$('#' + idToolbar2).append('<span>Index:<input type="text" id="' + idIndex + '"></span>');
-		$('#' + idToolbar2).append('<span>Custom<input type="text" id="' + idCustom + '"></span>');
+//		$('#' + idToolbar2).append('<span>Custom<input type="text" id="' + idCustom + '"></span>');
+		$('#' + idToolbar2).append('<div id="' + idCustom + '"></div>');
 		$('#' + idToolbar2).append('<span>Presentation<input type="text" id="' + idPresentation + '"></span>');
 		$('#' + idToolbar2).append('<input type="checkbox" id="' + idEdit + '">Edit');
 		$('#' + idToolbar2).append('<button id="' + idUpdate + '">update</button>');
 		$('#' + idToolbar2).append('<button id="' + idClear + '">clear</button>');
 		$('#' + idToolbar2).append('<button id="' + idCut + '">Cut</button>');
 		$('#' + idToolbar2).append('<button id="' + idPaste + '">Paste</button>');
-		$('#' + idToolbar2).append('<div id="' + idUid + '"></div>');
+		$('#' + idToolbar2).append('<div id="' + idUid + '">GUI id</div>');
 		$('#' + idToolbar2).append('<div id="' + idInfo + '"></div>');
 		
 		var idMainDiv = prefix + 'main';
@@ -115,7 +116,7 @@ class DesignerClass {
 			  buttons: {
 			    "OK": function(){
 			      $(this).dialog('close');
-			      layout.addDialog($('#' + idDialogPanelId).val());
+			      layout.addDialog($('#' + idDialogPanel).val());
 			    }
 			    ,
 			    "Cancel": function(){
@@ -271,7 +272,9 @@ class DesignerClass {
 		    }
 		});
 		$('#' + idAddDialog).click(function(e) {
-			$('#' + idDialog).dialog("open");
+			//$('#' + idDialog).dialog("open");
+			addDialog('');
+			
 		});
 		$('#' + idCut).click(function(e) {
 			cut();
@@ -425,14 +428,42 @@ class DesignerClass {
 		}	
 		
 		function updateCustomPropTable(widgetType, custom) {
+		
+			$('#' + idCustom).empty();
+			
 			$('#' + idCustomPropTable).empty();
 			var list = customDef[widgetType];
 			
 			for (var i in list) {
 				var pair = list[i];
+				var idCustomElement = 'customElement_' + pair.key;
+				$('#' + idCustom).append('<span>' + pair.key + '<input type="text" id="' + idCustomElement + '"></span>');
+				$('#' + idCustomElement).val(custom[pair.key]);
+				$('#' + idCustomElement).prop('name', pair.key);
 				
+				$('#' + idCustomElement).keydown(function(e) {
+				    if (e.keyCode == 13) {
+	//			    	custom.set($(this).prop('name'), $(this).val());
+				    	//setCustom(custom);
+				        setCustomElement($(this).prop('name'), $(this).val());
+				    }
+				});
+		
 				$('#' + idCustomPropTable).append('<tr><td>' + pair.key + '</td><td>' + pair.value + '</td></tr>');
-			}
+			}			
 		}
+		
+		function setCustomElement(customId, customValue) {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/runtime/setCustomElement?div=" + layout.getSelectedDiv() + '&customId=' + customId + '&customValue=' + customValue,
+			   success: function(msg){
+					layout.updateUI();
+			   }
+			});			
+		}
+		
+	//	$('#' + idEdit).prop("checked",true);
+		$('#' + idEdit).trigger('click');
 	}
 }

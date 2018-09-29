@@ -10,8 +10,8 @@ import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.HBox;
 import jp.silverbullet.SvProperty;
-import jp.silverbullet.dependency.engine.DependencyInterface;
-import jp.silverbullet.dependency.engine.RequestRejectedException;
+import jp.silverbullet.dependency.DependencyInterface;
+import jp.silverbullet.dependency.RequestRejectedException;
 import jp.silverbullet.property.ListDetailElement;
 
 import javax.swing.JLabel;

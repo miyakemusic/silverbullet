@@ -13,8 +13,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import javafx.application.Platform;
-import jp.silverbullet.BuilderFx;
+import jp.silverbullet.StaticInstances;
+import jp.silverbullet.javafx.BuilderFx;
 import jp.silverbullet.register.BitSetToIntConverter;
 import jp.silverbullet.register.RegisterBit;
 import jp.silverbullet.register.RegisterBit.ReadWriteType;
@@ -30,7 +30,7 @@ public class RegisterResource {
 	@Path("/getRegisters")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public SvRegisterJsonHolder getRegisters() {
-		RegisterProperty regProp =  BuilderFx.getModel().getBuilderModel().getRegisterProperty();
+		RegisterProperty regProp =  StaticInstances.getBuilderModel().getRegisterProperty();
 		
 		SvRegisterJsonHolder ret = new SvRegisterJsonHolder();
 		for (SvRegister register : regProp.getRegisters()) {
@@ -62,7 +62,7 @@ public class RegisterResource {
 			String[] tmp = kv.getKey().split("_");
 			String param = tmp[0];
 			int row = Integer.valueOf(tmp[1]);
-			SvRegister register =  BuilderFx.getModel().getBuilderModel().getRegisterProperty().getRegisters().get(row);
+			SvRegister register =  StaticInstances.getBuilderModel().getRegisterProperty().getRegisters().get(row);
 			
 			if (param.equals("addr")) {
 				register.setAddress(kv.getValue());
@@ -105,7 +105,7 @@ public class RegisterResource {
 		}
 		
 		if (sortRequired) {
-			BuilderFx.getModel().getBuilderModel().getRegisterProperty().sort();
+			StaticInstances.getBuilderModel().getRegisterProperty().sort();
 		}
 		
 		return "OK";
@@ -115,7 +115,7 @@ public class RegisterResource {
 	@Path("/addRow")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String addRow(@QueryParam("row") final String row) {
-		List<SvRegister> registers = BuilderFx.getModel().getBuilderModel().getRegisterProperty().getRegisters();
+		List<SvRegister> registers = StaticInstances.getBuilderModel().getRegisterProperty().getRegisters();
 		
 		SvRegister newRegister = new SvRegister();
 		newRegister.setName("NEW");
@@ -132,7 +132,7 @@ public class RegisterResource {
 			iRow++;
 		}
 		
-		BuilderFx.getModel().getBuilderModel().getRegisterProperty().getRegisters().add(iRow, newRegister);
+		StaticInstances.getBuilderModel().getRegisterProperty().getRegisters().add(iRow, newRegister);
 	
 		return "OK";
 	}
@@ -141,7 +141,7 @@ public class RegisterResource {
 	@Path("/addBitRow")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String addBitRow(@QueryParam("row") final int row) {
-		SvRegister register = BuilderFx.getModel().getBuilderModel().getRegisterProperty().getRegisters().get(row);
+		SvRegister register = StaticInstances.getBuilderModel().getRegisterProperty().getRegisters().get(row);
 //		register.addBit("new", 0, 0, ReadWriteType.RW, "description", "definition");
 		register.addBit("new bit", ReadWriteType.RW, "new bit", "new bit");
 		return "OK";
@@ -151,7 +151,7 @@ public class RegisterResource {
 	@Path("/getCurrentValue")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String getCurrentValue(@QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName) {
-		SvRegister register  = BuilderFx.getModel().getBuilderModel().getRegisterProperty().getRegisterByName(regName);
+		SvRegister register  = StaticInstances.getBuilderModel().getRegisterProperty().getRegisterByName(regName);
 		Map<Long, BitSet> value = BuilderFx.getRegisterMapModel().getMapValue();
 		String address = register.getAddress().replace("0x", "");
 		if (address.contains("-")) {

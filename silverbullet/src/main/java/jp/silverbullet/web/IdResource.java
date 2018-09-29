@@ -10,7 +10,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import jp.silverbullet.BuilderFx;
+import jp.silverbullet.StaticInstances;
 import jp.silverbullet.property.ListDetailElement;
 import jp.silverbullet.property.PropertyDef;
 import jp.silverbullet.property.PropertyType;
@@ -29,7 +29,7 @@ public class IdResource {
 	@Path("/selection")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public ListDetailElement[] getSelections(@QueryParam("id") final String id) {
-		return BuilderFx.getModel().getBuilderModel().getPropertyHolder().getProperty(id).getListDetail().toArray(new ListDetailElement[0]);
+		return StaticInstances.getBuilderModel().getPropertyHolder().getProperty(id).getListDetail().toArray(new ListDetailElement[0]);
 	}
 	
 	@GET
@@ -44,9 +44,9 @@ public class IdResource {
 		keys.add(COMMENT);
 		keys.add(SIZE);
 		keys.add(GROUP);
-		keys.addAll(BuilderFx.getModel().getBuilderModel().getPropertyHolder().getTypes().getArguments(type));
+		keys.addAll(StaticInstances.getBuilderModel().getPropertyHolder().getTypes().getArguments(type));
 		ret.setHeader(keys);
-		for (PropertyDef prop : BuilderFx.getModel().getBuilderModel().getPropertyHolder().getProperties()) {
+		for (PropertyDef prop : StaticInstances.getBuilderModel().getPropertyHolder().getProperties()) {
 			if (prop.getType().equals(type)) {
 				List<String> args = new ArrayList<>();
 		
@@ -89,7 +89,7 @@ public class IdResource {
 			prop.setType(type);
 		}
 		prop.setId("ID_" + Calendar.getInstance().getTime().getTime());
-		BuilderFx.getModel().getBuilderModel().getPropertyHolder().addProperty(prop);
+		StaticInstances.getBuilderModel().getPropertyHolder().addProperty(prop);
 		
 		return "OK";
 	}
@@ -98,7 +98,7 @@ public class IdResource {
 	@Path("/addChoice")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String addNewChoice(@QueryParam("id") final String id) {
-		PropertyDef prop = BuilderFx.getModel().getBuilderModel().getPropertyHolder().getProperty(id);
+		PropertyDef prop = StaticInstances.getBuilderModel().getPropertyHolder().getProperty(id);
 		ListDetailElement choice = new ListDetailElement();
 		choice.setId(id + "_" + Calendar.getInstance().getTime().getTime());
 		prop.addListItem(choice);
@@ -109,7 +109,7 @@ public class IdResource {
 	@Path("/updateChoice")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public String updateChoice(@QueryParam("id") final String id, @QueryParam("selectionId") final String selectionId, @QueryParam("paramName") final String paramName, @QueryParam("value") final String value) {
-		PropertyDef prop = BuilderFx.getModel().getBuilderModel().getPropertyHolder().getProperty(id);
+		PropertyDef prop = StaticInstances.getBuilderModel().getPropertyHolder().getProperty(id);
 		
 		for (ListDetailElement e: prop.getListDetail()) {
 			if (e.getId().equals(selectionId)) {
@@ -137,7 +137,7 @@ public class IdResource {
 	public JsonTable test(@QueryParam("type") final String type) {
 		JsonTable ret =  new JsonTable();
 		
-		PropertyListModel2 model = new PropertyListModel2(BuilderFx.getModel().getBuilderModel().getPropertyHolder());
+		PropertyListModel2 model = new PropertyListModel2(StaticInstances.getBuilderModel().getPropertyHolder());
 		
 		model.setFilterProperty(type);
 		
@@ -163,7 +163,7 @@ public class IdResource {
 	@Produces(MediaType.APPLICATION_JSON) 
 	public PropertyDefList getAllIds (@QueryParam("type") final String type) {
 		PropertyDefList ret =  new PropertyDefList();
-		for (PropertyDef prop : BuilderFx.getModel().getBuilderModel().getPropertyHolder().getProperties()) {
+		for (PropertyDef prop : StaticInstances.getBuilderModel().getPropertyHolder().getProperties()) {
 			ret.list.add(prop);
 		}
 		
@@ -174,7 +174,7 @@ public class IdResource {
 	@Path("/arguments")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public String[] getArguments(@QueryParam("type") final String type) {
-		return BuilderFx.getModel().getBuilderModel().getPropertyHolder().getTypes().getArguments(type).toArray(new String[0]);
+		return StaticInstances.getBuilderModel().getPropertyHolder().getTypes().getArguments(type).toArray(new String[0]);
 	}
 	
 	@GET
@@ -184,7 +184,7 @@ public class IdResource {
 			@QueryParam("paramName") final String paramName,  
 			@QueryParam("value") final String value) {
 
-		PropertyDef prop = BuilderFx.getModel().getBuilderModel().getPropertyHolder().getProperty(id);
+		PropertyDef prop = StaticInstances.getBuilderModel().getPropertyHolder().getProperty(id);
 		
 		if (paramName.equals(PropertyListModel2.ID)) {
 			prop.setId(value);
@@ -209,7 +209,7 @@ public class IdResource {
 	@Path("/typeNames")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public String[] getTypeNames() {
-		List<String> ret = new ArrayList<String>(BuilderFx.getModel().getBuilderModel().getPropertyHolder().getTypes().getDefinitions().keySet());
+		List<String> ret = new ArrayList<String>(StaticInstances.getBuilderModel().getPropertyHolder().getTypes().getDefinitions().keySet());
 		ret.add(0, "All");
 		return ret.toArray(new String[0]);
 	}
@@ -218,6 +218,6 @@ public class IdResource {
 	@Path("/types")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public PropertyType getTypes() {
-		return BuilderFx.getModel().getBuilderModel().getPropertyHolder().getTypes();
+		return StaticInstances.getBuilderModel().getPropertyHolder().getTypes();
 	}
 }

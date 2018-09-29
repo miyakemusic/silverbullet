@@ -1,7 +1,7 @@
 package jp.silverbullet.remote.engine;
 
 import jp.silverbullet.SvProperty;
-import jp.silverbullet.dependency.engine.DependencyInterface;
+import jp.silverbullet.dependency.DependencyInterface;
 import jp.silverbullet.remote.SvTexHolder;
 
 public interface RemoteServerModel {

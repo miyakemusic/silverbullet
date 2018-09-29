@@ -12,13 +12,22 @@ import javax.xml.bind.JAXBException;
 
 import org.junit.jupiter.api.Test;
 
-import jp.silverbullet.ChangedItemValue;
 import jp.silverbullet.SvProperty;
 import jp.silverbullet.SvPropertyStore;
 import jp.silverbullet.XmlPersistent;
-import jp.silverbullet.dependency.engine.DependencyBuilder;
-import jp.silverbullet.dependency.engine.RequestRejectedException;
-import jp.silverbullet.dependency.speceditor3.DependencyExpressionHolder.SettingDisabledBehavior;
+import jp.silverbullet.dependency.CachedPropertyStore;
+import jp.silverbullet.dependency.ChangedItemValue;
+import jp.silverbullet.dependency.DepPropertyStore;
+import jp.silverbullet.dependency.DependencyBuilder;
+import jp.silverbullet.dependency.DependencyEngine;
+import jp.silverbullet.dependency.DependencyExpression;
+import jp.silverbullet.dependency.DependencyExpressionHolder;
+import jp.silverbullet.dependency.DependencyProperty;
+import jp.silverbullet.dependency.DependencySpec;
+import jp.silverbullet.dependency.DependencySpecHolder;
+import jp.silverbullet.dependency.DependencyTargetElement;
+import jp.silverbullet.dependency.RequestRejectedException;
+import jp.silverbullet.dependency.DependencyExpressionHolder.SettingDisabledBehavior;
 import jp.silverbullet.property.ArgumentDefInterface;
 import jp.silverbullet.property.ListDetailElement;
 import jp.silverbullet.property.PropertyDef;
@@ -36,24 +45,24 @@ class DependencySpecDetail2Test {
 		store.add(createDoubleProperty(idSecond, 200, "nm", 0, 9999, 3));
 		store.add(createDoubleProperty(idEnableChanger, 100, "nm", 0, 9999, 3));
 		
-		DependencySpecHolder2 holder = new DependencySpecHolder2();
+		DependencySpecHolder holder = new DependencySpecHolder();
 		
 		{
-			DependencySpec2 spec = new DependencySpec2(idSecond);
+			DependencySpec spec = new DependencySpec(idSecond);
 			holder.add(spec);
 			DependencyExpressionHolder value = new DependencyExpressionHolder(DependencyTargetElement.Value);
 			value.addExpression().resultExpression("$"+idFirst + ".Value * 2");
 			spec.add(value);	
 		}
 		{
-			DependencySpec2 spec = new DependencySpec2(idFirst);
+			DependencySpec spec = new DependencySpec(idFirst);
 			holder.add(spec);
 			DependencyExpressionHolder enabled = new DependencyExpressionHolder(DependencyTargetElement.Enabled);
 			enabled.addExpression().resultExpression(DependencyExpression.False).conditionExpression("$" + idEnableChanger + ".Value > 100");
 			spec.add(enabled);	
 		}
 		
-		DependencyEngine2 engine = createEngine(holder, store);
+		DependencyEngine engine = createEngine(holder, store);
 		
 		try {
 			engine.requestChange(idFirst, "200");
@@ -96,10 +105,10 @@ class DependencySpecDetail2Test {
 		String idApplicationDrift = "ID_OSA_APPLICATION_DRIFT";
 		String idApplicationInBand = "ID_OSA_APPLICATION_INBAND";
 		
-		DependencySpecHolder2 holder = new DependencySpecHolder2();
+		DependencySpecHolder holder = new DependencySpecHolder();
 		
 		//////////BAND///////////
-		DependencySpec2 specBand = new DependencySpec2(idBand);
+		DependencySpec specBand = new DependencySpec(idBand);
 		holder.add(specBand);
 		//// Enabled ///
 		{
@@ -119,7 +128,7 @@ class DependencySpecDetail2Test {
 		////////// Start Wavelength///////////
 		//// Value ////
 		{
-			DependencySpec2 spec = new DependencySpec2(idStartWavelength);
+			DependencySpec spec = new DependencySpec(idStartWavelength);
 			holder.add(spec);
 			DependencyExpressionHolder specDetailStartW = new DependencyExpressionHolder(DependencyTargetElement.Value);
 			specDetailStartW.addExpression().resultExpression("1530").conditionIdValue(idBand).equals().conditionSelectionId(idBandC);
@@ -131,7 +140,7 @@ class DependencySpecDetail2Test {
 		////////// Stop Wavelength///////////
 		//// Value ////
 		{
-			DependencySpec2 spec = new DependencySpec2(idStopWavelength);
+			DependencySpec spec = new DependencySpec(idStopWavelength);
 			holder.add(spec);
 			DependencyExpressionHolder specDetailStopW = new DependencyExpressionHolder(DependencyTargetElement.Value);
 			specDetailStopW.addExpression().resultExpression("1565").conditionIdValue(idBand).equals().conditionSelectionId(idBandC);
@@ -146,7 +155,7 @@ class DependencySpecDetail2Test {
 		
 		//// ListItemVisibel ////
 		{
-			DependencySpec2 spec = new DependencySpec2(idApplicationInBand);
+			DependencySpec spec = new DependencySpec(idApplicationInBand);
 			holder.add(spec);
 			DependencyExpressionHolder specDetail = new DependencyExpressionHolder(DependencyTargetElement.ListItemVisible);
 			specDetail.addExpression().resultExpression(DependencyExpression.True).conditionIdValue(idModel).equals().conditionSelectionId(idModel21A);
@@ -164,8 +173,8 @@ class DependencySpecDetail2Test {
 		store.add(createListProperty(idModel, Arrays.asList(idModel20A, idModel21A), idModel20A));
 		store.add(createListProperty(idModel, Arrays.asList(idApplication, idApplicationWdm, idApplicationDrift, idApplicationInBand), idApplicationWdm));
 		
-		DependencyEngine2 engine = createEngine(holder, store);
-		DependencyBuilder3 builder2 = new DependencyBuilder3(idStartWavelength, holder);
+		DependencyEngine engine = createEngine(holder, store);
+		DependencyBuilder builder2 = new DependencyBuilder(idStartWavelength, holder);
 		List<DependencyProperty> spec2 = builder2.getSpecs(0);
 		assertTrue(builder2.getLayerCount() == 3);
 		
@@ -199,12 +208,12 @@ class DependencySpecDetail2Test {
 			assertTrue(cached.getProperty(idStartWavelength).getCurrentValue().equals("1400.000"));
 			
 			{
-				List<ChangedItemValue2> changed = cached.getChanged(idStartWavelength);
+				List<ChangedItemValue> changed = cached.getChanged(idStartWavelength);
 				assertEquals(DependencyTargetElement.Value, changed.get(0).getElement());
 				assertEquals("1400.000", changed.get(0).getValue());
 			}
 			{
-				List<ChangedItemValue2> changed = cached.getChanged(idBand);
+				List<ChangedItemValue> changed = cached.getChanged(idBand);
 				assertEquals(DependencyTargetElement.Value, changed.get(0).getElement());
 				assertEquals(idBandManual, changed.get(0).getValue());
 			}	
@@ -223,17 +232,17 @@ class DependencySpecDetail2Test {
 			assertEquals(idBandC, cached.getProperty(idBand).getCurrentValue());
 		
 			{
-				List<ChangedItemValue2> changed = cached.getChanged(idBand);
+				List<ChangedItemValue> changed = cached.getChanged(idBand);
 				assertEquals(DependencyTargetElement.Value, changed.get(0).getElement());
 				assertEquals(idBandC, changed.get(0).getValue());
 			}
 			{
-				List<ChangedItemValue2> changed = cached.getChanged(idStartWavelength);
+				List<ChangedItemValue> changed = cached.getChanged(idStartWavelength);
 				assertEquals(DependencyTargetElement.Value, changed.get(0).getElement());
 				assertEquals("1530.000", changed.get(0).getValue());
 			}
 			{
-				List<ChangedItemValue2> changed = cached.getChanged(idStopWavelength);
+				List<ChangedItemValue> changed = cached.getChanged(idStopWavelength);
 				assertEquals(DependencyTargetElement.Value, changed.get(0).getElement());
 				assertEquals("1565.000", changed.get(0).getValue());
 			}
@@ -245,9 +254,9 @@ class DependencySpecDetail2Test {
 //		DependencyBuilder3 builder = new DependencyBuilder3(idBand, holder);
 //		assertTrue(builder.getTree().getDependencyProperty().getId().equals(idBand));
 		
-		XmlPersistent<DependencySpecHolder2> propertyPersister = new XmlPersistent<>();
+		XmlPersistent<DependencySpecHolder> propertyPersister = new XmlPersistent<>();
 		try {
-			propertyPersister.save(holder, "C:\\Projects\\dep.xml", DependencySpecHolder2.class);
+			propertyPersister.save(holder, "C:\\Projects\\dep.xml", DependencySpecHolder.class);
 		} catch (JAXBException e) {
 			e.printStackTrace();
 		}
@@ -266,11 +275,11 @@ class DependencySpecDetail2Test {
 		store.add(createDoubleProperty(idCenterWavelength, 1450, "nm", 0, 9999, 3));
 		store.add(createDoubleProperty(idSpanWavelength, 400, "nm", 0, 9999, 3));
 		
-		DependencySpecHolder2 holder = new DependencySpecHolder2();
+		DependencySpecHolder holder = new DependencySpecHolder();
 				
 		////////// Start Wavelength///////////
 		{
-			DependencySpec2 spec = new DependencySpec2(idStartWavelength);
+			DependencySpec spec = new DependencySpec(idStartWavelength);
 			holder.add(spec);
 			DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.Value);
 			detail.addExpression().resultExpression("$"+idCenterWavelength+".Value" + "-" + "$"+idSpanWavelength+".Value/2");
@@ -278,7 +287,7 @@ class DependencySpecDetail2Test {
 		}
 		////////// Stop Wavelength///////////
 		{
-			DependencySpec2 spec = new DependencySpec2(idStopWavelength);
+			DependencySpec spec = new DependencySpec(idStopWavelength);
 			holder.add(spec);
 			DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.Value);
 			detail.addExpression().resultExpression("$"+idCenterWavelength+".Value" + "+" + "$"+idSpanWavelength+".Value/2");
@@ -286,7 +295,7 @@ class DependencySpecDetail2Test {
 		}
 		////////// Center Wavelength///////////
 		{
-			DependencySpec2 spec = new DependencySpec2(idCenterWavelength);
+			DependencySpec spec = new DependencySpec(idCenterWavelength);
 			holder.add(spec);
 			DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.Value);
 			detail.addExpression().resultExpression("($"+idStartWavelength+".Value" + "+" + "$"+idStopWavelength+".Value)/2");
@@ -294,13 +303,13 @@ class DependencySpecDetail2Test {
 		}
 		////////// Span Wavelength///////////
 		{
-			DependencySpec2 spec = new DependencySpec2(idSpanWavelength);
+			DependencySpec spec = new DependencySpec(idSpanWavelength);
 			holder.add(spec);
 			DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.Value);
 			detail.addExpression().resultExpression("$"+idStopWavelength +".Value - " + "$"+idStartWavelength + ".Value");
 			spec.add(detail);
 		}
-		DependencyEngine2 engine = createEngine(holder, store);
+		DependencyEngine engine = createEngine(holder, store);
 		try {
 			engine.requestChange(idCenterWavelength, "1550");
 			CachedPropertyStore cached = engine.getCachedPropertyStore();
@@ -322,11 +331,11 @@ class DependencySpecDetail2Test {
 		store.add(createDoubleProperty(idStartWavelength, 1500, "nm", 1250, 1650, 3));
 		store.add(createDoubleProperty(idStopWavelength, 1550, "nm", 1250, 1650, 3));
 		
-		DependencySpecHolder2 holder = new DependencySpecHolder2();
+		DependencySpecHolder holder = new DependencySpecHolder();
 		
 		////////// Start Wavelength///////////
 		{
-			DependencySpec2 spec = new DependencySpec2(idStartWavelength);
+			DependencySpec spec = new DependencySpec(idStartWavelength);
 			holder.add(spec);
 			DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.Value);
 			detail.addExpression().resultExpression("$" + idStopWavelength +".Value").conditionIdValue(idStartWavelength).largerThan().conditionIdValue(idStopWavelength);
@@ -334,14 +343,14 @@ class DependencySpecDetail2Test {
 		}
 		////////// Stop Wavelength///////////
 		{
-			DependencySpec2 spec = new DependencySpec2(idStopWavelength);
+			DependencySpec spec = new DependencySpec(idStopWavelength);
 			holder.add(spec);
 			DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.Value);
 			detail.addExpression().resultExpression("$" +idStartWavelength +".Value").conditionIdValue(idStartWavelength).largerThan().conditionIdValue(idStopWavelength);
 			spec.add(detail);
 		}
 		
-		DependencyEngine2 engine = createEngine(holder, store);
+		DependencyEngine engine = createEngine(holder, store);
 		try {
 			assertTrue(store.getProperty(idStartWavelength).getCurrentValue().equals("1500.000"));
 			assertTrue(store.getProperty(idStopWavelength).getCurrentValue().equals("1550.000"));
@@ -369,14 +378,14 @@ class DependencySpecDetail2Test {
 		String idApplicationDrift = "ID_OSA_APPLICATION_DRIFT";
 		String idApplicationInBand = "ID_OSA_APPLICATION_INBAND";
 		
-		DependencySpecHolder2 holder = new DependencySpecHolder2();
+		DependencySpecHolder holder = new DependencySpecHolder();
 		
 		CachedPropertyStore store = new CachedPropertyStore(createPropertyStore());
 		store.add(createListProperty(idModel, Arrays.asList(idModel20A, idModel21A), idModel20A));
 		store.add(createListProperty(idApplication, Arrays.asList(idApplicationWdm, idApplicationDrift, idApplicationInBand), idApplicationInBand));
 
 		{
-			DependencySpec2 spec = new DependencySpec2(idApplication);
+			DependencySpec spec = new DependencySpec(idApplication);
 			holder.add(spec);
 			DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.ListItemVisible);
 			detail.addExpression().resultExpression(DependencyExpression.True).conditionIdValue(idModel).equals().conditionSelectionId(idModel21A);
@@ -384,7 +393,7 @@ class DependencySpecDetail2Test {
 			spec.add(idApplicationInBand, detail);
 		}
 		
-		DependencyEngine2 engine = createEngine(holder, store);
+		DependencyEngine engine = createEngine(holder, store);
 		try {
 			engine.requestChange(idModel, idModel20A);
 			CachedPropertyStore cached = engine.getCachedPropertyStore();
@@ -395,7 +404,7 @@ class DependencySpecDetail2Test {
 			assertTrue(cached.getProperty(idApplication).getCurrentValue().equals(idApplicationWdm));
 			
 			{
-				List<ChangedItemValue2> changed = cached.getChanged(idApplication);
+				List<ChangedItemValue> changed = cached.getChanged(idApplication);
 				assertEquals(DependencyTargetElement.ListItemEnabled, changed.get(0).getElement());
 				assertEquals(idApplicationInBand + ",true", changed.get(0).getValue());
 
@@ -421,14 +430,14 @@ class DependencySpecDetail2Test {
 		String idApplicationDrift = "ID_OSA_APPLICATION_DRIFT";
 		String idApplicationInBand = "ID_OSA_APPLICATION_INBAND";
 		
-		DependencySpecHolder2 holder = new DependencySpecHolder2();
+		DependencySpecHolder holder = new DependencySpecHolder();
 		
 		DepPropertyStore store = createPropertyStore();
 		store.add(createListProperty(idModel, Arrays.asList(idModel20A, idModel21A, idModel22A, idModel23A), idModel20A));
 		store.add(createListProperty(idApplication, Arrays.asList(idApplicationWdm, idApplicationDrift, idApplicationInBand), idApplicationInBand));
 
 		{
-			DependencySpec2 spec = new DependencySpec2(idApplication);
+			DependencySpec spec = new DependencySpec(idApplication);
 			holder.add(spec);
 			DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.ListItemVisible);
 			detail.addExpression().resultExpression(DependencyExpression.True).conditionIdValue(idModel).equals().conditionSelectionId(idModel21A);
@@ -436,7 +445,7 @@ class DependencySpecDetail2Test {
 			detail.addExpression().resultExpression(DependencyExpression.False).conditionElse();
 			spec.add(idApplicationInBand, detail);
 		}
-		DependencyEngine2 engine = createEngine(holder, store);
+		DependencyEngine engine = createEngine(holder, store);
 		try {
 			// 20A
 			engine.requestChange(idModel, idModel20A);
@@ -448,12 +457,12 @@ class DependencySpecDetail2Test {
 			assertTrue(cached.getProperty(idApplication).getCurrentValue().equals(idApplicationWdm));
 			
 			{
-				List<ChangedItemValue2> changed = cached.getChanged(idApplication);
+				List<ChangedItemValue> changed = cached.getChanged(idApplication);
 				assertEquals(DependencyTargetElement.ListItemEnabled, changed.get(0).getElement());
 				assertEquals(idApplicationInBand + ",true", changed.get(0).getValue());
 			}
 			{
-				List<ChangedItemValue2> changed = cached.getChanged(idApplication);
+				List<ChangedItemValue> changed = cached.getChanged(idApplication);
 				assertEquals(DependencyTargetElement.Value, changed.get(1).getElement());
 				assertEquals(idApplicationWdm, changed.get(1).getValue());
 			}
@@ -505,18 +514,18 @@ class DependencySpecDetail2Test {
 		store.add(createDoubleProperty(idSpanWavelength, 400, "nm", 0, 9999, 3));
 		store.add(createListProperty(idModel, Arrays.asList(idModel20A, idModel21A, idModel22A, idModel23A), idModel20A));
 
-		DependencySpecHolder2 holder = new DependencySpecHolder2();
+		DependencySpecHolder holder = new DependencySpecHolder();
 				
 		////////// Start Wavelength///////////
 		{
-			DependencySpec2 spec = new DependencySpec2(idStartWavelength);
+			DependencySpec spec = new DependencySpec(idStartWavelength);
 			holder.add(spec);
 			DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.Value);
 			detail.addExpression().resultScript("if ($ID_OSA_MODEL.Value == %ID_OSA_MODEL_20A) {ret=$ID_OSA_STOP_WAVELENGTH.Value-$ID_OSA_START_WAVELENGTH.Value;} else if ($ID_OSA_MODEL.Value == %ID_OSA_MODEL_23A) {ret=$ID_OSA_STOP_WAVELENGTH.Value+$ID_OSA_START_WAVELENGTH.Value;} else {ret=100;}");
 			spec.add(detail);
 		}
 		
-		DependencyEngine2 engine = createEngine(holder, store);
+		DependencyEngine engine = createEngine(holder, store);
 			
 		// 20A
 		try {
@@ -550,10 +559,10 @@ class DependencySpecDetail2Test {
 		store.add(createDoubleProperty(idStartWavelength, 1300, "nm", 1250, 1650, 3));
 		store.add(createDoubleProperty(idStopWavelength, 1600, "nm", 1250, 1650, 3));
 		
-		DependencySpecHolder2 holder = new DependencySpecHolder2();
+		DependencySpecHolder holder = new DependencySpecHolder();
 		////////// Stop Wavelength///////////
 		{
-			DependencySpec2 spec = new DependencySpec2(idStopWavelength);
+			DependencySpec spec = new DependencySpec(idStopWavelength);
 			holder.add(spec);
 			DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.Value);
 			detail.addExpression().resultExpression("$" + idStartWavelength + ".Value" + "+100");
@@ -562,14 +571,14 @@ class DependencySpecDetail2Test {
 		}
 		////////// Start Wavelength///////////
 		{
-			DependencySpec2 spec = new DependencySpec2(idStartWavelength);
+			DependencySpec spec = new DependencySpec(idStartWavelength);
 			holder.add(spec);
 			DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.Value);
 			detail.addExpression().resultExpression("$" + idStopWavelength + ".Value" + "-100");
 			detail.setSettingDisabledBehavior(SettingDisabledBehavior.Reject);
 			spec.add(detail);
 		}
-		DependencyEngine2 engine = createEngine(holder, store);
+		DependencyEngine engine = createEngine(holder, store);
 		
 		boolean exception = false;
 		CachedPropertyStore cached = null;
@@ -610,10 +619,10 @@ class DependencySpecDetail2Test {
 		store.add(createListProperty(idBand, Arrays.asList(idBandC, idBandManual), idBandC));
 		store.add(createDoubleProperty(idStartWavelength, 1250, "nm", 0, 9999, 3));
 		store.add(createDoubleProperty(idStopWavelength, 1650, "nm", 0, 9999, 3));
-		DependencySpecHolder2 holder = new DependencySpecHolder2();
+		DependencySpecHolder holder = new DependencySpecHolder();
 		////////// Band ///////////
 		{
-			DependencySpec2 spec = new DependencySpec2(idBand);
+			DependencySpec spec = new DependencySpec(idBand);
 			holder.add(spec);
 			DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.Value);
 			detail.addExpression().resultExpression("%" + idBandManual).conditionExpression("$ID_OSA_START_WAVELENGTH.Value > 2000");
@@ -621,7 +630,7 @@ class DependencySpecDetail2Test {
 			spec.add(detail);
 		}
 
-		DependencyEngine2 engine = createEngine(holder, store);
+		DependencyEngine engine = createEngine(holder, store);
 		
 		try {
 			engine.requestChange(idStartWavelength, "2100");
@@ -642,18 +651,18 @@ class DependencySpecDetail2Test {
 		store.add(createDoubleProperty(idStartWavelength, 1500, "nm", 1250, 1650, 3));
 		store.add(createDoubleProperty(idStopWavelength, 1550, "nm", 1250, 1650, 3));
 		
-		DependencySpecHolder2 holder = new DependencySpecHolder2();
+		DependencySpecHolder holder = new DependencySpecHolder();
 		
 		////////// Start Wavelength///////////
 		{
-			DependencySpec2 spec = new DependencySpec2(idStartWavelength);
+			DependencySpec spec = new DependencySpec(idStartWavelength);
 			holder.add(spec);
 			DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.Value);
 			detail.addExpression().resultExpression("$" + idStopWavelength +".Value + 100");
 			spec.add(detail);
 		}
 		
-		DependencyEngine2 engine = createEngine(holder, store);
+		DependencyEngine engine = createEngine(holder, store);
 		try {			
 			engine.requestChange(idStopWavelength, "1500");
 			CachedPropertyStore cached = engine.getCachedPropertyStore();
@@ -681,11 +690,11 @@ class DependencySpecDetail2Test {
 		store.add(createDoubleProperty(idSpanWavelength, 400, "nm", 0, 9999, 3));
 		store.add(createListProperty(idBand, Arrays.asList(idBandC, idBandManual), idBandManual));
 
-		DependencySpecHolder2 holder = new DependencySpecHolder2();
+		DependencySpecHolder holder = new DependencySpecHolder();
 				
 		////////// Start Wavelength///////////
 		{
-			DependencySpec2 spec = new DependencySpec2(idStartWavelength);
+			DependencySpec spec = new DependencySpec(idStartWavelength);
 			holder.add(spec);
 			DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.Value);
 			detail.addExpression().resultExpression("$"+idCenterWavelength + ".Value - " + "$"+idSpanWavelength +".Value/2");
@@ -694,7 +703,7 @@ class DependencySpecDetail2Test {
 		}
 		////////// Stop Wavelength///////////
 		{
-			DependencySpec2 spec = new DependencySpec2(idStopWavelength);
+			DependencySpec spec = new DependencySpec(idStopWavelength);
 			holder.add(spec);
 			DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.Value);
 			detail.addExpression().resultExpression("$"+idCenterWavelength + ".Value + " + "$"+idSpanWavelength +".Value/2");
@@ -703,7 +712,7 @@ class DependencySpecDetail2Test {
 		}
 		////////// Center Wavelength///////////
 		{
-			DependencySpec2 spec = new DependencySpec2(idCenterWavelength);
+			DependencySpec spec = new DependencySpec(idCenterWavelength);
 			holder.add(spec);
 			DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.Value);
 			detail.addExpression().resultExpression("("+"$"+idStartWavelength + ".Value + " + "$"+idStopWavelength +".Value)/2");
@@ -717,7 +726,7 @@ class DependencySpecDetail2Test {
 		}
 		////////// Span Wavelength///////////
 		{
-			DependencySpec2 spec = new DependencySpec2(idSpanWavelength);
+			DependencySpec spec = new DependencySpec(idSpanWavelength);
 			holder.add(spec);
 			DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.Value);
 			detail.addExpression().resultExpression("$"+idStopWavelength + ".Value - " + "$"+idStartWavelength +".Value");
@@ -725,7 +734,7 @@ class DependencySpecDetail2Test {
 		}
 
 		{
-			DependencyBuilder3 builder = new DependencyBuilder3(idStartWavelength, holder);
+			DependencyBuilder builder = new DependencyBuilder(idStartWavelength, holder);
 			assertEquals(4, builder.getLayerCount());
 			
 			List<DependencyProperty> layer0 = builder.getSpecs(0);
@@ -734,19 +743,19 @@ class DependencySpecDetail2Test {
 			assertEquals(idSpanWavelength, layer0.get(1).getId());
 		}
 		{
-			DependencyBuilder3 builder = new DependencyBuilder3(idStopWavelength, holder);
+			DependencyBuilder builder = new DependencyBuilder(idStopWavelength, holder);
 			assertEquals(4, builder.getLayerCount());
 		}
 		{
-			DependencyBuilder3 builder = new DependencyBuilder3(idCenterWavelength, holder);
+			DependencyBuilder builder = new DependencyBuilder(idCenterWavelength, holder);
 			assertEquals(4, builder.getLayerCount());
 		}
 		{
-			DependencyBuilder3 builder = new DependencyBuilder3(idSpanWavelength, holder);
+			DependencyBuilder builder = new DependencyBuilder(idSpanWavelength, holder);
 			assertEquals(4, builder.getLayerCount());
 		}
 
-		DependencyEngine2 engine = createEngine(holder, store);
+		DependencyEngine engine = createEngine(holder, store);
 			
 		try {
 			engine.requestChange(idStartWavelength, "1350");
@@ -807,11 +816,11 @@ class DependencySpecDetail2Test {
 		store.add(createListProperty(idOsaTest, Arrays.asList(idOsaTestStart, idOsaTestStop), idOsaTestStop));
 		store.add(createListProperty(idOtdrTest, Arrays.asList(idOtdrTestStart, idOtdrTestStop), idOtdrTestStop));
 		
-		DependencySpecHolder2 holder = new DependencySpecHolder2();
+		DependencySpecHolder holder = new DependencySpecHolder();
 		
 		////////// idOsaTestStart ///////////
 		{
-			DependencySpec2 spec = new DependencySpec2(idOsaTest);
+			DependencySpec spec = new DependencySpec(idOsaTest);
 			holder.add(spec);
 			DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.Value);
 			detail.addExpression().resultExpression("%" + idOsaTestStart).conditionExpression("$" + idAllTest + ".Value ==%" + idAllTestStart);
@@ -821,7 +830,7 @@ class DependencySpecDetail2Test {
 		
 		////////// idOtdrTestStart ///////////
 		{
-			DependencySpec2 spec = new DependencySpec2(idOtdrTest);
+			DependencySpec spec = new DependencySpec(idOtdrTest);
 			holder.add(spec);
 			DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.Value);
 			detail.addExpression().resultExpression("%" + idOtdrTestStart).conditionExpression("$" + idAllTest + ".Value ==%" + idAllTestStart);
@@ -831,7 +840,7 @@ class DependencySpecDetail2Test {
 		
 //		DependencyBuilder3 builder = new DependencyBuilder3(idAllTest, holder);
 		
-		DependencyEngine2 engine = createEngine(holder, store);
+		DependencyEngine engine = createEngine(holder, store);
 		
 		try {
 			engine.requestChange(idAllTest, idAllTestStart);
@@ -854,8 +863,8 @@ class DependencySpecDetail2Test {
 		DepPropertyStore store = createPropertyStore();
 		store.add(createListProperty(idAllTest, Arrays.asList(idAllTestStart, idAllTestStop), idAllTestStop));
 		
-		DependencySpecHolder2 holder = new DependencySpecHolder2();
-		DependencyEngine2 engine = createEngine(holder, store);
+		DependencySpecHolder holder = new DependencySpecHolder();
+		DependencyEngine engine = createEngine(holder, store);
 		
 		try {
 			engine.requestChange(idAllTest, idAllTestStart);
@@ -888,10 +897,10 @@ class DependencySpecDetail2Test {
 		store.add(createListProperty(idPulse, Arrays.asList(idPulse10ns, idPulse20ns, idPulse50ns, idPulse100ns, idPulse500ns), idPulse10ns));
 		store.add(createListProperty(idRange, Arrays.asList(idRange5km, idRange10km, idRange50km, idRange100km, idRange200km), idRange5km));
 		
-		DependencySpecHolder2 holder = new DependencySpecHolder2();
+		DependencySpecHolder holder = new DependencySpecHolder();
 		
 		{
-			DependencySpec2 spec = new DependencySpec2(idPulse);
+			DependencySpec spec = new DependencySpec(idPulse);
 			holder.add(spec);
 			
 			{////////// Pulse500ns is OK when 200km///////////
@@ -916,7 +925,7 @@ class DependencySpecDetail2Test {
 				spec.add(idPulse50ns, detail);
 			}
 		}
-		DependencyEngine2 engine = createEngine(holder, store);
+		DependencyEngine engine = createEngine(holder, store);
 		
 		try {
 			engine.requestChange(idRange, idRange5km);
@@ -954,10 +963,10 @@ class DependencySpecDetail2Test {
 			e.printStackTrace();
 		}
 	}
-	private DependencyEngine2 createEngine(DependencySpecHolder2 holder, DepPropertyStore store) {
-		DependencyEngine2 engine = new DependencyEngine2() {
+	private DependencyEngine createEngine(DependencySpecHolder holder, DepPropertyStore store) {
+		DependencyEngine engine = new DependencyEngine() {
 			@Override
-			protected DependencySpecHolder2 getDependencyHolder() {
+			protected DependencySpecHolder getDependencyHolder() {
 				return holder;
 			}
 

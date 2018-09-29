@@ -16,10 +16,10 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import javafx.application.Platform;
-import jp.silverbullet.BuilderFx;
 import jp.silverbullet.Sequencer;
+import jp.silverbullet.StaticInstances;
 import jp.silverbullet.SvProperty;
-import jp.silverbullet.dependency.engine.RequestRejectedException;
+import jp.silverbullet.dependency.RequestRejectedException;
 import jp.silverbullet.property.ChartContent;
 import jp.silverbullet.web.ui.CustomProperties;
 import jp.silverbullet.web.ui.JsProperty;
@@ -33,7 +33,7 @@ public class RuntimeResource {
 	@Path("/getProperty")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public JsProperty getProperty(@QueryParam("id") String id, @QueryParam("ext") String ext) {
-		SvProperty property = BuilderFx.getModel().getBuilderModel().getProperty(id);
+		SvProperty property = StaticInstances.getBuilderModel().getProperty(id);
 		JsProperty ret = convertProperty(property, ext);
 		if (property.getType().equals(SvProperty.CHART_PROPERTY)) {
 			
@@ -97,7 +97,7 @@ public class RuntimeResource {
 			public void run() {
 				Sequencer sequencer = null;
 				try {
-					sequencer = BuilderFx.getModel().getBuilderModel().getSequencer();
+					sequencer = StaticInstances.getBuilderModel().getSequencer();
 					sequencer.requestChange(id, value);
 				} catch (RequestRejectedException e) {
 					// TODO Auto-generated catch block
@@ -265,7 +265,7 @@ public class RuntimeResource {
 	@Path("setCustom")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setCustom(@QueryParam("div") String div, @QueryParam("custom") String custom) {
-		UiLayout.getInstance().setCustom(div, custom);
+		//UiLayout.getInstance().setCustom(div, custom);
 		return "OK";
 	}
 	
@@ -289,5 +289,14 @@ public class RuntimeResource {
 	@Produces(MediaType.APPLICATION_JSON) 
 	public Map<String, List<Pair>> getCustromDefinition() {
 		return CustomProperties.getInstance().getMap();
+	}	
+	
+	@GET
+	@Path("setCustomElement")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String setCustomElement(@QueryParam("div") String div, @QueryParam("customId") String customId, @QueryParam("customValue") String customValue) {
+		UiLayout.getInstance().setCustomElement(div, customId, customValue);
+		return "OK";
 	}
+	
 }

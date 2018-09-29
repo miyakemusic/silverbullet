@@ -4,8 +4,8 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.CheckBox;
 import jp.silverbullet.SvProperty;
-import jp.silverbullet.dependency.engine.DependencyInterface;
-import jp.silverbullet.dependency.engine.RequestRejectedException;
+import jp.silverbullet.dependency.DependencyInterface;
+import jp.silverbullet.dependency.RequestRejectedException;
 
 public class SvCheckBoxFx extends SvPropertyWidgetFx {
 

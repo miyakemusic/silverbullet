@@ -8,9 +8,9 @@ import java.util.Map;
 import java.util.Set;
 import javafx.application.Platform;
 import jp.silverbullet.SvPropertyListener.Flag;
-import jp.silverbullet.dependency.speceditor2.DependencyFormula;
 import jp.silverbullet.property.ListDetailElement;
 import jp.silverbullet.property.PropertyDef;
+import jp.silverbullet.trash.speceditor2.DependencyFormula;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;

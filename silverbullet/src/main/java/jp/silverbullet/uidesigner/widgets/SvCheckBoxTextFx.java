@@ -8,8 +8,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import jp.silverbullet.SvProperty;
-import jp.silverbullet.dependency.engine.DependencyInterface;
-import jp.silverbullet.dependency.engine.RequestRejectedException;
+import jp.silverbullet.dependency.DependencyInterface;
+import jp.silverbullet.dependency.RequestRejectedException;
 
 public class SvCheckBoxTextFx extends SvPropertyWidgetFx {
 

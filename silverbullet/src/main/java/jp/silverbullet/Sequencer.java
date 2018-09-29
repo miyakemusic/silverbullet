@@ -9,11 +9,11 @@ import java.util.Map;
 import java.util.Set;
 
 import javafx.application.Platform;
-import jp.silverbullet.dependency.engine.DependencyInterface;
-import jp.silverbullet.dependency.engine.DependencyListener;
-import jp.silverbullet.dependency.engine.RequestRejectedException;
-import jp.silverbullet.dependency.speceditor3.ChangedItemValue2;
-import jp.silverbullet.dependency.speceditor3.DependencyEngine2;
+import jp.silverbullet.dependency.ChangedItemValue;
+import jp.silverbullet.dependency.DependencyEngine;
+import jp.silverbullet.dependency.DependencyInterface;
+import jp.silverbullet.dependency.DependencyListener;
+import jp.silverbullet.dependency.RequestRejectedException;
 import jp.silverbullet.handlers.AbstractSvHandler;
 import jp.silverbullet.handlers.CommonSvHandler;
 import jp.silverbullet.handlers.EasyAccessModel;
@@ -25,7 +25,7 @@ import jp.silverbullet.handlers.SvHandlerModel;
 public abstract class Sequencer implements DependencyInterface {
 	abstract protected SvPropertyStore getPropertiesStore();
 	abstract protected HandlerPropertyHolder getHandlerPropertyHolder();
-	abstract protected DependencyEngine2 getDependency();
+	abstract protected DependencyEngine getDependency();
 	abstract protected String getUserApplicationPath();
 	abstract protected EasyAccessModel getEasyAccessModel();
 	abstract protected RegisterAccess getRegisterAccess();
@@ -34,7 +34,7 @@ public abstract class Sequencer implements DependencyInterface {
 	private long myThreadId;
 	private Set<SequencerListener> listeners = new HashSet<SequencerListener>();
 	
-	LinkedHashMap<String, List<ChangedItemValue2>> history = new LinkedHashMap<>();
+	LinkedHashMap<String, List<ChangedItemValue>> history = new LinkedHashMap<>();
 	private List<String> debugDepLog;
 	
 	public Sequencer() {
@@ -49,7 +49,7 @@ public abstract class Sequencer implements DependencyInterface {
 		
 		// resolves dependencies
 		
-		DependencyEngine2 engine = getDependency();
+		DependencyEngine engine = getDependency();
 		engine.requestChange(id, value);
 		debugDepLog = engine.getDebugLog();
 		

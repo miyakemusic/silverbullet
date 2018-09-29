@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonParseException;
@@ -13,8 +14,8 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import jp.silverbullet.BuilderFx;
 import jp.silverbullet.SvProperty;
+import jp.silverbullet.javafx.BuilderFx;
 import jp.silverbullet.web.WebSocketBroadcaster;
 
 public class UiLayout {
@@ -284,7 +285,7 @@ public class UiLayout {
 		int unique = extractUnique(div);
 		JsWidget panel = getDiv(unique);
 		JsWidget dialog = new JsWidget();
-		dialog.setCustom(id);
+		dialog.getCustom().put("id", id);
 		dialog.setWidgetType(JsWidget.GUI_DIALOG);
 		panel.addChild(dialog);
 		this.save();
@@ -292,7 +293,8 @@ public class UiLayout {
 	
 	private JsWidget findPanel(JsWidget parent, String id) {
 		for (JsWidget jsWidget : parent.getChildren()) {
-			if (jsWidget.getId().equals(id)) {
+			String gui_id = jsWidget.getCustom().get(CustomProperties.GUI_ID);
+			if (gui_id != null && gui_id.equals(id)) {
 				return jsWidget;
 			}
 			JsWidget ret = findPanel(jsWidget, id);
@@ -316,7 +318,7 @@ public class UiLayout {
 		this.save();
 	}
 
-	public void setCustom(String div, String custom) {
+	public void setCustom(String div, Map<String, String> custom) {
 		JsWidget panel = getWidget(div);
 		panel.setCustom(custom);
 		this.save();
@@ -326,6 +328,12 @@ public class UiLayout {
 		JsWidget item = this.getWidget(itemDiv);
 		this.remove(itemDiv);
 		this.getWidget(newBaseDiv).addChild(item);
+		this.save();
+	}
+
+	public void setCustomElement(String div, String customId, String customValue) {
+		JsWidget panel = getWidget(div);
+		panel.getCustom().put(customId, customValue);
 		this.save();
 	}
 }

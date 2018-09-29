@@ -5,9 +5,9 @@ import java.util.List;
 import javafx.application.Platform;
 import jp.silverbullet.SvProperty;
 import jp.silverbullet.SvPropertyListener;
-import jp.silverbullet.dependency.engine.RequestRejectedException;
-import jp.silverbullet.dependency.speceditor2.DependencyFormula;
+import jp.silverbullet.dependency.RequestRejectedException;
 import jp.silverbullet.remote.SvTex;
+import jp.silverbullet.trash.speceditor2.DependencyFormula;
 
 public class SimpleSetGetExecutor extends AbstractCommandExecutor implements SvPropertyListener {
 

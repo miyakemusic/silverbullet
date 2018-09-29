@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import jp.silverbullet.SvProperty;
-import jp.silverbullet.dependency.engine.RequestRejectedException;
+import jp.silverbullet.dependency.RequestRejectedException;
 import jp.silverbullet.remote.SvTexHolder;
 import jp.silverbullet.remote.commands.ClearCommandExecutor;
 import jp.silverbullet.remote.commands.CommandCompleteCommandExecutor;

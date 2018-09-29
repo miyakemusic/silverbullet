@@ -2,14 +2,12 @@ package jp.silverbullet;
 
 import java.util.List;
 
-import javafx.scene.Node;
-import jp.silverbullet.dependency.engine.DependencyInterface;
-import jp.silverbullet.dependency.speceditor2.DependencySpecHolder;
-import jp.silverbullet.dependency.speceditor3.DependencySpecHolder2;
 import jp.silverbullet.property.PropertyHolder;
 import jp.silverbullet.register.RegisterProperty;
 import jp.silverbullet.remote.SvTexHolder;
 import jp.silverbullet.spec.SpecElement;
+import jp.silverbullet.dependency.DependencyInterface;
+import jp.silverbullet.dependency.DependencySpecHolder;
 import jp.silverbullet.handlers.HandlerPropertyHolder;
 import jp.silverbullet.handlers.RegisterAccess;
 import jp.silverbullet.handlers.SvDevice;
@@ -25,8 +23,6 @@ public interface BuilderModel {
 	PropertyHolder getPropertyHolder();
 
 	SvPropertyStore getPropertyStore();
-
-	DependencySpecHolder getDependencySpecHolder();
 
 	List<SvProperty> getAllProperties(String type);
 
@@ -64,5 +60,5 @@ public interface BuilderModel {
 
 	void importFile(String filename);
 
-	DependencySpecHolder2 getDependencySpecHolder2();
+	DependencySpecHolder getDependencySpecHolder2();
 }

@@ -6,7 +6,7 @@ import com.sun.jersey.core.util.Base64;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import jp.silverbullet.SvProperty;
-import jp.silverbullet.dependency.engine.DependencyInterface;
+import jp.silverbullet.dependency.DependencyInterface;
 
 public class SvImageFx extends SvPropertyWidgetFx {
 

@@ -4,19 +4,16 @@ import java.util.Arrays;
 import java.util.List;
 
 import javafx.application.Platform;
-import jp.silverbullet.dependency.engine.DependencyEngine;
-import jp.silverbullet.dependency.engine.DependencyInterface;
-import jp.silverbullet.dependency.engine.RequestRejectedException;
-import jp.silverbullet.dependency.speceditor2.DependencySpecHolder;
-import jp.silverbullet.dependency.speceditor3.DepPropertyStore;
-import jp.silverbullet.dependency.speceditor3.DependencyEngine2;
-import jp.silverbullet.dependency.speceditor3.DependencySpecHolder2;
 import jp.silverbullet.property.PropertyHolder;
 import jp.silverbullet.property.StringArray;
-import jp.silverbullet.property.editor.PropertyListModel2;
 import jp.silverbullet.register.RegisterProperty;
 import jp.silverbullet.remote.SvTexHolder;
 import jp.silverbullet.spec.SpecElement;
+import jp.silverbullet.dependency.DepPropertyStore;
+import jp.silverbullet.dependency.DependencyEngine;
+import jp.silverbullet.dependency.DependencyInterface;
+import jp.silverbullet.dependency.DependencySpecHolder;
+import jp.silverbullet.dependency.RequestRejectedException;
 import jp.silverbullet.handlers.EasyAccessModel;
 import jp.silverbullet.handlers.HandlerPropertyHolder;
 import jp.silverbullet.handlers.RegisterAccess;
@@ -26,7 +23,6 @@ import javax.xml.bind.JAXBException;
 
 public class BuilderModelImpl implements BuilderModel {
 	
-	private static final String DEPENDENCYSPEC_XML = "/dependencyspec.xml";
 	private static final String ID_DEF_XML = "id_def.xml";
 	private static final String HANDLER_XML = "handlers.xml";
 	private static final String REMOTE_XML = "remote.xml";
@@ -34,6 +30,7 @@ public class BuilderModelImpl implements BuilderModel {
 	private static final String HARDSPEC_XML = "hardspec.xml";
 	private static final String USERSTORY_XML = "userstory.xml";
 	private static final String DEPENDENCYSPEC2_XML = "dependencyspec2.xml";
+	private static BuilderModelImpl instance;
 	
 	private List<String> selectedId;
 	private SvPropertyStore store;
@@ -44,26 +41,18 @@ public class BuilderModelImpl implements BuilderModel {
 	private HandlerPropertyHolder handlerPropertyHolder = new HandlerPropertyHolder();
 	private SvTexHolder texHolder = new SvTexHolder();
 	private RegisterProperty registerProperty = new RegisterProperty();
-	private DependencySpecHolder2 dependencySpecHolder2 = new DependencySpecHolder2();
-//	private UserRegisterControl userRegisterAccess;// 
+	private DependencySpecHolder dependencySpecHolder = new DependencySpecHolder();
 	private SpecElement userStory = new SpecElement();
 	
 	@Override
 	public HandlerPropertyHolder getHandlerPropertyHolder() {
 		return handlerPropertyHolder;
 	}
-
+	
 	private DependencyEngine dependency = new DependencyEngine() {
 		@Override
-		protected SvPropertyStore getPropertiesStore() {
-			return store;
-		}
-	};
-	
-	private DependencyEngine2 dependency2 = new DependencyEngine2() {
-		@Override
-		protected DependencySpecHolder2 getDependencyHolder() {
-			return dependencySpecHolder2;
+		protected DependencySpecHolder getDependencyHolder() {
+			return dependencySpecHolder;
 		}
 
 		@Override
@@ -90,7 +79,7 @@ public class BuilderModelImpl implements BuilderModel {
 				@Override
 				public void run() {
 					try {
-						dependency2.requestChange(id, value);
+						dependency.requestChange(id, value);
 					} catch (RequestRejectedException e) {
 						e.printStackTrace();
 					}
@@ -107,7 +96,13 @@ public class BuilderModelImpl implements BuilderModel {
 //	private UserEasyAccess access = new UserEasyAccess(easyAccessModel);
 	private RegisterAccess regiseterAccess;
 
-	public BuilderModelImpl() {
+	public static BuilderModelImpl getInstance() {
+		if (instance == null) {
+			instance = new BuilderModelImpl();
+		}
+		return instance;
+	}
+	private BuilderModelImpl() {
 		store = new SvPropertyStore(propertiesHolder);	
 		
 		this.sequencer = new Sequencer() {
@@ -122,8 +117,8 @@ public class BuilderModelImpl implements BuilderModel {
 			}
 
 			@Override
-			protected DependencyEngine2 getDependency() {
-				return dependency2;
+			protected DependencyEngine getDependency() {
+				return dependency;
 			}
 
 
@@ -172,11 +167,6 @@ public class BuilderModelImpl implements BuilderModel {
 	}
 
 	@Override
-	public DependencySpecHolder getDependencySpecHolder() {
-		return this.dependency.getSpecHolder();
-	}
-
-	@Override
 	public List<SvProperty> getAllProperties(String type) {
 		return store.getAllProperties(type);
 	}
@@ -192,20 +182,19 @@ public class BuilderModelImpl implements BuilderModel {
 	}
 	@Override
 	public void save(String folder) {
-		this.dependency.saveSpec(folder + DEPENDENCYSPEC_XML);
 		saveTestProp(folder + "/" + ID_DEF_XML);
 		saveHandlerPropertyHolder(folder + "/" + HANDLER_XML);
 		saveRemote(folder + "/" + REMOTE_XML);
 		saveRegister(folder + "/" + REGISTER_XML);
 		saveSpec(this.hardSpec, folder + "/" + HARDSPEC_XML);
 		saveSpec(this.userStory, folder + "/" + USERSTORY_XML);
-		saveDependencySpecHolder2(this.dependencySpecHolder2, folder + "/" + DEPENDENCYSPEC2_XML);
+		saveDependencySpecHolder2(this.dependencySpecHolder, folder + "/" + DEPENDENCYSPEC2_XML);
 	}
 
-	private void saveDependencySpecHolder2(DependencySpecHolder2 dependencySpecHolder22, String filename) {
-		XmlPersistent<DependencySpecHolder2> propertyPersister = new XmlPersistent<>();
+	private void saveDependencySpecHolder2(DependencySpecHolder dependencySpecHolder22, String filename) {
+		XmlPersistent<DependencySpecHolder> propertyPersister = new XmlPersistent<>();
 		try {
-			propertyPersister.save(dependencySpecHolder22, filename, DependencySpecHolder2.class);
+			propertyPersister.save(dependencySpecHolder22, filename, DependencySpecHolder.class);
 		} catch (JAXBException e) {
 			e.printStackTrace();
 		}
@@ -259,7 +248,6 @@ public class BuilderModelImpl implements BuilderModel {
 		propertiesHolder.initialize();
 
 		this.store = new SvPropertyStore(propertiesHolder);
-		this.dependency.loadSpec(folder + DEPENDENCYSPEC_XML);
 		this.registerProperty = loadRegisterProperty(folder + "/" + REGISTER_XML);
 		handlerPropertyHolder = loadHandlerPropertyHolder(folder + "/" + HANDLER_XML);
 		if (handlerPropertyHolder == null) {
@@ -270,7 +258,7 @@ public class BuilderModelImpl implements BuilderModel {
 		this.hardSpec = loadSpec(folder + "/" + HARDSPEC_XML);
 		this.userStory = loadSpec(folder + "/" + USERSTORY_XML);
 		
-		this.dependencySpecHolder2 = loadDependencySpec2(folder + "/" + DEPENDENCYSPEC2_XML);
+		this.dependencySpecHolder = loadDependencySpec2(folder + "/" + DEPENDENCYSPEC2_XML);
 	}
 
 	@Override
@@ -279,7 +267,6 @@ public class BuilderModelImpl implements BuilderModel {
 		tmpProps.initialize();
 		this.propertiesHolder.addAll(tmpProps);
 		this.store.importProperties(tmpProps);
-		this.dependency.importSpec(folder + DEPENDENCYSPEC_XML);
 		RegisterProperty tmpRegister = loadRegisterProperty(folder + "/" + REGISTER_XML);
 		this.registerProperty.addAll(tmpRegister.getRegisters());
 		
@@ -342,13 +329,13 @@ public class BuilderModelImpl implements BuilderModel {
 	}
 
 
-	private DependencySpecHolder2 loadDependencySpec2(String filename) {
-		XmlPersistent<DependencySpecHolder2> propertyPersister = new XmlPersistent<>();
+	private DependencySpecHolder loadDependencySpec2(String filename) {
+		XmlPersistent<DependencySpecHolder> propertyPersister = new XmlPersistent<>();
 		try {
-			return propertyPersister.load(filename, DependencySpecHolder2.class);
+			return propertyPersister.load(filename, DependencySpecHolder.class);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new DependencySpecHolder2();
+			return new DependencySpecHolder();
 		}
 	}
 
@@ -436,7 +423,7 @@ public class BuilderModelImpl implements BuilderModel {
 	}
 
 	@Override
-	public DependencySpecHolder2 getDependencySpecHolder2() {
-		return dependencySpecHolder2;
+	public DependencySpecHolder getDependencySpecHolder2() {
+		return dependencySpecHolder;
 	}
 }

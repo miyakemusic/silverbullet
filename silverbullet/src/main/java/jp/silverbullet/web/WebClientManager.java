@@ -9,20 +9,21 @@ import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import jp.silverbullet.BuilderFx;
-import jp.silverbullet.ChangedItemValue;
-import jp.silverbullet.dependency.engine.DependencyListener;
+import jp.silverbullet.StaticInstances;
+import jp.silverbullet.dependency.DependencyListener;
+import jp.silverbullet.javafx.BuilderFx;
 import jp.silverbullet.register.BitSetToIntConverter;
 import jp.silverbullet.register.RegisterBit;
 import jp.silverbullet.register.RegisterMapListener;
 import jp.silverbullet.register.RegisterUpdates;
 import jp.silverbullet.register.SvRegister;
+import jp.silverbullet.trash.unknown.ChangedItemValue;
 import jp.silverbullet.register.BitUpdates;
 
 public class WebClientManager {
 
 	public WebClientManager() {
-		BuilderFx.getModel().getBuilderModel().getDependency().addDependencyListener(new DependencyListener() {
+		StaticInstances.getBuilderModel().getDependency().addDependencyListener(new DependencyListener() {
 			@Override
 			public boolean confirm(String history) {
 				return true;
@@ -48,7 +49,7 @@ public class WebClientManager {
 			}
 		});
 		
-		BuilderFx.getRegisterMapModel().addListener(new RegisterMapListener() {
+		StaticInstances.getRegisterMapModel().addListener(new RegisterMapListener() {
 			@Override
 			public void onInterrupt() {
 			}

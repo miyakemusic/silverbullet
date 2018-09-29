@@ -1,7 +1,7 @@
 package jp.silverbullet.handlers;
 
 import jp.silverbullet.SvProperty;
-import jp.silverbullet.dependency.engine.RequestRejectedException;
+import jp.silverbullet.dependency.RequestRejectedException;
 
 public interface SvHandlerModel {
 

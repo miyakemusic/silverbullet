@@ -13,8 +13,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import jp.silverbullet.SvProperty;
 import jp.silverbullet.SvPropertyListener.Flag;
-import jp.silverbullet.dependency.engine.DependencyInterface;
-import jp.silverbullet.dependency.engine.RequestRejectedException;
+import jp.silverbullet.dependency.DependencyInterface;
+import jp.silverbullet.dependency.RequestRejectedException;
 import jp.silverbullet.property.ListDetailElement;
 
 public class SvToggleButtonsFx extends SvAbstractTitledWidgetFx {

@@ -23,7 +23,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import jp.silverbullet.MyDialogFx;
+import jp.silverbullet.javafx.MyDialogFx;
 import jp.silverbullet.register.RegisterBit.ReadWriteType;
 
 public class RegisterMapUi extends VBox implements RegisterMapListener {

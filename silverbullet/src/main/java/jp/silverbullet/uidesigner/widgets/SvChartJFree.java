@@ -13,7 +13,7 @@ import org.jfree.data.xy.XYSeriesCollection;
 
 import javafx.embed.swing.SwingNode;
 import jp.silverbullet.SvProperty;
-import jp.silverbullet.dependency.engine.DependencyInterface;
+import jp.silverbullet.dependency.DependencyInterface;
 import jp.silverbullet.uidesigner.SvRowData;
 import jp.silverbullet.uidesigner.TableContent;
 

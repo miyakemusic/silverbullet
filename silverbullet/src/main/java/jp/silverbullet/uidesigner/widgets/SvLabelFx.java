@@ -3,7 +3,7 @@ package jp.silverbullet.uidesigner.widgets;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import jp.silverbullet.SvProperty;
-import jp.silverbullet.dependency.engine.DependencyInterface;
+import jp.silverbullet.dependency.DependencyInterface;
 
 public class SvLabelFx extends SvAbstractTitledWidgetFx {
 

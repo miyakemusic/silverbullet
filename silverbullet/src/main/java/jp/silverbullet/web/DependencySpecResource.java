@@ -17,17 +17,17 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import jp.silverbullet.BuilderFx;
+import jp.silverbullet.StaticInstances;
 import jp.silverbullet.SvProperty;
 import jp.silverbullet.SvPropertyStore;
-import jp.silverbullet.dependency.speceditor3.DependencyBuilder3;
-import jp.silverbullet.dependency.speceditor3.DependencyNode;
-import jp.silverbullet.dependency.speceditor3.DependencySpec2;
-import jp.silverbullet.dependency.speceditor3.DependencySpecHolder2;
-import jp.silverbullet.dependency.speceditor3.DependencySpecTableGenerator;
-import jp.silverbullet.dependency.speceditor3.ui.DependencyEditorModel;
-import jp.silverbullet.dependency.speceditor3.ui.DependencyTableRowData;
-import jp.silverbullet.dependency.speceditor3.ui.DependencyTargetConverter;
+import jp.silverbullet.dependency.DependencyBuilder;
+import jp.silverbullet.dependency.DependencyNode;
+import jp.silverbullet.dependency.DependencySpec;
+import jp.silverbullet.dependency.DependencySpecHolder;
+import jp.silverbullet.dependency.DependencySpecTableGenerator;
+import jp.silverbullet.dependency.ui.DependencyEditorModel;
+import jp.silverbullet.dependency.ui.DependencyTableRowData;
+import jp.silverbullet.dependency.ui.DependencyTargetConverter;
 import jp.silverbullet.property.PropertyHolder;
 
 @Path("/dependencySpec")
@@ -37,10 +37,10 @@ public class DependencySpecResource {
 	@Path("/elements")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public JsonTable getElements(@QueryParam("id") final String id) {
-		SvProperty prop = BuilderFx.getModel().getBuilderModel().getProperty(id);
-		DependencySpecHolder2 specHolder = BuilderFx.getModel().getBuilderModel().getDependencySpecHolder2();
-		PropertyHolder porpHolder = BuilderFx.getModel().getBuilderModel().getPropertyHolder();
-		SvPropertyStore propHolder = BuilderFx.getModel().getBuilderModel().getPropertyStore();
+		SvProperty prop = StaticInstances.getBuilderModel().getProperty(id);
+		DependencySpecHolder specHolder = StaticInstances.getBuilderModel().getDependencySpecHolder2();
+		PropertyHolder porpHolder = StaticInstances.getBuilderModel().getPropertyHolder();
+		SvPropertyStore propHolder = StaticInstances.getBuilderModel().getPropertyStore();
 		DependencyEditorModel model = new DependencyEditorModel(prop, specHolder, porpHolder, propHolder);
 		
 		JsonTable ret = new JsonTable();
@@ -61,11 +61,11 @@ public class DependencySpecResource {
 	}
 
 	private DependencyTableRowData[] createSpecTable(final String id) {
-		SvProperty property = BuilderFx.getModel().getBuilderModel().getProperty(id);
-		DependencySpec2 spec = BuilderFx.getModel().getBuilderModel().getDependencySpecHolder2().get(id);
+		SvProperty property = StaticInstances.getBuilderModel().getProperty(id);
+		DependencySpec spec = StaticInstances.getBuilderModel().getDependencySpecHolder2().get(id);
 		
-		DependencyEditorModel dependencyEditorModel = new DependencyEditorModel(property, BuilderFx.getModel().getBuilderModel().getDependencySpecHolder2(),
-				BuilderFx.getModel().getBuilderModel().getPropertyHolder(), BuilderFx.getModel().getBuilderModel().getPropertyStore());
+		DependencyEditorModel dependencyEditorModel = new DependencyEditorModel(property, StaticInstances.getBuilderModel().getDependencySpecHolder2(),
+				StaticInstances.getBuilderModel().getPropertyHolder(), StaticInstances.getBuilderModel().getPropertyStore());
 		List<DependencyTableRowData> table = new DependencySpecTableGenerator(dependencyEditorModel).get(spec);
 
 		return table.toArray(new DependencyTableRowData[0]);
@@ -97,7 +97,7 @@ public class DependencySpecResource {
 		
 		DependencyTargetConverter converter = new DependencyTargetConverter(element);
 		
-		DependencySpec2 spec = BuilderFx.getModel().getBuilderModel().getDependencySpecHolder2().get(id);
+		DependencySpec spec = StaticInstances.getBuilderModel().getDependencySpecHolder2().get(id);
 		try {
 			spec.add(converter.getElement(), converter.getSelectionId(), URLDecoder.decode(value, "UTF-8"), URLDecoder.decode(condition, "UTF-8"));
 		} catch (UnsupportedEncodingException e) {
@@ -114,7 +114,7 @@ public class DependencySpecResource {
 	public String removeSpec(@QueryParam("id") final String id, @QueryParam("element") final String element, 
 			@QueryParam("value") final String value) {
 		
-		DependencySpec2 spec = BuilderFx.getModel().getBuilderModel().getDependencySpecHolder2().get(id);
+		DependencySpec spec = StaticInstances.getBuilderModel().getDependencySpecHolder2().get(id);
 		DependencyTargetConverter converter = new DependencyTargetConverter(element);
 		spec.remove(converter.getElement(), converter.getSelectionId(), value);
 //		spec.remove(DependencyTargetElement.valueOf(element), value);
@@ -124,8 +124,8 @@ public class DependencySpecResource {
 	@GET
 	@Path("/spec")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public DependencySpec2 getSpec(@QueryParam("id") final String id) {
-		DependencySpec2 spec = BuilderFx.getModel().getBuilderModel().getDependencySpecHolder2().get(id);
+	public DependencySpec getSpec(@QueryParam("id") final String id) {
+		DependencySpec spec = StaticInstances.getBuilderModel().getDependencySpecHolder2().get(id);
 		return spec;
 	}
 	
@@ -167,8 +167,8 @@ public class DependencySpecResource {
 	}
 
 	private DepChainPair[] createDependencyLink(final String id) {
-		DependencySpecHolder2 holder = BuilderFx.getModel().getBuilderModel().getDependencySpecHolder2();
-		DependencyBuilder3 builder = new DependencyBuilder3(id, holder);
+		DependencySpecHolder holder = StaticInstances.getBuilderModel().getDependencySpecHolder2();
+		DependencyBuilder builder = new DependencyBuilder(id, holder);
 
 		Set<DepChainPair> set = new LinkedHashSet<>();
 		createLinkList(id, "Value", builder.getTree(), set);
@@ -180,11 +180,11 @@ public class DependencySpecResource {
 	@Path("/ids")
 	@Produces(MediaType.APPLICATION_JSON)
 	public JsonTable getIds() {
-		DependencySpecHolder2 holder = BuilderFx.getModel().getBuilderModel().getDependencySpecHolder2();
+		DependencySpecHolder holder = StaticInstances.getBuilderModel().getDependencySpecHolder2();
 		
 		JsonTable ret = new JsonTable();
 		for (String id : holder.getSpecs().keySet()) {
-			SvProperty prop = BuilderFx.getModel().getBuilderModel().getProperty(id);
+			SvProperty prop = StaticInstances.getBuilderModel().getProperty(id);
 			ret.addRow(Arrays.asList(prop.getTitle(), prop.getId(), prop.getType(), prop.getComment()));
 		}
 		

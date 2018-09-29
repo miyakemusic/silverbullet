@@ -141,7 +141,7 @@ public class RegisterIoGenerator {
 		abstract protected boolean isReadEnabled(RegisterBit bit);
 	}
 	
-	protected void generate(String path) {
+	public void generate(String path) {
 		new AbstractSourceGenerator() {
 			@Override
 			protected boolean isWriteEnabled(RegisterBit bit) {

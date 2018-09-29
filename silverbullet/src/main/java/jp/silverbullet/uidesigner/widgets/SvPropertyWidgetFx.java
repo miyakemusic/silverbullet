@@ -15,7 +15,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import jp.silverbullet.SvProperty;
 import jp.silverbullet.SvPropertyListener;
-import jp.silverbullet.dependency.engine.DependencyInterface;
+import jp.silverbullet.dependency.DependencyInterface;
 
 public abstract class SvPropertyWidgetFx extends StackPane implements SvPropertyListener {
 

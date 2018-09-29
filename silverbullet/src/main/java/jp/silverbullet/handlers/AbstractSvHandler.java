@@ -3,16 +3,16 @@ package jp.silverbullet.handlers;
 import java.util.List;
 import java.util.Map;
 
-import jp.silverbullet.dependency.speceditor3.ChangedItemValue2;
+import jp.silverbullet.dependency.ChangedItemValue;
 
 public abstract class AbstractSvHandler {
-	abstract protected void onExecute(SvHandlerModel model2, Map<String, List<ChangedItemValue2>> changed);
+	abstract protected void onExecute(SvHandlerModel model2, Map<String, List<ChangedItemValue>> changed);
 	
 	private SvHandlerModel model;
 	public AbstractSvHandler(SvHandlerModel model) {
 		this.model = model;
 	}
-	public void execute(Map<String, List<ChangedItemValue2>> changed) {
+	public void execute(Map<String, List<ChangedItemValue>> changed) {
 		onExecute(model, changed);
 	}
 	public SvHandlerModel getModel() {

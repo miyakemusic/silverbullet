@@ -19,7 +19,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import jp.silverbullet.MyDialogFx;
+import jp.silverbullet.javafx.MyDialogFx;
 import jp.silverbullet.spec.SpecElement.Type;
 
 public class SpecPaneFx extends VBox {	

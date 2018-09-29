@@ -3,7 +3,7 @@ package jp.silverbullet.uidesigner;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import jp.silverbullet.MyDialogFx;
+import jp.silverbullet.javafx.MyDialogFx;
 
 public class MyCommonDialogFx {
 

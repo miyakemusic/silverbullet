@@ -7,16 +7,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javafx.application.Platform;
-import jp.silverbullet.BuilderFx;
+import jp.silverbullet.StaticInstances;
 import jp.silverbullet.SvProperty;
-import jp.silverbullet.dependency.engine.RequestRejectedException;
-import jp.silverbullet.dependency.speceditor2.DependencyFormula;
+import jp.silverbullet.dependency.RequestRejectedException;
+import jp.silverbullet.javafx.BuilderFx;
 import jp.silverbullet.property.ListDetailElement;
+import jp.silverbullet.trash.speceditor2.DependencyFormula;
 import jp.silverbullet.uidesigner.pane.LayoutConfiguration;
 import jp.silverbullet.uidesigner.pane.SvPanelModel;
 import jp.silverbullet.uidesigner.pane.UiElement;
 import jp.silverbullet.uidesigner.widgets.Description;
-import jp.silverbullet.uidesigner.widgets.WidgetFactoryFx;
 import jp.silverbullet.web.obsolute.HtmlDi;
 import jp.silverbullet.web.obsolute.HtmlOptionInfo;
 import jp.silverbullet.web.obsolute.HtmlPane;
@@ -25,7 +25,6 @@ import jp.silverbullet.web.obsolute.HtmlWidgetFactory;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -58,7 +57,7 @@ public class TestResource {
 	@Path("/caption")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String getCaption(@QueryParam("id") String id) {
-		return BuilderFx.getModel().getBuilderModel().getProperty(id).getTitle();
+		return StaticInstances.getBuilderModel().getProperty(id).getTitle();
 	}
 	
 	@GET
@@ -69,7 +68,7 @@ public class TestResource {
 			@Override
 			public void run() {
 				try {
-					BuilderFx.getModel().getBuilderModel().getDependency().requestChange(id, DependencyFormula.ANY);
+					StaticInstances.getBuilderModel().getDependency().requestChange(id, DependencyFormula.ANY);
 				} catch (RequestRejectedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -101,7 +100,7 @@ public class TestResource {
 			for (int i = 0; i < layer; i++) {
 				indent += "->";
 			}
-			SvProperty property = BuilderFx.getModel().getBuilderModel().getProperty(e.getId());
+			SvProperty property = StaticInstances.getBuilderModel().getProperty(e.getId());
 			String type =  e.getWidgetType();
 			if (type.isEmpty()) {
 				
@@ -197,7 +196,7 @@ public class TestResource {
 	private String createWidgetJs(String pane, UiElement element) {
 		String ret = "";
 		String widgetType = element.getWidgetType();
-		SvProperty prop = BuilderFx.getModel().getBuilderModel().getProperty(element.getId());
+		SvProperty prop = StaticInstances.getBuilderModel().getProperty(element.getId());
 		Description description = new Description(element.getDescription());
 		Description style = new Description(element.getStyle());
 		if (widgetType.equals(SvPanelModel.COMBO_BOX)) {
@@ -425,13 +424,13 @@ public class TestResource {
 
 		@Override
 		public String getTitle(String id) {
-			return BuilderFx.getModel().getBuilderModel().getProperty(id).getTitle();
+			return StaticInstances.getBuilderModel().getProperty(id).getTitle();
 		}
 
 		@Override
 		public List<HtmlOptionInfo> getOptionInfo(String id) {
 			List<HtmlOptionInfo> ret = new ArrayList<> ();
-			for (ListDetailElement e : BuilderFx.getModel().getBuilderModel().getProperty(id).getAvailableListDetail()) {
+			for (ListDetailElement e : StaticInstances.getBuilderModel().getProperty(id).getAvailableListDetail()) {
 				ret.add(new HtmlOptionInfo(e.getId(), e.getTitle()));
 			}
 			return ret;
@@ -439,7 +438,7 @@ public class TestResource {
 
 		@Override
 		public String getValue(String id) {
-			SvProperty prop = BuilderFx.getModel().getBuilderModel().getProperty(id);
+			SvProperty prop = StaticInstances.getBuilderModel().getProperty(id);
 			if (prop.isListProperty()) {
 				return prop.getSelectedListTitle();
 			}
@@ -450,7 +449,7 @@ public class TestResource {
 
 		@Override
 		public String getSelectedId(String id) {
-			SvProperty prop = BuilderFx.getModel().getBuilderModel().getProperty(id);
+			SvProperty prop = StaticInstances.getBuilderModel().getProperty(id);
 			return prop.getCurrentValue();
 		}
 		
@@ -514,7 +513,7 @@ public class TestResource {
 			@Override
 			public void run() {
 				try {
-					BuilderFx.getModel().getBuilderModel().getDependency().requestChange(id, value);
+					StaticInstances.getBuilderModel().getDependency().requestChange(id, value);
 				} catch (RequestRejectedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -561,13 +560,13 @@ public class TestResource {
 	@Path("/property")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public SvProperty getProperty (@QueryParam("id") final String id) {
-		return BuilderFx.getModel().getBuilderModel().getProperty(id);
+		return StaticInstances.getBuilderModel().getProperty(id);
 	}
 	
 	@GET
 	@Path("/enabled")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String getEnabled (@QueryParam("id") final String id) {
-		return String.valueOf(BuilderFx.getModel().getBuilderModel().getProperty(id).isEnabled());
+		return String.valueOf(StaticInstances.getBuilderModel().getProperty(id).isEnabled());
 	}
 }

@@ -3,7 +3,7 @@ package jp.silverbullet.register;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import jp.silverbullet.MyDialogFx;
+import jp.silverbullet.javafx.MyDialogFx;
 
 public class MyMessageBox {
 

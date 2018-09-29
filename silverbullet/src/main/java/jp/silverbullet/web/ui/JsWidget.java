@@ -1,9 +1,9 @@
 package jp.silverbullet.web.ui;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
-import jp.silverbullet.web.Pair;
+import java.util.Map;
 
 public class JsWidget {
 
@@ -36,8 +36,9 @@ public class JsWidget {
 	private int unique;
 	private String styleClass;
 	private String css;
-	private String custom;
 	private Integer index = 0;
+	private Map<String, String> custom = new HashMap<>();
+
 	public JsWidget() {
 		this.unique = this.hashCode();
 	}
@@ -128,11 +129,11 @@ public class JsWidget {
 		this.presentation = presentation;
 	}
 
-	public String getCustom() {
+	public Map<String, String> getCustom() {
 		return custom;
 	}
 
-	public void setCustom(String custom) {
+	public void setCustom(Map<String, String> custom) {
 		this.custom = custom;
 	}
 

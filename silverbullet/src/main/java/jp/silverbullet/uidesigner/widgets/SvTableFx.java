@@ -20,7 +20,7 @@ import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.util.Callback;
 import jp.silverbullet.SvProperty;
-import jp.silverbullet.dependency.engine.DependencyInterface;
+import jp.silverbullet.dependency.DependencyInterface;
 import jp.silverbullet.uidesigner.SvRowData;
 import jp.silverbullet.uidesigner.SvTableElement;
 import jp.silverbullet.uidesigner.TableContent;

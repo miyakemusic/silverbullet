@@ -11,8 +11,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import jp.silverbullet.MyDialogFx;
 import jp.silverbullet.SvProperty;
+import jp.silverbullet.javafx.MyDialogFx;
 
 public class SvCommonDialog {
 

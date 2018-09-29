@@ -3,7 +3,7 @@ package jp.silverbullet.uidesigner.widgets;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleButton;
 import jp.silverbullet.SvProperty;
-import jp.silverbullet.dependency.engine.DependencyInterface;
+import jp.silverbullet.dependency.DependencyInterface;
 import jp.silverbullet.property.ListDetailElement;
 
 public class SvRadioButtonFx extends SvToggleButtonsFx {

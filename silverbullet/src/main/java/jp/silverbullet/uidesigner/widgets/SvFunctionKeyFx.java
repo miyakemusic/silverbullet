@@ -20,12 +20,12 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import jp.silverbullet.MyDialogFx;
 import jp.silverbullet.SvProperty;
-import jp.silverbullet.dependency.engine.DependencyInterface;
-import jp.silverbullet.dependency.engine.RequestRejectedException;
-import jp.silverbullet.dependency.speceditor2.DependencyFormula;
+import jp.silverbullet.dependency.DependencyInterface;
+import jp.silverbullet.dependency.RequestRejectedException;
+import jp.silverbullet.javafx.MyDialogFx;
 import jp.silverbullet.property.ListDetailElement;
+import jp.silverbullet.trash.speceditor2.DependencyFormula;
 import jp.silverbullet.uidesigner.pane.SvCommonDialog;
 import jp.silverbullet.uidesigner.pane.TenKeyFx;
 

@@ -16,7 +16,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
-import jp.silverbullet.MyDialogFx;
+import jp.silverbullet.javafx.MyDialogFx;
 import jp.silverbullet.property.editor.PropertyEditorPaneFx;
 import jp.silverbullet.register.RegisterBit.ReadWriteType;
 
