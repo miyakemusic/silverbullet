@@ -91,34 +91,45 @@ public class RuntimeResource {
 	@Path("/setValue")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<String> setCurrentValue(@QueryParam("id") String id, @QueryParam("value") String value) {
-		Object object = new Object();
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
-				Sequencer sequencer = null;
-				try {
-					sequencer = StaticInstances.getBuilderModel().getSequencer();
-					sequencer.requestChange(id, value);
-				} catch (RequestRejectedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} finally {
-					debugDepLog = sequencer.getDebugDepLog();
-					synchronized(object) {
-						object.notify();
-					}				
-				}
-			}
-		});
-		
+		Sequencer sequencer = null;
 		try {
-			synchronized(object) {
-				object.wait();
-			}
-		} catch (InterruptedException e) {
+			sequencer = StaticInstances.getBuilderModel().getSequencer();
+			sequencer.requestChange(id, value);
+		} catch (RequestRejectedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			debugDepLog = sequencer.getDebugDepLog();		
 		}
+		
+//		Object object = new Object();
+//		Platform.runLater(new Runnable() {
+//			@Override
+//			public void run() {
+//				Sequencer sequencer = null;
+//				try {
+//					sequencer = StaticInstances.getBuilderModel().getSequencer();
+//					sequencer.requestChange(id, value);
+//				} catch (RequestRejectedException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				} finally {
+//					debugDepLog = sequencer.getDebugDepLog();
+//					synchronized(object) {
+//						object.notify();
+//					}				
+//				}
+//			}
+//		});
+//		
+//		try {
+//			synchronized(object) {
+//				object.wait();
+//			}
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		return debugDepLog;
 	}
 	

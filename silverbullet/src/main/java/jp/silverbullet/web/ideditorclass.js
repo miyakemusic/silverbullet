@@ -1,11 +1,4 @@
-class IdEditorClass {
-//		var types;
-//		var headers;
-//		var currentSelections;
-//		var currentId;
-//		var currentType;
-//		var selectionId;
-    
+class IdEditorClass {    
     constructor(div) {
     	var prefix = 'ideditorclass';
     	
@@ -232,5 +225,22 @@ class IdEditorClass {
 		function getParamName(col) {
 			return me.headers[col];
 		}
+				
+	}
+	
+	set selectionId(id) {
+		this._selectionId = id;
+	}
+	
+	get selectionId() {
+		return this._selectionId;
+	}
+	
+	set currentId(id) {
+		this._currentId = id;
+	}
+	
+	get currentId() {
+		return this._currentId;
 	}
 }

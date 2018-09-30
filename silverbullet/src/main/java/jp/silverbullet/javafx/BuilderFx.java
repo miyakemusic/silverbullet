@@ -43,8 +43,8 @@ import jp.silverbullet.property.editor.PropertyEditorPaneFx;
 import jp.silverbullet.register.HardwarePane;
 import jp.silverbullet.register.HardwarePaneModel;
 import jp.silverbullet.register.RegisterMapModel;
-import jp.silverbullet.register.RegisterMapUi;
 import jp.silverbullet.register.RegisterProperty;
+import jp.silverbullet.register.ui.RegisterMapUi;
 import jp.silverbullet.remote.RemoteEditorFx;
 import jp.silverbullet.remote.RemoteEditorModel;
 import jp.silverbullet.remote.SvTex;
@@ -55,8 +55,6 @@ import jp.silverbullet.spec.SpecPaneFx;
 import jp.silverbullet.test.TestRecorder;
 import jp.silverbullet.test.TestRecorderUi;
 import jp.silverbullet.trash.dependency.analyzer.DependencyFrameFx;
-import jp.silverbullet.trash.speceditor2.DependencySpec;
-import jp.silverbullet.trash.speceditor2.DependencySpecDetail;
 import jp.silverbullet.trash.unknown.ChangedItemValue;
 import jp.silverbullet.uidesigner.DesignerModel;
 import jp.silverbullet.uidesigner.DesignerModelImpl;
@@ -80,7 +78,6 @@ import jp.silverbullet.SvProperty;
 import jp.silverbullet.SvPropertyListener;
 import jp.silverbullet.XmlPersistent;
 import jp.silverbullet.Zip;
-import jp.silverbullet.SvPropertyListener.Flag;
 import jp.silverbullet.dependency.DependencyInterface;
 import jp.silverbullet.dependency.DependencyListener;
 import jp.silverbullet.handlers.HandlerProperty;
@@ -296,7 +293,7 @@ public abstract class BuilderFx extends Application {
         root.getChildren().add(tabPane);       
         
         Scene scene = new Scene(root, 1200, 800);
-        scene.getStylesheets().add(BuilderFx.class.getResource("stylesheet.css").toExternalForm());
+ //       scene.getStylesheets().add(BuilderFx.class.getResource("stylesheet.css").toExternalForm());
         primaryStage.setScene(scene);
         
         primaryStage.show();

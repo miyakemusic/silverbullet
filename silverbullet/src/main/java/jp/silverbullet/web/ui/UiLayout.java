@@ -14,8 +14,8 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
+import jp.silverbullet.StaticInstances;
 import jp.silverbullet.SvProperty;
-import jp.silverbullet.javafx.BuilderFx;
 import jp.silverbullet.web.WebSocketBroadcaster;
 
 public class UiLayout {
@@ -128,7 +128,7 @@ public class UiLayout {
 		panel = getDiv(unique);
 		
 		for (String id : ids) {
-			SvProperty property = BuilderFx.getModel().getBuilderModel().getProperty(id);
+			SvProperty property = StaticInstances.getBuilderModel().getProperty(id);
 			String type = property.getType();
 			JsWidget widget = new JsWidget();
 			widget.setId(id);

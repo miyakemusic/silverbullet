@@ -17,7 +17,6 @@ import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import javafx.application.Platform;
 import jp.silverbullet.BuilderModel;
 import jp.silverbullet.handlers.InterruptHandler;
 import jp.silverbullet.handlers.RegisterAccess;
@@ -167,53 +166,15 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 			BitUpdates info = new BitUpdates(bit.getName(), val);
 			updates.getBits().add(info);
 		}
-//		mask.stream().forEach(i -> {
-//			current.set(i, true);
-//        });
-//		 for (int i = mask.nextSetBit(0); i >= 0; i = mask.nextSetBit(i+1)) {
-//		     current.set(i, true);//data.get(i);
-//		 }
+		
 		fireUpdate(regIndex, 0, 0, address, current, updates);
-//		int offset = 0;
-//		int blockNumber = bits.size() -1;
-//		for (int i = bits.size()-1; i >= 0; i--) {
-//			RegisterBit bit = bits.get(i);
-//			int width = this.getBitWidth(bit.getBit());
-//			boolean changed = false;
-//			int value = 0;
-//			for (int j = 0; j < width; j++) {
-//				int index = offset + j;
-//				if (mask.get(index)) {
-//					if (current.get(index) != data.get(index)) {
-//						current.set(index, data.get(index));
-//						changed = true;
-//					}
-//					if (data.get(index)) {
-//						value += Math.pow(2, j);
-//					}
-//				}
-//			}
-//			if (changed) {
-//				final int num = blockNumber;
-//				final int val = value;
-//				Platform.runLater(new Runnable() {
-//					@Override
-//					public void run() {
-//						fireUpdate(regIndex, num, val, address, current);
-//					}
-//				});
-//				
-//			}
-//			blockNumber--;
-//			offset += width;
-//		}
 	}
 
 	private int getIndex(long address) {
 		return (int)(address - this.minAddress);
 	}
 
-	int getBitWidth(String bit) {
+	public int getBitWidth(String bit) {
 		if (bit.contains(":")) {
 			String[] tmp = bit.split(":");
 			return Integer.valueOf(tmp[0].replace("[", "")) - Integer.valueOf(tmp[1].replace("]", "")) + 1;

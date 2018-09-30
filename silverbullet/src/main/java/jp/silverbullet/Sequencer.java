@@ -73,7 +73,7 @@ public abstract class Sequencer implements DependencyInterface {
 
 			@Override
 			public void requestChange(final String id, final String value) throws RequestRejectedException {
-				if (myThreadId == Thread.currentThread().getId()) {
+//				if (myThreadId == Thread.currentThread().getId()) {
 					try {
 						fireChangeFromSystem(id, value);
 						getDependency().requestChange(id, value);
@@ -82,20 +82,20 @@ public abstract class Sequencer implements DependencyInterface {
 					} catch (RequestRejectedException e) {
 						e.printStackTrace();
 					}					
-				}
-				else {
-					Platform.runLater(new Runnable() {
-						@Override
-						public void run() {
-							try {
-								fireChangeFromSystem(id, value);
-								getDependency().requestChange(id, value);
-							} catch (RequestRejectedException e) {
-								e.printStackTrace();
-							}	
-						}
-					});	
-				}
+//				}
+//				else {
+//					Platform.runLater(new Runnable() {
+//						@Override
+//						public void run() {
+//							try {
+//								fireChangeFromSystem(id, value);
+//								getDependency().requestChange(id, value);
+//							} catch (RequestRejectedException e) {
+//								e.printStackTrace();
+//							}	
+//						}
+//					});	
+//				}
 			}
 
 			@Override

@@ -14,7 +14,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import jp.silverbullet.StaticInstances;
-import jp.silverbullet.javafx.BuilderFx;
 import jp.silverbullet.register.BitSetToIntConverter;
 import jp.silverbullet.register.RegisterBit;
 import jp.silverbullet.register.RegisterBit.ReadWriteType;
@@ -152,7 +151,7 @@ public class RegisterResource {
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String getCurrentValue(@QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName) {
 		SvRegister register  = StaticInstances.getBuilderModel().getRegisterProperty().getRegisterByName(regName);
-		Map<Long, BitSet> value = BuilderFx.getRegisterMapModel().getMapValue();
+		Map<Long, BitSet> value = StaticInstances.getRegisterMapModel().getMapValue();
 		String address = register.getAddress().replace("0x", "");
 		if (address.contains("-")) {
 			address = address.split("-")[0];
@@ -168,4 +167,20 @@ public class RegisterResource {
 		return String.valueOf(ret);
 	}
 
+	@GET
+	@Path("/getSimulators")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<String> getSimulators() {
+		return StaticInstances.getRegisterMapModel().getSimulatorClasses();
+	}
+	
+	@GET
+	@Path("setSimulator")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String setSimulator(@QueryParam("simulator") final String simulator) {
+		StaticInstances.getRegisterMapModel().setSimulatorClass(simulator);
+		StaticInstances.getRegisterMapModel().setSimulatorEnabled(true);
+		StaticInstances.getRegisterMapModel().update();
+		return "OK";
+	}
 }

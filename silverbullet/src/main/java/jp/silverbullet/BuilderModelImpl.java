@@ -3,7 +3,6 @@ package jp.silverbullet;
 import java.util.Arrays;
 import java.util.List;
 
-import javafx.application.Platform;
 import jp.silverbullet.property.PropertyHolder;
 import jp.silverbullet.property.StringArray;
 import jp.silverbullet.register.RegisterProperty;
@@ -75,16 +74,21 @@ public class BuilderModelImpl implements BuilderModel {
 	private EasyAccessModel easyAccessModel = new EasyAccessModel() {
 		@Override
 		public void requestChange(final String id, final String value) {
-			Platform.runLater(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						dependency.requestChange(id, value);
-					} catch (RequestRejectedException e) {
-						e.printStackTrace();
-					}
-				}
-			});
+			try {
+				dependency.requestChange(id, value);
+			} catch (RequestRejectedException e) {
+				e.printStackTrace();
+			}
+//			Platform.runLater(new Runnable() {
+//				@Override
+//				public void run() {
+//					try {
+//						dependency.requestChange(id, value);
+//					} catch (RequestRejectedException e) {
+//						e.printStackTrace();
+//					}
+//				}
+//			});
 		}
 
 		@Override
@@ -249,6 +253,7 @@ public class BuilderModelImpl implements BuilderModel {
 
 		this.store = new SvPropertyStore(propertiesHolder);
 		this.registerProperty = loadRegisterProperty(folder + "/" + REGISTER_XML);
+		
 		handlerPropertyHolder = loadHandlerPropertyHolder(folder + "/" + HANDLER_XML);
 		if (handlerPropertyHolder == null) {
 			handlerPropertyHolder = new HandlerPropertyHolder();

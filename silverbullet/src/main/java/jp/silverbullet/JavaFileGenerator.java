@@ -25,6 +25,9 @@ public class JavaFileGenerator {
 		lines.add("package " + path + ";");
 		lines.add("public class ID {");
 		for (SvProperty prop : properties) {
+			if (prop.getIndex() > 0) { // This is tentative code
+				continue;
+			}
 			lines.add(createLine(prop.getId()));
 			if (prop.isListProperty()) {
 				for (ListDetailElement e : prop.getListDetail()) {
@@ -56,6 +59,9 @@ public class JavaFileGenerator {
 		source.add("        this.model = model2;");
 		source.add("    }");
 		for (SvProperty prop : properties) {
+			if (prop.getIndex() > 0) { // This is tentative code
+				continue;
+			}
 			if (prop.getType().equals("DoubleProperty")) {
 				source.add("    public void set" + getMethodName(prop.getId()) + "(double value" + ") {");
 				source.add("        model.requestChange(ID." + prop.getId() + ", String.valueOf(value));");

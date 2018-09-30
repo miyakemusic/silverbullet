@@ -12,13 +12,11 @@ import org.codehaus.jackson.map.ObjectMapper;
 import jp.silverbullet.StaticInstances;
 import jp.silverbullet.dependency.DependencyListener;
 import jp.silverbullet.javafx.BuilderFx;
-import jp.silverbullet.register.BitSetToIntConverter;
 import jp.silverbullet.register.RegisterBit;
 import jp.silverbullet.register.RegisterMapListener;
 import jp.silverbullet.register.RegisterUpdates;
 import jp.silverbullet.register.SvRegister;
 import jp.silverbullet.trash.unknown.ChangedItemValue;
-import jp.silverbullet.register.BitUpdates;
 
 public class WebClientManager {
 
@@ -57,7 +55,7 @@ public class WebClientManager {
 			@Override
 			public void onDataUpdate(int regIndex, int blockNumber, int value, long address, BitSet bitSet, RegisterUpdates updates) {
 				try {
-					SvRegister register = BuilderFx.getModel().getBuilderModel().getRegisterProperty().getRegisterByAddress(address);
+					SvRegister register = StaticInstances.getBuilderModel().getRegisterProperty().getRegisterByAddress(address);
 					String name = register.getName();
 					for (RegisterBit bit : register.getBits().getBits()) {
 						

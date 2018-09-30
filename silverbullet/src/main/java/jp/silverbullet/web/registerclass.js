@@ -2,12 +2,39 @@ class RegisterClass {
 
 	constructor(div) {
 		$('#' + div).append('<button id="commit">Commit</button><select id="spec"><option value="spec">Specification</option><option value="map">Map</option></select>');
+		$('#' + div).append('<select id="idSimulator">Simulator</select><button id="simButton">Apply</button>');
 		$('#' + div).append('<div id="mainDiv" class="regtable"></div>');
 		
 		initWebSocket();
 		getListAsync();
+		getSimulators();
 		
-				
+		function getSimulators() {
+			$('#simButton').click(function() {
+				$.ajax({
+				   type: "GET", 
+				   url: "http://" + window.location.host + "/rest/register/setSimulator?simulator=" + $('#idSimulator').val(),
+				   success: function(msg){
+				   		for (var i = 0; i < msg.length; i++) {
+							var sim = msg[i];
+							$('#idSimulator').append('<option value="' + sim + '">' + sim + '</option>');
+						}
+				   }
+				});				
+			});
+			
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/register/getSimulators",
+			   success: function(msg){
+			   		for (var i = 0; i < msg.length; i++) {
+						var sim = msg[i];
+						$('#idSimulator').append('<option value="' + sim + '">' + sim + '</option>');
+					}
+			   }
+			});	
+		}
+		
 		function initWebSocket() {
 			new MyWebSocket(function(msg) {
 				var obj = JSON.parse(msg);

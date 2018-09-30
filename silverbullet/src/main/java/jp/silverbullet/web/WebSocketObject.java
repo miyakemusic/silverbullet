@@ -19,16 +19,7 @@ public class WebSocketObject {
 
     @OnWebSocketMessage
     public void onText(String message) {
-//    	String command = message.split(":")[0];
-//    	String value = message.split(":")[1];
-    	
-//    	if (command.equals("login")) {
-//    		WebSocketBroadcaster.getInstance().addClient(this);
-//    	}
-//    	else {
-    		WebSocketBroadcaster.getInstance().sendToAll(message);
-//    	}
-        
+    	WebSocketBroadcaster.getInstance().sendToAll(message);
     }
 
     @OnWebSocketClose

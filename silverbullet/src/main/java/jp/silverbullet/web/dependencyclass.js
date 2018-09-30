@@ -35,9 +35,10 @@ class DependencyClass {
 			'</div>');
 	
 		$('#' + div).append('<div id="idSelectorDialog">' +
-				'<select id="propTypeDep"></select>' +
-				'<div id="idTableDep"></div>' +
-				'<div id="subTableDep"></div>' +
+//				'<select id="propTypeDep"></select>' +
+//				'<div id="idTableDep"></div>' +
+//				'<div id="subTableDep"></div>' +
+				'<div id="idSelectorDialogContent"></div>' + 
 			'</div>');
 			
 		$('#' + div).append('<div id="choiceDialog">' +
@@ -121,8 +122,8 @@ class DependencyClass {
 			  buttons: {
 			    "OK": function(){
 			      $(this).dialog('close');
-			      var id = me.manager.id;
-			      var subId = me.manager.subid;
+			      var id = me.idSelector.currentId;
+			      var subId = me.idSelector.selectionId;
 			      var text;
 			      if (subId != "") {
 			      	text = '$' + id + ".Value" + '==' + '%' + subId;
@@ -152,7 +153,8 @@ class DependencyClass {
 		});
 		
 		$("#idSelector").on('click', function(e) {
-			me.manager = new IdTableManager('idTableDep', 'subTableDep', '', '', 'propTypeDep');
+			//me.manager = new IdTableManager('idTableDep', 'subTableDep', '', '', 'propTypeDep');
+			me.idSelector = new IdEditorClass('idSelectorDialogContent');
 			$('#idSelectorDialog').dialog("open");
 		});
 		

@@ -16,6 +16,7 @@ public abstract class SilverBulletServer {
 
 	public void start() {
 		builderModel = StaticInstances.getBuilderModel();
+		builderModel.setUserPath(getUserPath());
 		registerMapModel = StaticInstances.getRegisterMapModel();
 		
 		String filename = getDefaultFilename();
@@ -23,11 +24,14 @@ public abstract class SilverBulletServer {
 			Zip.unzip(filename, StaticInstances.DESIGNER_TMP);
 		}
 		builderModel.load(StaticInstances.DESIGNER_TMP);
+//		registerMapModel.update();
 		
 		startWebServer();
 	}
 
 	protected abstract String getDefaultFilename();
+	protected abstract String getUserPath();
+	
 	protected void startWebServer() {
 		new WebClientManager();
 		webServer = new BuilderServer(8081, new BuilderServerListener() {

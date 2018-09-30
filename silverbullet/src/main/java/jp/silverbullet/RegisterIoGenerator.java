@@ -36,9 +36,10 @@ public class RegisterIoGenerator {
 			
 			source.add("package " + path + ";");
 			source.add("import " + RegisterAccess.class.getName() + ";");
-			source.add("import " + InterruptHandler.class.getName() + ";");
-			source.add("import javafx.application.Platform;");
-			source.add("public class " + className + " {");
+//			source.add("import " + InterruptHandler.class.getName() + ";");
+			source.add("import jp.silverbullet.register.RegisterControl;");
+//			source.add("import javafx.application.Platform;");
+			source.add("public class " + className + " extends RegisterControl {");
 			for (SvRegister register : registerProperty.getRegisters()) {
 				String registerAddressDef = "ADDR_" + convertName(register.getName()).toUpperCase();
 				addressNameMap.put(register.getAddress(), registerAddressDef);
@@ -56,34 +57,35 @@ public class RegisterIoGenerator {
 			source.add("    	return registerAccess;");
 			source.add("    }");
 			source.add("    public " + className + "(RegisterAccess registerAccess2) {");
+			source.add("         super(registerAccess2);");
 			source.add("         this.registerAccess = registerAccess2;");
 			source.add("    }");
-			source.add("    private Object lock = new Object();");
+//			source.add("    private Object lock = new Object();");
 		
-			source.add("    public void waitIntrrupt() {");
-			source.add("    InterruptHandler interruptHandler = new InterruptHandler() {");
-			source.add("        @Override");
-			source.add("        public void onTrigger() {");
-			source.add("            synchronized(lock) {");
-			source.add("    	        lock.notifyAll();");
-			source.add("            }");
-			source.add("        }  ");  
-			source.add("    };");
-			source.add("    this.registerAccess.addInterruptHandler(interruptHandler);");
-			source.add("    try {");
-			source.add("       synchronized(lock) {");
-			source.add("           lock.wait();");
-			source.add("           Platform.runLater(new Runnable() {");
-			source.add("              @Override");
-			source.add("              public void run() {");
-			source.add("           	   registerAccess.removeInteruptHandler(interruptHandler);");
-			source.add("              }");
-			source.add("           });");
-			source.add("      }");
-			source.add("    } catch (InterruptedException e) {");
-			source.add("        e.printStackTrace();");
-			source.add("    }");
-			source.add("    }");
+//			source.add("    public void waitIntrrupt() {");
+//			source.add("    InterruptHandler interruptHandler = new InterruptHandler() {");
+//			source.add("        @Override");
+//			source.add("        public void onTrigger() {");
+//			source.add("            synchronized(lock) {");
+//			source.add("    	        lock.notifyAll();");
+//			source.add("            }");
+//			source.add("        }  ");  
+//			source.add("    };");
+//			source.add("    this.registerAccess.addInterruptHandler(interruptHandler);");
+//			source.add("    try {");
+//			source.add("       synchronized(lock) {");
+//			source.add("           lock.wait();");
+//			source.add("           Platform.runLater(new Runnable() {");
+//			source.add("              @Override");
+//			source.add("              public void run() {");
+//			source.add("           	   registerAccess.removeInteruptHandler(interruptHandler);");
+//			source.add("              }");
+//			source.add("           });");
+//			source.add("      }");
+//			source.add("    } catch (InterruptedException e) {");
+//			source.add("        e.printStackTrace();");
+//			source.add("    }");
+//			source.add("    }");
 			
 			for (SvRegister register : registerProperty.getRegisters()) {
 				if (register.isBlock()) {

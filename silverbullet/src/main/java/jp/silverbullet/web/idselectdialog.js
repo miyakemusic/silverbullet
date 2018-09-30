@@ -1,11 +1,14 @@
 class IdSelectDialog {
 	constructor(base, okClicked) {
 		$('#' + base).append('<div id="idSelectDialog"></div>');
-		$('#idSelectDialog').append('<select id="propType"></select><button id="add">Add</button>');
-		$('#idSelectDialog').append('<div id="idList"></div>');
-		$('#idSelectDialog').append('<div id="subList">');
+//		$('#idSelectDialog').append('<select id="propType"></select><button id="add">Add</button>');
+//		$('#idSelectDialog').append('<div id="idList"></div>');
+//		$('#idSelectDialog').append('<div id="subList">');
 		
-		var tableManager = new IdTableManager('idList', 'subList', 'add', null, 'propType');
+//		var tableManager = new IdTableManager('idList', 'subList', 'add', null, 'propType');
+		
+		var idEditor = new IdEditorClass('idSelectDialog');
+		
 		$('#idSelectDialog').dialog({
 			  autoOpen: false,
 			  title: 'ID Selector',
@@ -14,7 +17,8 @@ class IdSelectDialog {
 			  buttons: {
 			    "OK": function(){
 			    	var ids = [];
-			    	ids.push(tableManager.id);
+//			    	ids.push(tableManager.id);
+					ids.push(idEditor.currentId);
 			    	okClicked(ids);
 			   		$(this).dialog('close');
 			    	

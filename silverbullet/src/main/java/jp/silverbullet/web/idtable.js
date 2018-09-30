@@ -80,6 +80,8 @@ class IdTableManager {
 					  minSpareRows: 1,
 					  currentRowClassName: 'currentRow',
 					  contextMenu: true,
+					  filters: true,
+					  dropdownMenu: ['filter_by_condition', 'filter_action_bar'],
 					  colWidths: function(index) {
 					        return [40, 200, 100, 200, 200, 100, 200, 200, 200, 200][index];
 					  },

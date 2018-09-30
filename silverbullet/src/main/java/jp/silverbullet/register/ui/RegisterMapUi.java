@@ -1,4 +1,4 @@
-package jp.silverbullet.register;
+package jp.silverbullet.register.ui;
 
 import java.io.File;
 import java.util.BitSet;
@@ -24,6 +24,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import jp.silverbullet.javafx.MyDialogFx;
+import jp.silverbullet.register.MyMessageBox;
+import jp.silverbullet.register.RegisterBit;
+import jp.silverbullet.register.RegisterMapListener;
+import jp.silverbullet.register.RegisterMapModel;
+import jp.silverbullet.register.RegisterUpdates;
 import jp.silverbullet.register.RegisterBit.ReadWriteType;
 
 public class RegisterMapUi extends VBox implements RegisterMapListener {
