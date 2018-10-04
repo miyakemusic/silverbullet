@@ -20,11 +20,8 @@ public abstract class SilverBulletServer {
 		registerMapModel = StaticInstances.getRegisterMapModel();
 		
 		String filename = getDefaultFilename();
-		if (Files.exists(Paths.get(filename))) {
-			Zip.unzip(filename, StaticInstances.DESIGNER_TMP);
-		}
-		builderModel.load(StaticInstances.DESIGNER_TMP);
-//		registerMapModel.update();
+
+		StaticInstances.load(filename);
 		
 		startWebServer();
 	}

@@ -31,5 +31,10 @@ public class HandlerPropertyHolder {
 	public void addAll(HandlerPropertyHolder tmpHandler) {
 		this.handlers.addAll(tmpHandler.getHandlers());
 	}
+
+	public List<HandlerProperty> remove(int row) {
+		this.handlers.remove(row);
+		return this.handlers;
+	}
 	
 }

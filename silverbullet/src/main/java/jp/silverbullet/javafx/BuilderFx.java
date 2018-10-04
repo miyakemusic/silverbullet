@@ -698,14 +698,14 @@ public abstract class BuilderFx extends Application {
 	}
 
 	protected void loadFile(String filename) {
-		if (!Files.exists(Paths.get(StaticInstances.DESIGNER_TMP))) {
+		if (!Files.exists(Paths.get(StaticInstances.TMP_FOLDER))) {
 			try {
-				Files.createDirectories(Paths.get(StaticInstances.DESIGNER_TMP));
+				Files.createDirectories(Paths.get(StaticInstances.TMP_FOLDER));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-		for (File file : new File(StaticInstances.DESIGNER_TMP).listFiles()) {
+		for (File file : new File(StaticInstances.TMP_FOLDER).listFiles()) {
 			try {
 				Files.delete(Paths.get(file.getAbsolutePath()));
 				
@@ -715,8 +715,8 @@ public abstract class BuilderFx extends Application {
 			}
 		}
 		if (Files.exists(Paths.get(filename))) {
-			Zip.unzip(filename, StaticInstances.DESIGNER_TMP);
-			designerModel.load(StaticInstances.DESIGNER_TMP);
+			Zip.unzip(filename, StaticInstances.TMP_FOLDER);
+			designerModel.load(StaticInstances.TMP_FOLDER);
 		}
 		builderModel.loadDefault();
 		
@@ -735,8 +735,8 @@ public abstract class BuilderFx extends Application {
 		String filename = f.getAbsolutePath();
 		
 		if (f != null) {
-			Zip.unzip(filename, StaticInstances.DESIGNER_TMP);
-			designerModel.importFile(StaticInstances.DESIGNER_TMP);
+			Zip.unzip(filename, StaticInstances.TMP_FOLDER);
+			designerModel.importFile(StaticInstances.TMP_FOLDER);
 			//this.builderModel.importFile(DESIGNER_TMP);
 		}
 		updateTabs();
@@ -759,15 +759,15 @@ public abstract class BuilderFx extends Application {
 	}
 
 	protected void saveFile(String filename) {
-		if (!Files.exists(Paths.get(StaticInstances.DESIGNER_TMP))) {
+		if (!Files.exists(Paths.get(StaticInstances.TMP_FOLDER))) {
 			try {
-				Files.createDirectory(Paths.get(StaticInstances.DESIGNER_TMP));
+				Files.createDirectory(Paths.get(StaticInstances.TMP_FOLDER));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-		designerModel.save(StaticInstances.DESIGNER_TMP);
-		Zip.zip(StaticInstances.DESIGNER_TMP, filename);
+		designerModel.save(StaticInstances.TMP_FOLDER);
+		Zip.zip(StaticInstances.TMP_FOLDER, filename);
 	}
 
 	protected void showPropertyEditor(String id) {		
