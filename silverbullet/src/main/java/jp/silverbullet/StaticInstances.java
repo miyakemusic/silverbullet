@@ -40,8 +40,9 @@ public class StaticInstances {
 		prevFilename = filename;
 		if (Files.exists(Paths.get(filename))) {
 			Zip.unzip(filename, StaticInstances.TMP_FOLDER);
+			getBuilderModel().load(StaticInstances.TMP_FOLDER);
 		}
-		getBuilderModel().load(StaticInstances.TMP_FOLDER);
+		
 	}
 
 }
