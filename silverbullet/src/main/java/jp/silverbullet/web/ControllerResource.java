@@ -48,6 +48,9 @@ public class ControllerResource {
 		else if (name.equals("async")) {
 			data.setAsync(Boolean.valueOf(value));
 		}
+		else if (name.equals("externalClass")) {
+			data.setExternalClass(value);
+		}
 		StaticInstances.save();
 		return getSpecs();
 	}

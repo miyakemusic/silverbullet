@@ -11,10 +11,11 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import jp.silverbullet.StaticInstances;
+import jp.silverbullet.SvProperty;
 import jp.silverbullet.property.ListDetailElement;
 import jp.silverbullet.property.PropertyDef;
 import jp.silverbullet.property.PropertyType;
-import jp.silverbullet.property.editor.PropertyListModel2;
+import jp.silverbullet.property.editor.PropertyListModel;
 
 @Path("/id")
 public class IdResource {
@@ -29,7 +30,12 @@ public class IdResource {
 	@Path("/selection")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public ListDetailElement[] getSelections(@QueryParam("id") final String id) {
-		return StaticInstances.getBuilderModel().getPropertyHolder().getProperty(id).getListDetail().toArray(new ListDetailElement[0]);
+		PropertyDef property = StaticInstances.getBuilderModel().getPropertyHolder().getProperty(id);
+		
+		if (property == null) {
+			System.out.println("IdResource/selection = null " + id);
+		}
+		return property.getListDetail().toArray(new ListDetailElement[0]);
 	}
 	
 	@GET
@@ -95,6 +101,15 @@ public class IdResource {
 	}
 	
 	@GET
+	@Path("/remove")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String remove(@QueryParam("id") final String id) {
+		StaticInstances.getBuilderModel().getPropertyHolder().remove(id);
+		
+		return "OK";
+	}
+	
+	@GET
 	@Path("/addChoice")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String addNewChoice(@QueryParam("id") final String id) {
@@ -113,13 +128,13 @@ public class IdResource {
 		
 		for (ListDetailElement e: prop.getListDetail()) {
 			if (e.getId().equals(selectionId)) {
-				if (paramName.equals(PropertyListModel2.ID)) {
+				if (paramName.equals(PropertyListModel.ID)) {
 					e.setId(value);
 				}
-				else if (paramName.equals(PropertyListModel2.COMMENT)) {
+				else if (paramName.equals(PropertyListModel.COMMENT)) {
 					e.setComment(value);
 				}
-				else if (paramName.equals(PropertyListModel2.TITLE)) {
+				else if (paramName.equals(PropertyListModel.TITLE)) {
 					e.setTitle(value);
 				}
 				
@@ -137,7 +152,7 @@ public class IdResource {
 	public JsonTable test(@QueryParam("type") final String type) {
 		JsonTable ret =  new JsonTable();
 		
-		PropertyListModel2 model = new PropertyListModel2(StaticInstances.getBuilderModel().getPropertyHolder());
+		PropertyListModel model = StaticInstances.getPropertyListModel();//new PropertyListModel2(StaticInstances.getBuilderModel().getPropertyHolder());
 		
 		model.setFilterProperty(type);
 		
@@ -185,23 +200,26 @@ public class IdResource {
 			@QueryParam("value") final String value) {
 
 		PropertyDef prop = StaticInstances.getBuilderModel().getPropertyHolder().getProperty(id);
-		
-		if (paramName.equals(PropertyListModel2.ID)) {
+		if (prop == null) {
+			System.out.println("IdResource/update prop == null " + id);
+		}
+		if (paramName.equals(PropertyListModel.ID)) {
 			prop.setId(value);
 		}
-		else if (paramName.equals(PropertyListModel2.TYPE)) {
+		else if (paramName.equals(PropertyListModel.TYPE)) {
 			prop.setType(value);
 		}
-		else if (paramName.equals(PropertyListModel2.TITLE)) {
+		else if (paramName.equals(PropertyListModel.TITLE)) {
 			prop.setTitle(value);
 		}
-		else if (paramName.equals(PropertyListModel2.COMMENT)) {
+		else if (paramName.equals(PropertyListModel.COMMENT)) {
 			prop.setComment(value);
 		}
 		else {
 			prop.updateArgument(paramName, value);
 		}
-	//	System.out.println("updateValue " + id + "," + paramName + "," + value);
+
+		StaticInstances.save();
 		return "";
 	}
 	

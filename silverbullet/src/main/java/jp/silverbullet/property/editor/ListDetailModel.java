@@ -4,7 +4,7 @@ import javax.swing.table.AbstractTableModel;
 
 import jp.silverbullet.property.PropertyDef;
 
-public class ListDetailModel2 extends AbstractTableModel {
+public class ListDetailModel extends AbstractTableModel {
 	private static final String COMMENT = "comment";
 	private static final String ID = "id";
 	private static final String TITLE = "title";

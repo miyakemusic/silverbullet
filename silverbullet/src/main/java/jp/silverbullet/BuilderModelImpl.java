@@ -142,6 +142,7 @@ public class BuilderModelImpl implements BuilderModel {
 			}
 		};
 
+		this.loadDefault();
 	}
 	
 	@Override
@@ -428,7 +429,7 @@ public class BuilderModelImpl implements BuilderModel {
 	}
 
 	@Override
-	public DependencySpecHolder getDependencySpecHolder2() {
+	public DependencySpecHolder getDependencySpecHolder() {
 		return dependencySpecHolder;
 	}
 }

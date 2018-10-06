@@ -5,6 +5,11 @@ class JsRadio {
 	}
 	
 	updateValue(property) {
+		$('#' + this.baseId).empty();
+		this.updateLayout(property);
+	}
+	
+	updateValue2(property) {
 		$('#' + this.baseId + ' input').prop('checked', false).checkboxradio('refresh');
 		$('#' + property.currentValue + '-' + 'radio' + this.baseId).prop('checked', true).checkboxradio('refresh');
 	}
@@ -34,11 +39,10 @@ class JsRadio {
 		});
 
 		$( '#' + this.radiosetId ).buttonset();
-//		$( '#' + this.radiosetId ).controlgroup({ icon: false});
 		$('input[name="' + this.name + '"]').checkboxradio({
 		    icon: false
 		});
-		this.updateValue(property);
+		this.updateValue2(property);
 	}
 }
 
@@ -50,6 +54,11 @@ class JsComboBox {
 	}
 	
 	updateValue(property) {
+		$('#' + this.baseId).empty();
+		this.updateLayout(property);
+	}
+	
+	updateValue2(property) {
 		$('#' + this.comboId).val(property.currentValue).selectmenu('refresh');
 		$('#' + this.unitId).text(property.unit);
 	}
@@ -60,7 +69,6 @@ class JsComboBox {
 		$('#' + this.titleId).text(property.title);
 		
 		this.comboId = 'combo' + this.baseId;
-//		$('#' + this.baseId).append('<SELECT id="' + this.comboId + '" class="currentValue"></SELECT>');
 		$('#' + this.baseId).append('<SELECT id="' + this.comboId + '"></SELECT>');
 		$('#' + this.baseId).append('<span id="' + this.unitId + '" class="unit"></span>');
  		$('#' + this.comboId).selectmenu();
@@ -78,8 +86,7 @@ class JsComboBox {
 			me.change(ui.item.value);
 		} );
 
-
-		this.updateValue(property);
+		this.updateValue2(property);
 	}
 }
 

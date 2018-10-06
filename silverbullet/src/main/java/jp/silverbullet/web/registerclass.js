@@ -2,8 +2,11 @@ class RegisterClass {
 
 	constructor(div) {
 		$('#' + div).append('<button id="commit">Commit</button><select id="spec"><option value="spec">Specification</option><option value="map">Map</option></select>');
-		$('#' + div).append('<select id="idSimulator">Simulator</select><button id="simButton">Apply</button>');
+		$('#' + div).append('<select id="idSimulator">Simulator</select><button id="simButton">Apply</button><button id="addNew">Add New</button>');
 		$('#' + div).append('<div id="mainDiv" class="regtable"></div>');
+		
+		this.changes = new Map();
+		var me = this;
 		
 		initWebSocket();
 		getListAsync();
@@ -172,7 +175,7 @@ class RegisterClass {
 					$('#' + editId).hide();
 					$('#' + labelId).text($('#' + editId).val().replace('\n','<br>'));
 					
-					changes.set(id, $('#' + editId).val());
+					me.changes.set(id, $('#' + editId).val());
 					commit();
 				}
 				else if (event.which == 27) { // Cancel
@@ -197,7 +200,7 @@ class RegisterClass {
 			$('#' + id).append(html);
 			$('#' + id + '_combo').val(value);
 			$('#' + id + '_combo').change(function() {
-				changes.set(id, $('#' + id + '_combo').val());
+				me.changes.set(id, $('#' + id + '_combo').val());
 				commit();
 			});
 		}
@@ -224,7 +227,7 @@ class RegisterClass {
 		
 		function commit() {
 			var changesList = [];
-			for (const [key, value] of changes) {
+			for (const [key, value] of me.changes) {
 				var obj = new Object();
 				obj.key = key;
 				obj.value = value;
@@ -237,7 +240,7 @@ class RegisterClass {
 			   contentType: 'application/json',
 			   data :JSON.stringify(changesList),
 			   success: function(msg){
-					changes.clear();
+					me.changes.clear();
 					getListAsync();
 			   },
 			   error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -257,6 +260,16 @@ class RegisterClass {
 			else {
 				createMap();
 			}
+		});
+		
+		$('#addNew').click(function() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/register/addNew",
+			   success: function(msg){
+					getListAsync();
+			   }
+			});				
 		});
 		
 		function createMap() {

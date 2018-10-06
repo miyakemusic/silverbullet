@@ -60,5 +60,5 @@ public interface BuilderModel {
 
 	void importFile(String filename);
 
-	DependencySpecHolder getDependencySpecHolder2();
+	DependencySpecHolder getDependencySpecHolder();
 }

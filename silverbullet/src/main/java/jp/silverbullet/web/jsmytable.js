@@ -45,6 +45,10 @@ class JsMyTable {
 		$('#' + this.tableId  + '> tbody').append('<tr></tr>');
 		
 		$.each(data, function(k, v) {
+			if (v == null || v == '') {
+				v = '--';
+			}
+			
 			var labelId = 'L' + row + '_' + k;
 			var editId = 'E' + row + '_' + k;
 			

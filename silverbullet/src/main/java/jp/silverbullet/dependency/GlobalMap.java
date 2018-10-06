@@ -30,7 +30,7 @@ public class GlobalMap {
 		for (String id : dependecyEditorModel.getDependencySpecHolder().getSpecs().keySet()) {
 			DependencySpec spec = dependecyEditorModel.getDependencySpecHolder().getSpecs().get(id);
 			DNode node = getNode(id);
-			for (String s : spec.getTriggerIds()) {
+			for (String s : spec.getTriggerIdsWithElement()) {
 				connect(node, s);
 			}
 		}

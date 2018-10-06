@@ -23,24 +23,30 @@
 <script type="text/javascript">
 $(function() {
 	$(document).ready(function(){
-		$('#page').change(function() {
-			$('#main').empty();
-			var val = $(this).val();
-			if (val == 'pageId') {
-				new IdEditorClass('main');
-			}
-			else if (val == 'pageDep') {
-				new DependencyClass('main');
-			}
-			else if (val == 'pageDesign') {
-				new DesignerClass('main');
-			}
-			else if (val == 'pageReg') {
-				new RegisterClass('main');
-			}
-			else if (val == 'pageController') {
-				new ControllerClass('main');
-			}
+		$('#tab').tabs();
+		
+		var idEditor = new IdEditorClass('tab_id');
+		idEditor.update();
+		new DependencyClass('tab_dependency');
+		new DesignerClass('tab_designer');
+		new RegisterClass('tab_register');
+		new ControllerClass('tab_control');
+		
+		$('#save').click(function() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/system/save",
+			   success: function(property){
+			   }
+			});
+		});
+		$('#generateSource').click(function() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/system/generateSource",
+			   success: function(property){
+			   }
+			});
 		});
 	});
 })
@@ -53,13 +59,21 @@ $(function() {
 <title>Users</title>
 </head>
 <body> 
-Page<select id="page">
-	<option value="pageId">ID</option>
-	<option value="pageDep">Dependency</option>
-	<option value="pageDesign">Designer</option>
-	<option value="pageReg">Register</option>
-	<option value="pageController">Controller</option>
-</select>
-<div id='main'></div>
+<button id="save">Save</button><button id="generateSource">Generate Source</button>
+<div id="tab">
+  <ul>
+  	<li><a href="#tab_id">ID</a></li>
+  	<li><a href="#tab_dependency">Dependency</a></li>
+  	<li><a href="#tab_designer">Designer</a></li>
+  	<li><a href="#tab_register">Register</a></li>
+  	<li><a href="#tab_control">Control</a></li>
+  </ul>
+  <div id="tab_id"></div>
+  <div id="tab_dependency"></div>
+  <div id="tab_designer"></div>
+  <div id="tab_register"></div>
+  <div id="tab_control"></div>
+</div>
+
 </body>
 </html>

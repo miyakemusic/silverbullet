@@ -60,7 +60,6 @@ public class PropertyHolder {
 	}
 		
 	public void addProperty(PropertyDef newProperty) {
-//		newProperty.setArgumentDef(this.getTypes().getArguments(newProperty.getType()));
 		newProperty.setArgumentDef(argDef);
 		newProperty.initArgumentValues();
 		newProperty.addPropertyDefListener(listener);
@@ -98,6 +97,11 @@ public class PropertyHolder {
 			listener.onAdded(newProperty);
 		}
 	}
+	
+	public void remove(String id) {
+		remove(this.getProperty(id));
+	}
+
 	public void remove(PropertyDef property) {
 		this.properties.remove(property);
 		property.removePropertyDefListener(listener);
@@ -151,5 +155,4 @@ public class PropertyHolder {
 		}
 		return null;
 	}
-
 }

@@ -40,8 +40,8 @@ import jp.silverbullet.property.PropertyHolder;
 import jp.silverbullet.register.MyMessageBox;
 
 public abstract class PropertyEditorPaneFx extends VBox {
-	private PropertyListModel2 model;
-	private ListDetailModel2 listModel = new ListDetailModel2();;
+	private PropertyListModel model;
+	private ListDetailModel listModel = new ListDetailModel();;
 	protected int selectedRow;
 	protected int subSelectedRow;
 	private TextField text;
@@ -51,7 +51,7 @@ public abstract class PropertyEditorPaneFx extends VBox {
 	abstract protected void onSelect(List<String> selected, List<String> subs);
 	
 	public PropertyEditorPaneFx(PropertyHolder newHolder) {
-		model = new PropertyListModel2(newHolder);
+		model = new PropertyListModel(newHolder);
 		createMenu();
 		createTools();
 		

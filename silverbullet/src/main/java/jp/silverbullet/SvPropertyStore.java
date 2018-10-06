@@ -26,12 +26,13 @@ public class SvPropertyStore {
 		propertiesHolder.addPropertyHolderListener(new PropertyHolderListener() {
 			@Override
 			public void onAdded(PropertyDef newProperty) {
-				map.put(newProperty.getId(), new SvProperty(newProperty));
+				addProperty(newProperty);
+				//map.put(newProperty.getId(), new SvProperty(newProperty));
 			}
 
 			@Override
 			public void onRemoved(PropertyDef property) {
-				map.remove(property.getId());
+				removeProperty(property.getId());
 			}
 
 			@Override
@@ -40,12 +41,22 @@ public class SvPropertyStore {
 			}
 
 			@Override
-			public void onIdChanged(String oldId, String newId) {
-				map.put(newId, map.get(oldId));
-				map.remove(oldId);
+			public boolean onIdChanged(String oldId, String newId) {
+				return changePropertyId(oldId, newId);
 			}
 		});
 	}
+	
+	private boolean changePropertyId(String oldId, String newId) {
+		if (oldId.equals(newId)) {
+			return false;
+		}
+		SvProperty tmp = this.getProperty(oldId);
+		this.addProperty(tmp.getProperty());
+		removeProperty(oldId);
+		return true;
+	}
+	
 	private void addProperty(PropertyDef prop) {
 		stripString(prop);
 		
@@ -57,6 +68,17 @@ public class SvPropertyStore {
 		}
 	}
 	
+	private void removeProperty(String id) {
+		List<String> removed = new ArrayList<String>();
+		for (String key : this.map.keySet()) {
+			if (key.split("@")[0].equals(id)) {
+				removed.add(key);
+			}
+		}
+		for (String key : removed) {
+			this.map.remove(key);
+		}
+	}
 	public SvProperty getProperty(String id) {
 		SvProperty ret = this.map.get(id + "@" + "0");
 		if (ret == null) {

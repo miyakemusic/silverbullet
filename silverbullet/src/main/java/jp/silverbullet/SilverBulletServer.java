@@ -17,6 +17,7 @@ public abstract class SilverBulletServer {
 	public void start() {
 		builderModel = StaticInstances.getBuilderModel();
 		builderModel.setUserPath(getUserPath());
+
 		registerMapModel = StaticInstances.getRegisterMapModel();
 		
 		String filename = getDefaultFilename();

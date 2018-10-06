@@ -14,7 +14,7 @@ import jp.silverbullet.property.PropertyDef;
 import jp.silverbullet.property.PropertyHolder;
 import jp.silverbullet.property.PropertyHolderListener;
 
-public class PropertyListModel2 extends AbstractTableModel {
+public class PropertyListModel extends AbstractTableModel {
 
 	/**
 	 * 
@@ -52,13 +52,13 @@ public class PropertyListModel2 extends AbstractTableModel {
 		}
 
 		@Override
-		public void onIdChanged(String oldId, String newId) {
+		public boolean onIdChanged(String oldId, String newId) {
 			// TODO Auto-generated method stub
-			
+			return false;
 		}
 		
 	};
-	public PropertyListModel2(PropertyHolder holder) {
+	public PropertyListModel(PropertyHolder holder) {
 		this.holder = holder;
 		holder.addPropertyHolderListener(listener);
 		updatePropertyList();

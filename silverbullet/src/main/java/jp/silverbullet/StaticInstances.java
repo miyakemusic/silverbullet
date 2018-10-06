@@ -4,12 +4,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import jp.silverbullet.property.editor.PropertyListModel;
 import jp.silverbullet.register.RegisterMapModel;
 
 public class StaticInstances {
 	public static final String TMP_FOLDER = "sv_tmp";
 	
 	private static RegisterMapModel registerMapModel = null;
+	private static PropertyListModel propertyListModel = null;
+	
 	private static String prevFilename = "";
 	
 	public static BuilderModel getBuilderModel() {
@@ -43,6 +46,20 @@ public class StaticInstances {
 			getBuilderModel().load(StaticInstances.TMP_FOLDER);
 		}
 		
+	}
+
+	public static PropertyListModel getPropertyListModel() {
+		if (propertyListModel == null) {
+			propertyListModel = new PropertyListModel(getBuilderModel().getPropertyHolder());
+		}
+		return propertyListModel;
+	}
+
+	public static void generateSource() {
+		String path = getBuilderModel().getUserApplicationPath();
+		new JavaFileGenerator(getBuilderModel().getAllProperties()).generate(path);
+		new RegisterIoGenerator(getBuilderModel().getRegisterProperty(), path).generate(path);
+
 	}
 
 }

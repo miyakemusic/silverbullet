@@ -1,6 +1,7 @@
 package jp.silverbullet.dependency;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -133,7 +134,22 @@ public class DependencySpec {
 		return ret;
 	}
 
-	public Set<String> getTriggerIds() {
+
+	public List<String> getTriggerIds() {
+		Set<String> tmp = getTriggerIdsWithElement();
+		List<String> ret = new ArrayList<>();
+		for (String s : tmp) {
+			if (s.contains(".")) {
+				ret.add(s.split("\\.")[0]);
+			}
+			else {
+				ret.add(s);
+			}
+		}
+		return ret;
+	}
+	
+	public Set<String> getTriggerIdsWithElement() {
 		Set<String> ret = new HashSet<String>();
 		for (DependencyTargetElement target : this.depExpHolderMap.keySet())  {
 			DependencyExpressionHolderMap map2 = depExpHolderMap.get(target);
@@ -192,6 +208,10 @@ public class DependencySpec {
 		return ret;
 	}
 
+	public void add(DependencyTargetElement element, String value, String condition) {
+		this.getDependencyExpressionHolder(element, DefaultItem).addExpression().resultExpression(value).conditionExpression(condition);
+	}
+	
 	public void add(DependencyTargetElement element, String selectionId, String value, String condition) {
 		this.getDependencyExpressionHolder(element, selectionId).addExpression().resultExpression(value).conditionExpression(condition);
 	}

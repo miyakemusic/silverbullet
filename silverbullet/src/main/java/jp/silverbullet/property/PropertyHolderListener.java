@@ -8,6 +8,6 @@ public interface PropertyHolderListener {
 
 	void onPropertyUpdated(PropertyDef newPropertyDef);
 
-	void onIdChanged(String oldId, String newId);
+	boolean onIdChanged(String oldId, String newId);
 
 }

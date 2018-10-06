@@ -113,21 +113,21 @@ public class RegisterIoGenerator {
 						+ " = new " + getClassName(register.getName()) + "();");
 			}
 			
-			source.add("    private boolean readIoBoolean(long address, int bit) {");
-			source.add("        return registerAccess.readIoBoolean(address, bit);");
-			source.add("    }");
-			source.add("    private int readIoInteger(long address, int bitFrom, int bitTo) {");
-			source.add("        return registerAccess.readIoInteger(address, bitFrom, bitTo);");
-			source.add("    }");
-			source.add("    private void writeIo(long address, boolean value, int bit) {");
-			source.add("        registerAccess.writeIo(address, value, bit);");
-			source.add("    }");
-			source.add("    private void writeIo(long address, int value, int bitFrom, int bitTo) {");
-			source.add("        registerAccess.writeIo(address, value, bitFrom, bitTo);");
-			source.add("    }");
-			source.add("    private void writeIo(long address, float value, int bitFrom, int bitTo) {");
-			source.add("        registerAccess.writeIo(address, value, bitFrom, bitTo);");
-			source.add("    }");
+//			source.add("    private boolean readIoBoolean(long address, int bit) {");
+//			source.add("        return registerAccess.readIoBoolean(address, bit);");
+//			source.add("    }");
+//			source.add("    private int readIoInteger(long address, int bitFrom, int bitTo) {");
+//			source.add("        return registerAccess.readIoInteger(address, bitFrom, bitTo);");
+//			source.add("    }");
+//			source.add("    private void writeIo(long address, boolean value, int bit) {");
+//			source.add("        registerAccess.writeIo(address, value, bit);");
+//			source.add("    }");
+//			source.add("    private void writeIo(long address, int value, int bitFrom, int bitTo) {");
+//			source.add("        registerAccess.writeIo(address, value, bitFrom, bitTo);");
+//			source.add("    }");
+//			source.add("    private void writeIo(long address, float value, int bitFrom, int bitTo) {");
+//			source.add("        registerAccess.writeIo(address, value, bitFrom, bitTo);");
+//			source.add("    }");
 			source.add("}");
 			
 			try {
@@ -310,13 +310,13 @@ public class RegisterIoGenerator {
 //					bit.setType(ReadWriteType.UNUSED);
 //				}
 				if (bit.isWriteEnabled()) {
-					source.add("    abstract public void write_" + convertName(register.getName()) + "_" + convertName(bit.getName()) + "(int value);");
+					source.add("    public void write_" + convertName(register.getName()) + "_" + convertName(bit.getName()) + "(int value) {};");
 				}
 //				if (bit.isReadEnabled()) {
 //					source.add("    abstract void read_" + convertName(bit.getName()) + "();");
 //				}
 			}
-			source.add("    abstract public void read_" + convertName(register.getName()) + "_" + convertName(register.getName()) + "();");
+			source.add("    public void read_" + convertName(register.getName()) + "_" + convertName(register.getName()) + "() {};");
 		}
 			
 		source.addAll(new SimSourceGenerator() {

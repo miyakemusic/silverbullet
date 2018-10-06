@@ -349,7 +349,7 @@ public abstract class SvPanelFx extends VBox {
 	
 	protected void showDependencyDiagramUi2(String id) {
 		MyDialogFx dialog = new MyDialogFx("Dependency Diagram", this);
-		DependencyEditorModel dependencyEditorModel = new DependencyEditorModel(model.getProperty(id), this.model.getDi().getDependencySpecHolder2(), model.getPropertyHolder(), model.getPropertyStore());
+		DependencyEditorModel dependencyEditorModel = new DependencyEditorModel(model.getProperty(id), this.model.getDi().getDependencySpecHolder(), model.getPropertyHolder(), model.getPropertyStore());
 		Pane node = new DependencyEditorUi(dependencyEditorModel);
 		dialog.showModal(node);
 		

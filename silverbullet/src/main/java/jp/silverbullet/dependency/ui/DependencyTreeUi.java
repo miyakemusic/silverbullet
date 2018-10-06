@@ -94,7 +94,7 @@ public class DependencyTreeUi extends AnchorPane {
 		DependencyProperty depProp = new DependencyProperty(property.getId(), 
 				DependencyTargetElement.Any, "", "", null);
 
-		Set<String> ids = spec.getTriggerIds();
+		Set<String> ids = spec.getTriggerIdsWithElement();
 		tree.setDependencyProperty(depProp);
 		int i = 0;
 		for (String id : ids) {

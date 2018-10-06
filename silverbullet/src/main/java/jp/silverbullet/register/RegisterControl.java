@@ -53,4 +53,20 @@ public class RegisterControl {
 			}
     	}
     }
+    
+    protected boolean readIoBoolean(long address, int bit) {
+        return registerAccess.readIoBoolean(address, bit);
+    }
+    protected int readIoInteger(long address, int bitFrom, int bitTo) {
+        return registerAccess.readIoInteger(address, bitFrom, bitTo);
+    }
+    protected void writeIo(long address, boolean value, int bit) {
+        registerAccess.writeIo(address, value, bit);
+    }
+    protected void writeIo(long address, int value, int bitFrom, int bitTo) {
+        registerAccess.writeIo(address, value, bitFrom, bitTo);
+    }
+    protected void writeIo(long address, float value, int bitFrom, int bitTo) {
+        registerAccess.writeIo(address, value, bitFrom, bitTo);
+    }
 }

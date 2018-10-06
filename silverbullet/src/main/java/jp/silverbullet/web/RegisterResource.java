@@ -111,6 +111,21 @@ public class RegisterResource {
 	}
 	
 	@GET
+	@Path("/addNew")
+	public String addNew() {
+		RegisterProperty registerProperty = StaticInstances.getBuilderModel().getRegisterProperty();
+		
+		if (registerProperty.getRegisters().size() == 0) {
+			
+		}
+		else {
+			
+		}
+		registerProperty.addRegister("New", "0x00", "New");
+		return "OK";
+	}
+	
+	@GET
 	@Path("/addRow")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String addRow(@QueryParam("row") final String row) {

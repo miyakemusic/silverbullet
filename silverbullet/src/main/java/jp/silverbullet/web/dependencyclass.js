@@ -2,9 +2,22 @@ class DependencyClass {
 	constructor(div) {
 	
 		$('#' + div).append('<div id="myDiagramDiv" style="width:1000px; height:300px; background-color: #DAE4E4;"></div>');
-		$('#' + div).append('<div id="panel" style="width:1000px; height:100px; background-color: lightBlue;"></div>');
+		$('#' + div).append('<div id="idListPanel" style="width:1000px; height:100px; background-color: lightBlue;"></div>');
 		$('#' + div).append('<div id="specSummary"></div>');
 				
+		$('#' + div).append('<button id="idCreateNewSpec">Create New Spec</button>');
+		$('#idCreateNewSpec').click(function() {
+			showIdSelectDialog(function(id, subid) {
+				$.ajax({
+				   type: "GET", 
+				   url: "http://" + window.location.host + "/rest/dependencySpec/createNew?id=" + id,
+				   success: function(msg){
+						updateMainTable();
+				   }
+				});		
+			});
+		});
+
 		$('#' + div).append('<div id="depDialog"></div>');
 		
 		$('#depDialog').append('<div id="targetId"></div>');
@@ -35,12 +48,14 @@ class DependencyClass {
 			'</div>');
 	
 		$('#' + div).append('<div id="idSelectorDialog">' +
-//				'<select id="propTypeDep"></select>' +
-//				'<div id="idTableDep"></div>' +
-//				'<div id="subTableDep"></div>' +
 				'<div id="idSelectorDialogContent"></div>' + 
 			'</div>');
+
+		$('#idSelectorDialog').dialog({
+			autoOpen:false,
+		});
 			
+		
 		$('#' + div).append('<div id="choiceDialog">' +
 			'<select id="choice"></select>' +
 		'</div>');
@@ -53,6 +68,9 @@ class DependencyClass {
 			'<div id="depList"></div>' +
 		'</div>');
 
+		
+		var idSelector = new IdEditorClass('idSelectorDialogContent');
+		
 		var diagram = new DependencyDiagram('myDiagramDiv');
 
 		var me = this;
@@ -112,34 +130,7 @@ class DependencyClass {
 			width: 800,
 //			height: 600
 		});		
-		
-		$('#idSelectorDialog').dialog({
-			autoOpen:false,
-			modal:true,
-			width: 800,
-			height: 600,
-			
-			  buttons: {
-			    "OK": function(){
-			      $(this).dialog('close');
-			      var id = me.idSelector.currentId;
-			      var subId = me.idSelector.selectionId;
-			      var text;
-			      if (subId != "") {
-			      	text = '$' + id + ".Value" + '==' + '%' + subId;
-			      }
-			      else {
-			      	text = '$' + id + '.Value';
-			      }
-			      $('#' + me.activeTextArea).val($('#' + me.activeTextArea).val() + text);
-			    }
-			    ,
-			    "Cancel": function(){
-			      $(this).dialog('close');
-			    }
-			  },
-		});
-		
+				
 		$('#valueBoolean').append($('<option>').html('true').val('true'));
 		$('#valueBoolean').append($('<option>').html('false').val('false'));
 		$('#valueBoolean').hide();
@@ -153,10 +144,42 @@ class DependencyClass {
 		});
 		
 		$("#idSelector").on('click', function(e) {
-			//me.manager = new IdTableManager('idTableDep', 'subTableDep', '', '', 'propTypeDep');
-			me.idSelector = new IdEditorClass('idSelectorDialogContent');
-			$('#idSelectorDialog').dialog("open");
+			showIdSelectDialog(function(id, subid) {
+				var text;
+				if (subid != "") {
+					text = '$' + id + ".Value" + '==' + '%' + subid;
+				}
+				else {
+					text = '$' + id + '.Value';
+				}
+				
+				$('#' + me.activeTextArea).val($('#' + me.activeTextArea).val() + text);			
+			});
 		});
+		
+		function showIdSelectDialog(result) {
+			$('#idSelectorDialog').dialog({
+				autoOpen:false,
+				modal:true,
+				width: 800,
+				height: 600,
+				
+				buttons: {
+					"OK": function(){
+						$(this).dialog('close');
+						var id = idSelector.currentId;
+						var subId = idSelector.selectionId;
+						result(id, subId);
+				    }
+				    ,
+				    "Cancel": function(){
+				      $(this).dialog('close');
+				    }
+				},
+			});
+			$('#idSelectorDialog').dialog("open");
+			idSelector.update();
+		}
 		
 		$("#choiceSelector").on('click', function(e) {
 			$('#choiceDialog').dialog("open");
@@ -184,7 +207,7 @@ class DependencyClass {
 		});
 		
 		function updateMainTable() {
-			
+			$('#idListPanel').empty();
 			$.ajax({
 			   type: "GET", 
 			   url: "http://" + window.location.host + "/rest/dependencySpec/ids",
@@ -193,7 +216,7 @@ class DependencyClass {
 						var row = msg.table[index];
 						var idPanel = row[1] + "_panel";
 
-						$('#panel').append('<div id = "' + idPanel + '" class="depPane">' + 
+						$('#idListPanel').append('<div id = "' + idPanel + '" class="depPane">' + 
 							'<input class="small" id="' + row[1] + '" type="button" value="' + row[1] + '"/>' + '<br>'+
 							row[2] + '<br>' + row[4] + '<br>' + row[3] + '</div>');						
 
@@ -219,11 +242,6 @@ class DependencyClass {
 						$(id).mousemove(function(e) {
 						});
 						
-						$(id).mouseover(function() {
-							if (me.fromId != "") {
-				//				$(this).css("background-color", "yellow");
-							}
-						});	
 					}
 			   }
 			});	
@@ -331,9 +349,9 @@ class DependencyClass {
 			   			
 			   			$('#' + tableId).css("table-layout","fixed");
 			   					   			
-			   			$('#' + tableId).append('<colgroup><col style="width:10%;"></colgroup>');
-						$('#' + tableId).append('<colgroup><col style="width:50%;"></colgroup>');
+			   			$('#' + tableId).append('<colgroup><col style="width:30%;"></colgroup>');
 						$('#' + tableId).append('<colgroup><col style="width:40%;"></colgroup>');
+						$('#' + tableId).append('<colgroup><col style="width:30%;"></colgroup>');
 			   			
 			   			$('#' + tableId + ' > thead').append('<tr><th>Element</th><th>Value</th><th>Condition</th></tr>');
 

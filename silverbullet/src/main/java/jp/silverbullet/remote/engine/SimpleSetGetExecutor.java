@@ -5,6 +5,7 @@ import java.util.List;
 import javafx.application.Platform;
 import jp.silverbullet.SvProperty;
 import jp.silverbullet.SvPropertyListener;
+import jp.silverbullet.dependency.DependencyExpression;
 import jp.silverbullet.dependency.RequestRejectedException;
 import jp.silverbullet.remote.SvTex;
 import jp.silverbullet.trash.speceditor2.DependencyFormula;
@@ -41,7 +42,7 @@ private String value;
 		
 		if (!tex.isQuery()) {
 			if (property.isActionProperty()) {
-				value = DependencyFormula.ANY;
+				value = DependencyExpression.AnyValue;
 			}
 			else if (property.isListProperty()) {
 				if (params.size() == 1) {

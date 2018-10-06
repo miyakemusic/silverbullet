@@ -21,14 +21,17 @@ import jp.silverbullet.StaticInstances;
 import jp.silverbullet.SvProperty;
 import jp.silverbullet.SvPropertyStore;
 import jp.silverbullet.dependency.DependencyBuilder;
+import jp.silverbullet.dependency.DependencyExpression;
 import jp.silverbullet.dependency.DependencyNode;
 import jp.silverbullet.dependency.DependencySpec;
 import jp.silverbullet.dependency.DependencySpecHolder;
 import jp.silverbullet.dependency.DependencySpecTableGenerator;
+import jp.silverbullet.dependency.DependencyTargetElement;
 import jp.silverbullet.dependency.ui.DependencyEditorModel;
 import jp.silverbullet.dependency.ui.DependencyTableRowData;
 import jp.silverbullet.dependency.ui.DependencyTargetConverter;
 import jp.silverbullet.property.PropertyHolder;
+import jp.silverbullet.trash.speceditor2.DependencyFormula;
 
 @Path("/dependencySpec")
 public class DependencySpecResource {
@@ -38,7 +41,7 @@ public class DependencySpecResource {
 	@Produces(MediaType.APPLICATION_JSON) 
 	public JsonTable getElements(@QueryParam("id") final String id) {
 		SvProperty prop = StaticInstances.getBuilderModel().getProperty(id);
-		DependencySpecHolder specHolder = StaticInstances.getBuilderModel().getDependencySpecHolder2();
+		DependencySpecHolder specHolder = StaticInstances.getBuilderModel().getDependencySpecHolder();
 		PropertyHolder porpHolder = StaticInstances.getBuilderModel().getPropertyHolder();
 		SvPropertyStore propHolder = StaticInstances.getBuilderModel().getPropertyStore();
 		DependencyEditorModel model = new DependencyEditorModel(prop, specHolder, porpHolder, propHolder);
@@ -62,9 +65,9 @@ public class DependencySpecResource {
 
 	private DependencyTableRowData[] createSpecTable(final String id) {
 		SvProperty property = StaticInstances.getBuilderModel().getProperty(id);
-		DependencySpec spec = StaticInstances.getBuilderModel().getDependencySpecHolder2().get(id);
+		DependencySpec spec = StaticInstances.getBuilderModel().getDependencySpecHolder().get(id);
 		
-		DependencyEditorModel dependencyEditorModel = new DependencyEditorModel(property, StaticInstances.getBuilderModel().getDependencySpecHolder2(),
+		DependencyEditorModel dependencyEditorModel = new DependencyEditorModel(property, StaticInstances.getBuilderModel().getDependencySpecHolder(),
 				StaticInstances.getBuilderModel().getPropertyHolder(), StaticInstances.getBuilderModel().getPropertyStore());
 		List<DependencyTableRowData> table = new DependencySpecTableGenerator(dependencyEditorModel).get(spec);
 
@@ -97,11 +100,21 @@ public class DependencySpecResource {
 		
 		DependencyTargetConverter converter = new DependencyTargetConverter(element);
 		
-		DependencySpec spec = StaticInstances.getBuilderModel().getDependencySpecHolder2().get(id);
+		DependencySpec spec = StaticInstances.getBuilderModel().getDependencySpecHolder().get(id);
 		try {
-			spec.add(converter.getElement(), converter.getSelectionId(), URLDecoder.decode(value, "UTF-8"), URLDecoder.decode(condition, "UTF-8"));
+			String value2 = URLDecoder.decode(value, "UTF-8");
+			String condition2 = URLDecoder.decode(condition, "UTF-8");
+		
+			spec.add(converter.getElement(), converter.getSelectionId(), value2, condition2);
+			if (spec.getDependencyExpressionHolder(converter.getElement(), converter.getSelectionId()).getExpressions().size() == 1) {
+				if (value2.equalsIgnoreCase(DependencyExpression.True)) {
+					spec.add(converter.getElement(), converter.getSelectionId(), DependencyExpression.False, DependencyExpression.ELSE);					
+				}
+				else if (value2.equalsIgnoreCase(DependencyExpression.False)) {
+					spec.add(converter.getElement(), converter.getSelectionId(), DependencyExpression.True, DependencyExpression.ELSE);
+				}
+			}
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return "OK";
@@ -114,7 +127,7 @@ public class DependencySpecResource {
 	public String removeSpec(@QueryParam("id") final String id, @QueryParam("element") final String element, 
 			@QueryParam("value") final String value) {
 		
-		DependencySpec spec = StaticInstances.getBuilderModel().getDependencySpecHolder2().get(id);
+		DependencySpec spec = StaticInstances.getBuilderModel().getDependencySpecHolder().get(id);
 		DependencyTargetConverter converter = new DependencyTargetConverter(element);
 		spec.remove(converter.getElement(), converter.getSelectionId(), value);
 //		spec.remove(DependencyTargetElement.valueOf(element), value);
@@ -125,7 +138,7 @@ public class DependencySpecResource {
 	@Path("/spec")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public DependencySpec getSpec(@QueryParam("id") final String id) {
-		DependencySpec spec = StaticInstances.getBuilderModel().getDependencySpecHolder2().get(id);
+		DependencySpec spec = StaticInstances.getBuilderModel().getDependencySpecHolder().get(id);
 		return spec;
 	}
 	
@@ -166,8 +179,18 @@ public class DependencySpecResource {
 		return createDependencyLink(id);
 	}
 
+	@GET
+	@Path("/createNew")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String createNew(@QueryParam("id") final String id) {
+		DependencySpecHolder holder = StaticInstances.getBuilderModel().getDependencySpecHolder();
+		DependencySpec spec = holder.get(id);
+//		spec.add(DependencyTargetElement.Enabled, DependencyExpression.True, "");
+		return "OK";
+	}
+	
 	private DepChainPair[] createDependencyLink(final String id) {
-		DependencySpecHolder holder = StaticInstances.getBuilderModel().getDependencySpecHolder2();
+		DependencySpecHolder holder = StaticInstances.getBuilderModel().getDependencySpecHolder();
 		DependencyBuilder builder = new DependencyBuilder(id, holder);
 
 		Set<DepChainPair> set = new LinkedHashSet<>();
@@ -180,11 +203,19 @@ public class DependencySpecResource {
 	@Path("/ids")
 	@Produces(MediaType.APPLICATION_JSON)
 	public JsonTable getIds() {
-		DependencySpecHolder holder = StaticInstances.getBuilderModel().getDependencySpecHolder2();
+		DependencySpecHolder holder = StaticInstances.getBuilderModel().getDependencySpecHolder();
 		
 		JsonTable ret = new JsonTable();
+		
+		Set<String> tmps = new HashSet<String>();
 		for (String id : holder.getSpecs().keySet()) {
-			SvProperty prop = StaticInstances.getBuilderModel().getProperty(id);
+			DependencySpec spec = holder.getSpecs().get(id);
+			tmps.addAll(spec.getTriggerIds());
+			tmps.add(id);
+		}
+		
+		for (String id2 : tmps) {
+			SvProperty prop = StaticInstances.getBuilderModel().getProperty(id2);
 			ret.addRow(Arrays.asList(prop.getTitle(), prop.getId(), prop.getType(), prop.getComment()));
 		}
 		

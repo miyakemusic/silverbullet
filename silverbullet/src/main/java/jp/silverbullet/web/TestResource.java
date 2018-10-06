@@ -9,6 +9,7 @@ import java.util.List;
 import javafx.application.Platform;
 import jp.silverbullet.StaticInstances;
 import jp.silverbullet.SvProperty;
+import jp.silverbullet.dependency.DependencyExpression;
 import jp.silverbullet.dependency.RequestRejectedException;
 import jp.silverbullet.javafx.BuilderFx;
 import jp.silverbullet.property.ListDetailElement;
@@ -68,7 +69,7 @@ public class TestResource {
 			@Override
 			public void run() {
 				try {
-					StaticInstances.getBuilderModel().getDependency().requestChange(id, DependencyFormula.ANY);
+					StaticInstances.getBuilderModel().getDependency().requestChange(id, DependencyExpression.AnyValue);
 				} catch (RequestRejectedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
