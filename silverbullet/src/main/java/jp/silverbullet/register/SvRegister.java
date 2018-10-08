@@ -67,7 +67,14 @@ public class SvRegister {
 	}
 
 	public int getDecAddress() {
-		return Integer.parseInt(this.getAddress().replace("0x", ""), 16);
+		String hexAddress = "";
+		if (this.getAddress().contains("-")) {
+			hexAddress = this.getAddress().split("-")[0];
+		}
+		else {
+			hexAddress = this.getAddress();
+		}
+		return Integer.parseInt(hexAddress.replace("0x", ""), 16);
 	}
 	
 	

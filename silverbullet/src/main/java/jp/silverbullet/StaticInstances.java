@@ -3,9 +3,11 @@ package jp.silverbullet;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.BitSet;
 
 import jp.silverbullet.property.editor.PropertyListModel;
 import jp.silverbullet.register.RegisterMapModel;
+import jp.silverbullet.register.SvSimulator;
 
 public class StaticInstances {
 	public static final String TMP_FOLDER = "sv_tmp";
@@ -14,6 +16,12 @@ public class StaticInstances {
 	private static PropertyListModel propertyListModel = null;
 	
 	private static String prevFilename = "";
+
+	public static SvSimulator getSimulator() {
+		return simulator;
+	}
+
+	private static SvSimulator simulator;
 	
 	public static BuilderModel getBuilderModel() {
 		return BuilderModelImpl.getInstance();
@@ -23,6 +31,19 @@ public class StaticInstances {
 		if (registerMapModel == null) {
 			registerMapModel = new RegisterMapModel(getBuilderModel());
 			BuilderModelImpl.getInstance().setDeviceDriver(registerMapModel);
+			
+			simulator = new SvSimulator() {
+				@Override
+				protected void writeIo(long address, BitSet data, BitSet mask) {
+
+				}
+
+				@Override
+				protected void writeBlock(long address, byte[] data) {
+
+				}
+			};
+			registerMapModel.addSimulator(simulator);
 		}
 		return registerMapModel;
 	}
@@ -45,6 +66,7 @@ public class StaticInstances {
 			Zip.unzip(filename, StaticInstances.TMP_FOLDER);
 			getBuilderModel().load(StaticInstances.TMP_FOLDER);
 		}
+		registerMapModel.update();
 		
 	}
 

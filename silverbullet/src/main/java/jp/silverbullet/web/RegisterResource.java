@@ -1,5 +1,6 @@
 package jp.silverbullet.web;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
@@ -14,17 +15,27 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import jp.silverbullet.StaticInstances;
+import jp.silverbullet.handlers.RegisterAccess;
 import jp.silverbullet.register.BitSetToIntConverter;
 import jp.silverbullet.register.RegisterBit;
 import jp.silverbullet.register.RegisterBit.ReadWriteType;
 import jp.silverbullet.register.RegisterProperty;
 import jp.silverbullet.register.SvRegister;
+import jp.silverbullet.register.SvSimulator;
 import jp.silverbullet.register.json.SvRegisterJson;
 import jp.silverbullet.register.json.SvRegisterJsonHolder;
 
 @Path("/register")
 public class RegisterResource {
 
+	@GET
+	@Path("/interrupt")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String interupt() {
+		StaticInstances.getRegisterMapModel().triggerInterrupt();
+		return "OK";
+	}
+	
 	@GET
 	@Path("/getRegisters")
 	@Produces(MediaType.APPLICATION_JSON) 
@@ -156,11 +167,46 @@ public class RegisterResource {
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String addBitRow(@QueryParam("row") final int row) {
 		SvRegister register = StaticInstances.getBuilderModel().getRegisterProperty().getRegisters().get(row);
-//		register.addBit("new", 0, 0, ReadWriteType.RW, "description", "definition");
 		register.addBit("new bit", ReadWriteType.RW, "new bit", "new bit");
 		return "OK";
 	}
 
+	@GET
+	@Path("/setCurrentValue")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String setCurrentValue(@QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName, @QueryParam("value") final String value) {
+		// This design is wrong
+		// This layer should be set by simulator layer. 
+		// should not set to RegisterMapModel
+		
+		SvRegister register  = StaticInstances.getBuilderModel().getRegisterProperty().getRegisterByName(regName);
+		RegisterBit bit = register.getBits().get(bitName);
+		
+		Map<Long, BitSet> map = StaticInstances.getRegisterMapModel().getMapValue();
+
+		String address = register.getAddress().replace("0x", "");
+		if (address.contains("-")) {
+			address = address.split("-")[0];
+		}
+		long intAddress = Integer.parseInt(address, 16);
+//		BitSet dataSet = map.get(intAddress);
+		BitSet dataSet = new BitSet();
+		
+		int iValue = Integer.valueOf(value);
+		BitSet tmp = BitSet.valueOf(new long[]{iValue});
+		BitSet mask = new BitSet();
+		for (int i = bit.getStartBit(); i <= bit.getEndBit(); i++) {
+			dataSet.set(i, tmp.get(i - bit.getStartBit()));
+			mask.set(i);
+		}
+		
+//		StaticInstances.getRegisterMapModel().up(intAddress, data, mask);
+		
+		StaticInstances.getSimulator().updateRegister(intAddress, dataSet, mask);
+		return "OK";
+	}
+	
+	
 	@GET
 	@Path("/getCurrentValue")
 	@Produces(MediaType.TEXT_PLAIN) 
@@ -193,9 +239,36 @@ public class RegisterResource {
 	@Path("setSimulator")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String setSimulator(@QueryParam("simulator") final String simulator) {
-		StaticInstances.getRegisterMapModel().setSimulatorClass(simulator);
-		StaticInstances.getRegisterMapModel().setSimulatorEnabled(true);
-		StaticInstances.getRegisterMapModel().update();
+		try {
+			Class<?> c = Class.forName(StaticInstances.getBuilderModel().getUserApplicationPath() + ".test." + simulator);	
+			SvSimulator object = (SvSimulator)c.getConstructor(RegisterAccess.class).newInstance(StaticInstances.getBuilderModel().getRegisterAccess());
+			StaticInstances.getRegisterMapModel().addSimulator(object);
+			StaticInstances.getRegisterMapModel().update();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+//		StaticInstances.getRegisterMapModel().setSimulatorClass(simulator);
+//		StaticInstances.getRegisterMapModel().setSimulatorEnabled(true);
+		
 		return "OK";
 	}
 }

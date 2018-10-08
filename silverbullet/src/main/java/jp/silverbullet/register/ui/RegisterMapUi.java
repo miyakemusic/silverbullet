@@ -215,7 +215,7 @@ public class RegisterMapUi extends VBox implements RegisterMapListener {
 		simulator.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
-				model.setSimulatorEnabled(simulator.isSelected());
+//				model.setSimulatorEnabled(simulator.isSelected());
 			}
 		});
 		hbox.getChildren().add(simulator);
@@ -226,7 +226,7 @@ public class RegisterMapUi extends VBox implements RegisterMapListener {
 		combo.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
-				model.setSimulatorClass(combo.getSelectionModel().getSelectedItem());
+//				model.setSimulatorClass(combo.getSelectionModel().getSelectedItem());
 			}
 		});
 		return hbox;

@@ -3,14 +3,52 @@ class RegisterClass {
 	constructor(div) {
 		$('#' + div).append('<button id="commit">Commit</button><select id="spec"><option value="spec">Specification</option><option value="map">Map</option></select>');
 		$('#' + div).append('<select id="idSimulator">Simulator</select><button id="simButton">Apply</button><button id="addNew">Add New</button>');
+		$('#' + div).append('<div><button id="idInterrupt">Interrupt</button></div>');
 		$('#' + div).append('<div id="mainDiv" class="regtable"></div>');
 		
 		this.changes = new Map();
+		this.bitInfo = new Map();
+		
 		var me = this;
+		var selectedValueId;
+		var changedValue;
+		
+		// dialog for changing value
+		var dialogId = div + 'changeValueDialog';
+		var editValue = div + 'editValue';
+		var idBitName = div + 'dialogBitName';
+		$('#' + div).append('<div id="' + dialogId + '"><label id="' + idBitName + '"></label><br><input type="text" id="' + editValue + '"></div>');
+		$('#' + dialogId).dialog({
+			  autoOpen: false,
+			  title: 'Edit',
+			  closeOnEscape: false,
+			  modal: true,
+			  buttons: {
+			    "OK": function(){
+			    	$(this).dialog('close');
+			    	changeBitValue(selectedValueId, $('#' + editValue).val());
+			    }
+			    ,
+			    "Cancel": function(){
+			    	$(this).dialog('close');
+			    }
+			  },
+			width: 400,
+			height: 300
+		});	
 		
 		initWebSocket();
 		getListAsync();
 		getSimulators();
+		
+		$('#idInterrupt').click(function() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/register/interrupt",
+			   success: function(msg){
+			   }
+			});			
+		});
 		
 		function getSimulators() {
 			$('#simButton').click(function() {
@@ -48,7 +86,7 @@ class RegisterClass {
 					var bitName = bit.name;
 					var bitVal = bit.val;
 					
-					var buttonId = '#' + createButtonId(regName, bitName);
+					var buttonId = '#' + getButtonId(regName, bitName);
 					$(buttonId).html(bitVal);
 					
 					$('.regButton').removeClass('changed');
@@ -78,7 +116,6 @@ class RegisterClass {
 			$('#regTable').append('<colgroup><col style="width:20%"></colgroup>');
 			$('#regTable').append('<colgroup><col style="width:55%"></colgroup>');
 			
-//			$("#regTable > thead").append('<tr><th style="width: 10px;">Address</th><th style="width: 10px;">Name</th><th>Description</th><th>Spec.</th></tr>');
 			$("#regTable > thead").append('<tr><th>Address</th><th>Name</th><th>Description</th><th>Spec.</th></tr>');
 			
 			var sign = '_';
@@ -328,12 +365,18 @@ class RegisterClass {
 					}
 					
 					if (startBit == j) {
-						var buttonId = createButtonId(register.name, bit.name);
+						var buttonId = getButtonId(register.name, bit.name);
+						var buttonInfoObj = new Object();
+						buttonInfoObj.address = register.address;
+						buttonInfoObj.register = register.name;
+						buttonInfoObj.bitName = bit.name;
+						buttonInfoObj.bit = bit.bit;
+						me.bitInfo.set(buttonId, buttonInfoObj);
+						
 						var name = '<div>' + bit.name + '</div><div><Button id="' + buttonId + '" class="regButton"></Button></div>';
 						getCurrentValue(buttonId, register.name, bit.name);
 						row += '<td colspan="' + colSpan + '">' + name + '</td>';
 						
-						//$('#' + bit.name).css({width: (colSpan * 20) + 'px'});
 						colSpan = 0;
 						if (register.bits.length-1 > currentBit) {
 							currentBit++;
@@ -342,9 +385,32 @@ class RegisterClass {
 					}
 				}
 				$('#' + mapTableId + ' > tbody').append('<tr>' + row + '</tr>');
+				
+				$('.regButton').click(function() {
+					var id = $(this).prop('id');
+					selectedValueId = id;
+					var text = $(this).text();
+					
+					var obj = me.bitInfo.get(id);
+					$('#'+ idBitName).html('Register: ' + obj.register + '(' + obj.address + ')' + '<br>' + 
+					'Bit: ' + obj.bitName + '[' + obj.bit + ']');
+					$('#' + editValue).val(text);
+					$('#' + dialogId).dialog('open');
+				});
 			}
 		}
+
 		
+		function changeBitValue(buttonId, value) {
+			var obj = me.bitInfo.get(buttonId);
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/register/setCurrentValue?regName=" + obj.register + '&bitName=' + obj.bitName + '&value=' + value,
+			   success: function(msg){
+//					$('#' + id).html(msg);
+			   }
+			});		
+		}		
 		function getCurrentValue(id, regName, bitName) {
 			$.ajax({
 			   type: "GET", 
@@ -372,12 +438,14 @@ class RegisterClass {
 			}
 		}
 	
-		function createButtonId(regName, bitName) {
+		function getButtonId(regName, bitName) {
 			return stripChar(regName) + stripChar(bitName);
 		}
 		
 		function stripChar(str) {
 			return str.replace(/\//g, '_').replace(/\)/g,"").replace(/\(/g,"").replace(/\]/g,"").replace(/\[/g,"").replace(/\./g,'').replace(/\:/g,'').replace(/ /g, '_');
 		}	
+		
+		
 	}
 }

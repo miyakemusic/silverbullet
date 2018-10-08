@@ -12,12 +12,16 @@ abstract public class SvSimulator {
 //	protected SimRegisterControl getRegControl() {
 //		return regControl;
 //	}
-	protected synchronized void triggerInterrupt() {
+	public synchronized void triggerInterrupt() {
 		this.deviceHandler.onInterrupt();
 	}
 	
-	protected void updateBlockData(long address, byte[] data) {
+	public void updateBlockData(long address, byte[] data) {
 		this.deviceHandler.onUpdateBlockData(address, data);
+	}
+	
+	public void updateRegister(long address, BitSet data, BitSet mask) {
+		this.deviceHandler.onUpdateRegister(address, data, mask);
 	}
 	
 	protected int getValue(int index, BitSet value, BitSet mask) {

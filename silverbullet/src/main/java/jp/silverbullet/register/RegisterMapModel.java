@@ -30,9 +30,9 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 	private BuilderModel builderModel;
 	private Set<RegisterMapListener> listeners = new HashSet<>();
 	private Set<InterruptHandler> interruptHandlers = new HashSet<>();
-	private SvSimulator currentDevice;
-	private SvSimulator simulator;
-	private SvSimulator nullSimulator = new NullSimulator();
+//	private SvSimulator currentDevice;
+	private List<SvSimulator> simulators = new ArrayList<>();
+//	private SvSimulator nullSimulator = new NullSimulator();
 	private Map<Long, byte[]> blockData = new HashMap<>();
 	private Map<Long, String> blockNameMap = new HashMap<>();
 	private RegisterMonitor monitor = new NullMonitor();
@@ -46,7 +46,7 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 	
 	public RegisterMapModel(BuilderModel builderModel) {
 		this.builderModel = builderModel;
-		this.currentDevice = nullSimulator;
+//		this.currentDevice = nullSimulator;
 		update();
 	}
 
@@ -54,12 +54,12 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 		this.monitor = monitor;
 	}
 	
-	public void setSimulator(SvSimulator simulator) {
-		this.simulator = simulator;
-		this.simulator.setDevice(this);
-		if (this.currentDevice != this.nullSimulator) {
-			this.currentDevice = this.simulator;
-		}
+	public void addSimulator(SvSimulator simulator) {
+		simulator.setDevice(this);
+		this.simulators.add(simulator);
+//		if (this.currentDevice != this.nullSimulator) {
+//			this.currentDevice = this.simulator;
+//		}
 		this.monitor.setSimulator(simulator.getClass().getSimpleName().replace(".class", ""));
 	}
 	
@@ -134,7 +134,11 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 			return -1;
 		}
 		updateBits(address, data, mask);
-		currentDevice.writeIo(address, data, mask);
+		
+		for (SvSimulator simulator : this.simulators) {
+			simulator.writeIo(address, data, mask);
+		}
+		
 		
 		return 0;
 	}
@@ -186,14 +190,14 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 		
 	public String getValue(int regIndex, int block) {
 		long address = this.getAddAt(regIndex);
-		if ((this.currentDevice == this.nullSimulator) && (this.blockNameMap.get(address) != null)) {
-			return "File:" + blockNameMap.get(address);
-		}
-		else {
+//		if ((this.currentDevice == this.nullSimulator) && (this.blockNameMap.get(address) != null)) {
+//			return "File:" + blockNameMap.get(address);
+//		}
+//		else {
 			BitSet current = getCurrentValue(regIndex);
 			String ret = getCurrentValue(getBits(regIndex, block), current);
 			return ret;
-		}
+//		}
 	}
 
 	protected String getCurrentValue(String bits, BitSet current) {
@@ -335,46 +339,15 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 		}
 	}
 
-	public void setSimulatorEnabled(boolean enabled) {
-		if (enabled) {
-			this.currentDevice = this.simulator;
-		}
-		else {
-			this.currentDevice = this.nullSimulator ;
-		}
-		this.monitor.setSimulatorEnabled(enabled);
-	}
-
-	public void setSimulatorClass(String simClass) {
-		try {
-			Class<?> c = Class.forName(builderModel.getUserApplicationPath() + ".test." + simClass);
-			
-			SvSimulator object = (SvSimulator)c.getConstructor(RegisterAccess.class).newInstance(builderModel.getRegisterAccess());
-//			SvSimulator object = (SvSimulator)c.newInstance();
-			this.setSimulator(object);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+//	public void setSimulatorEnabled(boolean enabled) {
+//		if (enabled) {
+//			this.currentDevice = this.simulator;
+//		}
+//		else {
+//			this.currentDevice = this.nullSimulator ;
+//		}
+//		this.monitor.setSimulatorEnabled(enabled);
+//	}
 
 	public List<String> getSimulatorClasses() {
 		String p = this.getClass().getResource(this.getClass().getSimpleName() + ".class").toExternalForm();
