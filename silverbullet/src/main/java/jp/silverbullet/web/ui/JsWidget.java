@@ -23,6 +23,7 @@ public class JsWidget {
 	public static final String GUI_DIALOG = "GUI_DIALOG";
 	public static final String TAB = "TAB";
 	public static final String LABEL = "LABEL";
+	public static final String MESSAGEBOX = "MESSAGEBOX";
 	
 	private String id = "";
 	private String presentation = "";

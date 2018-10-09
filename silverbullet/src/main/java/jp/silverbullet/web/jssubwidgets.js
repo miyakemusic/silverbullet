@@ -11,7 +11,7 @@ class JsRadio {
 	
 	updateValue2(property) {
 		$('#' + this.baseId + ' input').prop('checked', false).checkboxradio('refresh');
-		$('#' + property.currentValue + '-' + 'radio' + this.baseId).prop('checked', true).checkboxradio('refresh');
+		$('#' + property.currentSelectionId + '-' + 'radio' + this.baseId).prop('checked', true).checkboxradio('refresh');
 	}
 	
 	updateLayout(property) {
@@ -44,6 +44,10 @@ class JsRadio {
 		});
 		this.updateValue2(property);
 	}
+	
+	setDisabled(disabled) {
+		$('#' + this.baseId + " input").checkboxradio( "option", "disabled", disabled );
+	}
 }
 
 class JsComboBox {
@@ -59,7 +63,7 @@ class JsComboBox {
 	}
 	
 	updateValue2(property) {
-		$('#' + this.comboId).val(property.currentValue).selectmenu('refresh');
+		$('#' + this.comboId).val(property.currentSelectionId).selectmenu('refresh');
 		$('#' + this.unitId).text(property.unit);
 	}
 	
@@ -87,6 +91,10 @@ class JsComboBox {
 		} );
 
 		this.updateValue2(property);
+	}
+	
+	setDisabled(disabled) {
+		$('#' + this.comboId).selectmenu( "option", "disabled", disabled );
 	}
 }
 
@@ -120,6 +128,10 @@ class JsTextInput {
 		
 		this.updateValue(property);	
 	}
+	
+	setDisabled(disabled) {
+		$('#' + this.baseId + ' > ').prop('disabled', disabled);
+	}
 }
 
 class JsLabel {
@@ -145,6 +157,40 @@ class JsLabel {
 	}
 }
 
+class JsMessageBox {
+	constructor(baseId, info, change) {
+		this.baseId = baseId;
+		this.change = change;
+	}
+	
+	updateValue(property) {
+		$('#' + this.contentId).text(property.currentSelectionText);
+		$('#' + this.dialogId).dialog('open');
+	}
+	
+	updateLayout(property) {
+		this.dialogId = 'dialog' + this.baseId;
+		this.contentId = 'dialogcontent' + this.baseId;
+		$('#' + this.baseId).append('<label>Message (' + property.id + ')</label>');
+		$('#' + this.baseId).append('<div id="' + this.dialogId + '"><div id="' + this.contentId + '"></div></div>');
+		$('#' + this.dialogId).dialog({
+			  autoOpen: false,
+			  title: property.title,
+			  closeOnEscape: false,
+			  modal: false,
+			  buttons: {
+			    "OK": function(){
+			      $(this).dialog('close');
+			    }
+			  },
+			width: 400,
+			height: 300
+		});	
+		
+		this.updateValue(property);
+	}
+}
+
 class JsToggleButton {
 	constructor(baseId, info, change) {
 		this.baseId = baseId;
@@ -156,8 +202,7 @@ class JsToggleButton {
 		$('#' + this.titleId).text(property.title);
 		var nextTitle;
 		for (var i = 0; i < property.elements.length; i++) {
-			if (property.elements[i].id == property.currentValue) {
-//				$('#' + this.buttonId).text(property.elements[i].title);
+			if (property.elements[i].id == property.currentSelectionId) {
 				if (i < property.elements.length-1) {	
 					this.nextId = property.elements[i+1].id;
 					nextTitle = property.elements[i+1].title;
@@ -193,6 +238,10 @@ class JsToggleButton {
 		
 		this.updateValue(property);
 	}
+	
+	setDisabled(disabled) {
+		$('#' + this.baseId + ' > ').prop('disabled', disabled);
+	}
 }
 class JsActionButton {
 	constructor(baseId, change) {
@@ -211,6 +260,10 @@ class JsActionButton {
 		$('#' + this.baseId).append(html);
 		$('#' + this.buttonId).button();
 		this.updateValue(property);
+	}
+	
+	setDisabled(disabled) {
+		$('#' + this.baseId + ' > ').prop('disabled', disabled);
 	}
 }
 
@@ -233,6 +286,10 @@ class JsCheckBox {
 		$('#' + this.baseId).append(html);
 		$('#' + this.checkId).checkboxradio();
 		this.updateValue(property);
+	}
+	
+	setDisabled(disabled) {
+		$('#' + this.baseId + ' > ').prop('disabled', disabled);
 	}
 }
 

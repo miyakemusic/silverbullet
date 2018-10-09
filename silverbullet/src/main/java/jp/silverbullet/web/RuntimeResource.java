@@ -15,7 +15,6 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import javafx.application.Platform;
 import jp.silverbullet.Sequencer;
 import jp.silverbullet.StaticInstances;
 import jp.silverbullet.SvProperty;
@@ -35,9 +34,6 @@ public class RuntimeResource {
 	public JsProperty getProperty(@QueryParam("id") String id, @QueryParam("ext") String ext) {
 		SvProperty property = StaticInstances.getBuilderModel().getProperty(id);
 		JsProperty ret = convertProperty(property, ext);
-		if (property.getType().equals(SvProperty.CHART_PROPERTY)) {
-			
-		}
 		return ret;
 	}
 	
@@ -80,9 +76,15 @@ public class RuntimeResource {
 				}
 			}
 		}
+		else if (property.isListProperty()) {
+			ret.setCurrentValue(property.getSelectedListTitle());
+			ret.setCurrentSelectionId(property.getCurrentValue());
+		}
 		else {
 			ret.setCurrentValue(property.getCurrentValue());
 		}
+		
+
 		return ret;
 	}
 	
@@ -245,7 +247,7 @@ public class RuntimeResource {
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<String> getAllWidgeTypes() {
 		return Arrays.asList(JsWidget.TOGGLEBUTTON, JsWidget.ACTIONBUTTON, JsWidget.COMBOBOX, JsWidget.RADIOBUTTON, JsWidget.TEXTFIELD,
-				JsWidget.CHART, JsWidget.CHECKBOX, JsWidget.GUI_DIALOG, JsWidget.PANEL, JsWidget.TAB, JsWidget.LABEL);
+				JsWidget.CHART, JsWidget.CHECKBOX, JsWidget.GUI_DIALOG, JsWidget.PANEL, JsWidget.TAB, JsWidget.LABEL, JsWidget.MESSAGEBOX);
 	}
 	
 	@GET

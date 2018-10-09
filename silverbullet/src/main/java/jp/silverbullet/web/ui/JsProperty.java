@@ -12,6 +12,7 @@ public class JsProperty {
 	private List<ListDetailElement> elements = new ArrayList<>();
 	private String currentValue;
 	private boolean enabled;
+	private String currentSelectionId;
 	
 	public boolean isEnabled() {
 		return enabled;
@@ -48,5 +49,12 @@ public class JsProperty {
 	}
 	public void setCurrentValue(String currentValue) {
 		this.currentValue = currentValue;
-	}	
+	}
+	public String getCurrentSelectionId() {
+		return currentSelectionId;
+	}
+	public void setCurrentSelectionId(String currentSelectionId) {
+		this.currentSelectionId = currentSelectionId;
+	}
+	
 }

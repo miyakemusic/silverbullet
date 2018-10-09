@@ -136,7 +136,11 @@ class JsWidget {
 				me.requestChange(me.info.id, id, dependency);
 			});
 		}	
-				
+		else if (this.info.widgetType == 'MESSAGEBOX') {
+			this.subWidget = new JsMessageBox(this.baseId, this.info, function(id) {
+				me.requestChange(me.info.id, id, dependency);
+			});
+		}					
 		$('#' + this.baseId).addClass('base');
 		if (this.info.styleClass != null) {
 			$('#' + this.baseId).addClass(this.info.styleClass);
@@ -200,8 +204,11 @@ class JsWidget {
 			   url: "http://" + window.location.host + "/rest/runtime/getProperty?id=" + id,
 			   success: function(property){
 			   		if (me.subWidget != null) {
-			   			$('#' + me.baseId + ' > ').prop('disabled', !property.enabled);
+			   			//
+			   			
 			   			me.subWidget.updateValue(property);
+			   			me.subWidget.setDisabled(!property.enabled);
+//			   			$('#' + me.baseId + ' > ').prop('disabled', !property.enabled);
 			   		}
 			   }
 			});
