@@ -354,6 +354,9 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 		String pp = p.replace(this.getClass().getName().replace(".", "/") + ".class", "").replace("file:/", "");
 		pp += builderModel.getUserApplicationPath().replaceAll("\\.", "/") + "/test";
 		//String p = builderModel.getUserApplicationPath().
+		if (System.getProperty("os.name").toLowerCase().equals("linux")) {
+			pp = "/" + pp;
+		}
 		List<String> ret = new ArrayList<String>();
 		for (File file : new File(pp).listFiles()) {
 			String name =file.getName().replace(".class", "");
