@@ -204,11 +204,8 @@ class JsWidget {
 			   url: "http://" + window.location.host + "/rest/runtime/getProperty?id=" + id,
 			   success: function(property){
 			   		if (me.subWidget != null) {
-			   			//
-			   			
 			   			me.subWidget.updateValue(property);
 			   			me.subWidget.setDisabled(!property.enabled);
-//			   			$('#' + me.baseId + ' > ').prop('disabled', !property.enabled);
 			   		}
 			   }
 			});
@@ -259,19 +256,14 @@ class JsWidget {
 	    var me = this;
 	    if (this.info.widgetType == 'PANEL' || this.info.widgetType == 'TABLE' || this.info.widgetType == 'CHART'
 	    	|| this.info.widgetType == 'TAB') {	
-	    	if (this.info.widgetType == 'PANEL' || this.info.widgetType == 'TAB') {		
+	    	if (this.info.widgetType == 'PANEL' || this.info.widgetType == 'TAB') {	
+	    		
 				$('#' + this.baseId).draggable({
 					start : function (event , ui){
-						//console.log("start event start" );
-						//console.log(event , ui);
 					} ,
 					drag : function (event , ui) {
-						//console.log("drag event start" );
-						//console.log(event , ui);
-										} ,
+					} ,
 					stop : function (event , ui){
-						//console.log("stop event start" );
-						//console.log(event , ui);
 						me.setPosition(event);
 					} 
 				});
@@ -303,6 +295,10 @@ class JsWidget {
 		else {
 			$('.base').removeClass('selected');
 			$('#' + this.baseId).off('click');
+		}
+		
+		if (this.subWidget != null) {
+			this.subWidget.setEditable(enabled);
 		}
 	}
 }

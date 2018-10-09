@@ -1,5 +1,19 @@
-class JsRadio {
+class JsSubWidget {
+	constructor(baseId) {
+		this.baseId = baseId;
+	}
+	
+	setEditable(editable) {
+	}
+	
+	setDisabled(disabled) {
+		$('#' + this.baseId + ' > ').prop('disabled', disabled);
+	}
+}
+
+class JsRadio extends JsSubWidget {
 	constructor(baseId, change) {
+		super(baseId);
 		this.baseId = baseId;
 		this.change = change;
 	}
@@ -50,8 +64,9 @@ class JsRadio {
 	}
 }
 
-class JsComboBox {
+class JsComboBox extends JsSubWidget {
 	constructor(baseId, change) {
+		super(baseId);
 		this.baseId = baseId;
 		this.change = change;
 		this.unitId = 'unit' + this.baseId;
@@ -98,8 +113,9 @@ class JsComboBox {
 	}
 }
 
-class JsTextInput {
+class JsTextInput extends JsSubWidget {
 	constructor(baseId, change) {
+		super(baseId);
 		this.baseId = baseId;
 		this.change = change;
 	}
@@ -128,14 +144,11 @@ class JsTextInput {
 		
 		this.updateValue(property);	
 	}
-	
-	setDisabled(disabled) {
-		$('#' + this.baseId + ' > ').prop('disabled', disabled);
-	}
 }
 
-class JsLabel {
+class JsLabel extends JsSubWidget {
 	constructor(baseId, info, change) {
+		super(baseId);
 		this.baseId = baseId;
 		this.change = change;
 	}
@@ -157,8 +170,9 @@ class JsLabel {
 	}
 }
 
-class JsMessageBox {
+class JsMessageBox extends JsSubWidget {
 	constructor(baseId, info, change) {
+		super(baseId);
 		this.baseId = baseId;
 		this.change = change;
 	}
@@ -171,7 +185,9 @@ class JsMessageBox {
 	updateLayout(property) {
 		this.dialogId = 'dialog' + this.baseId;
 		this.contentId = 'dialogcontent' + this.baseId;
-		$('#' + this.baseId).append('<label>Message (' + property.id + ')</label>');
+		this.tmpId = 'tmp' + this.baseId;
+		
+		$('#' + this.baseId).append('<label id="' + this.tmpId + '">Message (' + property.id + ')</label>');
 		$('#' + this.baseId).append('<div id="' + this.dialogId + '"><div id="' + this.contentId + '"></div></div>');
 		$('#' + this.dialogId).dialog({
 			  autoOpen: false,
@@ -189,10 +205,20 @@ class JsMessageBox {
 		
 		this.updateValue(property);
 	}
+	
+	setEditable(enabled) {
+		if (enabled == 'enabled') {
+			$('#' + this.tmpId).show();
+		}
+		else {
+			$('#' + this.tmpId).hide();
+		}
+	}
 }
 
-class JsToggleButton {
+class JsToggleButton extends JsSubWidget {
 	constructor(baseId, info, change) {
+		super(baseId);
 		this.baseId = baseId;
 		this.change = change;
 		this.custom = info.custom;
@@ -243,8 +269,9 @@ class JsToggleButton {
 		$('#' + this.baseId + ' > ').prop('disabled', disabled);
 	}
 }
-class JsActionButton {
+class JsActionButton extends JsSubWidget {
 	constructor(baseId, change) {
+		super(baseId);
 		this.baseId = baseId;
 		this.change = change;
 	}
@@ -267,8 +294,9 @@ class JsActionButton {
 	}
 }
 
-class JsCheckBox {
+class JsCheckBox extends JsSubWidget {
 	constructor(baseId, change) {
+		super(baseId);
 		this.baseId = baseId;
 		this.change = change;
 	}
@@ -293,8 +321,9 @@ class JsCheckBox {
 	}
 }
 
-class JsChart {
+class JsChart extends JsSubWidget {
 	constructor(baseId, info, change) {
+		super(baseId);
 		this.baseId = baseId;
 		this.change = change;
 		this.info = info;
@@ -363,8 +392,9 @@ class JsChart {
 	}
 }
 
-class JsTable {
+class JsTable extends JsSubWidget {
 	constructor(baseId, change) {
+		super(baseId);
 		this.baseId = baseId;
 		this.change = change;
 		this.headers = [];
@@ -425,8 +455,9 @@ class JsTable {
 	}
 }
 
-class JsDialogButton {
+class JsDialogButton extends JsSubWidget {
 	constructor(baseId, info, change) {
+		super(baseId);
 		this.baseId = baseId;
 		this.buttonId = 'button' + this.baseId;
 		this.dialogId = 'dialog' + this.baseId;
@@ -469,8 +500,9 @@ class JsDialogButton {
 	}
 }
 
-class JsTabPanel {
+class JsTabPanel extends JsSubWidget {
 	constructor(baseId, info, change) {
+		super(baseId);
 		this.baseId = baseId;
 		this.change = change;
 		this.info = info;
