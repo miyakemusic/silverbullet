@@ -25,8 +25,8 @@ import jp.silverbullet.web.ui.JsProperty;
 import jp.silverbullet.web.ui.JsWidget;
 import jp.silverbullet.web.ui.UiLayout;
 
-@Path("/runtime")
-public class RuntimeResource {
+@Path("/design")
+public class DesignResource {
 
 	@GET
 	@Path("/getProperty")
@@ -143,6 +143,10 @@ public class RuntimeResource {
 			return UiLayout.getInstance().getRoot();
 		}
 		else {
+//			if (root.contains("-")) {
+//				String[] tmp = root.split("-");
+//				root = tmp[tmp.length-1];
+//			}
 			return UiLayout.getInstance().getSubTree(root);
 		}
 	}

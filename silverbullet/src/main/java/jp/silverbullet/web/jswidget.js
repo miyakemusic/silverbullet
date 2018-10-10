@@ -42,7 +42,7 @@ class JsWidget {
 		var o = $('#' + this.baseId);
 		$.ajax({
 		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/runtime/move?div="+ me.getRealBaseId() + "&x=" + x + "&y=" + y,
+		   url: "http://" + window.location.host + "/rest/design/move?div="+ me.getRealBaseId() + "&x=" + x + "&y=" + y,
 		   success: function(msg){
 
 		   }
@@ -55,7 +55,7 @@ class JsWidget {
 		var me = this;
 		$.ajax({
 		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/runtime/resize?div=" + me.getRealBaseId() + "&width=" + width + "&height=" +height,
+		   url: "http://" + window.location.host + "/rest/design/resize?div=" + me.getRealBaseId() + "&width=" + width + "&height=" +height,
 		   success: function(msg){
 
 		   }
@@ -201,7 +201,7 @@ class JsWidget {
 		else {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/runtime/getProperty?id=" + id,
+			   url: "http://" + window.location.host + "/rest/design/getProperty?id=" + id,
 			   success: function(property){
 			   		if (me.subWidget != null) {
 			   			me.subWidget.updateValue(property);
@@ -230,7 +230,7 @@ class JsWidget {
 		else {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/runtime/getProperty?id=" + id,
+			   url: "http://" + window.location.host + "/rest/design/getProperty?id=" + id,
 			   success: function(property){
 			   		if (me.subWidget != null) {
 			   			me.subWidget.updateLayout(property);
@@ -244,7 +244,7 @@ class JsWidget {
 	requestChange(id, value, dependency) {
 		$.ajax({
 		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/runtime/setValue?id="+id + "&value=" + value,
+		   url: "http://" + window.location.host + "/rest/design/setValue?id="+id + "&value=" + value,
 		   success: function(msg){
 				dependency(msg);
 		   }

@@ -29,6 +29,7 @@ class JsRadio extends JsSubWidget {
 	}
 	
 	updateLayout(property) {
+		$('#' + this.baseId).empty();
 		var html = '<fieldset>';
 		html += '<legend>' + property.title + '</legend>';
 		this.radiosetId = 'radioset' + this.baseId;
@@ -83,6 +84,7 @@ class JsComboBox extends JsSubWidget {
 	}
 	
 	updateLayout(property) {
+		$('#' + this.baseId).empty();
 		this.titleId = 'title' + this.baseId;
 		$('#' + this.baseId).append('<span class="title" id=' + this.titleId + '></span>');
 		$('#' + this.titleId).text(property.title);
@@ -127,6 +129,7 @@ class JsTextInput extends JsSubWidget {
 	}
 	
 	updateLayout(property) {
+		$('#' + this.baseId).empty();
 		this.titleId = 'title' + this.baseId;
 		this.unitId = 'unit' + this.baseId;
 		this.textId = 'text' + this.baseId;
@@ -160,6 +163,7 @@ class JsLabel extends JsSubWidget {
 	}
 	
 	updateLayout(property) {
+		$('#' + this.baseId).empty();
 		this.titleId = 'title' + this.baseId;
 		this.valueId = 'value' + this.baseId;
 		this.unitId = 'unit' + this.baseId;
@@ -175,17 +179,19 @@ class JsMessageBox extends JsSubWidget {
 		super(baseId);
 		this.baseId = baseId;
 		this.change = change;
+		this.tmpId = 'tmp' + this.baseId;
 	}
 	
 	updateValue(property) {
-		$('#' + this.contentId).text(property.currentSelectionText);
+		$('#' + this.contentId).text(property.currentValue);
 		$('#' + this.dialogId).dialog('open');
 	}
 	
 	updateLayout(property) {
+		$('#' + this.baseId).empty();
 		this.dialogId = 'dialog' + this.baseId;
 		this.contentId = 'dialogcontent' + this.baseId;
-		this.tmpId = 'tmp' + this.baseId;
+		
 		
 		$('#' + this.baseId).append('<label id="' + this.tmpId + '">Message (' + property.id + ')</label>');
 		$('#' + this.baseId).append('<div id="' + this.dialogId + '"><div id="' + this.contentId + '"></div></div>');
@@ -202,12 +208,14 @@ class JsMessageBox extends JsSubWidget {
 			width: 400,
 			height: 300
 		});	
-		
+//		$('#' + this.tmpId).hide();
 		this.updateValue(property);
+		this.setEditable(editable);
 	}
 	
 	setEditable(enabled) {
-		if (enabled == 'enabled') {
+		this.editable = enabled;
+		if (enabled == 'enable') {
 			$('#' + this.tmpId).show();
 		}
 		else {
@@ -245,6 +253,7 @@ class JsToggleButton extends JsSubWidget {
 	}
 	
 	updateLayout(property) {
+		$('#' + this.baseId).empty();
 		this.buttonId = 'button' + this.baseId;
 		this.titleId = 'title' + this.baseId;
 		var html;
@@ -281,6 +290,7 @@ class JsActionButton extends JsSubWidget {
 	}
 	
 	updateLayout(property) {
+		$('#' + this.baseId).empty();
 		this.buttonId = 'button' + this.baseId;
 		this.titleId = 'title' + this.baseId;
 		var html = '<button id="' + this.buttonId + '"></button>';
@@ -307,6 +317,7 @@ class JsCheckBox extends JsSubWidget {
 	}
 	
 	updateLayout(property) {
+		$('#' + this.baseId).empty();
 		this.checkId = 'check' + this.baseId;
 		this.titleId = 'title' + this.baseId;
 		
@@ -334,7 +345,7 @@ class JsChart extends JsSubWidget {
 		if (property.currentValue == 'REQUEST_AGAIN') {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/runtime/getProperty?id=" + me.info.id + '&ext=501',
+			   url: "http://" + window.location.host + "/rest/design/getProperty?id=" + me.info.id + '&ext=501',
 			   success: function(property){
 			   		if (property.currentValue != null) {
 						me.updateChart(property);
@@ -345,6 +356,7 @@ class JsChart extends JsSubWidget {
 	}
 	
 	updateLayout(property) {
+		$('#' + this.baseId).empty();
 		var html = '<canvas id="chart" height="200" width="400"></canvas>';
 		$('#' + this.baseId).append(html);
 		
@@ -421,6 +433,7 @@ class JsTable extends JsSubWidget {
 	}
 	
 	updateLayout(property) {
+		$('#' + this.baseId).empty();
 		this.tableid = 'table'+this.baseId;
 		$('#' + this.baseId).append('<div id="' + this.tableid + '"></div>');
 //		$('#' + this.baseId).css('margin', '0px');
@@ -469,6 +482,7 @@ class JsDialogButton extends JsSubWidget {
 	}
 		
 	updateLayout(info) {
+		$('#' + this.baseId).empty();
 		var root = info.custom["target_gui_id"];
 		$('#' + this.baseId).append('<Button id="' + this.buttonId + '">' + info.custom['caption'] + '</Button>');
 		$('#' + this.buttonId).button();
@@ -552,6 +566,7 @@ class JsTabPanel extends JsSubWidget {
 	}
 	
 	updateLayout(property) {
+		$('#' + this.baseId).empty();
 		for (var index = 0 ; index < property.elements.length; index++) {
 			var titleId = this.tabTitleMap[property.elements[index].id];
 			if (titleId != undefined) {

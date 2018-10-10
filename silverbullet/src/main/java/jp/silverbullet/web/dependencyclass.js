@@ -120,7 +120,12 @@ class DependencyClass {
 			  buttons: {
 			    "OK": function(){
 			      $(this).dialog('close');
-			      addDepSpec();
+			      if (me.nowEditing) {
+			      	editDepSpec();
+			      }
+			      else {
+			      	addDepSpec();
+			      }
 			    }
 			    ,
 			    "Cancel": function(){
@@ -193,10 +198,19 @@ class DependencyClass {
 		$("#addSpec").on('click', function(e) {
 			$('#valueText').val('');
 			$('#conditionText').val('');
+			
+			me.nowEditing = false;
+			
 			$('#depDialog').dialog("open");
 		});
 		
 		$("#editSpec").on('click', function(e) {
+			me.prevValue = me.currentValue;
+			me.prevCondition = me.currentCondition;
+			me.prevConfirmation = me.currentConfirmation;
+			
+			me.nowEditing = true;
+			
 			$('#valueText').val(me.currentValue);
 			$('#conditionText').val(me.currentCondition);
 			$('#depDialog').dialog("open");
@@ -260,14 +274,14 @@ class DependencyClass {
 			   			$('#targetIdElement').append($('<option>').html(msg.table[i][0]).val(msg.table[i][0]));
 			   		}
 										
-					me.depList = new DependencySpec(to, 'depList', function(element, value, condition) {
+					me.depList = new DependencySpec(to, 'depList', function(element, value, condition, confirmation) {
 						me.currentElement = element;
 						me.currentValue = value;
 						me.currentCondition = condition;
+						me.currentConfirmation = confirmation;
 					});
 					$('#triggerId').text(from);
 					$('#id').text(to);
-//					$('#depListDialog').dialog('option', 'title', to);
 					$('#depListDialog').dialog("open");	
 			   }
 			});
@@ -287,6 +301,33 @@ class DependencyClass {
 		
 		updateMainTable();
 					
+
+		
+		function addDepSpecTmp() {
+			var element = $('#targetIdElement').val();
+			var value = $('#valueText').val();
+			var condition= $('#conditionText').val();
+			
+			me.depList.add(element, value, condition);
+		}
+				
+		function editDepSpec() {
+			var id = $('#targetId').text();
+			var element = $('#targetIdElement').val();
+			var value = $('#valueText').val();
+			var condition= $('#conditionText').val();
+			
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/dependencySpec/editSpec?id=" + id + "&element=" + element + 
+			   	"&prevValue=" + encode(me.prevValue) + "&prevCondition=" + encode(me.prevCondition) + "&prevConfirmation=" + me.prevConfirmation + 
+			   	"&value=" + encode(value) + "&condition=" + encode(condition) + "&confirmation=" + "",
+			   success: function(msg){
+				me.depList.update();
+			   }
+			});
+		}
+		
 		function addDepSpec() {
 			var id = $('#targetId').text();
 			var element = $('#targetIdElement').val();
@@ -311,9 +352,10 @@ class DependencyClass {
 			var id = $('#targetId').text();
 			var element = me.currentElement;
 			var value = me.currentValue;
+			var condition = me.currentCondition;
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/dependencySpec/removeSpec?id=" + id + "&element=" + element + "&value=" + encode(value),
+			   url: "http://" + window.location.host + "/rest/dependencySpec/removeSpec?id=" + id + "&element=" + element + "&value=" + encode(value) + "&condition=" + encode(condition),
 			   success: function(msg){
 					me.depList.update();
 			   }

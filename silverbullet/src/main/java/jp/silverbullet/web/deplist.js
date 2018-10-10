@@ -1,90 +1,74 @@
 class DependencySpec {	
 		
-	constructor(id, table, callback) {
-		this.createTable(id, table, callback);
-		this.createTable(id, table, callback);
+	constructor(id, base, callback) {
+		this.id = id;
+		this.table = base + 'depTable';
+		this.callback = callback;
+		
+		$('#' + base).append('<div id="' + this.table + '"></div>');
+		this.update();
 	}
 	
 	update() {
-		this.createTable(this.id, this.table, this.callback);
+		this.createTable();
+		this.createTable();
 	}
 	
-	createTable(id, table, callback) {
-		this.id = id;
-		this.table = table;
-		this.callback = callback;
+	add(element, value, condition) {
+		if (element == null) return;
+		var obj = new Object();
+		obj.element = element;
+		obj.value = value;
+		obj.condition = condition;
+		obj.confirmation = "false";
 		
+		this.data.push(obj);
+		this.updateTable();
+	}
+	
+	createTable() {
+		var me = this;
+
+		$('#' + this.table).handsontable({
+		  width: 1000,
+		  height: 200,
+		  manualColumnResize: true,
+		  startRows: 10,
+		  startCols: 10,
+		  colHeaders: ['Element', 'Value', 'Condition', 'Confirmation'],
+		  rowHeaders: true,
+	//	  minSpareRows: 1,
+		  colWidths: function(index) {
+		        return [100, 100, 500, 100, 100, 200, 200, 200, 200][index];
+		  },
+		  afterSelection: function(r, c, r2, c2, preventScrolling, selectionLayerLevel) {
+		  	var element = $("#" + me.table).handsontable('getInstance').getDataAtCell(r, 0);
+		  	var value = $("#" + me.table).handsontable('getInstance').getDataAtCell(r, 1);
+		  	var condition = $("#" + me.table).handsontable('getInstance').getDataAtCell(r, 2);
+		  	var confirmation = $("#" + me.table).handsontable('getInstance').getDataAtCell(r, 3);
+		  	
+		  	me.callback(element, value, condition, confirmation);
+	      },
+	      afterChange: function(change, source) {
+    	     if (source === 'loadData') {
+                 return;
+             }
+    	  }
+		});
+						
 		$.ajax({
 			type: "GET", 
-			url: "http://" + window.location.host + "/rest/dependencySpec/specTable?id=" + id,
+			url: "http://" + window.location.host + "/rest/dependencySpec/specTable?id=" + me.id,
 			success: function(msg) {
-					$('#' + table).handsontable({
-					  width: 1000,
-					  height: 200,
-					  manualColumnResize: true,
-					  startRows: 10,
-					  startCols: 10,
-					  colHeaders: ['Element', 'Value', 'Condition', 'Confirmation'],
-					  rowHeaders: true,
-					  minSpareRows: 1,
-					  colWidths: function(index) {
-					        return [100, 100, 500, 100, 100, 200, 200, 200, 200][index];
-					  },
-					  afterSelection: function(r, c, r2, c2, preventScrolling, selectionLayerLevel) {
-					  	var element = $("#" + table).handsontable('getInstance').getDataAtCell(r, 0);
-					  	var value = $("#" + table).handsontable('getInstance').getDataAtCell(r, 1);
-					  	var condition = $("#" + table).handsontable('getInstance').getDataAtCell(r, 2);
-					  	callback(element, value, condition);
-	      		      },
-	      		      afterChange: function(change, source) {
-                	     if (source === 'loadData') {
-                             return;
-                         }
-                	  }
-					});
-					$('#' + table).handsontable("loadData", msg);
-					$('#' + table).handsontable('getInstance').render();
+				me.data = msg;
+				me.updateTable();
 			}
 		});
 	}
-
-	constructor2(id, table) {
-			$.ajax({
-			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/dependencySpec/spec?id=" + id,
-			   success: function(msg) {
-			   	for (var targetElement in msg.depExpHolderMap) {
-			   		var expressionHolderMap = msg.depExpHolderMap[targetElement].dependencyExpressionHolderMap;
-			   		for (var selection in expressionHolderMap) {
-			   			for (var iExpressionHolder in expressionHolderMap[selection]) {
-			   				var expressionHolders = expressionHolderMap[selection][iExpressionHolder];
-			   				for (var iExpressionHolder in expressionHolders) {
-			   					var targetElemenet = expressionHolders[iExpressionHolder].targetElement;
-			   					var settingDisabledBehavior = expressionHolders[iExpressionHolder].settingDisabledBehavior;
-			 
-			   					for (var value in expressionHolders[iExpressionHolder].expressions) {
-			   						var expressions = expressionHolders[iExpressionHolder].expressions[value];
-			   						for (var n in expressions) {
-			   							var expression = expressions[n];
-			   							for (var o in expression) {
-			   								var obj = expression[o];
-			   								var expressionText = obj.expression;
-			   								var comfirm = obj.confirmRequired;
-			   								console.log(expressionText);
-			   							}
-			   							
-			   						}
-			   						
-			   					}
-			   				}
-			   				
 	
-			   				
-			   			}
-			   			
-			   		}
-			   	}
-			   }
-			});
+	updateTable() {
+		var me = this;
+		$('#' + me.table).handsontable("loadData", me.data);
+		$('#' + me.table).handsontable('getInstance').render();
 	}
 }

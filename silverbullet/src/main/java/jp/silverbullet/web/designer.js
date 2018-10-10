@@ -101,7 +101,7 @@ class DesignerClass {
 		var dialog = new IdSelectDialog(div, function(ids) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/runtime/addWidget?id=" + ids + "&div=" + layout.selectedDiv,
+			   url: "http://" + window.location.host + "/rest/design/addWidget?id=" + ids + "&div=" + layout.selectedDiv,
 			   success: function(msg){
 					layout.updateUI();
 			   }
@@ -180,7 +180,7 @@ class DesignerClass {
 	
 		$.ajax({
 		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/runtime/layoutTypes",
+		   url: "http://" + window.location.host + "/rest/design/layoutTypes",
 		   success: function(msg){
 				for (var i in msg) {
 					$("#" + idLayout).append($("<option>").val(msg[i]).text(msg[i]));
@@ -190,7 +190,7 @@ class DesignerClass {
 		
 		$.ajax({
 		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/runtime/allWidgetTypes",
+		   url: "http://" + window.location.host + "/rest/design/allWidgetTypes",
 		   success: function(msg){
 				for (var i in msg) {
 					$("#" + idWidgetType).append($("<option>").val(msg[i]).text(msg[i]));
@@ -200,7 +200,7 @@ class DesignerClass {
 
 		$.ajax({
 		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/runtime/getStyleClasses",
+		   url: "http://" + window.location.host + "/rest/design/getStyleClasses",
 		   success: function(msg){
 				for (var i in msg) {
 					$("#" + idStyleClasses).append($("<option>").val(msg[i]).text(msg[i]));
@@ -210,7 +210,7 @@ class DesignerClass {
 		
 		$.ajax({
 		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/runtime/getCustromDefinition",
+		   url: "http://" + window.location.host + "/rest/design/getCustromDefinition",
 		   success: function(msg){
 		       customDef = msg;
 		       
@@ -296,7 +296,7 @@ class DesignerClass {
 		function addTab() {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/runtime/addTab?div=" + layout.getSelectedDiv(),
+			   url: "http://" + window.location.host + "/rest/design/addTab?div=" + layout.getSelectedDiv(),
 			   success: function(msg){
 					layout.updateUI();
 			   }
@@ -306,7 +306,7 @@ class DesignerClass {
 		function clearLayout() {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/runtime/clearLayout",
+			   url: "http://" + window.location.host + "/rest/design/clearLayout",
 			   success: function(msg){
 					layout.updateUI();
 			   }
@@ -316,7 +316,7 @@ class DesignerClass {
 		function changeLayout(layoutType) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/runtime/setLayout?div=" + layout.getSelectedDiv() + '&layout=' + layoutType,
+			   url: "http://" + window.location.host + "/rest/design/setLayout?div=" + layout.getSelectedDiv() + '&layout=' + layoutType,
 			   success: function(msg){
 					layout.updateUI();
 			   }
@@ -326,7 +326,7 @@ class DesignerClass {
 		function changeWidgetType(widgetType) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/runtime/setWidgetType?div=" + layout.getSelectedDiv() + '&widgetType=' + widgetType,
+			   url: "http://" + window.location.host + "/rest/design/setWidgetType?div=" + layout.getSelectedDiv() + '&widgetType=' + widgetType,
 			   success: function(msg){
 					layout.updateUI();
 			   }
@@ -336,7 +336,7 @@ class DesignerClass {
 		function removeWidget() {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/runtime/remove?div=" + layout.getSelectedDiv(),
+			   url: "http://" + window.location.host + "/rest/design/remove?div=" + layout.getSelectedDiv(),
 			   success: function(msg){
 					layout.updateUI();
 			   }
@@ -346,7 +346,7 @@ class DesignerClass {
 		function addDialog(id) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/runtime/addDialog?div=" + layout.getSelectedDiv() + '&id=' + id,
+			   url: "http://" + window.location.host + "/rest/design/addDialog?div=" + layout.getSelectedDiv() + '&id=' + id,
 			   success: function(msg){
 					layout.updateUI();
 			   }
@@ -356,7 +356,7 @@ class DesignerClass {
 		function setStyleClass(style) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/runtime/setStyle?div=" + layout.getSelectedDiv() + "&style=" + style,
+			   url: "http://" + window.location.host + "/rest/design/setStyle?div=" + layout.getSelectedDiv() + "&style=" + style,
 			   success: function(msg){
 					layout.updateUI();
 			   }
@@ -366,7 +366,7 @@ class DesignerClass {
 		function setCss(css) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/runtime/setCss?div=" + layout.getSelectedDiv() + "&css=" + css,
+			   url: "http://" + window.location.host + "/rest/design/setCss?div=" + layout.getSelectedDiv() + "&css=" + css,
 			   success: function(msg){
 					layout.updateUI();
 			   }
@@ -376,7 +376,7 @@ class DesignerClass {
 		function setGuid(id) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/runtime/setId?div=" + layout.getSelectedDiv() + "&id=" + id,
+			   url: "http://" + window.location.host + "/rest/design/setId?div=" + layout.getSelectedDiv() + "&id=" + id,
 			   success: function(msg){
 					layout.updateUI();
 			   }
@@ -386,7 +386,7 @@ class DesignerClass {
 		function setPresentation(presentation) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/runtime/setPresentation?div=" + layout.getSelectedDiv() + "&presentation=" + presentation,
+			   url: "http://" + window.location.host + "/rest/design/setPresentation?div=" + layout.getSelectedDiv() + "&presentation=" + presentation,
 			   success: function(msg){
 					layout.updateUI();
 			   }
@@ -396,7 +396,7 @@ class DesignerClass {
 		function setCustom(custom) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/runtime/setCustom?div=" + layout.getSelectedDiv() + "&custom=" + custom,
+			   url: "http://" + window.location.host + "/rest/design/setCustom?div=" + layout.getSelectedDiv() + "&custom=" + custom,
 			   success: function(msg){
 					layout.updateUI();
 			   }
@@ -410,7 +410,7 @@ class DesignerClass {
 		function paste() {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/runtime/cutPaste?newBaseDiv=" + layout.getSelectedDiv() + '&itemDiv=' + copiedDiv,
+			   url: "http://" + window.location.host + "/rest/design/cutPaste?newBaseDiv=" + layout.getSelectedDiv() + '&itemDiv=' + copiedDiv,
 			   success: function(msg){
 					layout.updateUI();
 			   }
@@ -420,7 +420,7 @@ class DesignerClass {
 		function addPanel() {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/runtime/addPanel?div=" + layout.getSelectedDiv(),
+			   url: "http://" + window.location.host + "/rest/design/addPanel?div=" + layout.getSelectedDiv(),
 			   success: function(msg){
 					layout.updateUI();
 			   }
@@ -456,7 +456,7 @@ class DesignerClass {
 		function setCustomElement(customId, customValue) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/runtime/setCustomElement?div=" + layout.getSelectedDiv() + '&customId=' + customId + '&customValue=' + customValue,
+			   url: "http://" + window.location.host + "/rest/design/setCustomElement?div=" + layout.getSelectedDiv() + '&customId=' + customId + '&customValue=' + customValue,
 			   success: function(msg){
 					layout.updateUI();
 			   }

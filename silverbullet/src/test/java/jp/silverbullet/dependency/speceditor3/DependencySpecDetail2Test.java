@@ -963,6 +963,39 @@ class DependencySpecDetail2Test {
 			e.printStackTrace();
 		}
 	}
+	
+	@Test
+	void  testEdit() {
+		String idPulse = "ID_PULSEWIDTH";
+		String idPulse10ns = "ID_PULSEWIDTH_10NS";
+		String idPulse20ns = "ID_PULSEWIDTH_20NS";
+		String idPulse50ns = "ID_PULSEWIDTH_50NS";
+		String idPulse100ns = "ID_PULSEWIDTH_100NS";
+		String idPulse500ns = "ID_PULSEWIDTH_500NS";
+		
+		String idRange = "ID_RANGE";
+		String idRange5km = "ID_RANGE_5KM";
+		String idRange10km = "ID_RANGE_10KM";
+		String idRange50km = "ID_RANGE_50KM";
+		String idRange100km = "ID_RANGE_100KM";
+		String idRange200km = "ID_RANGE_200KM";
+		
+		DepPropertyStore store = createPropertyStore();
+		store.add(createListProperty(idPulse, Arrays.asList(idPulse10ns, idPulse20ns, idPulse50ns, idPulse100ns, idPulse500ns), idPulse10ns));
+		store.add(createListProperty(idRange, Arrays.asList(idRange5km, idRange10km, idRange50km, idRange100km, idRange200km), idRange5km));
+		
+		DependencySpecHolder holder = new DependencySpecHolder();
+
+		DependencySpec spec = new DependencySpec(idPulse);
+		spec.add(DependencyTargetElement.Enabled, DependencyExpression.True, "$ID_RANGE.Value=%ID_RANGE_200KM");
+		holder.add(spec);
+		
+		assertEquals("$ID_RANGE.Value=%ID_RANGE_200KM", holder.get(idPulse).getDependencyExpressionHolder(DependencyTargetElement.Enabled).getExpressions().get(DependencyExpression.True).getDependencyExpressions().get(0).getExpression().getExpression());
+		assertEquals(DependencyExpression.ELSE, holder.get(idPulse).getDependencyExpressionHolder(DependencyTargetElement.Enabled).getExpressions().get(DependencyExpression.False).getDependencyExpressions().get(0).getExpression().getExpression());
+
+		assertEquals(2, holder.get(idPulse).getDependencyExpressionHolder(DependencyTargetElement.Enabled).getExpressions().keySet().size());
+	}
+	
 	private DependencyEngine createEngine(DependencySpecHolder holder, DepPropertyStore store) {
 		DependencyEngine engine = new DependencyEngine() {
 			@Override

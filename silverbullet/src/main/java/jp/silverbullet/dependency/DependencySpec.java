@@ -9,6 +9,8 @@ import java.util.Set;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import jp.silverbullet.dependency.ui.DependencyTargetConverter;
+
 @XmlRootElement(name="DependencySpec")
 public class DependencySpec {	
 	public static final String DefaultItem = "DefaultItem";
@@ -209,19 +211,28 @@ public class DependencySpec {
 	}
 
 	public void add(DependencyTargetElement element, String value, String condition) {
-		this.getDependencyExpressionHolder(element, DefaultItem).addExpression().resultExpression(value).conditionExpression(condition);
+		add(element, DefaultItem, value, condition);
+		//this.getDependencyExpressionHolder(element, DefaultItem).addExpression().resultExpression(value).conditionExpression(condition);
 	}
 	
 	public void add(DependencyTargetElement element, String selectionId, String value, String condition) {
 		this.getDependencyExpressionHolder(element, selectionId).addExpression().resultExpression(value).conditionExpression(condition);
+		if (getDependencyExpressionHolder(element, selectionId).getExpressions().size() == 1) {
+			if (value.equalsIgnoreCase(DependencyExpression.True)) {
+				add(element, selectionId, DependencyExpression.False, DependencyExpression.ELSE);					
+			}
+			else if (value.equalsIgnoreCase(DependencyExpression.False)) {
+				add(element, selectionId, DependencyExpression.True, DependencyExpression.ELSE);
+			}
+		}
 	}
 
-	public void remove(DependencyTargetElement element, String selectionId, String value) {
-		this.getDependencyExpressionHolder(element, selectionId).remove(value);
+	public void remove(DependencyTargetElement element, String selectionId, String value, String condition) {
+		this.getDependencyExpressionHolder(element, selectionId).remove(value, condition);
 	}
 	
-	public void remove(DependencyTargetElement element, String value) {
-		this.getDependencyExpressionHolder(element).remove(value);
-	}
+//	public void remove(DependencyTargetElement element, String value) {
+//		this.getDependencyExpressionHolder(element).remove(value);
+//	}
 
 }

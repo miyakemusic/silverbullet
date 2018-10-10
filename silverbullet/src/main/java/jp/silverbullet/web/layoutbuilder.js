@@ -18,7 +18,7 @@ class LayoutBuilder {
 		
 		$.ajax({
 		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/runtime/getDesign?root=" + me.root,
+		   url: "http://" + window.location.host + "/rest/design/getDesign?root=" + me.root,
 		   success: function(msg){
 		   		$('#' + me.base).empty();
 		   		me.createWidget(me.base, msg);

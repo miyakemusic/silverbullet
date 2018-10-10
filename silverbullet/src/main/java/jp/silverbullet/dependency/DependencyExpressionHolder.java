@@ -155,7 +155,20 @@ public class DependencyExpressionHolder {
 		return this.expressions.isEmpty();
 	}
 
-	public void remove(String value) {
-		this.expressions.remove(value);
+	public void remove(String value, String condition) {
+		//this.expressions.remove(value);
+		for (String key: this.expressions.keySet()) {
+			DependencyExpressionList list = this.expressions.get(key);
+			for (DependencyExpression e : list.getDependencyExpressions()) {
+				if (e.getExpression().getExpression().equals(condition)) {
+					list.remove(e);
+					break;
+				}
+			}
+			if (list.getDependencyExpressions().isEmpty()) {
+				this.expressions.remove(key);
+				break;
+			}
+		}
 	}
 }

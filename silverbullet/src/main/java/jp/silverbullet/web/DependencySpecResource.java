@@ -21,17 +21,14 @@ import jp.silverbullet.StaticInstances;
 import jp.silverbullet.SvProperty;
 import jp.silverbullet.SvPropertyStore;
 import jp.silverbullet.dependency.DependencyBuilder;
-import jp.silverbullet.dependency.DependencyExpression;
 import jp.silverbullet.dependency.DependencyNode;
 import jp.silverbullet.dependency.DependencySpec;
 import jp.silverbullet.dependency.DependencySpecHolder;
 import jp.silverbullet.dependency.DependencySpecTableGenerator;
-import jp.silverbullet.dependency.DependencyTargetElement;
 import jp.silverbullet.dependency.ui.DependencyEditorModel;
 import jp.silverbullet.dependency.ui.DependencyTableRowData;
 import jp.silverbullet.dependency.ui.DependencyTargetConverter;
 import jp.silverbullet.property.PropertyHolder;
-import jp.silverbullet.trash.speceditor2.DependencyFormula;
 
 @Path("/dependencySpec")
 public class DependencySpecResource {
@@ -106,30 +103,36 @@ public class DependencySpecResource {
 			String condition2 = URLDecoder.decode(condition, "UTF-8");
 		
 			spec.add(converter.getElement(), converter.getSelectionId(), value2, condition2);
-			if (spec.getDependencyExpressionHolder(converter.getElement(), converter.getSelectionId()).getExpressions().size() == 1) {
-				if (value2.equalsIgnoreCase(DependencyExpression.True)) {
-					spec.add(converter.getElement(), converter.getSelectionId(), DependencyExpression.False, DependencyExpression.ELSE);					
-				}
-				else if (value2.equalsIgnoreCase(DependencyExpression.False)) {
-					spec.add(converter.getElement(), converter.getSelectionId(), DependencyExpression.True, DependencyExpression.ELSE);
-				}
-			}
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
 		return "OK";
 	}
 	
+	@GET
+	@Path("/editSpec")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String editSpec(@QueryParam("id") final String id, @QueryParam("element") final String element, 
+			@QueryParam("prevValue") @Encoded final String prevValue, @QueryParam("prevCondition") @Encoded final String prevCondition, @QueryParam("prevConfirmation") final String prevConfirmation,
+			@QueryParam("value") @Encoded final String value, @QueryParam("condition") @Encoded final String condition, @QueryParam("confirmation") final String confirmation) {
+		
+		DependencySpec spec = StaticInstances.getBuilderModel().getDependencySpecHolder().get(id);
+		DependencyTargetConverter converter = new DependencyTargetConverter(element);	
+		
+		spec.remove(converter.getElement(), converter.getSelectionId(), prevValue, prevCondition);
+		spec.add(converter.getElement(), converter.getSelectionId(), value, condition);
+		return "OK";
+	}
 	
 	@GET
 	@Path("/removeSpec")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String removeSpec(@QueryParam("id") final String id, @QueryParam("element") final String element, 
-			@QueryParam("value") final String value) {
+			@QueryParam("value") final String value, @QueryParam("condition") final String condition) {
 		
 		DependencySpec spec = StaticInstances.getBuilderModel().getDependencySpecHolder().get(id);
 		DependencyTargetConverter converter = new DependencyTargetConverter(element);
-		spec.remove(converter.getElement(), converter.getSelectionId(), value);
+		spec.remove(converter.getElement(), converter.getSelectionId(), value, condition);
 //		spec.remove(DependencyTargetElement.valueOf(element), value);
 		return "OK";
 	}
