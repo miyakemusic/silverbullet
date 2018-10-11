@@ -11,10 +11,13 @@ class DesignerClass {
 		var idLayout = prefix + 'layout';
 		var idWidgetType = prefix + 'widgetType';
 		var idDependencyLog = prefix + 'dependency';
-		
+		var idEdit = prefix + 'edit';
+				
 		$('#' + div).append('<div id="' + idToolbar + '"></div>');
+		$('#' + idToolbar).append('<input type="checkbox" id="' + idEdit + '">Edit');
 		$('#' + idToolbar).append('<button id="' + idAdd + '">Add Id</button>');
 		$('#' + idToolbar).append('<button id="' + idAddPanel + '">Add Panel</button>');
+		$('#' + idToolbar).append('<button id="' + idAddTab + '">Add Tab</button>');
 		$('#' + idToolbar).append('<button id="' + idRemove + '">Remove</button>');
 		$('#' + idToolbar).append('<button id="' + idAddDialog + '">Add Dialog</button>');
 		$('#' + idToolbar).append('<select id="' + idLayout + '"></select>');
@@ -30,7 +33,6 @@ class DesignerClass {
 		var idId = prefix + 'id';
 		var idCustom = prefix + 'custom';
 		var idPresentation = prefix + 'presentation';
-		var idEdit = prefix + 'edit';
 		var idUpdate = prefix + 'update';
 		var idClear = prefix + 'clear';
 		var idCut = prefix + 'cut';
@@ -46,24 +48,34 @@ class DesignerClass {
 		var idIndex = prefix + 'index';
 		
 		$('#' + div).append('<div id="' + idToolbar2 + '"></div>');
-		$('#' + idToolbar2).append('<button id="' + idAddTab + '">Add Tab</button>');
-		$('#' + idToolbar2).append('<span>Style Class<input type="text" id="' + idStyleClass + '"></span>');
-		$('#' + idToolbar2).append('Class<select id="' + idStyleClasses + '"></select>');
-		$('#' + idToolbar2).append('<button id="' + idAddStyleClass + '">Add Style Class</button>');
-		$('#' + idToolbar2).append('<span>CSS<input type="text" id="' + idCss + '"></span>');
-		$('#' + idToolbar2).append('<span>ID<input type="text" id="' + idId + '"></span>');
-		$('#' + idToolbar2).append('<span>Index:<input type="text" id="' + idIndex + '"></span>');
-//		$('#' + idToolbar2).append('<span>Custom<input type="text" id="' + idCustom + '"></span>');
-		$('#' + idToolbar2).append('<div id="' + idCustom + '"></div>');
-		$('#' + idToolbar2).append('<span>Presentation<input type="text" id="' + idPresentation + '"></span>');
-		$('#' + idToolbar2).append('<input type="checkbox" id="' + idEdit + '">Edit');
-		$('#' + idToolbar2).append('<button id="' + idUpdate + '">update</button>');
-		$('#' + idToolbar2).append('<button id="' + idClear + '">clear</button>');
-		$('#' + idToolbar2).append('<button id="' + idCut + '">Cut</button>');
-		$('#' + idToolbar2).append('<button id="' + idPaste + '">Paste</button>');
-		$('#' + idToolbar2).append('<div id="' + idUid + '">GUI id</div>');
-		$('#' + idToolbar2).append('<div id="' + idInfo + '"></div>');
 		
+		var idControl = prefix + 'control';
+		$('#' + idToolbar2).append('<div id="' + idControl + '"></div>');
+		$('#' + idControl).append('<span>Style Class<input type="text" id="' + idStyleClass + '"></span>');
+		$('#' + idControl).append('Class<select id="' + idStyleClasses + '"></select>');
+		$('#' + idControl).append('<button id="' + idAddStyleClass + '">Add Style Class</button>');
+		
+		var idProp1 = prefix + 'prop1';
+		$('#' + idToolbar2).append('<div id="' + idProp1 + '"></div>');		
+		$('#' + idProp1).append('<span>CSS<input type="text" id="' + idCss + '"></span>');
+//		$('#' + idProp1).append('<span>ID<input type="text" id="' + idId + '"></span>');
+		$('#' + idProp1).append('<span>Index:<input type="text" id="' + idIndex + '"></span>');
+		$('#' + idProp1).append('<span>Presentation<input type="text" id="' + idPresentation + '"></span>');
+		
+		var idProp2 = prefix + "prop2";
+		$('#' + idToolbar2).append('<div id="' + idProp2 + '"></div>');	
+		$('#' + idProp2).append('<button id="' + idUpdate + '">update</button>');
+		$('#' + idProp2).append('<button id="' + idClear + '">clear</button>');
+		$('#' + idProp2).append('<button id="' + idCut + '">Cut</button>');
+		$('#' + idProp2).append('<button id="' + idPaste + '">Paste</button>');
+		$('#' + idProp2).append('<span id="' + idUid + '">GUI id</span>');
+		$('#' + idProp2).append('<span id="' + idInfo + '"></span>');
+		
+		var idExt = prefix + "ext";
+		$('#' + idToolbar2).append('<div id="' + idExt + '"></div>');	
+		$('#' + idExt).append('<label>Custom:</label>');
+		$('#' + idExt).append('<span id="' + idCustom + '"></span>');
+				
 		var idMainDiv = prefix + 'main';
 		$('#' + div).append('<div id="' + idMainDiv + '"></div>');
 		$('#' + idMainDiv).append('<div id="' + idRoot + '"></div>');
@@ -82,7 +94,7 @@ class DesignerClass {
 				$('#' + idLayout).val(info.layout);
 				$('#' + idStyleClass).val(info.styleClass);
 				$('#' + idCss).val(info.css);
-				$('#' + idId).val(info.id);
+//				$('#' + idId).val(info.id);
 				$('#' + idPresentation).val(info.presentation);
 				$('#' + idCustom).val(info.custom);
 				$('#' + idUid).text(baseId);
@@ -256,11 +268,11 @@ class DesignerClass {
 		    }
 		});
 		
-		$('#' + idId).keydown(function(e) {
-		    if (e.keyCode == 13) {
-		        setGuid($('#' + idId).val());
-		    }
-		});
+//		$('#' + idId).keydown(function(e) {
+//		    if (e.keyCode == 13) {
+//		        setGuid($('#' + idId).val());
+//		    }
+//		});
 		$('#' + idPresentation).keydown(function(e) {
 		    if (e.keyCode == 13) {
 		        setPresentation($('#' + idPresentation).val());

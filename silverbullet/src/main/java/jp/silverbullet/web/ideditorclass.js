@@ -228,6 +228,7 @@ class IdEditorClass {
 		   url: "http://" + window.location.host + "/rest/id/updateChoice?id=" + id + "&selectionId=" + selectionId + "&paramName=" + paramName + "&value=" + value,
 		   success: function(msg){
 		   		me.updateSelectionTable(me.currentId);
+		   		me.updateSelectionTable(me.currentId);
 		   }
 		});			
 	}
