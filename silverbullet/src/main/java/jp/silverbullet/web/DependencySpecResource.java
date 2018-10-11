@@ -21,13 +21,13 @@ import jp.silverbullet.StaticInstances;
 import jp.silverbullet.SvProperty;
 import jp.silverbullet.SvPropertyStore;
 import jp.silverbullet.dependency.DependencyBuilder;
+import jp.silverbullet.dependency.DependencyEditorModel;
 import jp.silverbullet.dependency.DependencyNode;
 import jp.silverbullet.dependency.DependencySpec;
 import jp.silverbullet.dependency.DependencySpecHolder;
 import jp.silverbullet.dependency.DependencySpecTableGenerator;
-import jp.silverbullet.dependency.ui.DependencyEditorModel;
-import jp.silverbullet.dependency.ui.DependencyTableRowData;
-import jp.silverbullet.dependency.ui.DependencyTargetConverter;
+import jp.silverbullet.dependency.DependencyTableRowData;
+import jp.silverbullet.dependency.DependencyTargetConverter;
 import jp.silverbullet.property.PropertyHolder;
 
 @Path("/dependencySpec")

@@ -1,15 +1,12 @@
 package jp.silverbullet.dependency;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.xml.bind.annotation.XmlRootElement;
-
-import jp.silverbullet.dependency.ui.DependencyTargetConverter;
 
 @XmlRootElement(name="DependencySpec")
 public class DependencySpec {	

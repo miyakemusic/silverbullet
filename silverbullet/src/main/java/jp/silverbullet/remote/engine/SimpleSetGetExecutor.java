@@ -8,7 +8,6 @@ import jp.silverbullet.SvPropertyListener;
 import jp.silverbullet.dependency.DependencyExpression;
 import jp.silverbullet.dependency.RequestRejectedException;
 import jp.silverbullet.remote.SvTex;
-import jp.silverbullet.trash.speceditor2.DependencyFormula;
 
 public class SimpleSetGetExecutor extends AbstractCommandExecutor implements SvPropertyListener {
 

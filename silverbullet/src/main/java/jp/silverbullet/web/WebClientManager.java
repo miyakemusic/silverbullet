@@ -10,13 +10,12 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import jp.silverbullet.StaticInstances;
+import jp.silverbullet.dependency.ChangedItemValue;
 import jp.silverbullet.dependency.DependencyListener;
-import jp.silverbullet.javafx.BuilderFx;
 import jp.silverbullet.register.RegisterBit;
 import jp.silverbullet.register.RegisterMapListener;
 import jp.silverbullet.register.RegisterUpdates;
 import jp.silverbullet.register.SvRegister;
-import jp.silverbullet.trash.unknown.ChangedItemValue;
 
 public class WebClientManager {
 
@@ -25,11 +24,6 @@ public class WebClientManager {
 			@Override
 			public boolean confirm(String history) {
 				return true;
-			}
-
-			@Override
-			public void onResult(Map<String, List<ChangedItemValue>> changedHistory) {
-
 			}
 
 			@Override
@@ -44,6 +38,12 @@ public class WebClientManager {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+			}
+
+			@Override
+			public void onResult(Map<String, List<ChangedItemValue>> changedHistory) {
+				// TODO Auto-generated method stub
+				
 			}
 		});
 		

@@ -3,8 +3,6 @@ package jp.silverbullet.dependency;
 import java.util.List;
 import java.util.Map;
 
-import jp.silverbullet.trash.unknown.ChangedItemValue;
-
 public interface DependencyListener {
 
 	boolean confirm(String history);

@@ -1,13 +1,10 @@
 package jp.silverbullet.test;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.BitSet;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javafx.application.Platform;
@@ -17,14 +14,12 @@ import jp.silverbullet.BuilderModel;
 import jp.silverbullet.IdValues;
 import jp.silverbullet.SequencerListener;
 import jp.silverbullet.SvProperty;
-import jp.silverbullet.SvPropertyStore;
 import jp.silverbullet.XmlPersistent;
-import jp.silverbullet.dependency.DependencyListener;
+import jp.silverbullet.dependency.DepPropertyStore;
+import jp.silverbullet.dependency.DependencyEngine;
+import jp.silverbullet.dependency.DependencySpecHolder;
 import jp.silverbullet.dependency.RequestRejectedException;
 import jp.silverbullet.register.RegisterMonitor;
-import jp.silverbullet.trash.unknown.ChangedItemValue;
-import jp.silverbullet.trashdependency.engine.DependencyEngine;
-
 import javax.xml.bind.JAXBException;
 
 public class TestRecorder implements RegisterMonitor {
@@ -188,10 +183,18 @@ public class TestRecorder implements RegisterMonitor {
 	public void loadFile(String prm) {
 		IdValues data = loadSnapShot(prm);
 		DependencyEngine dependency = new DependencyEngine() {
+
 			@Override
-			protected SvPropertyStore getPropertiesStore() {
-				return builderModel.getPropertyStore();
+			protected DepPropertyStore getPropertiesStore() {
+				return null;
 			}
+
+			@Override
+			protected DependencySpecHolder getDependencyHolder() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
 		};
 		
 		

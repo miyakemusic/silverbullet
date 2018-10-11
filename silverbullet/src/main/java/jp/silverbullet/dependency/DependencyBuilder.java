@@ -3,8 +3,6 @@ package jp.silverbullet.dependency;
 import java.util.ArrayList;
 import java.util.List;
 
-import jp.silverbullet.trash.speceditor2.DependencySpecDetail;
-
 public class DependencyBuilder {
 	private DependencyNode tree = new DependencyNode(null, null, -1);
 	
