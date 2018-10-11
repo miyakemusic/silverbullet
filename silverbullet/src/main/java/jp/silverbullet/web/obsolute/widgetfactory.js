@@ -1,6 +1,0 @@
-class WidgetFactory {
-	constructor(targetDiv) {
-	}
-	
-	
-}
