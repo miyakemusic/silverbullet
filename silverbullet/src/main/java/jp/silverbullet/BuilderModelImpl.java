@@ -6,6 +6,7 @@ import java.util.List;
 import jp.silverbullet.property.PropertyHolder;
 import jp.silverbullet.property.StringArray;
 import jp.silverbullet.register.RegisterProperty;
+import jp.silverbullet.register.RegisterShortCutHolder;
 import jp.silverbullet.remote.SvTexHolder;
 import jp.silverbullet.spec.SpecElement;
 import jp.silverbullet.dependency.DepPropertyStore;
@@ -28,6 +29,8 @@ public class BuilderModelImpl implements BuilderModel {
 	private static final String REGISTER_XML = "register.xml";
 	private static final String HARDSPEC_XML = "hardspec.xml";
 	private static final String USERSTORY_XML = "userstory.xml";
+	private static final String REGISTERSHORTCUT = "registershortcuts.xml";
+	
 	private static final String DEPENDENCYSPEC2_XML = "dependencyspec2.xml";
 	private static BuilderModelImpl instance;
 	
@@ -42,6 +45,7 @@ public class BuilderModelImpl implements BuilderModel {
 	private RegisterProperty registerProperty = new RegisterProperty();
 	private DependencySpecHolder dependencySpecHolder = new DependencySpecHolder();
 	private SpecElement userStory = new SpecElement();
+	private RegisterShortCutHolder registerShortCuts = new RegisterShortCutHolder();
 	
 	@Override
 	public HandlerPropertyHolder getHandlerPropertyHolder() {
@@ -75,20 +79,10 @@ public class BuilderModelImpl implements BuilderModel {
 		@Override
 		public void requestChange(final String id, final String value) {
 			try {
-				dependency.requestChange(id, value);
+				sequencer.requestChange(id, value);
 			} catch (RequestRejectedException e) {
 				e.printStackTrace();
 			}
-//			Platform.runLater(new Runnable() {
-//				@Override
-//				public void run() {
-//					try {
-//						dependency.requestChange(id, value);
-//					} catch (RequestRejectedException e) {
-//						e.printStackTrace();
-//					}
-//				}
-//			});
 		}
 
 		@Override
@@ -97,7 +91,6 @@ public class BuilderModelImpl implements BuilderModel {
 		}
 	};
 	
-//	private UserEasyAccess access = new UserEasyAccess(easyAccessModel);
 	private RegisterAccess regiseterAccess;
 
 	public static BuilderModelImpl getInstance() {
@@ -185,16 +178,6 @@ public class BuilderModelImpl implements BuilderModel {
 	public List<String> getIds(String type) {
 		return store.getIds(type);
 	}
-	@Override
-	public void save(String folder) {
-		saveTestProp(folder + "/" + ID_DEF_XML);
-		saveHandlerPropertyHolder(folder + "/" + HANDLER_XML);
-		saveRemote(folder + "/" + REMOTE_XML);
-		saveRegister(folder + "/" + REGISTER_XML);
-		saveSpec(this.hardSpec, folder + "/" + HARDSPEC_XML);
-		saveSpec(this.userStory, folder + "/" + USERSTORY_XML);
-		saveDependencySpecHolder2(this.dependencySpecHolder, folder + "/" + DEPENDENCYSPEC2_XML);
-	}
 
 	private void saveDependencySpecHolder2(DependencySpecHolder dependencySpecHolder22, String filename) {
 		XmlPersistent<DependencySpecHolder> propertyPersister = new XmlPersistent<>();
@@ -249,63 +232,53 @@ public class BuilderModelImpl implements BuilderModel {
 	@Override
 	public void load(String folder) {
 
-		propertiesHolder = loadTestProp(folder + "/" + ID_DEF_XML);
+		propertiesHolder = load(PropertyHolder.class, folder + "/" + ID_DEF_XML);
 		propertiesHolder.initialize();
 
 		this.store = new SvPropertyStore(propertiesHolder);
-		this.registerProperty = loadRegisterProperty(folder + "/" + REGISTER_XML);
-		
-		handlerPropertyHolder = loadHandlerPropertyHolder(folder + "/" + HANDLER_XML);
-		if (handlerPropertyHolder == null) {
-			handlerPropertyHolder = new HandlerPropertyHolder();
-		}
-		
-		this.texHolder = loadRemote(folder + "/" + REMOTE_XML);
-		this.hardSpec = loadSpec(folder + "/" + HARDSPEC_XML);
-		this.userStory = loadSpec(folder + "/" + USERSTORY_XML);
-		
-		this.dependencySpecHolder = loadDependencySpec2(folder + "/" + DEPENDENCYSPEC2_XML);
+		this.registerProperty = load(RegisterProperty.class, folder + "/" + REGISTER_XML);
+		this.handlerPropertyHolder = load(HandlerPropertyHolder.class, folder + "/" + HANDLER_XML);
+		this.texHolder = load(SvTexHolder.class, folder + "/" + REMOTE_XML);
+		this.hardSpec = load(SpecElement.class, folder + "/" + HARDSPEC_XML);
+		this.userStory = load(SpecElement.class, folder + "/" + USERSTORY_XML);
+		this.registerShortCuts = load(RegisterShortCutHolder.class, folder + "/" + REGISTERSHORTCUT);
+		this.dependencySpecHolder = load(DependencySpecHolder.class, folder + "/" + DEPENDENCYSPEC2_XML);
 	}
 
+	@Override
+	public void save(String folder) {
+		save(this.propertiesHolder, PropertyHolder.class, folder + "/" + ID_DEF_XML);
+		save(this.handlerPropertyHolder, HandlerPropertyHolder.class, folder + "/" + HANDLER_XML);
+		save(this.texHolder, SvTexHolder.class, folder + "/" + REMOTE_XML);
+		save(this.registerProperty, RegisterProperty.class, folder + "/" + REGISTER_XML);
+		save(this.hardSpec, SpecElement.class, folder + "/" + HARDSPEC_XML);
+		save(this.userStory, SpecElement.class, folder + "/" + USERSTORY_XML);
+		save(this.registerShortCuts, RegisterShortCutHolder.class, folder + "/" + REGISTERSHORTCUT);
+		save(this.dependencySpecHolder, DependencySpecHolder.class, folder + "/" + DEPENDENCYSPEC2_XML);
+	}
+	
 	@Override
 	public void importFile(String folder) {
 		PropertyHolder tmpProps = loadTestProp(folder + "/" + ID_DEF_XML);
 		tmpProps.initialize();
 		this.propertiesHolder.addAll(tmpProps);
 		this.store.importProperties(tmpProps);
-		RegisterProperty tmpRegister = loadRegisterProperty(folder + "/" + REGISTER_XML);
+		RegisterProperty tmpRegister = load(RegisterProperty.class, folder + "/" + REGISTER_XML);
 		this.registerProperty.addAll(tmpRegister.getRegisters());
 		
-		HandlerPropertyHolder tmpHandler = loadHandlerPropertyHolder(folder + "/" + HANDLER_XML);
+		HandlerPropertyHolder tmpHandler = load(HandlerPropertyHolder.class, folder + "/" + HANDLER_XML);
 		if (handlerPropertyHolder == null) {
 			handlerPropertyHolder = new HandlerPropertyHolder();
 		}
 		handlerPropertyHolder.addAll(tmpHandler);
 		
-		this.texHolder.addAll(loadRemote(folder + "/" + REMOTE_XML));
-		this.hardSpec.addAll(loadSpec(folder + "/" + HARDSPEC_XML));
-		this.userStory.addAll(loadSpec(folder + "/" + USERSTORY_XML));	
+		this.texHolder.addAll(load(SvTexHolder.class, folder + "/" + REMOTE_XML));
+		this.hardSpec.addAll(load(SpecElement.class, folder + "/" + HARDSPEC_XML));
+		this.userStory.addAll(load(SpecElement.class, folder + "/" + USERSTORY_XML));	
 	}
 	
 	@Override
 	public void loadDefault() {
-//		XmlPersistent<PropertyType> per = new XmlPersistent<>();
-//		try {
-//			InputStream is = getClass().getClassLoader().getResourceAsStream("defaultprottype.xml");
-//			BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("defaultprottype.xml")));
-//			
-//			String xml = "";
-//			String s = "";
-//	         while((s = reader.readLine()) != null) {
-//	        	 xml = xml + s;
-//	         } 
-//	         PropertyType propType = per.loadFromXml(xml, PropertyType.class);
-//			this.propertiesHolder.addTypes(propType);
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		
 		this.propertiesHolder.getTypes().getDefinitions().put("ListProperty", new StringArray(Arrays.asList("unit", "choices", "defaultKey", "persistent")));
 		this.propertiesHolder.getTypes().getDefinitions().put("ImageProperty", new StringArray(Arrays.asList("persistent")));
 		this.propertiesHolder.getTypes().getDefinitions().put("TextProperty", new StringArray(Arrays.asList("defaultValue", "maxLength", "persistent")));
@@ -316,54 +289,30 @@ public class BuilderModelImpl implements BuilderModel {
 	
 	}
 	
-	private SpecElement loadSpec(String filename) {
-		XmlPersistent<SpecElement> propertyPersister = new XmlPersistent<>();
+	private <T> T load(Class<T> clazz, String filename) {
+		XmlPersistent<T> propertyPersister = new XmlPersistent<>();
 		try {
-			return propertyPersister.load(filename, SpecElement.class);
+			return propertyPersister.load(filename, clazz);
 		} catch (Exception e) {
-			return new SpecElement();
+			try {
+				return clazz.newInstance();
+			} catch (InstantiationException | IllegalAccessException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
+		return null;
 	}
-
-	private RegisterProperty loadRegisterProperty(String filename) {
-		XmlPersistent<RegisterProperty> propertyPersister = new XmlPersistent<>();
-		try {
-			return propertyPersister.load(filename, RegisterProperty.class);
-		} catch (Exception e) {
-			return new RegisterProperty();
-		}
-	}
-
-
-	private DependencySpecHolder loadDependencySpec2(String filename) {
-		XmlPersistent<DependencySpecHolder> propertyPersister = new XmlPersistent<>();
-		try {
-			return propertyPersister.load(filename, DependencySpecHolder.class);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new DependencySpecHolder();
-		}
-	}
-
 	
-	private SvTexHolder loadRemote(String filename) {
-		XmlPersistent<SvTexHolder> propertyPersister = new XmlPersistent<SvTexHolder>();
+	private <T> void save(T object, Class<T> clazz, String filename) {
+		XmlPersistent<T> propertyPersister = new XmlPersistent<>();
 		try {
-			return propertyPersister.load(filename, SvTexHolder.class);
-		} catch (Exception e) {
-			return new SvTexHolder();
-		}
+			propertyPersister.save(object, filename, clazz);
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}		
 	}
-
-	private HandlerPropertyHolder loadHandlerPropertyHolder(String filename) {
-		XmlPersistent<HandlerPropertyHolder> propertyPersister = new XmlPersistent<HandlerPropertyHolder>();
-		try {
-			return propertyPersister.load(filename, HandlerPropertyHolder.class);
-		} catch (Exception e) {
-			return null;
-		}
-	}
-
+	
 	private void saveTestProp(String filename) {
 		XmlPersistent<PropertyHolder> propertyPersister = new XmlPersistent<PropertyHolder>();
 		try {
@@ -431,5 +380,13 @@ public class BuilderModelImpl implements BuilderModel {
 	@Override
 	public DependencySpecHolder getDependencySpecHolder() {
 		return dependencySpecHolder;
+	}
+	@Override
+	public RegisterShortCutHolder getRegisterShortCut() {
+		return this.registerShortCuts;
+	}
+	@Override
+	public EasyAccessModel getEasyAccess() {
+		return this.easyAccessModel;
 	}
 }

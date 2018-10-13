@@ -3,6 +3,8 @@ package jp.silverbullet;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import jp.silverbullet.handlers.EasyAccessModel;
+import jp.silverbullet.handlers.RegisterAccess;
 import jp.silverbullet.register.RegisterMapModel;
 import jp.silverbullet.web.BuilderServer;
 import jp.silverbullet.web.BuilderServerListener;
@@ -29,14 +31,18 @@ public abstract class SilverBulletServer {
 
 	protected abstract String getDefaultFilename();
 	protected abstract String getUserPath();
+	protected abstract void onStart(EasyAccessModel easyAccess, RegisterAccess registerAccess);
 	
 	protected void startWebServer() {
 		new WebClientManager();
 		webServer = new BuilderServer(8081, new BuilderServerListener() {
 			@Override
 			public void onStarted() {
+				SilverBulletServer.this.onStart(builderModel.getEasyAccess(), builderModel.getRegisterAccess());
 			}
 		});
 	}
+
+	
 
 }

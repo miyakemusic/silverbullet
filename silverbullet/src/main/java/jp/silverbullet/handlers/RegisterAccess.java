@@ -51,15 +51,6 @@ public class RegisterAccess {
 	}
 
 	public void writeIo(long address, int value, int bitFrom, int bitTo) {
-//		final Integer v = value << bitFrom;
-//		Converter converter = new Converter() {
-//			@Override
-//			protected void handle(DataOutputStream out) throws IOException {
-//				out.writeInt(v);
-//			}
-//		};
-//		
-//		byte[] d = converter.getData();
 		BitSet data = new BitSet(32);
 	//	String bit = Integer.toBinaryString(value);
 		//data = BitSet.valueOf(new long[]{value});

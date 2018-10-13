@@ -1,7 +1,8 @@
 class RegisterClass {
 
 	constructor(div) {
-		$('#' + div).append('<button id="commit">Commit</button><select id="spec"><option value="spec">Specification</option><option value="map">Map</option></select>');
+		$('#' + div).append('<div><select id="spec"><option value="spec">Specification</option><option value="map">Map</option></select></div>');
+		$('#' + div).append('<button id="commit">Commit</button>');
 		$('#' + div).append('<select id="idSimulator">Simulator</select><button id="simButton">Apply</button><button id="addNew">Add New</button>');
 		$('#' + div).append('<div><button id="idInterrupt">Interrupt</button></div>');
 		$('#' + div).append('<div id="mainDiv" class="regtable"></div>');
@@ -32,6 +33,11 @@ class RegisterClass {
 			    "Cancel": function(){
 			    	$(this).dialog('close');
 			    }
+			    ,
+			    "Create Shortcut": function() {
+			    	$(this).dialog('close');
+			    	createShortCut(selectedValueId);
+			    }
 			  },
 			width: 400,
 			height: 300
@@ -42,13 +48,17 @@ class RegisterClass {
 		getSimulators();
 		
 		$('#idInterrupt').click(function() {
+			interrupt();	
+		});
+		
+		function interrupt() {
 			$.ajax({
 			   type: "GET", 
 			   url: "http://" + window.location.host + "/rest/register/interrupt",
 			   success: function(msg){
 			   }
-			});			
-		});
+			});		
+		}
 		
 		function getSimulators() {
 			$('#simButton').click(function() {
@@ -400,17 +410,24 @@ class RegisterClass {
 			}
 		}
 
-		
 		function changeBitValue(buttonId, value) {
 			var obj = me.bitInfo.get(buttonId);
 			$.ajax({
 			   type: "GET", 
 			   url: "http://" + window.location.host + "/rest/register/setCurrentValue?regName=" + obj.register + '&bitName=' + obj.bitName + '&value=' + value,
 			   success: function(msg){
-//					$('#' + id).html(msg);
 			   }
 			});		
-		}		
+		}
+		function createShortCut(buttonId) {
+			var obj = me.bitInfo.get(buttonId);
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/register/createShortCut?regName=" + obj.register + '&bitName=' + obj.bitName,
+			   success: function(msg){
+			   }
+			});		
+		}
 		function getCurrentValue(id, regName, bitName) {
 			$.ajax({
 			   type: "GET", 

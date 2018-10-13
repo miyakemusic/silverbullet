@@ -21,30 +21,7 @@ public class RegisterControl {
 	    this.registerAccess.addInterruptHandler(interruptHandler);
     }
     
-    public void waitIntrrupt() {
-//	    InterruptHandler interruptHandler = new InterruptHandler() {
-//	        @Override
-//	        public void onTrigger() {
-//	            synchronized(lock) {
-//	    	        lock.notifyAll();
-//	            }
-//	        }  
-//	    };
-//	    this.registerAccess.addInterruptHandler(interruptHandler);
-//	    try {
-//	       synchronized(lock) {
-//	           lock.wait();
-//	           Platform.runLater(new Runnable() {
-//	              @Override
-//	              public void run() {
-//	           	   registerAccess.removeInteruptHandler(interruptHandler);
-//	              }
-//	           });
-//	      }
-//	    } catch (InterruptedException e) {
-//	        e.printStackTrace();
-//	    }
-    		  
+    public void waitIntrrupt() {    		  
     	synchronized(lock) {
     		try {
 				lock.wait();

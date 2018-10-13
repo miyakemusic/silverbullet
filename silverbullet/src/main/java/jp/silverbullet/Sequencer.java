@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javafx.application.Platform;
 import jp.silverbullet.dependency.ChangedItemValue;
 import jp.silverbullet.dependency.DependencyEngine;
 import jp.silverbullet.dependency.DependencyInterface;
@@ -38,7 +37,6 @@ public abstract class Sequencer implements DependencyInterface {
 	private List<String> debugDepLog;
 	
 	public Sequencer() {
-//		this.dependency = dependency2;
 		myThreadId = Thread.currentThread().getId();
 	}
 	
@@ -73,29 +71,14 @@ public abstract class Sequencer implements DependencyInterface {
 
 			@Override
 			public void requestChange(final String id, final String value) throws RequestRejectedException {
-//				if (myThreadId == Thread.currentThread().getId()) {
-					try {
-						fireChangeFromSystem(id, value);
-						getDependency().requestChange(id, value);
-						debugDepLog.addAll(getDependency().getDebugLog());
-						
-					} catch (RequestRejectedException e) {
-						e.printStackTrace();
-					}					
-//				}
-//				else {
-//					Platform.runLater(new Runnable() {
-//						@Override
-//						public void run() {
-//							try {
-//								fireChangeFromSystem(id, value);
-//								getDependency().requestChange(id, value);
-//							} catch (RequestRejectedException e) {
-//								e.printStackTrace();
-//							}	
-//						}
-//					});	
-//				}
+				try {
+					fireChangeFromSystem(id, value);
+					getDependency().requestChange(id, value);
+					debugDepLog.addAll(getDependency().getDebugLog());
+					
+				} catch (RequestRejectedException e) {
+					e.printStackTrace();
+				}					
 			}
 
 			@Override

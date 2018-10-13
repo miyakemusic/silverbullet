@@ -1,5 +1,7 @@
 class DesignerClass {
 	constructor(div) {
+		$('#' + div).append('<a href="http://' + window.location.host + '/runtime.html" target="_blank">runtime</a><br>');
+	
 		var customDef;
 		
 		var prefix = 'designer';

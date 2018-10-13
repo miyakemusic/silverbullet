@@ -40,4 +40,18 @@ public class JsonTable {
 	public void addRow(String[] val) {
 		this.table.add(val);
 	}
+
+	public String[] getHeader() {
+		return header;
+	}
+
+	public List<String[]> getTable() {
+		return table;
+	}
+
+	public void setTable(List<String[]> table) {
+		this.table = table;
+	}
+	
+	
 }

@@ -46,7 +46,10 @@ public class WebSocketBroadcaster {
 			new Thread() {
 				@Override
 				public void run() {
-					member.getSession().getRemote().sendStringByFuture(message);
+					if (member != null) {
+						member.getSession().getRemote().sendStringByFuture(message);
+					}
+					
 				}
 			}.start();
 			

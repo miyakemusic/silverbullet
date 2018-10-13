@@ -20,6 +20,7 @@ import jp.silverbullet.register.BitSetToIntConverter;
 import jp.silverbullet.register.RegisterBit;
 import jp.silverbullet.register.RegisterBit.ReadWriteType;
 import jp.silverbullet.register.RegisterProperty;
+import jp.silverbullet.register.RegisterShortCut;
 import jp.silverbullet.register.SvRegister;
 import jp.silverbullet.register.SvSimulator;
 import jp.silverbullet.register.json.SvRegisterJson;
@@ -175,10 +176,6 @@ public class RegisterResource {
 	@Path("/setCurrentValue")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setCurrentValue(@QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName, @QueryParam("value") final String value) {
-		// This design is wrong
-		// This layer should be set by simulator layer. 
-		// should not set to RegisterMapModel
-		
 		SvRegister register  = StaticInstances.getBuilderModel().getRegisterProperty().getRegisterByName(regName);
 		RegisterBit bit = register.getBits().get(bitName);
 		
@@ -199,13 +196,26 @@ public class RegisterResource {
 			dataSet.set(i, tmp.get(i - bit.getStartBit()));
 			mask.set(i);
 		}
-		
-//		StaticInstances.getRegisterMapModel().up(intAddress, data, mask);
-		
+
 		StaticInstances.getSimulator().updateRegister(intAddress, dataSet, mask);
 		return "OK";
 	}
 	
+	
+	@GET
+	@Path("/createShortCut")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String createShortCut(@QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName) {
+		StaticInstances.getBuilderModel().getRegisterShortCut().add(regName, bitName);
+		return "OK";
+	}
+	
+	@GET
+	@Path("/getShortCuts")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public List<RegisterShortCut> getShortCuts() {
+		return StaticInstances.getBuilderModel().getRegisterShortCut().getShortcuts();
+	}
 	
 	@GET
 	@Path("/getCurrentValue")
@@ -271,4 +281,13 @@ public class RegisterResource {
 		
 		return "OK";
 	}
+	
+	@GET
+	@Path("/setCheck")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String setCheck(@QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName, @QueryParam("value") final String value) {
+		StaticInstances.getBuilderModel().getRegisterShortCut().updateCheck(regName, bitName, value.equals("on"));
+		return "OK";
+	}
+
 }

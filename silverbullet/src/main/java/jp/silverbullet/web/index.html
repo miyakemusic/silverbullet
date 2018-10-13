@@ -19,6 +19,7 @@
 <script type="text/javascript" src="diagram.js"></script>
 <script type="text/javascript" src="registerclass.js"></script>
 <script type="text/javascript" src="dependencyclass.js"></script>
+<script type="text/javascript" src="debugclass.js"></script>
 <script type="text/javascript" src="mywebsocket.js"></script>
 <script type="text/javascript">
 $(function() {
@@ -31,6 +32,7 @@ $(function() {
 		new DesignerClass('tab_designer');
 		new RegisterClass('tab_register');
 		new ControllerClass('tab_control');
+		new DebugClass('tab_debug');
 		
 		$('#save').click(function() {
 			$.ajax({
@@ -67,12 +69,14 @@ $(function() {
   	<li><a href="#tab_designer">Designer</a></li>
   	<li><a href="#tab_register">Register</a></li>
   	<li><a href="#tab_control">Control</a></li>
+  	<li><a href="#tab_debug">Debug</a></li>
   </ul>
   <div id="tab_id"></div>
   <div id="tab_dependency"></div>
   <div id="tab_designer"></div>
   <div id="tab_register"></div>
   <div id="tab_control"></div>
+  <div id="tab_debug"></div>
 </div>
 
 </body>

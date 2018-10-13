@@ -4,10 +4,13 @@ import java.util.List;
 
 import jp.silverbullet.property.PropertyHolder;
 import jp.silverbullet.register.RegisterProperty;
+import jp.silverbullet.register.RegisterShortCutHolder;
+import jp.silverbullet.register.SvRegister;
 import jp.silverbullet.remote.SvTexHolder;
 import jp.silverbullet.spec.SpecElement;
 import jp.silverbullet.dependency.DependencyInterface;
 import jp.silverbullet.dependency.DependencySpecHolder;
+import jp.silverbullet.handlers.EasyAccessModel;
 import jp.silverbullet.handlers.HandlerPropertyHolder;
 import jp.silverbullet.handlers.RegisterAccess;
 import jp.silverbullet.handlers.SvDevice;
@@ -61,4 +64,8 @@ public interface BuilderModel {
 	void importFile(String filename);
 
 	DependencySpecHolder getDependencySpecHolder();
+
+	RegisterShortCutHolder getRegisterShortCut();
+	
+	EasyAccessModel getEasyAccess();
 }

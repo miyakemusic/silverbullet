@@ -180,6 +180,7 @@ class JsMessageBox extends JsSubWidget {
 		this.baseId = baseId;
 		this.change = change;
 		this.tmpId = 'tmp' + this.baseId;
+		this.editable = true;
 	}
 	
 	updateValue(property) {
@@ -210,7 +211,7 @@ class JsMessageBox extends JsSubWidget {
 		});	
 //		$('#' + this.tmpId).hide();
 		this.updateValue(property);
-		this.setEditable(editable);
+		this.setEditable(this.editable);
 	}
 	
 	setEditable(enabled) {
