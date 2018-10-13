@@ -2,7 +2,8 @@ package jp.silverbullet.remote.engine;
 
 import java.util.List;
 
-import javafx.application.Platform;
+import javax.swing.SwingUtilities;
+
 import jp.silverbullet.SvProperty;
 import jp.silverbullet.SvPropertyListener;
 import jp.silverbullet.dependency.DependencyExpression;
@@ -65,7 +66,7 @@ private String value;
 					value = params.get(0);
 				}
 			}
-			Platform.runLater(new FxRunnable(tex.getVlist(), value){
+			SwingUtilities.invokeLater(new FxRunnable(tex.getVlist(), value){
 				@Override
 				void onCompleted() {
 					getModel().getSyncController().notifyComplete();

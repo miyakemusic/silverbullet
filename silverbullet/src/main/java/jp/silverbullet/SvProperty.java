@@ -6,11 +6,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javafx.application.Platform;
 import jp.silverbullet.SvPropertyListener.Flag;
 import jp.silverbullet.dependency.DependencyExpression;
 import jp.silverbullet.property.ListDetailElement;
 import jp.silverbullet.property.PropertyDef;
+
+import javax.swing.SwingUtilities;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -259,7 +260,7 @@ public class SvProperty implements Cloneable {
 
 	public void removeListener(final SvPropertyListener listener) {
 		if (this.listenerTouching) {
-			Platform.runLater(new Runnable() {
+			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
 					listeners.remove(listener);

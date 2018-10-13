@@ -9,8 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javafx.application.Platform;
-import jp.silverbullet.handlers.InterruptHandler;
 import jp.silverbullet.handlers.RegisterAccess;
 import jp.silverbullet.register.RangeGetter;
 import jp.silverbullet.register.RegisterBit;
@@ -36,9 +34,7 @@ public class RegisterIoGenerator {
 			
 			source.add("package " + path + ";");
 			source.add("import " + RegisterAccess.class.getName() + ";");
-//			source.add("import " + InterruptHandler.class.getName() + ";");
 			source.add("import jp.silverbullet.register.RegisterControl;");
-//			source.add("import javafx.application.Platform;");
 			source.add("public class " + className + " extends RegisterControl {");
 			for (SvRegister register : registerProperty.getRegisters()) {
 				String registerAddressDef = "ADDR_" + convertName(register.getName()).toUpperCase();
