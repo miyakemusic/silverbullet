@@ -1,6 +1,7 @@
 package jp.silverbullet.web;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
@@ -29,13 +30,18 @@ public class IdResource {
 	@GET
 	@Path("/selection")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public ListDetailElement[] getSelections(@QueryParam("id") final String id) {
+	public JsonTable getSelections(@QueryParam("id") final String id) {
 		PropertyDef property = StaticInstances.getBuilderModel().getPropertyHolder().getProperty(id);
 		
 		if (property == null) {
 			System.out.println("IdResource/selection = null " + id);
 		}
-		return property.getListDetail().toArray(new ListDetailElement[0]);
+		JsonTable ret = new JsonTable();
+		ret.setHeader(Arrays.asList("ID","Comment","Presentation"));
+		for (ListDetailElement e: property.getListDetail()) {
+			ret.addRow(Arrays.asList(e.getId(), e.getComment(), e.getTitle()));
+		}
+		return ret;//property.getListDetail().toArray(new ListDetailElement[0]);
 	}
 	
 	@GET

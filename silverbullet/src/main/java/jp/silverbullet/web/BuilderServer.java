@@ -4,19 +4,15 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.webapp.WebAppContext;
 
-import jp.silverbullet.web.ui.UiLayout;
-
 public class BuilderServer {
 	
 	public static void main(String[] arg) {
 		new BuilderServer(8081, new BuilderServerListener() {
-
 			@Override
 			public void onStarted() {
 				// TODO Auto-generated method stub
 				
 			}
-			
 		});
 	}
 
@@ -39,9 +35,7 @@ public class BuilderServer {
 		String resource = this.getClass().getPackage().getName().replace(".", "/");
         String xmlPath = "";
         String resourcePath = "";
-        
-        UiLayout.getInstance().initialize();
-        
+                
         try {
 	        xmlPath = this.getClass().
 	     	       getClassLoader().getResource(xml).toExternalForm();
@@ -63,12 +57,7 @@ public class BuilderServer {
         webAppContext.setServer(server);
         webAppContext.setContextPath("/");
         handlers.addHandler(webAppContext);
-     
-        // websocket handler        
-//        ServletContextHandler contextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
-//        contextHandler.addServlet(new ServletHolder(new WebSocketServletImpl()), "/");
-//        handlers.addHandler(contextHandler);
-                
+            
         server.setHandler(handlers);
 
         try {

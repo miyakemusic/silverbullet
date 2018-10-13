@@ -10,7 +10,7 @@ import jp.silverbullet.register.RegisterMapModel;
 import jp.silverbullet.register.SvSimulator;
 
 public class StaticInstances {
-	public static final String TMP_FOLDER = "sv_tmp";
+	public static final String TMP_FOLDER = "./sv_tmp";
 	
 	private static RegisterMapModel registerMapModel = null;
 	private static PropertyListModel propertyListModel = null;

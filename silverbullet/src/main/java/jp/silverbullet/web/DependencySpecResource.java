@@ -30,6 +30,7 @@ import jp.silverbullet.dependency.DependencyTableRowData;
 import jp.silverbullet.dependency.DependencyTargetConverter;
 import jp.silverbullet.property.PropertyHolder;
 
+
 @Path("/dependencySpec")
 public class DependencySpecResource {
 

@@ -8,11 +8,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jp.silverbullet.StaticInstances;
 import jp.silverbullet.SvProperty;
@@ -75,7 +75,7 @@ public class UiLayout {
 	}
 
 	private UiLayout() {
-
+//		initialize();
 	}
 	
 	public void initialize() {
@@ -85,25 +85,6 @@ public class UiLayout {
 		}
 		
 		root = createRoot();
-		
-//		JsWidget panel2 = createPanel();
-//		root.addChild(panel2);
-//		panel2.setWidth("400");
-//		panel2.setHeight("200");
-//
-//		JsWidget panel3 = createPanel();
-//		panel2.addChild(panel3);
-//		panel3.setWidth("200");
-//		panel3.setHeight("100");
-//		
-//		root.addChild(createWidget("ID_BAND", JsWidget.COMBOBOX));
-//		root.addChild(createWidget("ID_STARTWAVELENGTH", JsWidget.TEXTFIELD));
-//		root.addChild(createWidget("ID_STOPWAVELENGTH", JsWidget.TEXTFIELD));
-//		
-//		JsWidget panel = createPanel();
-//		root.addChild(panel);
-//		panel.addChild(createWidget("ID_CENTERWAVELENGTH", JsWidget.TEXTFIELD));
-//		panel.addChild(createWidget("ID_SPANWAVELENGTH", JsWidget.TEXTFIELD));
 	}
 	
 	private JsWidget createPanel() {
@@ -305,6 +286,9 @@ public class UiLayout {
 		return null;
 	}
 	public JsWidget getSubTree(String id) {
+		if (this.root.getCustom().get(CustomProperties.GUI_ID).equals(id)) {
+			return root;
+		}
 		return this.findPanel(this.root, id);
 	}
 

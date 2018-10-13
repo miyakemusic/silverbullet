@@ -9,11 +9,7 @@ public class BitSetToIntConverter {
 		newBitSet.stream().forEach(i -> {
 			ret |= (1 << i);
         });
-//		for (int i = 0; i < newBitSet.length(); i++) {
-//			if (newBitSet.get(i)) {
-//				ret |= (1 << i);
-//			}
-//		}
+
 		return ret;
 	}
 	

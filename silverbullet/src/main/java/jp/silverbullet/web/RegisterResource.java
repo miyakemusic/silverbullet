@@ -242,7 +242,8 @@ public class RegisterResource {
 	@Path("/getSimulators")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<String> getSimulators() {
-		return StaticInstances.getRegisterMapModel().getSimulatorClasses();
+		//return new ArrayList<String>();
+		return StaticInstances.getRegisterMapModel().getSimulatorClasses(StaticInstances.getBuilderModel().getUserApplicationPath());
 	}
 	
 	@GET

@@ -177,9 +177,9 @@ class IdEditorClass {
 				  manualColumnResize: true,
 				  startRows: 10,
 				  startCols: 10,
-				  colHeaders: ['ID', 'Comment', 'Caption'],
+				  colHeaders: msg.header, //['ID', 'Comment', 'Caption'],
 				  rowHeaders: true,
-				  minSpareRows: 1,
+///				  minSpareRows: 1,
 				  colWidths: function(index) {
 				        return [200, 100, 200, 200, 100, 200, 200, 200, 200][index];
 				  },
@@ -203,11 +203,11 @@ class IdEditorClass {
             		 else if (colNumber == 2) {
             		 	paramName = "title";
             		 }
-            		 me.changeSelection(me.currentId, me.selectionId, colNumber, newValue);
+            		 me.changeSelection(me.currentId, me.selectionId, paramName, newValue);
             	  }
 				});
 				me.currentSelections = msg;
-				$("#" + me.idSubTable).handsontable("loadData", msg);
+				$("#" + me.idSubTable).handsontable("loadData", msg.table);
 		   }
 		});	
 	}
@@ -248,8 +248,8 @@ class IdEditorClass {
 			return;
 		}
 		var arr = [];
-		for (var i = 0; i < this.currentSelections.length; i++) {
-			arr.push(this.currentSelections[i].id);
+		for (var i = 0; i < this.currentSelections.table.length; i++) {
+			arr.push(this.currentSelections.table[i][0]);
 		}
 		return arr;
 	}

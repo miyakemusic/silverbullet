@@ -1,8 +1,5 @@
 package jp.silverbullet;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 import jp.silverbullet.handlers.EasyAccessModel;
 import jp.silverbullet.handlers.RegisterAccess;
 import jp.silverbullet.register.RegisterMapModel;

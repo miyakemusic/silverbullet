@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
@@ -16,10 +15,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
 
 import jp.silverbullet.BuilderModel;
 import jp.silverbullet.handlers.InterruptHandler;
-import jp.silverbullet.handlers.RegisterAccess;
 import jp.silverbullet.handlers.SvDevice;
 
 public class RegisterMapModel implements SvDevice, SvDeviceHandler {
@@ -143,14 +143,10 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 		return 0;
 	}
 
-	protected void updateBits(long address, BitSet data, BitSet mask) {
-		monitor.writeIo(address, data, mask); // for auto test
-		
+	protected void updateBits(long address, BitSet data, BitSet mask) {		
 		BitSet current = this.mapValue.get(address);
-		final int regIndex = getIndex(address);
-		
+		final int regIndex = getIndex(address);	
 		SvRegister register = this.map.get(address);
-
 		Set<RegisterBit> changed = new HashSet<>();
 		for (int i = 0; i < RegisterBitArray.REGISTER_WIDTH; i++) {
 			if (mask.get(i)) {
@@ -161,6 +157,7 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 				}
 			}
 		}
+
 		RegisterUpdates updates = new RegisterUpdates();
 		updates.setAddress((int)address);
 		updates.setName(register.getName());
@@ -170,7 +167,7 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 			BitUpdates info = new BitUpdates(bit.getName(), val);
 			updates.getBits().add(info);
 		}
-		
+
 		fireUpdate(regIndex, 0, 0, address, current, updates);
 	}
 
@@ -349,23 +346,37 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 //		this.monitor.setSimulatorEnabled(enabled);
 //	}
 
-	public List<String> getSimulatorClasses() {
-		String p = this.getClass().getResource(this.getClass().getSimpleName() + ".class").toExternalForm();
-		String pp = p.replace(this.getClass().getName().replace(".", "/") + ".class", "").replace("file:/", "");
-		pp += builderModel.getUserApplicationPath().replaceAll("\\.", "/") + "/test";
-		//String p = builderModel.getUserApplicationPath().
-		if (System.getProperty("os.name").toLowerCase().equals("linux")) {
-			pp = "/" + pp;
-		}
-		List<String> ret = new ArrayList<String>();
-		for (File file : new File(pp).listFiles()) {
-			String name =file.getName().replace(".class", "");
-			if (name.contains("$") || !name.startsWith("Sim")) {
-				continue;
+	public List<String> getSimulatorClasses(String userApplicationPackage) {
+		Reflections reflections = new Reflections(userApplicationPackage + ".test", new SubTypesScanner(false));
+		Set<Class<?>> allClasses = reflections.getSubTypesOf(Object.class);
+		List<String> ret = new ArrayList<>();
+		for (Class c : allClasses) {
+			if (c.getName().startsWith(userApplicationPackage + ".test.Sim")) {
+				ret.add(c.getName().replace(".class", "").replace(userApplicationPackage + ".test.", "").replace("$1", ""));
 			}
-			ret.add(name);
 		}
 		return ret;
+//System.out.println("this.getClass().getSimpleName()=" + this.getClass().getSimpleName());
+//System.out.println("this.getClass().getResource(this.getClass().getSimpleName() + \".class\")=" + this.getClass().getResource(this.getClass().getSimpleName() + ".class"));
+//		String p = this.getClass().getResource(this.getClass().getSimpleName() + ".class").toExternalForm();
+//System.out.println("p=" + p);
+//		String pp = p.replace(this.getClass().getName().replace(".", "/") + ".class", "").replace("file:/", "");
+//System.out.println("pp=" + pp);
+//		pp += builderModel.getUserApplicationPath().replaceAll("\\.", "/") + "/test";
+//System.out.println("pp=" + pp);
+//		//String p = builderModel.getUserApplicationPath().
+//		if (System.getProperty("os.name").toLowerCase().equals("linux")) {
+//			pp = "/" + pp;
+//		}
+//		List<String> ret = new ArrayList<String>();
+//		for (File file : new File(pp).listFiles()) {
+//			String name =file.getName().replace(".class", "");
+//			if (name.contains("$") || !name.startsWith("Sim")) {
+//				continue;
+//			}
+//			ret.add(name);
+//		}
+//		return ret;
 	}
 
 	@Override

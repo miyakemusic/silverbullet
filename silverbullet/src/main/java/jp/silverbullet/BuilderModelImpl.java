@@ -9,6 +9,7 @@ import jp.silverbullet.register.RegisterProperty;
 import jp.silverbullet.register.RegisterShortCutHolder;
 import jp.silverbullet.remote.SvTexHolder;
 import jp.silverbullet.spec.SpecElement;
+import jp.silverbullet.web.ui.UiLayout;
 import jp.silverbullet.dependency.DepPropertyStore;
 import jp.silverbullet.dependency.DependencyEngine;
 import jp.silverbullet.dependency.DependencyInterface;
@@ -243,6 +244,8 @@ public class BuilderModelImpl implements BuilderModel {
 		this.userStory = load(SpecElement.class, folder + "/" + USERSTORY_XML);
 		this.registerShortCuts = load(RegisterShortCutHolder.class, folder + "/" + REGISTERSHORTCUT);
 		this.dependencySpecHolder = load(DependencySpecHolder.class, folder + "/" + DEPENDENCYSPEC2_XML);
+		
+		UiLayout.getInstance().initialize();
 	}
 
 	@Override

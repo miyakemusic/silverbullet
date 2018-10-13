@@ -11,15 +11,16 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jp.silverbullet.Sequencer;
 import jp.silverbullet.StaticInstances;
 import jp.silverbullet.SvProperty;
 import jp.silverbullet.dependency.RequestRejectedException;
 import jp.silverbullet.property.ChartContent;
+
 import jp.silverbullet.web.ui.CustomProperties;
 import jp.silverbullet.web.ui.JsProperty;
 import jp.silverbullet.web.ui.JsWidget;
@@ -143,10 +144,6 @@ public class DesignResource {
 			return UiLayout.getInstance().getRoot();
 		}
 		else {
-//			if (root.contains("-")) {
-//				String[] tmp = root.split("-");
-//				root = tmp[tmp.length-1];
-//			}
 			return UiLayout.getInstance().getSubTree(root);
 		}
 	}

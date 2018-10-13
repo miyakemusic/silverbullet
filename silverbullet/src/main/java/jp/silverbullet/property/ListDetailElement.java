@@ -28,22 +28,6 @@ public class ListDetailElement implements Cloneable {
 		this.id = id;
 	}
 
-//	public String getKey() {
-//		return key;
-//	}
-//
-//	public void setKey(String key) {
-//		this.key = key;
-//	}
-//
-//	public String getValue() {
-//		return value;
-//	}
-//
-//	public void setValue(String value) {
-//		this.value = value;
-//	}
-
 	public ListDetailElement() {
 		
 	}
@@ -58,8 +42,6 @@ public class ListDetailElement implements Cloneable {
 //		this.value = value;
 	}
 	private String id = "ID_";
-//	private String key;
-//	private String value;
 	private String comment = "";
 	private String title = "";
 	
