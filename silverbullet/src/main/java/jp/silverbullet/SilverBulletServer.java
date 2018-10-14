@@ -13,7 +13,7 @@ public abstract class SilverBulletServer {
 	static private BuilderModel builderModel;
 	static private RegisterMapModel registerMapModel;
 
-	public void start() {
+	public void start(String port) {
 		builderModel = StaticInstances.getBuilderModel();
 		builderModel.setUserPath(getUserPath());
 
@@ -23,16 +23,16 @@ public abstract class SilverBulletServer {
 
 		StaticInstances.load(filename);
 		
-		startWebServer();
+		startWebServer(Integer.valueOf(port));
 	}
 
 	protected abstract String getDefaultFilename();
 	protected abstract String getUserPath();
 	protected abstract void onStart(EasyAccessModel easyAccess, RegisterAccess registerAccess);
 	
-	protected void startWebServer() {
+	protected void startWebServer(Integer port) {
 		new WebClientManager();
-		webServer = new BuilderServer(8081, new BuilderServerListener() {
+		webServer = new BuilderServer(port, new BuilderServerListener() {
 			@Override
 			public void onStarted() {
 				SilverBulletServer.this.onStart(builderModel.getEasyAccess(), builderModel.getRegisterAccess());
