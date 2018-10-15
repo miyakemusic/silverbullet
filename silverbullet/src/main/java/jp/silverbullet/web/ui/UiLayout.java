@@ -75,7 +75,7 @@ public class UiLayout {
 	}
 
 	private UiLayout() {
-//		initialize();
+		root = createRoot();
 	}
 	
 	public void initialize() {
