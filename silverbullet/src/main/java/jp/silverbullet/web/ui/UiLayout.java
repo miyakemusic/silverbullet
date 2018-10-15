@@ -75,7 +75,7 @@ public class UiLayout {
 	}
 
 	private UiLayout() {
-		root = createRoot();
+
 	}
 	
 	public void initialize() {
@@ -99,6 +99,7 @@ public class UiLayout {
 	public static UiLayout getInstance() {
 		if (instance == null) {
 			instance = new UiLayout();
+			instance.initialize();
 		}
 		return instance;
 	}
@@ -286,7 +287,7 @@ public class UiLayout {
 		return null;
 	}
 	public JsWidget getSubTree(String id) {
-		if (this.root.getCustom().get(CustomProperties.GUI_ID).equals(id)) {
+		if (this.root.getCustom(CustomProperties.GUI_ID).equals(id)) {
 			return root;
 		}
 		return this.findPanel(this.root, id);

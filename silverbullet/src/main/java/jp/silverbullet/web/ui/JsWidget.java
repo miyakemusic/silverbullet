@@ -145,5 +145,13 @@ public class JsWidget {
 	public void setIndex(Integer index) {
 		this.index = index;
 	}
+
+	public String getCustom(String id) {
+		String v = this.custom.get(id);//CustomProperties.GUI_ID
+		if (v == null) {
+			v = "";
+		}
+		return v;
+	}
 	
 }
