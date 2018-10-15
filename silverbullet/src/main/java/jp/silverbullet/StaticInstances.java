@@ -49,6 +49,12 @@ public class StaticInstances {
 	}
 
 	public static void save() {
+		createTmpFolderIfNotExists();
+		getBuilderModel().save(StaticInstances.TMP_FOLDER);
+		Zip.zip(StaticInstances.TMP_FOLDER, prevFilename);
+	}
+
+	private static void createTmpFolderIfNotExists() {
 		if (!Files.exists(Paths.get(StaticInstances.TMP_FOLDER))) {
 			try {
 				Files.createDirectory(Paths.get(StaticInstances.TMP_FOLDER));
@@ -56,11 +62,10 @@ public class StaticInstances {
 				e.printStackTrace();
 			}
 		}
-		getBuilderModel().save(StaticInstances.TMP_FOLDER);
-		Zip.zip(StaticInstances.TMP_FOLDER, prevFilename);
 	}
 
 	public static void load(String filename) {
+		createTmpFolderIfNotExists();
 		prevFilename = filename;
 		if (Files.exists(Paths.get(filename))) {
 			Zip.unzip(filename, StaticInstances.TMP_FOLDER);
