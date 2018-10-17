@@ -13,7 +13,7 @@ public class SystemResource {
 	@Path("/save")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String Save() {
-		StaticInstances.save();
+		StaticInstances.getInstance().save();
 		return "OK";
 	}
 	
@@ -21,7 +21,7 @@ public class SystemResource {
 	@Path("/generateSource")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String generateSource() {
-		StaticInstances.generateSource();
+		StaticInstances.getInstance().generateSource();
 		return "OK";
 	}
 }

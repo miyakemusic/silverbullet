@@ -20,7 +20,7 @@ import jp.silverbullet.register.SvRegister;
 public class WebClientManager {
 
 	public WebClientManager() {
-		StaticInstances.getBuilderModel().getDependency().addDependencyListener(new DependencyListener() {
+		StaticInstances.getInstance().getBuilderModel().getDependency().addDependencyListener(new DependencyListener() {
 			@Override
 			public boolean confirm(String history) {
 				return true;
@@ -47,7 +47,7 @@ public class WebClientManager {
 			}
 		});
 		
-		StaticInstances.getRegisterMapModel().addListener(new RegisterMapListener() {
+		StaticInstances.getInstance().getRegisterMapModel().addListener(new RegisterMapListener() {
 			@Override
 			public void onInterrupt() {
 			}
@@ -55,7 +55,7 @@ public class WebClientManager {
 			@Override
 			public void onDataUpdate(int regIndex, int blockNumber, int value, long address, BitSet bitSet, RegisterUpdates updates) {
 				try {
-					SvRegister register = StaticInstances.getBuilderModel().getRegisterProperty().getRegisterByAddress(address);
+					SvRegister register = StaticInstances.getInstance().getBuilderModel().getRegisterProperty().getRegisterByAddress(address);
 					String name = register.getName();
 					for (RegisterBit bit : register.getBits().getBits()) {
 						

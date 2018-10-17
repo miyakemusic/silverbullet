@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.BitSet;
+import java.util.HashMap;
+import java.util.Map;
 
 import jp.silverbullet.property.editor.PropertyListModel;
 import jp.silverbullet.register.RegisterMapModel;
@@ -12,49 +14,65 @@ import jp.silverbullet.register.SvSimulator;
 public class StaticInstances {
 	public static final String TMP_FOLDER = "./sv_tmp";
 	
-	private static RegisterMapModel registerMapModel = null;
-	private static PropertyListModel propertyListModel = null;
+	private static StaticInstances instance;
+	private RegisterMapModel registerMapModel = null;
+	private PropertyListModel propertyListModel = null;
 	
-	private static String prevFilename = "";
+//	private static Map<String, BuilderModel> models = new HashMap<>();
+	private BuilderModel builderModel;
+	private String currentFilename = "";
 
-	public static SvSimulator getSimulator() {
+	public static StaticInstances getInstance() {
+		if (instance == null) {
+			instance = new StaticInstances();
+		}
+		return instance;
+	}
+	
+	public SvSimulator getSimulator() {
 		return simulator;
 	}
 
-	private static SvSimulator simulator;
+	private SvSimulator simulator;
 	
-	public static BuilderModel getBuilderModel() {
-		return BuilderModelImpl.getInstance();
+	
+	public BuilderModel getBuilderModel() {
+		return builderModel;
 	}
 
-	public static RegisterMapModel getRegisterMapModel() {
-		if (registerMapModel == null) {
-			registerMapModel = new RegisterMapModel(getBuilderModel());
-			BuilderModelImpl.getInstance().setDeviceDriver(registerMapModel);
-			
-			simulator = new SvSimulator() {
-				@Override
-				protected void writeIo(long address, BitSet data, BitSet mask) {
+	private StaticInstances() {
+		builderModel = new BuilderModelImpl();
+		createOtherInstances();
+	}
 
-				}
+	private void createOtherInstances() {
+		registerMapModel = new RegisterMapModel(builderModel);
+		getBuilderModel().setDeviceDriver(registerMapModel);
+		
+		simulator = new SvSimulator() {
+			@Override
+			protected void writeIo(long address, BitSet data, BitSet mask) {
+			}
 
-				@Override
-				protected void writeBlock(long address, byte[] data) {
-
-				}
-			};
-			registerMapModel.addSimulator(simulator);
-		}
+			@Override
+			protected void writeBlock(long address, byte[] data) {
+			}
+		};
+		registerMapModel.addSimulator(simulator);
+		propertyListModel = new PropertyListModel(getBuilderModel().getPropertyHolder());
+	}
+	
+	public RegisterMapModel getRegisterMapModel() {
 		return registerMapModel;
 	}
 
-	public static void save() {
+	public void save() {
 		createTmpFolderIfNotExists();
 		getBuilderModel().save(StaticInstances.TMP_FOLDER);
-		Zip.zip(StaticInstances.TMP_FOLDER, prevFilename);
+		Zip.zip(StaticInstances.TMP_FOLDER, currentFilename);
 	}
 
-	private static void createTmpFolderIfNotExists() {
+	private static synchronized void createTmpFolderIfNotExists() {
 		if (!Files.exists(Paths.get(StaticInstances.TMP_FOLDER))) {
 			try {
 				Files.createDirectory(Paths.get(StaticInstances.TMP_FOLDER));
@@ -64,25 +82,22 @@ public class StaticInstances {
 		}
 	}
 
-	public static void load(String filename) {
+	public void load(String filename) {
 		createTmpFolderIfNotExists();
-		prevFilename = filename;
+		currentFilename = filename;
 		if (Files.exists(Paths.get(filename))) {
 			Zip.unzip(filename, StaticInstances.TMP_FOLDER);
 			getBuilderModel().load(StaticInstances.TMP_FOLDER);
+			createOtherInstances();
 		}
 		registerMapModel.update();
-		
 	}
 
-	public static PropertyListModel getPropertyListModel() {
-		if (propertyListModel == null) {
-			propertyListModel = new PropertyListModel(getBuilderModel().getPropertyHolder());
-		}
+	public PropertyListModel getPropertyListModel() {
 		return propertyListModel;
 	}
 
-	public static void generateSource() {
+	public void generateSource() {
 		String path = getBuilderModel().getUserApplicationPath();
 		new JavaFileGenerator(getBuilderModel().getAllProperties()).generate(path);
 		new RegisterIoGenerator(getBuilderModel().getRegisterProperty(), path).generate(path);

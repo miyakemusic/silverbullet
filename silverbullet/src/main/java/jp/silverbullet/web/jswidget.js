@@ -93,6 +93,11 @@ class JsWidget {
 				me.requestChange(me.info.id, id, dependency);
 			});
 		}
+		else if (this.info.widgetType == 'CSSBUTTON') {
+			this.subWidget = new JsCssButton(this.baseId, this.info, function(id) {
+				me.requestChange(me.info.id, id, dependency);
+			});
+		}
 		else if (this.info.widgetType == 'ACTIONBUTTON') {
 			this.subWidget = new JsActionButton(this.baseId, function(id) {
 				me.requestChange(me.info.id, id, dependency);

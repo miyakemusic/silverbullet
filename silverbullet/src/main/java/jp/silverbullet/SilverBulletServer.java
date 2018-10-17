@@ -14,15 +14,13 @@ public abstract class SilverBulletServer {
 	static private RegisterMapModel registerMapModel;
 
 	public void start(String port) {
-		builderModel = StaticInstances.getBuilderModel();
+		String filename = getDefaultFilename();
+		StaticInstances.getInstance().load(filename);
+		builderModel = StaticInstances.getInstance().getBuilderModel();
 		builderModel.setUserPath(getUserPath());
 
-		registerMapModel = StaticInstances.getRegisterMapModel();
-		
-		String filename = getDefaultFilename();
-
-		StaticInstances.load(filename);
-		
+		registerMapModel = StaticInstances.getInstance().getRegisterMapModel();
+			
 		startWebServer(Integer.valueOf(port));
 	}
 

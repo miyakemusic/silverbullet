@@ -33,7 +33,7 @@ public class RegisterResource {
 	@Path("/interrupt")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String interupt() {
-		StaticInstances.getRegisterMapModel().triggerInterrupt();
+		StaticInstances.getInstance().getRegisterMapModel().triggerInterrupt();
 		return "OK";
 	}
 	
@@ -41,7 +41,7 @@ public class RegisterResource {
 	@Path("/getRegisters")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public SvRegisterJsonHolder getRegisters() {
-		RegisterProperty regProp =  StaticInstances.getBuilderModel().getRegisterProperty();
+		RegisterProperty regProp =  StaticInstances.getInstance().getBuilderModel().getRegisterProperty();
 		
 		SvRegisterJsonHolder ret = new SvRegisterJsonHolder();
 		for (SvRegister register : regProp.getRegisters()) {
@@ -73,7 +73,7 @@ public class RegisterResource {
 			String[] tmp = kv.getKey().split("_");
 			String param = tmp[0];
 			int row = Integer.valueOf(tmp[1]);
-			SvRegister register =  StaticInstances.getBuilderModel().getRegisterProperty().getRegisters().get(row);
+			SvRegister register =  StaticInstances.getInstance().getBuilderModel().getRegisterProperty().getRegisters().get(row);
 			
 			if (param.equals("addr")) {
 				register.setAddress(kv.getValue());
@@ -116,7 +116,7 @@ public class RegisterResource {
 		}
 		
 		if (sortRequired) {
-			StaticInstances.getBuilderModel().getRegisterProperty().sort();
+			StaticInstances.getInstance().getBuilderModel().getRegisterProperty().sort();
 		}
 		
 		return "OK";
@@ -125,7 +125,7 @@ public class RegisterResource {
 	@GET
 	@Path("/addNew")
 	public String addNew() {
-		RegisterProperty registerProperty = StaticInstances.getBuilderModel().getRegisterProperty();
+		RegisterProperty registerProperty = StaticInstances.getInstance().getBuilderModel().getRegisterProperty();
 		
 		if (registerProperty.getRegisters().size() == 0) {
 			
@@ -141,7 +141,7 @@ public class RegisterResource {
 	@Path("/addRow")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String addRow(@QueryParam("row") final String row) {
-		List<SvRegister> registers = StaticInstances.getBuilderModel().getRegisterProperty().getRegisters();
+		List<SvRegister> registers = StaticInstances.getInstance().getBuilderModel().getRegisterProperty().getRegisters();
 		
 		SvRegister newRegister = new SvRegister();
 		newRegister.setName("NEW");
@@ -158,7 +158,7 @@ public class RegisterResource {
 			iRow++;
 		}
 		
-		StaticInstances.getBuilderModel().getRegisterProperty().getRegisters().add(iRow, newRegister);
+		StaticInstances.getInstance().getBuilderModel().getRegisterProperty().getRegisters().add(iRow, newRegister);
 	
 		return "OK";
 	}
@@ -167,7 +167,7 @@ public class RegisterResource {
 	@Path("/addBitRow")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String addBitRow(@QueryParam("row") final int row) {
-		SvRegister register = StaticInstances.getBuilderModel().getRegisterProperty().getRegisters().get(row);
+		SvRegister register = StaticInstances.getInstance().getBuilderModel().getRegisterProperty().getRegisters().get(row);
 		register.addBit("new bit", ReadWriteType.RW, "new bit", "new bit");
 		return "OK";
 	}
@@ -176,10 +176,10 @@ public class RegisterResource {
 	@Path("/setCurrentValue")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setCurrentValue(@QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName, @QueryParam("value") final String value) {
-		SvRegister register  = StaticInstances.getBuilderModel().getRegisterProperty().getRegisterByName(regName);
+		SvRegister register  = StaticInstances.getInstance().getBuilderModel().getRegisterProperty().getRegisterByName(regName);
 		RegisterBit bit = register.getBits().get(bitName);
 		
-		Map<Long, BitSet> map = StaticInstances.getRegisterMapModel().getMapValue();
+		Map<Long, BitSet> map = StaticInstances.getInstance().getRegisterMapModel().getMapValue();
 
 		String address = register.getAddress().replace("0x", "");
 		if (address.contains("-")) {
@@ -197,7 +197,7 @@ public class RegisterResource {
 			mask.set(i);
 		}
 
-		StaticInstances.getSimulator().updateRegister(intAddress, dataSet, mask);
+		StaticInstances.getInstance().getSimulator().updateRegister(intAddress, dataSet, mask);
 		return "OK";
 	}
 	
@@ -206,7 +206,7 @@ public class RegisterResource {
 	@Path("/createShortCut")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String createShortCut(@QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName) {
-		StaticInstances.getBuilderModel().getRegisterShortCut().add(regName, bitName);
+		StaticInstances.getInstance().getBuilderModel().getRegisterShortCut().add(regName, bitName);
 		return "OK";
 	}
 	
@@ -214,15 +214,15 @@ public class RegisterResource {
 	@Path("/getShortCuts")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<RegisterShortCut> getShortCuts() {
-		return StaticInstances.getBuilderModel().getRegisterShortCut().getShortcuts();
+		return StaticInstances.getInstance().getBuilderModel().getRegisterShortCut().getShortcuts();
 	}
 	
 	@GET
 	@Path("/getCurrentValue")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String getCurrentValue(@QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName) {
-		SvRegister register  = StaticInstances.getBuilderModel().getRegisterProperty().getRegisterByName(regName);
-		Map<Long, BitSet> value = StaticInstances.getRegisterMapModel().getMapValue();
+		SvRegister register  = StaticInstances.getInstance().getBuilderModel().getRegisterProperty().getRegisterByName(regName);
+		Map<Long, BitSet> value = StaticInstances.getInstance().getRegisterMapModel().getMapValue();
 		String address = register.getAddress().replace("0x", "");
 		if (address.contains("-")) {
 			address = address.split("-")[0];
@@ -243,7 +243,7 @@ public class RegisterResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<String> getSimulators() {
 		//return new ArrayList<String>();
-		return StaticInstances.getRegisterMapModel().getSimulatorClasses(StaticInstances.getBuilderModel().getUserApplicationPath());
+		return StaticInstances.getInstance().getRegisterMapModel().getSimulatorClasses(StaticInstances.getInstance().getBuilderModel().getUserApplicationPath());
 	}
 	
 	@GET
@@ -251,10 +251,10 @@ public class RegisterResource {
 	@Produces(MediaType.TEXT_PLAIN)
 	public String setSimulator(@QueryParam("simulator") final String simulator) {
 		try {
-			Class<?> c = Class.forName(StaticInstances.getBuilderModel().getUserApplicationPath() + ".test." + simulator);	
-			SvSimulator object = (SvSimulator)c.getConstructor(RegisterAccess.class).newInstance(StaticInstances.getBuilderModel().getRegisterAccess());
-			StaticInstances.getRegisterMapModel().addSimulator(object);
-			StaticInstances.getRegisterMapModel().update();
+			Class<?> c = Class.forName(StaticInstances.getInstance().getBuilderModel().getUserApplicationPath() + ".test." + simulator);	
+			SvSimulator object = (SvSimulator)c.getConstructor(RegisterAccess.class).newInstance(StaticInstances.getInstance().getBuilderModel().getRegisterAccess());
+			StaticInstances.getInstance().getRegisterMapModel().addSimulator(object);
+			StaticInstances.getInstance().getRegisterMapModel().update();
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -277,8 +277,8 @@ public class RegisterResource {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-//		StaticInstances.getRegisterMapModel().setSimulatorClass(simulator);
-//		StaticInstances.getRegisterMapModel().setSimulatorEnabled(true);
+//		StaticInstances.getInstance().getRegisterMapModel().setSimulatorClass(simulator);
+//		StaticInstances.getInstance().getRegisterMapModel().setSimulatorEnabled(true);
 		
 		return "OK";
 	}
@@ -287,7 +287,7 @@ public class RegisterResource {
 	@Path("/setCheck")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setCheck(@QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName, @QueryParam("value") final String value) {
-		StaticInstances.getBuilderModel().getRegisterShortCut().updateCheck(regName, bitName, value.equals("on"));
+		StaticInstances.getInstance().getBuilderModel().getRegisterShortCut().updateCheck(regName, bitName, value.equals("on"));
 		return "OK";
 	}
 

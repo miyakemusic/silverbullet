@@ -33,7 +33,7 @@ public class DesignResource {
 	@Path("/getProperty")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public JsProperty getProperty(@QueryParam("id") String id, @QueryParam("ext") String ext) {
-		SvProperty property = StaticInstances.getBuilderModel().getProperty(id);
+		SvProperty property = StaticInstances.getInstance().getBuilderModel().getProperty(id);
 		JsProperty ret = convertProperty(property, ext);
 		return ret;
 	}
@@ -96,7 +96,7 @@ public class DesignResource {
 	public List<String> setCurrentValue(@QueryParam("id") String id, @QueryParam("value") String value) {
 		Sequencer sequencer = null;
 		try {
-			sequencer = StaticInstances.getBuilderModel().getSequencer();
+			sequencer = StaticInstances.getInstance().getBuilderModel().getSequencer();
 			sequencer.requestChange(id, value);
 		} catch (RequestRejectedException e) {
 			// TODO Auto-generated catch block
@@ -113,10 +113,10 @@ public class DesignResource {
 	@Produces(MediaType.APPLICATION_JSON) 
 	public JsWidget getDesign(@QueryParam("root") String root) {
 		if (root == null || root.isEmpty()) {
-			return UiLayout.getInstance().getRoot();
+			return StaticInstances.getInstance().getBuilderModel().getUiLayout().getRoot();// StaticInstances.getInstance().getBuilderModel().getUiLayout().getRoot();
 		}
 		else {
-			return UiLayout.getInstance().getSubTree(root);
+			return StaticInstances.getInstance().getBuilderModel().getUiLayout().getSubTree(root);
 		}
 	}
 	
@@ -124,7 +124,7 @@ public class DesignResource {
 	@Path("/addWidget")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String addWidget(@QueryParam("id") List<String> ids, @QueryParam("div") String div) {
-		UiLayout.getInstance().addWidget(div, ids);
+		StaticInstances.getInstance().getBuilderModel().getUiLayout().addWidget(div, ids);
 		return "OK";
 	}
 
@@ -132,7 +132,7 @@ public class DesignResource {
 	@Path("/addDialog")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String addDialog(@QueryParam("div") String div, @QueryParam("id") String id) {
-		UiLayout.getInstance().addDialog(div, id);
+		StaticInstances.getInstance().getBuilderModel().getUiLayout().addDialog(div, id);
 		return "OK";
 	}
 	
@@ -140,7 +140,7 @@ public class DesignResource {
 	@Path("/remove")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String remove(@QueryParam("div") String div) {
-		UiLayout.getInstance().remove(div);
+		StaticInstances.getInstance().getBuilderModel().getUiLayout().remove(div);
 		return "OK";
 	}
 	
@@ -149,7 +149,7 @@ public class DesignResource {
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String move(@QueryParam("div") String div, @QueryParam("x") String x, @QueryParam("y") String y) {
 //		System.out.println(x + "," + y);
-		UiLayout.getInstance().move(div, x, y);
+		StaticInstances.getInstance().getBuilderModel().getUiLayout().move(div, x, y);
 		return "OK";
 	}
 
@@ -157,7 +157,7 @@ public class DesignResource {
 	@Path("/addPanel")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String addPanel(@QueryParam("div") String div) {
-		UiLayout.getInstance().addPanel(div);
+		StaticInstances.getInstance().getBuilderModel().getUiLayout().addPanel(div);
 		return "OK";
 	}
 
@@ -165,7 +165,7 @@ public class DesignResource {
 	@Path("/addTab")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String addTab(@QueryParam("div") String div) {
-		UiLayout.getInstance().addTab(div);
+		StaticInstances.getInstance().getBuilderModel().getUiLayout().addTab(div);
 		return "OK";
 	}
 	
@@ -173,7 +173,7 @@ public class DesignResource {
 	@Path("/clearLayout")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String clearLayout() {
-		UiLayout.getInstance().clear();
+		StaticInstances.getInstance().getBuilderModel().getUiLayout().clear();
 		return "OK";
 	}
 	
@@ -181,7 +181,7 @@ public class DesignResource {
 	@Path("/setLayout")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String move(@QueryParam("div") String div, @QueryParam("layout") String layout) {
-		UiLayout.getInstance().setLayout(div, layout);
+		StaticInstances.getInstance().getBuilderModel().getUiLayout().setLayout(div, layout);
 		return "OK";
 	}
 
@@ -189,7 +189,7 @@ public class DesignResource {
 	@Path("/setStyle")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setStyle(@QueryParam("div") String div, @QueryParam("style") String style) {
-		UiLayout.getInstance().setSyle(div, style);
+		StaticInstances.getInstance().getBuilderModel().getUiLayout().setSyle(div, style);
 		return "OK";
 	}
 
@@ -197,14 +197,14 @@ public class DesignResource {
 	@Path("/setCss")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setCss(@QueryParam("div") String div, @QueryParam("css") String css) {
-		UiLayout.getInstance().setCss(div, css);
+		StaticInstances.getInstance().getBuilderModel().getUiLayout().setCss(div, css);
 		return "OK";
 	}
 	@GET
 	@Path("/resize")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String resize(@QueryParam("div") String div, @QueryParam("width") String width, @QueryParam("height") String height) {
-		UiLayout.getInstance().resize(div, width, height);
+		StaticInstances.getInstance().getBuilderModel().getUiLayout().resize(div, width, height);
 		return "OK";
 	}
 	
@@ -219,7 +219,7 @@ public class DesignResource {
 	@Path("allWidgetTypes")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<String> getAllWidgeTypes() {
-		return Arrays.asList(JsWidget.TOGGLEBUTTON, JsWidget.ACTIONBUTTON, JsWidget.COMBOBOX, JsWidget.RADIOBUTTON, JsWidget.TEXTFIELD,
+		return Arrays.asList(JsWidget.TOGGLEBUTTON, JsWidget.CSSBUTTON, JsWidget.ACTIONBUTTON, JsWidget.COMBOBOX, JsWidget.RADIOBUTTON, JsWidget.TEXTFIELD,
 				JsWidget.CHART, JsWidget.CHECKBOX, JsWidget.GUI_DIALOG, JsWidget.PANEL, JsWidget.TAB, JsWidget.LABEL, JsWidget.MESSAGEBOX);
 	}
 	
@@ -227,7 +227,7 @@ public class DesignResource {
 	@Path("setWidgetType")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setWidgetType(@QueryParam("div") String div, @QueryParam("widgetType") String widgetType) {
-		UiLayout.getInstance().setWidgetType(div, widgetType);
+		StaticInstances.getInstance().getBuilderModel().getUiLayout().setWidgetType(div, widgetType);
 		return "OK";
 	}
 	
@@ -235,7 +235,7 @@ public class DesignResource {
 	@Path("setId")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setId(@QueryParam("div") String div, @QueryParam("id") String id) {
-		UiLayout.getInstance().setId(div, id);
+		StaticInstances.getInstance().getBuilderModel().getUiLayout().setId(div, id);
 		return "OK";
 	}
 	
@@ -243,7 +243,7 @@ public class DesignResource {
 	@Path("setPresentation")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setPresentation(@QueryParam("div") String div, @QueryParam("presentation") String presentation) {
-		UiLayout.getInstance().setPresentation(div, presentation);
+		StaticInstances.getInstance().getBuilderModel().getUiLayout().setPresentation(div, presentation);
 		return "OK";
 	}
 
@@ -251,7 +251,7 @@ public class DesignResource {
 	@Path("setCustom")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setCustom(@QueryParam("div") String div, @QueryParam("custom") String custom) {
-		//UiLayout.getInstance().setCustom(div, custom);
+		//StaticInstances.getInstance().getBuilderModel().getUiLayout().setCustom(div, custom);
 		return "OK";
 	}
 	
@@ -259,7 +259,7 @@ public class DesignResource {
 	@Path("cutPaste")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String cutPaste(@QueryParam("newBaseDiv") String newBaseDiv, @QueryParam("itemDiv") String itemDiv) {
-		UiLayout.getInstance().cutPaste(newBaseDiv, itemDiv);
+		StaticInstances.getInstance().getBuilderModel().getUiLayout().cutPaste(newBaseDiv, itemDiv);
 		return "OK";
 	}
 	
@@ -281,7 +281,7 @@ public class DesignResource {
 	@Path("setCustomElement")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setCustomElement(@QueryParam("div") String div, @QueryParam("customId") String customId, @QueryParam("customValue") String customValue) {
-		UiLayout.getInstance().setCustomElement(div, customId, customValue);
+		StaticInstances.getInstance().getBuilderModel().getUiLayout().setCustomElement(div, customId, customValue);
 		return "OK";
 	}
 	

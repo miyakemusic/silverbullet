@@ -8,6 +8,7 @@ import jp.silverbullet.register.RegisterShortCutHolder;
 import jp.silverbullet.register.SvRegister;
 import jp.silverbullet.remote.SvTexHolder;
 import jp.silverbullet.spec.SpecElement;
+import jp.silverbullet.web.ui.UiLayout;
 import jp.silverbullet.dependency.DependencyInterface;
 import jp.silverbullet.dependency.DependencySpecHolder;
 import jp.silverbullet.handlers.EasyAccessModel;
@@ -68,4 +69,6 @@ public interface BuilderModel {
 	RegisterShortCutHolder getRegisterShortCut();
 	
 	EasyAccessModel getEasyAccess();
+	
+	UiLayout getUiLayout();
 }

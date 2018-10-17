@@ -19,15 +19,15 @@ public class ControllerResource {
 	@Path("/getSpecs")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<HandlerProperty> getSpecs() {
-		return StaticInstances.getBuilderModel().getHandlerPropertyHolder().getHandlers();
+		return StaticInstances.getInstance().getBuilderModel().getHandlerPropertyHolder().getHandlers();
 	}
 	
 	@GET
 	@Path("/remove")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<HandlerProperty> removeRow(@QueryParam("row") int row) {
-		List<HandlerProperty> ret = StaticInstances.getBuilderModel().getHandlerPropertyHolder().remove(row);
-		StaticInstances.save();
+		List<HandlerProperty> ret = StaticInstances.getInstance().getBuilderModel().getHandlerPropertyHolder().remove(row);
+		StaticInstances.getInstance().save();
 		return ret;
 	}
 	
@@ -35,7 +35,7 @@ public class ControllerResource {
 	@Path("/update")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<HandlerProperty> updateValue(@QueryParam("row") int row, @QueryParam("name") String name, @QueryParam("value") String value) {
-		HandlerProperty data = StaticInstances.getBuilderModel().getHandlerPropertyHolder().getHandlers().get(row);
+		HandlerProperty data = StaticInstances.getInstance().getBuilderModel().getHandlerPropertyHolder().getHandlers().get(row);
 		if (name.equals("name")) {
 			data.setName(value);
 		}
@@ -51,7 +51,7 @@ public class ControllerResource {
 		else if (name.equals("externalClass")) {
 			data.setExternalClass(value);
 		}
-		StaticInstances.save();
+		StaticInstances.getInstance().save();
 		return getSpecs();
 	}
 	
@@ -59,8 +59,8 @@ public class ControllerResource {
 	@Path("/addNew")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<HandlerProperty> updateValue() {
-		String id = StaticInstances.getBuilderModel().getPropertyStore().getAllIds().get(0);
-		StaticInstances.getBuilderModel().getHandlerPropertyHolder().addHandler("New", "---", true, id);
+		String id = StaticInstances.getInstance().getBuilderModel().getPropertyStore().getAllIds().get(0);
+		StaticInstances.getInstance().getBuilderModel().getHandlerPropertyHolder().addHandler("New", "---", true, id);
 		return getSpecs();
 	}
 }

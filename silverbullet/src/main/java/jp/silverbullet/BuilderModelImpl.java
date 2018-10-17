@@ -1,5 +1,9 @@
 package jp.silverbullet;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
@@ -9,6 +13,7 @@ import jp.silverbullet.register.RegisterProperty;
 import jp.silverbullet.register.RegisterShortCutHolder;
 import jp.silverbullet.remote.SvTexHolder;
 import jp.silverbullet.spec.SpecElement;
+import jp.silverbullet.web.ui.PropertyGetter;
 import jp.silverbullet.web.ui.UiLayout;
 import jp.silverbullet.dependency.DepPropertyStore;
 import jp.silverbullet.dependency.DependencyEngine;
@@ -22,6 +27,11 @@ import jp.silverbullet.handlers.SvDevice;
 
 import javax.xml.bind.JAXBException;
 
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class BuilderModelImpl implements BuilderModel {
 	
 	private static final String ID_DEF_XML = "id_def.xml";
@@ -31,8 +41,9 @@ public class BuilderModelImpl implements BuilderModel {
 	private static final String HARDSPEC_XML = "hardspec.xml";
 	private static final String USERSTORY_XML = "userstory.xml";
 	private static final String REGISTERSHORTCUT = "registershortcuts.xml";
-	
 	private static final String DEPENDENCYSPEC2_XML = "dependencyspec2.xml";
+	private static final String GUI_LAYOUT_JSON = "layout.json";	
+	
 	private static BuilderModelImpl instance;
 	
 	private List<String> selectedId;
@@ -93,14 +104,9 @@ public class BuilderModelImpl implements BuilderModel {
 	};
 	
 	private RegisterAccess regiseterAccess;
+	private UiLayout uiLayout;
 
-	public static BuilderModelImpl getInstance() {
-		if (instance == null) {
-			instance = new BuilderModelImpl();
-		}
-		return instance;
-	}
-	private BuilderModelImpl() {
+	public BuilderModelImpl() {
 		store = new SvPropertyStore(propertiesHolder);	
 		
 		this.sequencer = new Sequencer() {
@@ -180,51 +186,6 @@ public class BuilderModelImpl implements BuilderModel {
 		return store.getIds(type);
 	}
 
-	private void saveDependencySpecHolder2(DependencySpecHolder dependencySpecHolder22, String filename) {
-		XmlPersistent<DependencySpecHolder> propertyPersister = new XmlPersistent<>();
-		try {
-			propertyPersister.save(dependencySpecHolder22, filename, DependencySpecHolder.class);
-		} catch (JAXBException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void saveSpec(SpecElement spec, String filename) {
-		XmlPersistent<SpecElement> propertyPersister = new XmlPersistent<>();
-		try {
-			propertyPersister.save(spec, filename, SpecElement.class);
-		} catch (JAXBException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void saveRegister(String filename) {
-		XmlPersistent<RegisterProperty> propertyPersister = new XmlPersistent<RegisterProperty>();
-		try {
-			propertyPersister.save(this.registerProperty, filename, RegisterProperty.class);
-		} catch (JAXBException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void saveRemote(String filename) {
-		XmlPersistent<SvTexHolder> propertyPersister = new XmlPersistent<SvTexHolder>();
-		try {
-			propertyPersister.save(this.texHolder, filename, SvTexHolder.class);
-		} catch (JAXBException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void saveHandlerPropertyHolder(String filename) {
-		XmlPersistent<HandlerPropertyHolder> propertyPersister = new XmlPersistent<HandlerPropertyHolder>();
-		try {
-			propertyPersister.save(this.handlerPropertyHolder, filename, HandlerPropertyHolder.class);
-		} catch (JAXBException e) {
-			e.printStackTrace();
-		}
-	}
-
 	@Override
 	public DependencyInterface getDependency() {
 		return this.sequencer;
@@ -244,10 +205,35 @@ public class BuilderModelImpl implements BuilderModel {
 		this.userStory = load(SpecElement.class, folder + "/" + USERSTORY_XML);
 		this.registerShortCuts = load(RegisterShortCutHolder.class, folder + "/" + REGISTERSHORTCUT);
 		this.dependencySpecHolder = load(DependencySpecHolder.class, folder + "/" + DEPENDENCYSPEC2_XML);
-		
-		UiLayout.getInstance().initialize();
+		this.uiLayout = loadJson(UiLayout.class, folder + "/" + GUI_LAYOUT_JSON);
+		this.uiLayout.setPropertyGetter(new PropertyGetter() {
+			@Override
+			public SvProperty getProperty(String id) {
+				return store.getProperty(id);
+			}
+		});
+//		UiLayout.getInstance().initialize();
 	}
 
+	private <T> T loadJson(Class<T> clazz, String filename) {
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			return mapper.readValue(new File(filename), clazz);
+		} catch (JsonParseException e) {
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		try {
+			return clazz.newInstance();
+		} catch (InstantiationException | IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
 	@Override
 	public void save(String folder) {
 		save(this.propertiesHolder, PropertyHolder.class, folder + "/" + ID_DEF_XML);
@@ -258,8 +244,25 @@ public class BuilderModelImpl implements BuilderModel {
 		save(this.userStory, SpecElement.class, folder + "/" + USERSTORY_XML);
 		save(this.registerShortCuts, RegisterShortCutHolder.class, folder + "/" + REGISTERSHORTCUT);
 		save(this.dependencySpecHolder, DependencySpecHolder.class, folder + "/" + DEPENDENCYSPEC2_XML);
+		saveJson(this.uiLayout, folder + "/" + GUI_LAYOUT_JSON);
 	}
 	
+	private void saveJson(Object object, String filename) {
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			String s = mapper.writeValueAsString(object);
+			Files.write(Paths.get(filename), Arrays.asList(s));
+		} catch (JsonGenerationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	@Override
 	public void importFile(String folder) {
 		PropertyHolder tmpProps = loadTestProp(folder + "/" + ID_DEF_XML);
@@ -314,15 +317,6 @@ public class BuilderModelImpl implements BuilderModel {
 		} catch (JAXBException e) {
 			e.printStackTrace();
 		}		
-	}
-	
-	private void saveTestProp(String filename) {
-		XmlPersistent<PropertyHolder> propertyPersister = new XmlPersistent<PropertyHolder>();
-		try {
-			propertyPersister.save(this.propertiesHolder, filename, PropertyHolder.class);
-		} catch (JAXBException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	private PropertyHolder loadTestProp(String filename) {
@@ -391,5 +385,9 @@ public class BuilderModelImpl implements BuilderModel {
 	@Override
 	public EasyAccessModel getEasyAccess() {
 		return this.easyAccessModel;
+	}
+	@Override
+	public UiLayout getUiLayout() {
+		return this.uiLayout;
 	}
 }

@@ -279,6 +279,59 @@ class JsToggleButton extends JsSubWidget {
 		$('#' + this.baseId + ' > ').prop('disabled', disabled);
 	}
 }
+
+class JsCssButton extends JsSubWidget {
+	constructor(baseId, info, change) {
+		super(baseId);
+		this.baseId = baseId;
+		this.change = change;
+		this.custom = info.custom;
+	}
+	
+	updateValue(property) {
+		$('#' + this.titleId).text(property.title);
+		var nextTitle;
+		for (var i = 0; i < property.elements.length; i++) {
+			if (property.elements[i].id == property.currentSelectionId) {
+				if (i < property.elements.length-1) {	
+					this.nextId = property.elements[i+1].id;
+					nextTitle = property.elements[i+1].title;
+				}
+				else {
+					this.nextId = property.elements[0].id;
+					nextTitle = property.elements[0].title;
+				}
+				//$('#' + this.buttonId).html('<div class="fbTitle">' + property.title + '</div>' + '<div class="fbValue">' + nextTitle + property.unit + '</div>');
+				$('#' + this.buttonId).text(nextTitle);
+				break;
+			}
+		}
+		
+	}
+	
+	updateLayout(property) {
+		$('#' + this.baseId).empty();
+		this.buttonId = 'button' + this.baseId;
+		this.titleId = 'title' + this.baseId;
+		var html = '<div id=' + this.titleId + '>' + property.title + '</div><div id="' + this.buttonId + '" class="fbTitle"></div>';
+
+		$('#' + this.baseId).append(html);
+		
+		var me = this;
+		$('#' + this.buttonId).click(function() {
+			me.change(me.nextId);
+		});
+		$('#' + this.titleId).click(function() {
+			me.change(me.nextId);
+		});		
+		this.updateValue(property);
+	}
+	
+	setDisabled(disabled) {
+		$('#' + this.baseId + ' > ').prop('disabled', disabled);
+	}
+}
+
 class JsActionButton extends JsSubWidget {
 	constructor(baseId, change) {
 		super(baseId);

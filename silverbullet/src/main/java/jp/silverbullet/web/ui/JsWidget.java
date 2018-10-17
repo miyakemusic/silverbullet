@@ -24,6 +24,7 @@ public class JsWidget {
 	public static final String TAB = "TAB";
 	public static final String LABEL = "LABEL";
 	public static final String MESSAGEBOX = "MESSAGEBOX";
+	public static final String CSSBUTTON = "CSSBUTTON";
 	
 	private String id = "";
 	private String presentation = "";

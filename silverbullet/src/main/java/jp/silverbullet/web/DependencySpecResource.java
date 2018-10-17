@@ -38,10 +38,10 @@ public class DependencySpecResource {
 	@Path("/elements")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public JsonTable getElements(@QueryParam("id") final String id) {
-		SvProperty prop = StaticInstances.getBuilderModel().getProperty(id);
-		DependencySpecHolder specHolder = StaticInstances.getBuilderModel().getDependencySpecHolder();
-		PropertyHolder porpHolder = StaticInstances.getBuilderModel().getPropertyHolder();
-		SvPropertyStore propHolder = StaticInstances.getBuilderModel().getPropertyStore();
+		SvProperty prop = StaticInstances.getInstance().getInstance().getBuilderModel().getProperty(id);
+		DependencySpecHolder specHolder = StaticInstances.getInstance().getInstance().getBuilderModel().getDependencySpecHolder();
+		PropertyHolder porpHolder = StaticInstances.getInstance().getInstance().getBuilderModel().getPropertyHolder();
+		SvPropertyStore propHolder = StaticInstances.getInstance().getInstance().getBuilderModel().getPropertyStore();
 		DependencyEditorModel model = new DependencyEditorModel(prop, specHolder, porpHolder, propHolder);
 		
 		JsonTable ret = new JsonTable();
@@ -62,11 +62,11 @@ public class DependencySpecResource {
 	}
 
 	private DependencyTableRowData[] createSpecTable(final String id) {
-		SvProperty property = StaticInstances.getBuilderModel().getProperty(id);
-		DependencySpec spec = StaticInstances.getBuilderModel().getDependencySpecHolder().get(id);
+		SvProperty property = StaticInstances.getInstance().getBuilderModel().getProperty(id);
+		DependencySpec spec = StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder().get(id);
 		
-		DependencyEditorModel dependencyEditorModel = new DependencyEditorModel(property, StaticInstances.getBuilderModel().getDependencySpecHolder(),
-				StaticInstances.getBuilderModel().getPropertyHolder(), StaticInstances.getBuilderModel().getPropertyStore());
+		DependencyEditorModel dependencyEditorModel = new DependencyEditorModel(property, StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder(),
+				StaticInstances.getInstance().getBuilderModel().getPropertyHolder(), StaticInstances.getInstance().getBuilderModel().getPropertyStore());
 		List<DependencyTableRowData> table = new DependencySpecTableGenerator(dependencyEditorModel).get(spec);
 
 		return table.toArray(new DependencyTableRowData[0]);
@@ -98,7 +98,7 @@ public class DependencySpecResource {
 		
 		DependencyTargetConverter converter = new DependencyTargetConverter(element);
 		
-		DependencySpec spec = StaticInstances.getBuilderModel().getDependencySpecHolder().get(id);
+		DependencySpec spec = StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder().get(id);
 		try {
 			String value2 = URLDecoder.decode(value, "UTF-8");
 			String condition2 = URLDecoder.decode(condition, "UTF-8");
@@ -117,7 +117,7 @@ public class DependencySpecResource {
 			@QueryParam("prevValue") @Encoded final String prevValue, @QueryParam("prevCondition") @Encoded final String prevCondition, @QueryParam("prevConfirmation") final String prevConfirmation,
 			@QueryParam("value") @Encoded final String value, @QueryParam("condition") @Encoded final String condition, @QueryParam("confirmation") final String confirmation) {
 		
-		DependencySpec spec = StaticInstances.getBuilderModel().getDependencySpecHolder().get(id);
+		DependencySpec spec = StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder().get(id);
 		DependencyTargetConverter converter = new DependencyTargetConverter(element);	
 		
 		spec.remove(converter.getElement(), converter.getSelectionId(), prevValue, prevCondition);
@@ -131,7 +131,7 @@ public class DependencySpecResource {
 	public String removeSpec(@QueryParam("id") final String id, @QueryParam("element") final String element, 
 			@QueryParam("value") final String value, @QueryParam("condition") final String condition) {
 		
-		DependencySpec spec = StaticInstances.getBuilderModel().getDependencySpecHolder().get(id);
+		DependencySpec spec = StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder().get(id);
 		DependencyTargetConverter converter = new DependencyTargetConverter(element);
 		spec.remove(converter.getElement(), converter.getSelectionId(), value, condition);
 //		spec.remove(DependencyTargetElement.valueOf(element), value);
@@ -142,7 +142,7 @@ public class DependencySpecResource {
 	@Path("/spec")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public DependencySpec getSpec(@QueryParam("id") final String id) {
-		DependencySpec spec = StaticInstances.getBuilderModel().getDependencySpecHolder().get(id);
+		DependencySpec spec = StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder().get(id);
 		return spec;
 	}
 	
@@ -187,14 +187,14 @@ public class DependencySpecResource {
 	@Path("/createNew")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String createNew(@QueryParam("id") final String id) {
-		DependencySpecHolder holder = StaticInstances.getBuilderModel().getDependencySpecHolder();
+		DependencySpecHolder holder = StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder();
 		DependencySpec spec = holder.get(id);
 //		spec.add(DependencyTargetElement.Enabled, DependencyExpression.True, "");
 		return "OK";
 	}
 	
 	private DepChainPair[] createDependencyLink(final String id) {
-		DependencySpecHolder holder = StaticInstances.getBuilderModel().getDependencySpecHolder();
+		DependencySpecHolder holder = StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder();
 		DependencyBuilder builder = new DependencyBuilder(id, holder);
 
 		Set<DepChainPair> set = new LinkedHashSet<>();
@@ -207,7 +207,7 @@ public class DependencySpecResource {
 	@Path("/ids")
 	@Produces(MediaType.APPLICATION_JSON)
 	public JsonTable getIds() {
-		DependencySpecHolder holder = StaticInstances.getBuilderModel().getDependencySpecHolder();
+		DependencySpecHolder holder = StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder();
 		
 		JsonTable ret = new JsonTable();
 		
@@ -219,7 +219,7 @@ public class DependencySpecResource {
 		}
 		
 		for (String id2 : tmps) {
-			SvProperty prop = StaticInstances.getBuilderModel().getProperty(id2);
+			SvProperty prop = StaticInstances.getInstance().getBuilderModel().getProperty(id2);
 			ret.addRow(Arrays.asList(prop.getTitle(), prop.getId(), prop.getType(), prop.getComment()));
 		}
 		
