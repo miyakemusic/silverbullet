@@ -1,9 +1,12 @@
 package jp.silverbullet.web.ui;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
 
 public class JsWidget {
 
@@ -34,6 +37,7 @@ public class JsWidget {
 	private String top = "";
 	private String left = "";
 	private String layout = "";
+	private String fontsize = "";
 	private List<JsWidget> children = new ArrayList<>();
 	private int unique;
 	private String styleClass;
@@ -147,12 +151,40 @@ public class JsWidget {
 		this.index = index;
 	}
 
+	public String getFontsize() {
+		return fontsize;
+	}
+
+	public void setFontsize(String fontsize) {
+		this.fontsize = fontsize;
+	}
+
 	public String getCustom(String id) {
 		String v = this.custom.get(id);//CustomProperties.GUI_ID
 		if (v == null) {
 			v = "";
 		}
 		return v;
+	}
+
+	public void setField(String propertyType, String value) {
+		Method method;
+		try {
+			method = this.getClass().getMethod("set" + StringUtils.capitalize(propertyType), String.class);
+		} catch (ReflectiveOperationException e) {
+			throw new RuntimeException(e);
+		}
+
+		Object ret; //戻り値
+		try {
+			ret = method.invoke(this, value);
+			//  = object.メソッド(1); と同じ
+		} catch (IllegalArgumentException e) {
+			throw e;
+		} catch (ReflectiveOperationException e) {
+			throw new RuntimeException(e);
+		}
+		
 	}
 	
 }

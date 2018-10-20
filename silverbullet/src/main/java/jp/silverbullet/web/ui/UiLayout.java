@@ -7,54 +7,17 @@ import jp.silverbullet.SvProperty;
 import jp.silverbullet.web.WebSocketBroadcaster;
 
 public class UiLayout {
-//	@JsonIgnore
-//	private static UiLayout instance;
+
 	public JsWidget root;
 	private PropertyGetter propertyGetter;
 	public UiLayout() {
 		root = createRoot();
 	}
-//	public static void write(UiLayout object) {
-//		ObjectMapper mapper = new ObjectMapper();
-//		try {
-//			String s = mapper.writeValueAsString(object);
-//			Files.write(Paths.get("layout.json"), Arrays.asList(s));
-//		} catch (JsonGenerationException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (JsonMappingException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
 	
 	private void fireEvent() {
-//		write(this);
 		WebSocketBroadcaster.getInstance().sendMessage("layoutChanged");
 	}
-	
-//	public void read(String filename) {
-//		this.root = UiLayout.createRoot();
-//		
-//		ObjectMapper mapper = new ObjectMapper();
-//		try {
-//			UiLayout object = mapper.readValue(new File(filename), UiLayout.class);
-//			root = object.root;
-//		} catch (JsonParseException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (JsonMappingException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
-	
+
 	public void setPropertyGetter(PropertyGetter propertyGetter) {
 		this.propertyGetter = propertyGetter;
 	}
@@ -64,18 +27,9 @@ public class UiLayout {
 		root.setWidgetType(JsWidget.PANEL);
 		root.setWidth("800");
 		root.setHeight("400");
-
+		root.setLayout(JsWidget.ABSOLUTELAYOUT);
 		return root;
 	}
-	
-//	public void initialize() {
-//		if (Files.exists(Paths.get("layout.json"))) {
-//			read("layout.json");
-//			return;
-//		}
-//		
-//		root = createRoot();
-//	}
 	
 	private JsWidget createPanel() {
 		JsWidget widget = new JsWidget();
@@ -86,13 +40,6 @@ public class UiLayout {
 	public JsWidget getRoot() {
 		return root;
 	}
-//	public static UiLayout getInstance() {
-//		if (instance == null) {
-//			instance = new UiLayout();
-//			instance.initialize();
-//		}
-//		return instance;
-//	}
 
 	public void addWidget(String div, List<String> ids) {
 		int unique = extractUnique(div);
@@ -198,11 +145,11 @@ public class UiLayout {
 		this.getDiv(unique).addChild(panel);
 	}
 	
-	public void setLayout(String div, String layout) {
-		JsWidget panel = getWidget(div);
-		panel.setLayout(layout);
-		this.fireEvent();
-	}
+//	public void setLayout(String div, String layout) {
+//		JsWidget panel = getWidget(div);
+//		panel.setLayout(layout);
+//		this.fireEvent();
+//	}
 
 	private JsWidget getWidget(String div) {
 		int unique = extractUnique(div);
@@ -229,23 +176,23 @@ public class UiLayout {
 		return false;
 	}
 
-	public void setWidgetType(String div, String widgetType) {
-		JsWidget panel = getWidget(div);
-		panel.setWidgetType(widgetType);
-		this.fireEvent();
-	}
+//	public void setWidgetType(String div, String widgetType) {
+//		JsWidget panel = getWidget(div);
+//		panel.setWidgetType(widgetType);
+//		this.fireEvent();
+//	}
 
-	public void setSyle(String div, String style) {
-		JsWidget panel = getWidget(div);
-		panel.setStyleClass(style);
-		this.fireEvent();
-	}
+//	public void setSyle(String div, String style) {
+//		JsWidget panel = getWidget(div);
+//		panel.setStyleClass(style);
+//		this.fireEvent();
+//	}
 
-	public void setCss(String div, String css) {
-		JsWidget panel = getWidget(div);
-		panel.setCss(css);
-		this.fireEvent();	
-	}
+//	public void setCss(String div, String css) {
+//		JsWidget panel = getWidget(div);
+//		panel.setCss(css);
+//		this.fireEvent();	
+//	}
 
 	public void setId(String div, String id) {
 		JsWidget panel = getWidget(div);
@@ -287,12 +234,18 @@ public class UiLayout {
 		this.root = createRoot();
 	}
 
-	public void setPresentation(String div, String presentation) {
-		JsWidget panel = getWidget(div);
-		panel.setPresentation(presentation);
-		this.fireEvent();
-	}
+//	public void setPresentation(String div, String presentation) {
+//		JsWidget panel = getWidget(div);
+//		panel.setPresentation(presentation);
+//		this.fireEvent();
+//	}
 
+//	public void setFontSize(String div, String fontSize) {
+//		JsWidget panel = getWidget(div);
+//		panel.setFontsize(fontSize);
+//		this.fireEvent();
+//	}
+	
 	public void setCustom(String div, Map<String, String> custom) {
 		JsWidget panel = getWidget(div);
 		panel.setCustom(custom);
@@ -311,4 +264,36 @@ public class UiLayout {
 		panel.getCustom().put(customId, customValue);
 		this.fireEvent();
 	}
+
+
+	public void changeId(String prevId, String newId) {
+		new WalkThrough(this.getRoot())	{
+			@Override
+			protected void handle(JsWidget jsWidget) {
+				if (jsWidget.getId().equals(prevId)) {
+					jsWidget.setId(newId);
+				}
+			}
+		};
+	}
+
+	public void updateProperty(String div, String propertyType, String value) {
+		JsWidget panel = getWidget(div);
+		panel.setField(propertyType, value);
+		this.fireEvent();
+	}
+}
+
+abstract class WalkThrough {
+	public WalkThrough(JsWidget parent) {
+		walk(parent);
+	}
+	
+	public void walk(JsWidget parent) {
+		for (JsWidget jsWidget : parent.getChildren()) {
+			handle(jsWidget);
+			walk(jsWidget);
+		}			
+	}
+	abstract protected void handle(JsWidget jsWidget);
 }

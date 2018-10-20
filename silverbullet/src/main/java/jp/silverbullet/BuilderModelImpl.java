@@ -218,18 +218,28 @@ public class BuilderModelImpl implements BuilderModel {
 	private <T> T loadJson(Class<T> clazz, String filename) {
 		ObjectMapper mapper = new ObjectMapper();
 		try {
-			return mapper.readValue(new File(filename), clazz);
+			T ret = mapper.readValue(new File(filename), clazz);
+			if (ret == null) {
+				try {
+					ret = clazz.newInstance();
+				} catch (InstantiationException | IllegalAccessException e) {
+					e.printStackTrace();
+				}
+			}
+			return ret;
 		} catch (JsonParseException e) {
 			e.printStackTrace();
 		} catch (JsonMappingException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (Exception e2) {
+			e2.printStackTrace();
 		}
+
 		try {
 			return clazz.newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
@@ -292,6 +302,9 @@ public class BuilderModelImpl implements BuilderModel {
 		this.propertiesHolder.getTypes().getDefinitions().put("LongProperty", new StringArray(Arrays.asList("unit", "defaultValue", "min", "max", "persistent")));
 		this.propertiesHolder.getTypes().getDefinitions().put("ChartProperty", new StringArray());
 		this.propertiesHolder.getTypes().getDefinitions().put("TableProperty", new StringArray());
+		
+		uiLayout = new UiLayout();
+		
 	
 	}
 	
@@ -389,5 +402,14 @@ public class BuilderModelImpl implements BuilderModel {
 	@Override
 	public UiLayout getUiLayout() {
 		return this.uiLayout;
+	}
+
+	@Override
+	public void changeId(String prevId, String newId) {
+		this.dependencySpecHolder.changeId(prevId, newId);
+	    this.propertiesHolder.changeId(prevId, newId);
+	// TODO	this.handlerPropertyHolder.changeId(prevId, newId);
+		this.uiLayout.changeId(prevId, newId);
+		
 	}
 }

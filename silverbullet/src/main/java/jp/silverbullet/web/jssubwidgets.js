@@ -1,11 +1,15 @@
 class JsSubWidget {
 	constructor(baseId) {
-		this.baseId = baseId;
+		this.baseId = 'baseof' + baseId;
+		this.originalId = baseId;
+		$('#' + baseId).append('<div id="' + this.baseId + '"></div>');
+		$('#' + this.baseId).height('100%');
+		$('#' + this.baseId).width('100%');
 	}
 	
-	setEditable(editable) {
+	setEditable(editable) { 
 	}
-	
+		
 	setDisabled(disabled) {
 		$('#' + this.baseId + ' > ').prop('disabled', disabled);
 	}
@@ -14,7 +18,6 @@ class JsSubWidget {
 class JsRadio extends JsSubWidget {
 	constructor(baseId, change) {
 		super(baseId);
-		this.baseId = baseId;
 		this.change = change;
 	}
 	
@@ -68,7 +71,6 @@ class JsRadio extends JsSubWidget {
 class JsComboBox extends JsSubWidget {
 	constructor(baseId, change) {
 		super(baseId);
-		this.baseId = baseId;
 		this.change = change;
 		this.unitId = 'unit' + this.baseId;
 	}
@@ -118,7 +120,6 @@ class JsComboBox extends JsSubWidget {
 class JsTextInput extends JsSubWidget {
 	constructor(baseId, change) {
 		super(baseId);
-		this.baseId = baseId;
 		this.change = change;
 	}
 	
@@ -152,7 +153,6 @@ class JsTextInput extends JsSubWidget {
 class JsLabel extends JsSubWidget {
 	constructor(baseId, info, change) {
 		super(baseId);
-		this.baseId = baseId;
 		this.change = change;
 	}
 	
@@ -177,7 +177,6 @@ class JsLabel extends JsSubWidget {
 class JsMessageBox extends JsSubWidget {
 	constructor(baseId, info, change) {
 		super(baseId);
-		this.baseId = baseId;
 		this.change = change;
 		this.tmpId = 'tmp' + this.baseId;
 		this.editable = true;
@@ -228,7 +227,6 @@ class JsMessageBox extends JsSubWidget {
 class JsToggleButton extends JsSubWidget {
 	constructor(baseId, info, change) {
 		super(baseId);
-		this.baseId = baseId;
 		this.change = change;
 		this.custom = info.custom;
 	}
@@ -283,7 +281,6 @@ class JsToggleButton extends JsSubWidget {
 class JsCssButton extends JsSubWidget {
 	constructor(baseId, info, change) {
 		super(baseId);
-		this.baseId = baseId;
 		this.change = change;
 		this.custom = info.custom;
 	}
@@ -335,7 +332,6 @@ class JsCssButton extends JsSubWidget {
 class JsActionButton extends JsSubWidget {
 	constructor(baseId, change) {
 		super(baseId);
-		this.baseId = baseId;
 		this.change = change;
 	}
 	
@@ -361,7 +357,6 @@ class JsActionButton extends JsSubWidget {
 class JsCheckBox extends JsSubWidget {
 	constructor(baseId, change) {
 		super(baseId);
-		this.baseId = baseId;
 		this.change = change;
 	}
 	
@@ -389,7 +384,6 @@ class JsCheckBox extends JsSubWidget {
 class JsChart extends JsSubWidget {
 	constructor(baseId, info, change) {
 		super(baseId);
-		this.baseId = baseId;
 		this.change = change;
 		this.info = info;
 	}
@@ -461,7 +455,7 @@ class JsChart extends JsSubWidget {
 class JsTable extends JsSubWidget {
 	constructor(baseId, change) {
 		super(baseId);
-		this.baseId = baseId;
+		
 		this.change = change;
 		this.headers = [];
 	}
@@ -484,13 +478,13 @@ class JsTable extends JsSubWidget {
 		});	
 
 		this.hot.loadData(table.data);
+		
 	}
 	
 	updateLayout(property) {
 		$('#' + this.baseId).empty();
 		this.tableid = 'table'+this.baseId;
 		$('#' + this.baseId).append('<div id="' + this.tableid + '"></div>');
-//		$('#' + this.baseId).css('margin', '0px');
 
 		var headers = ['COL#1', 'COL#2', 'COL#3', 'COL#4'];
 		this.createTable(headers);
@@ -500,22 +494,24 @@ class JsTable extends JsSubWidget {
 	
 	resize() {
 		var me = this;
+
 		this.hot.updateSettings({
 		    height: $('#' + me.baseId).height()
 		});		
 	}
-	
+			
 	createTable(headers) {
-//		var height = $('#' + this.baseId).prop('height');
+		var height = $('#' + this.baseId).prop('height');
 		$('#' + this.tableid).handsontable({
 		  manualColumnResize: true,
 //		  width: 700,
-//		  height: 400,
+//		  height: height,
 //		  startRows: 3,
 //		  startCols: 10,
 		  colHeaders: headers,
 		  rowHeaders: true,
-		  minSpareRows: 1
+//		  stretchH: 'all'
+//		  minSpareRows: 1
 		});	
 	
 		this.hot = $('#' + this.tableid).handsontable('getInstance');	
@@ -525,7 +521,7 @@ class JsTable extends JsSubWidget {
 class JsDialogButton extends JsSubWidget {
 	constructor(baseId, info, change) {
 		super(baseId);
-		this.baseId = baseId;
+		
 		this.buttonId = 'button' + this.baseId;
 		this.dialogId = 'dialog' + this.baseId;
 		
@@ -571,7 +567,7 @@ class JsDialogButton extends JsSubWidget {
 class JsTabPanel extends JsSubWidget {
 	constructor(baseId, info, change) {
 		super(baseId);
-		this.baseId = baseId;
+		
 		this.change = change;
 		this.info = info;
 		this.tabTitleMap = new Map();

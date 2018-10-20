@@ -147,7 +147,7 @@ class JsWidget {
 			});
 		}					
 		$('#' + this.baseId).addClass('base');
-		if (this.info.styleClass != null) {
+		if ((this.info.styleClass != null) && (this.info.styleClass != '')) {
 			$('#' + this.baseId).addClass(this.info.styleClass);
 		}
 		
@@ -176,7 +176,11 @@ class JsWidget {
 		this.applySize();
 	
 		if (this.info.css != null && this.info.css != '') {
+			//$('#' + this.baseId).css(this.info.css);
 			$('#' + this.baseId).css(this.info.css.split(',')[0] , this.info.css.split(',')[1]);
+		}
+		if ((this.info.fontsize != null) && (this.info.fontsize != '')) {
+			$('#' + this.baseId + ' *').css('font-size', this.info.fontsize);
 		}
 	}
 	
@@ -194,6 +198,7 @@ class JsWidget {
 		if (this.info.height != 0) {
 			$('#' + this.baseId).height(this.info.height);
 		}	
+
 	}
 	
 	updateValue() {
@@ -259,36 +264,33 @@ class JsWidget {
 	editable(enabled) {
 	    var baseId = this.baseId;
 	    var me = this;
-	    if (this.info.widgetType == 'PANEL' || this.info.widgetType == 'TABLE' || this.info.widgetType == 'CHART'
-	    	|| this.info.widgetType == 'TAB') {	
-	    	if (this.info.widgetType == 'PANEL' || this.info.widgetType == 'TAB') {	
-	    		
-				$('#' + this.baseId).draggable({
-					start : function (event , ui){
-					} ,
-					drag : function (event , ui) {
-					} ,
-					stop : function (event , ui){
-						me.setPosition(event);
-					} 
-				});
-				
-				$('#' + this.baseId).draggable(enabled);		
+	    
+    	if (!$('#' + this.baseId).parent().hasClass('Horizontal') && !$('#' + this.baseId).parent().hasClass('Vertical')) {
+			$('#' + this.baseId).draggable({
+				start : function (event , ui){
+				} ,
+				drag : function (event , ui) {
+				} ,
+				stop : function (event , ui){
+					me.setPosition(event);
+				} 
+			});
+			
+			$('#' + this.baseId).draggable(enabled);		
 
-			    $('#' + this.baseId).droppable({
-			      drop: function( event, ui ) {
-					
-			      }
-			    });		    
-		    }
+		    $('#' + this.baseId).droppable({
+		      drop: function( event, ui ) {
+				
+		      }
+		    });		
 			$('#' + this.baseId).resizable({
 		      stop: function( event, ui ) {
 		      	me.setSize();
 		      }
-		    });
+		    });    
 		    $('#' + this.baseId).resizable(enabled);
-	   	}
-    	
+	    }
+
     	if (enabled == 'enable') {
 	    	$('#' + this.baseId).click(function(e){
 				$('.base').removeClass('selected');

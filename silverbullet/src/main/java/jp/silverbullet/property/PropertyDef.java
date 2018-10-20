@@ -39,6 +39,10 @@ public class PropertyDef implements Cloneable {
 	public void setId(String id) {
 		String oldId = this.id;
 		this.id = id;
+		for (ListDetailElement e : listDetail) {
+			e.setId(e.getId().replace(oldId, id));
+		}
+		
 		if (!oldId.isEmpty()) {
 			this.fireIdChangedEvent(oldId, id);
 		}

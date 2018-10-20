@@ -216,13 +216,16 @@ div.BigGrid input {
 	font-size:18px;
 }
 
-div.big * {
+div.fontVeryBig * {
+ 	font-size:40px;
+}
+div.fontBig * {
  	font-size:20px;
 }
-div.medium * {
+div.fonrMedium * {
  	font-size:16px;
 }
-div.small * {
+div.fontSmall * {
  	font-size:12px;
 } 
 div.noborder {
@@ -316,4 +319,8 @@ div.float {
 .styled:active {
     box-shadow: inset -2px -2px 3px rgba(255, 255, 255, .6),
                 inset 2px 2px 3px rgba(0, 0, 0, .6);
+}
+
+.transparent {
+	background-color:transparent;
 }

@@ -44,4 +44,16 @@ public class DependencySpecHolder {
 			this.specs.remove(spec.getId());
 		}
 	}
+
+	public void changeId(String prevId, String newId) {
+		for (String id : this.specs.keySet()) {
+			DependencySpec spec = this.specs.get(id);
+			spec.changeId(prevId, newId);
+		}
+		if (this.specs.keySet().contains(prevId)) {
+			DependencySpec spec = this.specs.get(prevId);
+			this.specs.put(newId, spec);
+			this.specs.remove(prevId);
+		}
+	}
 }

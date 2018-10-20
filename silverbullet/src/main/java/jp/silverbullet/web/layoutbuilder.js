@@ -21,8 +21,10 @@ class LayoutBuilder {
 		   url: "http://" + window.location.host + "/rest/design/getDesign?root=" + me.root,
 		   success: function(msg){
 		   		$('#' + me.base).empty();
-		   		me.createWidget(me.base, msg);
-		   		me.updateAllWidgetsValue();
+		   		if (msg != null) {
+		   			me.createWidget(me.base, msg);
+		   			me.updateAllWidgetsValue();
+		   		}
 		   }
 		});	
 	}

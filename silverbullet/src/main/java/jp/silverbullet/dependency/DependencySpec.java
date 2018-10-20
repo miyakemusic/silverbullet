@@ -227,6 +227,10 @@ public class DependencySpec {
 	public void remove(DependencyTargetElement element, String selectionId, String value, String condition) {
 		this.getDependencyExpressionHolder(element, selectionId).remove(value, condition);
 	}
+
+	public void changeId(String prevId, String newId) {
+		// TODO
+	}
 	
 //	public void remove(DependencyTargetElement element, String value) {
 //		this.getDependencyExpressionHolder(element).remove(value);

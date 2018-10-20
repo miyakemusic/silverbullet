@@ -9,7 +9,6 @@ import jp.silverbullet.web.Pair;
 
 public class CustomProperties {
 	public static final String GUI_ID = "gui_id";
-
 	public static final String TAB_RELATION = "tab_relation_id";
 	
 	private static CustomProperties instance = null;
@@ -22,7 +21,7 @@ public class CustomProperties {
 		return instance;
 	}
 	
-	private CustomProperties() {
+	private CustomProperties() {		
 		map.put(JsWidget.TAB, Arrays.asList(new Pair(GUI_ID, "string")));
 		map.put(JsWidget.TOGGLEBUTTON, Arrays.asList(new Pair("frame", "boolean")));
 		map.put(JsWidget.GUI_DIALOG, Arrays.asList(new Pair("target_gui_id", "string"), new Pair("caption", "string")));
@@ -32,6 +31,5 @@ public class CustomProperties {
 	public Map<String, List<Pair>> getMap() {
 		return map;
 	}
-
 	
 }

@@ -71,4 +71,6 @@ public interface BuilderModel {
 	EasyAccessModel getEasyAccess();
 	
 	UiLayout getUiLayout();
+
+	void changeId(String id, String value);
 }

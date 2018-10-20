@@ -17,6 +17,7 @@ class DesignerClass {
 		var idToolbar2 = prefix + 'toolBar2';
 		var idStyleClass = prefix + 'styleClass';
 		var idStyleClasses = prefix + 'styleClasses';
+		var idFontSize = prefix + 'fontsize';
 		var idAddStyleClass = prefix + 'addStyleClasses';
 		var idCss = prefix + 'css';
 		var idId = prefix + 'id';
@@ -84,6 +85,8 @@ class DesignerClass {
 		$('#' + idPropPane).append('<div>CSS<input type="text" id="' + idCss + '"></div>');
 		$('#' + idPropPane).append('<div>Style Class<input type="text" id="' + idStyleClass + '"></div>');
 		
+		$('#' + idPropPane).append('<div>Font Size<input type="text" id="' + idFontSize + '"></div>');
+		
 		var idAddClassDiv= prefix+'addClassDiv';
 		$('#' + idPropPane).append('<div id="' + idAddClassDiv + '" class="panel"></div>');
 		$('#' + idAddClassDiv).append('Class<select id="' + idStyleClasses + '"></select>');
@@ -116,9 +119,11 @@ class DesignerClass {
 				$('#' + idCss).val(info.css);
 //				$('#' + idId).val(info.id);
 				$('#' + idPresentation).val(info.presentation);
-				$('#' + idCustom).val(info.custom);
+//				$('#' + idCustom).val(info.custom);
 				$('#' + idUid).text(baseId);
 				$('#' + idIndex).val(info.index);
+				$('#' + idFontSize).val(info.fontsize);
+				
 				updateCustomPropTable(widgetType, info.custom);
 			},
 			function(msg) {
@@ -187,14 +192,7 @@ class DesignerClass {
 			}
 			layout.enableEdit = me.enableEdit;
 		});
-		
-		$('#' + idLayout).change(function() {
-			changeLayout($(this).val());
-		});
-		
-		$('#' + idWidgetType).change(function() {
-			changeWidgetType($("#" + idWidgetType).val());
-		});
+
 		
 		$('#' + idAdd).click(function(e) {
 			dialog.showModal();
@@ -278,31 +276,40 @@ class DesignerClass {
 		
 		$('#' + idStyleClass).keydown(function(e) {
 		    if (e.keyCode == 13) {
-		        setStyleClass($('#' + idStyleClass).val());
+		        updateGuiProperty('styleClass', $('#' + idStyleClass).val());
 		    }
 		});
 		
 		$('#' + idCss).keydown(function(e) {
 		    if (e.keyCode == 13) {
-		        setCss($('#' + idCss).val());
+		        updateGuiProperty('css', $('#' + idCss).val());
 		    }
 		});
 		
-//		$('#' + idId).keydown(function(e) {
-//		    if (e.keyCode == 13) {
-//		        setGuid($('#' + idId).val());
-//		    }
-//		});
+
 		$('#' + idPresentation).keydown(function(e) {
 		    if (e.keyCode == 13) {
-		        setPresentation($('#' + idPresentation).val());
+		        updateGuiProperty('presentation', $('#' + idPresentation).val());
 		    }
 		});
-		$('#' + idCustom).keydown(function(e) {
+		$('#' + idFontSize).keydown(function(e) {
 		    if (e.keyCode == 13) {
-		        setCustom($('#' + idCustom).val());
+		        updateGuiProperty('fontsize', $('#' + idFontSize).val());
 		    }
 		});
+				
+		function appendStyleClass() {
+			updateGuiProperty('styleClass', $('#' + idStyleClass).val() + ' ' + $('#' + idStyleClasses).val());
+		}
+		
+		$('#' + idLayout).change(function() {
+			updateGuiProperty('layout', $('#' + idLayout).val());
+		});
+		
+		$('#' + idWidgetType).change(function() {
+			updateGuiProperty($("#" + idWidgetType).val());
+		});
+		
 		$('#' + idAddDialog).click(function(e) {
 			//$('#' + idDialog).dialog("open");
 			addDialog('');
@@ -320,11 +327,7 @@ class DesignerClass {
 		$('#' + idDependencyLog).click(function(e) {
 			$('#' + idDependencyDialog).dialog("open");
 		});
-		
-		function appendStyleClass() {
-			setStyleClass($('#' + idStyleClass).val() + ' ' + $('#' + idStyleClasses).val());
-		}
-		
+
 		function addTab() {
 			$.ajax({
 			   type: "GET", 
@@ -344,27 +347,7 @@ class DesignerClass {
 			   }
 			});	
 		}
-		
-		function changeLayout(layoutType) {
-			$.ajax({
-			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/design/setLayout?div=" + layout.getSelectedDiv() + '&layout=' + layoutType,
-			   success: function(msg){
-					layout.updateUI();
-			   }
-			});	
-		}
-		
-		function changeWidgetType(widgetType) {
-			$.ajax({
-			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/design/setWidgetType?div=" + layout.getSelectedDiv() + '&widgetType=' + widgetType,
-			   success: function(msg){
-					layout.updateUI();
-			   }
-			});	
-		}
-		
+				
 		function removeWidget() {
 			$.ajax({
 			   type: "GET", 
@@ -384,56 +367,16 @@ class DesignerClass {
 			   }
 			});	
 		}
-	
-		function setStyleClass(style) {
+			
+		function updateGuiProperty(fieldType, value) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/design/setStyle?div=" + layout.getSelectedDiv() + "&style=" + style,
-			   success: function(msg){
-					layout.updateUI();
-			   }
-			});			
-		}
-		
-		function setCss(css) {
-			$.ajax({
-			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/design/setCss?div=" + layout.getSelectedDiv() + "&css=" + css,
+			   url: "http://" + window.location.host + "/rest/design/updateGuiProperty?div=" + layout.getSelectedDiv() + "&propertyType=" + fieldType + "&value=" + value,
 			   success: function(msg){
 					layout.updateUI();
 			   }
 			});			
 		}	
-			
-		function setGuid(id) {
-			$.ajax({
-			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/design/setId?div=" + layout.getSelectedDiv() + "&id=" + id,
-			   success: function(msg){
-					layout.updateUI();
-			   }
-			});			
-		}
-	
-		function setPresentation(presentation) {
-			$.ajax({
-			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/design/setPresentation?div=" + layout.getSelectedDiv() + "&presentation=" + presentation,
-			   success: function(msg){
-					layout.updateUI();
-			   }
-			});			
-		}
-	
-		function setCustom(custom) {
-			$.ajax({
-			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/design/setCustom?div=" + layout.getSelectedDiv() + "&custom=" + custom,
-			   success: function(msg){
-					layout.updateUI();
-			   }
-			});			
-		}
 	
 		function cut() {
 			copiedDiv = layout.getSelectedDiv();
@@ -475,8 +418,6 @@ class DesignerClass {
 				
 				$('#' + idCustomElement).keydown(function(e) {
 				    if (e.keyCode == 13) {
-	//			    	custom.set($(this).prop('name'), $(this).val());
-				    	//setCustom(custom);
 				        setCustomElement($(this).prop('name'), $(this).val());
 				    }
 				});

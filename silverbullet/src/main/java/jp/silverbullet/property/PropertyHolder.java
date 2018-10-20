@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class PropertyHolder {
 	private PropertyType types = new PropertyType();
-	private List<PropertyDef> properties = new ArrayList<PropertyDef>();
+	private List<PropertyDef> properties = new ArrayList<PropertyDef>(); // This should be MAP. TODO
 	private Set<PropertyHolderListener> listeners = new HashSet<>();
 	private PropertyDefListener listener = new PropertyDefListener() {
 		@Override
@@ -154,5 +154,13 @@ public class PropertyHolder {
 			}
 		}
 		return null;
+	}
+
+	public void changeId(String prevId, String newId) {
+		for (PropertyDef prop : this.properties) {
+			if (prop.getId().equals(prevId)) {
+				prop.setId(newId);
+			}
+		}
 	}
 }

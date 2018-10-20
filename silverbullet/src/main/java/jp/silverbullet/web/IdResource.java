@@ -210,7 +210,8 @@ public class IdResource {
 			System.out.println("IdResource/update prop == null " + id);
 		}
 		if (paramName.equals(PropertyListModel.ID)) {
-			prop.setId(value);
+//			prop.setId(value);
+			StaticInstances.getInstance().getBuilderModel().changeId(prop.getId(), value);
 		}
 		else if (paramName.equals(PropertyListModel.TYPE)) {
 			prop.setType(value);

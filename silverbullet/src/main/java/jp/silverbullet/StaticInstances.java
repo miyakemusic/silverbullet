@@ -4,9 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.BitSet;
-import java.util.HashMap;
-import java.util.Map;
-
 import jp.silverbullet.property.editor.PropertyListModel;
 import jp.silverbullet.register.RegisterMapModel;
 import jp.silverbullet.register.SvSimulator;
@@ -89,6 +86,9 @@ public class StaticInstances {
 			Zip.unzip(filename, StaticInstances.TMP_FOLDER);
 			getBuilderModel().load(StaticInstances.TMP_FOLDER);
 			createOtherInstances();
+		}
+		else {
+			builderModel.loadDefault();
 		}
 		registerMapModel.update();
 	}

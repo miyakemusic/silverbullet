@@ -181,30 +181,23 @@ public class DesignResource {
 	@Path("/setLayout")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String move(@QueryParam("div") String div, @QueryParam("layout") String layout) {
-		StaticInstances.getInstance().getBuilderModel().getUiLayout().setLayout(div, layout);
+		StaticInstances.getInstance().getBuilderModel().getUiLayout().updateProperty(div, "layout", layout);
 		return "OK";
 	}
 
-	@GET
-	@Path("/setStyle")
-	@Produces(MediaType.TEXT_PLAIN) 
-	public String setStyle(@QueryParam("div") String div, @QueryParam("style") String style) {
-		StaticInstances.getInstance().getBuilderModel().getUiLayout().setSyle(div, style);
-		return "OK";
-	}
-
-	@GET
-	@Path("/setCss")
-	@Produces(MediaType.TEXT_PLAIN) 
-	public String setCss(@QueryParam("div") String div, @QueryParam("css") String css) {
-		StaticInstances.getInstance().getBuilderModel().getUiLayout().setCss(div, css);
-		return "OK";
-	}
 	@GET
 	@Path("/resize")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String resize(@QueryParam("div") String div, @QueryParam("width") String width, @QueryParam("height") String height) {
 		StaticInstances.getInstance().getBuilderModel().getUiLayout().resize(div, width, height);
+		return "OK";
+	}
+	
+	@GET
+	@Path("/updateGuiProperty")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String updateGuiProperty(@QueryParam("div") String div, @QueryParam("propertyType") String propertyType, @QueryParam("value") String value) {
+		StaticInstances.getInstance().getBuilderModel().getUiLayout().updateProperty(div, propertyType, value);
 		return "OK";
 	}
 	
@@ -221,30 +214,6 @@ public class DesignResource {
 	public List<String> getAllWidgeTypes() {
 		return Arrays.asList(JsWidget.TOGGLEBUTTON, JsWidget.CSSBUTTON, JsWidget.ACTIONBUTTON, JsWidget.COMBOBOX, JsWidget.RADIOBUTTON, JsWidget.TEXTFIELD,
 				JsWidget.CHART, JsWidget.CHECKBOX, JsWidget.GUI_DIALOG, JsWidget.PANEL, JsWidget.TAB, JsWidget.LABEL, JsWidget.MESSAGEBOX);
-	}
-	
-	@GET
-	@Path("setWidgetType")
-	@Produces(MediaType.TEXT_PLAIN) 
-	public String setWidgetType(@QueryParam("div") String div, @QueryParam("widgetType") String widgetType) {
-		StaticInstances.getInstance().getBuilderModel().getUiLayout().setWidgetType(div, widgetType);
-		return "OK";
-	}
-	
-	@GET
-	@Path("setId")
-	@Produces(MediaType.TEXT_PLAIN) 
-	public String setId(@QueryParam("div") String div, @QueryParam("id") String id) {
-		StaticInstances.getInstance().getBuilderModel().getUiLayout().setId(div, id);
-		return "OK";
-	}
-	
-	@GET
-	@Path("setPresentation")
-	@Produces(MediaType.TEXT_PLAIN) 
-	public String setPresentation(@QueryParam("div") String div, @QueryParam("presentation") String presentation) {
-		StaticInstances.getInstance().getBuilderModel().getUiLayout().setPresentation(div, presentation);
-		return "OK";
 	}
 
 	@GET
@@ -267,7 +236,7 @@ public class DesignResource {
 	@Path("getStyleClasses")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<String> getStyleClasses(@QueryParam("type") String type) {
-		return Arrays.asList("tabs-top", "tabs-bottom", "itemBox", "BigGrid", "noborder", "big", "medium", "small");
+		return Arrays.asList("tabs-top", "tabs-bottom", "itemBox", "BigGrid", "noborder", "fontVeryBig", "fontBig", "fontMedium", "fontSmall");
 	}
 	
 	@GET
