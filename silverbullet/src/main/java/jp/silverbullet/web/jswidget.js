@@ -108,6 +108,11 @@ class JsWidget {
 				me.requestChange(me.info.id, id, dependency);
 			});
 		}
+		else if (this.info.widgetType == 'CHART_CANVASJS') {
+			this.subWidget = new JsChartCanvasJs(this.baseId, this.info, function(id) {
+				me.requestChange(me.info.id, id, dependency);
+			});
+		}
 		else if (this.info.widgetType == 'TABLE') {
 			this.subWidget = new JsTable(this.baseId, function(id) {
 				me.requestChange(me.info.id, id, dependency);
@@ -115,7 +120,15 @@ class JsWidget {
 		}
 		else if (this.info.widgetType == 'PANEL') {
 			$('#' + this.baseId).addClass('panel');
-			
+			if (me.info.custom['background-color'] != null) {
+				$('#' + this.baseId).css('background-color', me.info.custom['background-color']);
+			}
+			if (me.info.custom['opacity'] != null) {
+				$('#' + this.baseId).css('opacity', me.info.custom['opacity']);
+			}
+			if (me.info.custom['background-image'] != null) {
+				$('#' + this.baseId).css('background-image', 'url(' + me.info.custom['background-image'] + ')');
+			}
 			if (this.info.layout == 'Flow Layout') {
 				$('#' + this.baseId).addClass('Flow');	
 			}
@@ -156,10 +169,7 @@ class JsWidget {
 	
 	applyLayout() {
 		if ($('#' + this.baseId).parent().hasClass('Flow')) {
-			$('#' + this.baseId).css({'position':'relative', 'display':'inline'});
-			$('#' + this.baseId + '>.title').css({'display':'inline'});
-			$('#' + this.baseId + '*').css({'margin':'2px'});
-			$('#' + this.baseId + '*').css({'padding':'1px'});
+			$('#' + this.baseId).css('float', 'left');
 		}
 		else if ($('#' + this.baseId).parent().hasClass('Absolute')) {
 			$('#' + this.baseId).css({'position':'absolute', 'display':'inline-block'});
@@ -298,9 +308,11 @@ class JsWidget {
 				e.stopPropagation();
 				me.selected(baseId, me.info);
 			});
+			$('.panel').addClass('design');
 		}
 		else {
 			$('.base').removeClass('selected');
+			$('.panel').removeClass('design');
 			$('#' + this.baseId).off('click');
 		}
 		

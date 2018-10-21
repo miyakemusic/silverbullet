@@ -220,7 +220,7 @@ class DesignerClass {
 		
 		$.ajax({
 		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/design/allWidgetTypes",
+		   url: "http://" + window.location.host + "/rest/design/getWidgetTypes",
 		   success: function(msg){
 				for (var i in msg) {
 					$("#" + idWidgetType).append($("<option>").val(msg[i]).text(msg[i]));
@@ -307,7 +307,7 @@ class DesignerClass {
 		});
 		
 		$('#' + idWidgetType).change(function() {
-			updateGuiProperty($("#" + idWidgetType).val());
+			updateGuiProperty('widgetType', $("#" + idWidgetType).val());
 		});
 		
 		$('#' + idAddDialog).click(function(e) {

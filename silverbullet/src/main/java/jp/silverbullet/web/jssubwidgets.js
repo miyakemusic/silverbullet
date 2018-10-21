@@ -1,7 +1,7 @@
 class JsSubWidget {
-	constructor(baseId) {
+	constructor(baseId, change) {
 		this.baseId = 'baseof' + baseId;
-		this.originalId = baseId;
+		this.change = change;
 		$('#' + baseId).append('<div id="' + this.baseId + '"></div>');
 		$('#' + this.baseId).height('100%');
 		$('#' + this.baseId).width('100%');
@@ -13,12 +13,14 @@ class JsSubWidget {
 	setDisabled(disabled) {
 		$('#' + this.baseId + ' > ').prop('disabled', disabled);
 	}
+	
+	resize() {
+	}
 }
 
 class JsRadio extends JsSubWidget {
 	constructor(baseId, change) {
-		super(baseId);
-		this.change = change;
+		super(baseId, change);
 	}
 	
 	updateValue(property) {
@@ -70,8 +72,7 @@ class JsRadio extends JsSubWidget {
 
 class JsComboBox extends JsSubWidget {
 	constructor(baseId, change) {
-		super(baseId);
-		this.change = change;
+		super(baseId, change);
 		this.unitId = 'unit' + this.baseId;
 	}
 	
@@ -94,7 +95,7 @@ class JsComboBox extends JsSubWidget {
 		this.comboId = 'combo' + this.baseId;
 		$('#' + this.baseId).append('<SELECT id="' + this.comboId + '"></SELECT>');
 		$('#' + this.baseId).append('<span id="' + this.unitId + '" class="unit"></span>');
- 		$('#' + this.comboId).selectmenu();
+ 		$('#' + this.comboId).selectmenu({ width : 'auto'});
       		   		
 		for (var i in property.elements) {
    			var element = property.elements[i];
@@ -109,18 +110,23 @@ class JsComboBox extends JsSubWidget {
 			me.change(ui.item.value);
 		} );
 
+		$('#' + this.baseId + ' > *').css({'margin':'2px'});
+
 		this.updateValue2(property);
 	}
 	
 	setDisabled(disabled) {
 		$('#' + this.comboId).selectmenu( "option", "disabled", disabled );
 	}
+	
+	resize() {
+//	$('#' + this.comboId).selectmenu( "option", "width", $('#' + this.baseId).width() - $('#' + this.titleId).width() - 5);
+	}
 }
 
 class JsTextInput extends JsSubWidget {
 	constructor(baseId, change) {
-		super(baseId);
-		this.change = change;
+		super(baseId, change);
 	}
 	
 	updateValue(property) {
@@ -138,8 +144,10 @@ class JsTextInput extends JsSubWidget {
 		$('#' + this.baseId).append('<span class="title" id="' + this.titleId + '"></span>');
 		this.textId = 'text' + this.baseId;
 		$('#' + this.baseId).append('<input type="text" class="currentValue" id="' + this.textId + '">');
-	
 		$('#' + this.baseId).append('<label id="' + this.unitId + '" class="unit"></unit>');
+		
+		$('#' + this.textId).button().width(100);
+		$('#' + this.baseId + ' > *').css({'margin':'2px'});
 		
 		var me = this;
 		$('#' + this.textId).change(function() {
@@ -152,8 +160,7 @@ class JsTextInput extends JsSubWidget {
 
 class JsLabel extends JsSubWidget {
 	constructor(baseId, info, change) {
-		super(baseId);
-		this.change = change;
+		super(baseId, change);
 	}
 	
 	updateValue(property) {
@@ -170,14 +177,15 @@ class JsLabel extends JsSubWidget {
 		
 		var html = '<span id="' + this.titleId + '" class="title"></span>:<span id="' + this.valueId + '" class="currentValue"></span><span id="' + this.unitId + '" class="unit"></span>';
 		$('#' + this.baseId).append(html);
+		
+		$('#' + this.baseId + ' > *').css({'margin':'2px'});
 		this.updateValue(property);
 	}
 }
 
 class JsMessageBox extends JsSubWidget {
 	constructor(baseId, info, change) {
-		super(baseId);
-		this.change = change;
+		super(baseId, change);
 		this.tmpId = 'tmp' + this.baseId;
 		this.editable = true;
 	}
@@ -226,8 +234,7 @@ class JsMessageBox extends JsSubWidget {
 
 class JsToggleButton extends JsSubWidget {
 	constructor(baseId, info, change) {
-		super(baseId);
-		this.change = change;
+		super(baseId, change);
 		this.custom = info.custom;
 	}
 	
@@ -280,8 +287,7 @@ class JsToggleButton extends JsSubWidget {
 
 class JsCssButton extends JsSubWidget {
 	constructor(baseId, info, change) {
-		super(baseId);
-		this.change = change;
+		super(baseId, change);
 		this.custom = info.custom;
 	}
 	
@@ -331,8 +337,7 @@ class JsCssButton extends JsSubWidget {
 
 class JsActionButton extends JsSubWidget {
 	constructor(baseId, change) {
-		super(baseId);
-		this.change = change;
+		super(baseId, change);
 	}
 	
 	updateValue(property) {
@@ -356,8 +361,7 @@ class JsActionButton extends JsSubWidget {
 
 class JsCheckBox extends JsSubWidget {
 	constructor(baseId, change) {
-		super(baseId);
-		this.change = change;
+		super(baseId, change);
 	}
 	
 	updateValue(property) {
@@ -381,10 +385,72 @@ class JsCheckBox extends JsSubWidget {
 	}
 }
 
+class JsChartCanvasJs extends JsSubWidget {
+	constructor(baseId, info, change) {
+		super(baseId, change);
+		this.info = info;
+	}
+	
+	updateValue(property) {
+		var me = this;
+		this.chart.data[0].remove();
+		if (property.currentValue == 'REQUEST_AGAIN') {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/design/getProperty?id=" + me.info.id + '&ext=501',
+			   success: function(property){
+					var trace = JSON.parse(property.currentValue);
+					var list = [];
+					for (var i = 0; i < trace.y.length; i++) {
+						var obj = new Object();
+						obj.x = parseFloat(i);
+						obj.y = parseFloat(trace.y[i])+
+						list.push(obj);
+						//me.chart.options.data[0].dataPoints.push({ x: parseFloat(i), y: parseFloat(trace.y[i])});
+					}	
+					var data = new Object();
+					data.type = 'spline';
+					data.dataPoints = list;
+					me.chart.options.data.push(data);
+					me.chart.render();   
+		//			me.chart.options.data[0].dataPoints.push({ x:i, y: 25 - Math.random() * 10});
+			   }
+			});
+		}	
+	}
+	
+	updateLayout(property) {
+		$('#' + this.baseId).empty();
+	
+		this.chart = new CanvasJS.Chart(this.baseId, { 
+			title: {
+				text: "Adding & Updating dataPoints"
+			},
+			data: [
+			{
+				type: "spline",
+				dataPoints: [
+					{ y: 3000 },
+					{ y:  4 },
+					{ y: 18 },
+					{ y: -3000 }	
+				]
+			}
+			]
+		});
+		this.chart.render();	
+	}
+	
+	resize() {
+		if (this.chart != null)  {
+			this.chart.render();
+		}
+	}
+}
+
 class JsChart extends JsSubWidget {
 	constructor(baseId, info, change) {
-		super(baseId);
-		this.change = change;
+		super(baseId, change);
 		this.info = info;
 	}
 	
@@ -454,9 +520,8 @@ class JsChart extends JsSubWidget {
 
 class JsTable extends JsSubWidget {
 	constructor(baseId, change) {
-		super(baseId);
-		
-		this.change = change;
+		super(baseId, change);
+
 		this.headers = [];
 	}
 	
@@ -520,13 +585,12 @@ class JsTable extends JsSubWidget {
 
 class JsDialogButton extends JsSubWidget {
 	constructor(baseId, info, change) {
-		super(baseId);
+		super(baseId, change);
 		
 		this.buttonId = 'button' + this.baseId;
 		this.dialogId = 'dialog' + this.baseId;
 		
 		this.contentId = 'content' + this.baseId;
-		this.change = change;
 		
 		this.updateLayout(info);
 	}
@@ -566,9 +630,8 @@ class JsDialogButton extends JsSubWidget {
 
 class JsTabPanel extends JsSubWidget {
 	constructor(baseId, info, change) {
-		super(baseId);
+		super(baseId, change);
 		
-		this.change = change;
 		this.info = info;
 		this.tabTitleMap = new Map();
 		this.tabIndexMap = new Map();

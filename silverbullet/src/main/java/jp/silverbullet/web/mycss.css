@@ -41,10 +41,18 @@ td.unused {
 }
 
 div.panel {
- 	border: 1px black solid;
  	background-color: white;
  }
 
+div.design {
+ 	border: 1px black solid;
+}
+
+div.selected {
+ 	border: 1px black solid;
+ 	background-color: gray;
+ }
+ 
 div.base * {
 	font-size:13px;
 	table-layout: fixed;
@@ -137,11 +145,6 @@ div.TabContent{
 	width:100%;
 	height:100%;
 }
-
-div.selected {
- 	border: 1px black solid;
- 	background-color: gray;
- }
  
 div.itemBox > div.base {
 	font-size:16px;

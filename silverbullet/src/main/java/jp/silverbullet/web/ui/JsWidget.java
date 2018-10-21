@@ -21,6 +21,7 @@ public class JsWidget {
 	public static final String TOGGLEBUTTON = "TOGGLEBUTTON";
 	public static final String ACTIONBUTTON = "ACTIONBUTTON";
 	public static final String CHART = "CHART";
+	public static final String CHART_CANVASJS = "CHART_CANVASJS";
 	public static final String TABLE = "TABLE";
 	public static final String CHECKBOX = "CHECKBOX";
 	public static final String GUI_DIALOG = "GUI_DIALOG";

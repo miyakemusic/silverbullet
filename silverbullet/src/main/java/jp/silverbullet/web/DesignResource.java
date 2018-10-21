@@ -24,7 +24,6 @@ import jp.silverbullet.property.ChartContent;
 import jp.silverbullet.web.ui.CustomProperties;
 import jp.silverbullet.web.ui.JsProperty;
 import jp.silverbullet.web.ui.JsWidget;
-import jp.silverbullet.web.ui.UiLayout;
 
 @Path("/design")
 public class DesignResource {
@@ -209,11 +208,11 @@ public class DesignResource {
 	}
 	
 	@GET
-	@Path("allWidgetTypes")
+	@Path("getWidgetTypes")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public List<String> getAllWidgeTypes() {
+	public List<String> getWidgetTypes() {
 		return Arrays.asList(JsWidget.TOGGLEBUTTON, JsWidget.CSSBUTTON, JsWidget.ACTIONBUTTON, JsWidget.COMBOBOX, JsWidget.RADIOBUTTON, JsWidget.TEXTFIELD,
-				JsWidget.CHART, JsWidget.CHECKBOX, JsWidget.GUI_DIALOG, JsWidget.PANEL, JsWidget.TAB, JsWidget.LABEL, JsWidget.MESSAGEBOX);
+				JsWidget.CHART, JsWidget.CHART_CANVASJS, JsWidget.CHECKBOX, JsWidget.GUI_DIALOG, JsWidget.PANEL, JsWidget.TAB, JsWidget.LABEL, JsWidget.MESSAGEBOX);
 	}
 
 	@GET
