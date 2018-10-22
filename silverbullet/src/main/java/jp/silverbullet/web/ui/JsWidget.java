@@ -29,6 +29,7 @@ public class JsWidget {
 	public static final String LABEL = "LABEL";
 	public static final String MESSAGEBOX = "MESSAGEBOX";
 	public static final String CSSBUTTON = "CSSBUTTON";
+	public static final String ROOT = "ROOT";
 	
 	private String id = "";
 	private String presentation = "";
@@ -44,6 +45,7 @@ public class JsWidget {
 	private String styleClass;
 	private String css;
 	private Integer index = 0;
+	private Boolean editable = true;
 	private Map<String, String> custom = new HashMap<>();
 
 	public JsWidget() {
@@ -168,10 +170,10 @@ public class JsWidget {
 		return v;
 	}
 
-	public void setField(String propertyType, String value) {
+	public void setField(String propertyType, Object value, Class clazz) {
 		Method method;
 		try {
-			method = this.getClass().getMethod("set" + StringUtils.capitalize(propertyType), String.class);
+			method = this.getClass().getMethod("set" + StringUtils.capitalize(propertyType), clazz);
 		} catch (ReflectiveOperationException e) {
 			throw new RuntimeException(e);
 		}
@@ -186,6 +188,14 @@ public class JsWidget {
 			throw new RuntimeException(e);
 		}
 		
+	}
+
+	public Boolean getEditable() {
+		return editable;
+	}
+
+	public void setEditable(Boolean editable) {
+		this.editable = editable;
 	}
 	
 }

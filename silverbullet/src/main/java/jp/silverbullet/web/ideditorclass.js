@@ -114,7 +114,6 @@ class IdEditorClass {
 				  startRows: 10,
 				  startCols: 10,
 				  colHeaders: msg.header,
-		//		  minSpareRows: 1,
 				  currentRowClassName: 'currentRow',
 				  contextMenu: true,
 				  colWidths: function(index) {

@@ -37,18 +37,12 @@ public abstract class ExpressionCalculator {
 			if (prop.isListProperty()) {
 				value = "\"%" + prop.getCurrentValue() + "\"";
 			}
-			else if (prop.isNumericProperty()){
+			else /*if (prop.isNumericProperty())*/ {
 				value = prop.getCurrentValue();
 			}
 			ret = ret.replace("$" + sid, value);
 		}
-//		String[] tmp = expression.split("[$\\.]+");
-//		for (String id : tmp) {
-//			SvProperty prop = getProperty(id);
-//			if (prop != null) {
-//				expression = expression.replace("$" + id + ".Value", prop.getCurrentValue());
-//			}
-//		}
+
 		return ret;
 	}
 	
@@ -63,7 +57,6 @@ public abstract class ExpressionCalculator {
 			Object object = scriptEngine.get("ret");
 			return object;
 		} catch (ScriptException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;

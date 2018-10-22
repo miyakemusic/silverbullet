@@ -35,6 +35,7 @@ class DesignerClass {
 		var idDependencyDialog = prefix + 'dependencyDialog';
 		var idDependencyDialogPanel = prefix + 'dependencyDialogPanel';
 		var idIndex = prefix + 'index';
+		var idEditable = prefix + 'editable';
 									
 		var idBase = prefix + '_base';		
 		var idNorth = prefix + 'north';
@@ -86,6 +87,7 @@ class DesignerClass {
 		$('#' + idPropPane).append('<div>Style Class<input type="text" id="' + idStyleClass + '"></div>');
 		
 		$('#' + idPropPane).append('<div>Font Size<input type="text" id="' + idFontSize + '"></div>');
+		$('#' + idPropPane).append('<div>Editable<input type="checkbox" id="' + idEditable + '"></div>');
 		
 		var idAddClassDiv= prefix+'addClassDiv';
 		$('#' + idPropPane).append('<div id="' + idAddClassDiv + '" class="panel"></div>');
@@ -123,7 +125,7 @@ class DesignerClass {
 				$('#' + idUid).text(baseId);
 				$('#' + idIndex).val(info.index);
 				$('#' + idFontSize).val(info.fontsize);
-				
+				$('#' + idEditable).val(info.editable);
 				updateCustomPropTable(widgetType, info.custom);
 			},
 			function(msg) {
@@ -285,7 +287,7 @@ class DesignerClass {
 		        updateGuiProperty('css', $('#' + idCss).val());
 		    }
 		});
-		
+
 
 		$('#' + idPresentation).keydown(function(e) {
 		    if (e.keyCode == 13) {
@@ -296,6 +298,10 @@ class DesignerClass {
 		    if (e.keyCode == 13) {
 		        updateGuiProperty('fontsize', $('#' + idFontSize).val());
 		    }
+		});
+				
+		$('#' + idEditable).change(function() {
+			updateGuiBooleanProperty('editable', $('#' + idEditable).prop('checked'));
 		});
 				
 		function appendStyleClass() {
@@ -377,7 +383,16 @@ class DesignerClass {
 			   }
 			});			
 		}	
-	
+		function updateGuiBooleanProperty(fieldType, value) {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/design/updateGuiBooleanProperty?div=" + layout.getSelectedDiv() + "&propertyType=" + fieldType + "&value=" + value,
+			   success: function(msg){
+					layout.updateUI();
+			   }
+			});			
+		}	
+			
 		function cut() {
 			copiedDiv = layout.getSelectedDiv();
 		}

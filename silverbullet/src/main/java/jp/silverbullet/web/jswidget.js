@@ -139,6 +139,10 @@ class JsWidget {
 				$('#' + this.baseId).addClass('Vertical');	
 			}
 		}
+		else if (this.info.widgetType == 'ROOT') {
+			$('#' + this.baseId).addClass('panel');
+			$('#' + this.baseId).addClass('Root');	
+		}
 		else if (this.info.widgetType == 'TAB') {
 			this.subWidget = new JsTabPanel(this.baseId, this.info, function(id) {
 				me.requestChange(me.info.id, id, dependency);
@@ -272,36 +276,11 @@ class JsWidget {
 	}
 	
 	editable(enabled) {
+		
 	    var baseId = this.baseId;
 	    var me = this;
 	    
-    	if (!$('#' + this.baseId).parent().hasClass('Horizontal') && !$('#' + this.baseId).parent().hasClass('Vertical')) {
-			$('#' + this.baseId).draggable({
-				start : function (event , ui){
-				} ,
-				drag : function (event , ui) {
-				} ,
-				stop : function (event , ui){
-					me.setPosition(event);
-				} 
-			});
-			
-			$('#' + this.baseId).draggable(enabled);		
-
-		    $('#' + this.baseId).droppable({
-		      drop: function( event, ui ) {
-				
-		      }
-		    });		
-			$('#' + this.baseId).resizable({
-		      stop: function( event, ui ) {
-		      	me.setSize();
-		      }
-		    });    
-		    $('#' + this.baseId).resizable(enabled);
-	    }
-
-    	if (enabled == 'enable') {
+	    if (enabled == 'enable') {
 	    	$('#' + this.baseId).click(function(e){
 				$('.base').removeClass('selected');
 				$(this).addClass('selected');
@@ -315,9 +294,37 @@ class JsWidget {
 			$('.panel').removeClass('design');
 			$('#' + this.baseId).off('click');
 		}
-		
+
 		if (this.subWidget != null) {
 			this.subWidget.setEditable(enabled);
+		}	
+		if (!this.info.editable) {
+			return;
 		}
+		
+		$('#' + this.baseId).resizable({
+	      stop: function( event, ui ) {
+	      	me.setSize();
+	      }
+	    });    
+	    $('#' + this.baseId).resizable(enabled);
+		
+		if (this.info.widgetType == 'ROOT') {
+			return;
+		}
+		
+		if ($('#' + this.baseId).parent().hasClass('Absolute')) {	    
+			$('#' + this.baseId).draggable({
+				start : function (event , ui){
+				} ,
+				drag : function (event , ui) {
+				} ,
+				stop : function (event , ui){
+					me.setPosition(event);
+				} 
+			});
+			$('#' + this.baseId).draggable(enabled);		
+		}
+
 	}
 }

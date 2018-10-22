@@ -20,6 +20,7 @@ import javax.ws.rs.core.MediaType;
 import jp.silverbullet.StaticInstances;
 import jp.silverbullet.SvProperty;
 import jp.silverbullet.SvPropertyStore;
+import jp.silverbullet.dependency.DepChainPair;
 import jp.silverbullet.dependency.DependencyBuilder;
 import jp.silverbullet.dependency.DependencyEditorModel;
 import jp.silverbullet.dependency.DependencyNode;
@@ -28,6 +29,7 @@ import jp.silverbullet.dependency.DependencySpecHolder;
 import jp.silverbullet.dependency.DependencySpecTableGenerator;
 import jp.silverbullet.dependency.DependencyTableRowData;
 import jp.silverbullet.dependency.DependencyTargetConverter;
+import jp.silverbullet.dependency.LinkGenerator;
 import jp.silverbullet.property.PropertyHolder;
 
 
@@ -79,8 +81,8 @@ public class DependencySpecResource {
 	public Map<String, DependencyTableRowData[]> getRelationIds(@QueryParam("id") final String id) {
 		Set<String> ids = new HashSet<>();
 		Map<String, DependencyTableRowData[]> map = new HashMap<>();
-		
-		for (DepChainPair link : createDependencyLink(id)) {
+		LinkGenerator linkGenerator = new LinkGenerator(id);
+		for (DepChainPair link : linkGenerator.getLink()) {
 			ids.add(link.from.id);
 			ids.add(link.to.id);
 		}
@@ -93,8 +95,15 @@ public class DependencySpecResource {
 	@GET
 	@Path("/addSpec")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String addSpec(@QueryParam("id") final String id, @QueryParam("element") final String element, 
-			@QueryParam("value") @Encoded final String value, @QueryParam("condition") @Encoded final String condition) {
+	public String addSpec(@QueryParam("id") final String id, @QueryParam("element") String element, 
+			@QueryParam("value") @Encoded String value, @QueryParam("condition") @Encoded String condition) {
+		try {
+			element = URLDecoder.decode(element, "UTF-8");
+			value = URLDecoder.decode(value, "UTF-8");
+			condition = URLDecoder.decode(condition, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 		
 		DependencyTargetConverter converter = new DependencyTargetConverter(element);
 		
@@ -113,9 +122,19 @@ public class DependencySpecResource {
 	@GET
 	@Path("/editSpec")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String editSpec(@QueryParam("id") final String id, @QueryParam("element") final String element, 
-			@QueryParam("prevValue") @Encoded final String prevValue, @QueryParam("prevCondition") @Encoded final String prevCondition, @QueryParam("prevConfirmation") final String prevConfirmation,
-			@QueryParam("value") @Encoded final String value, @QueryParam("condition") @Encoded final String condition, @QueryParam("confirmation") final String confirmation) {
+	public String editSpec(@QueryParam("id") String id, @QueryParam("element") String element, 
+			@QueryParam("prevValue") @Encoded String prevValue, @QueryParam("prevCondition") @Encoded String prevCondition, @QueryParam("prevConfirmation") final String prevConfirmation,
+			@QueryParam("value") @Encoded String value, @QueryParam("condition") @Encoded String condition, @QueryParam("confirmation") String confirmation) {
+		
+		try {
+			element = URLDecoder.decode(element, "UTF-8");
+			prevValue = URLDecoder.decode(prevValue, "UTF-8");
+			prevCondition = URLDecoder.decode(prevCondition, "UTF-8");
+			value = URLDecoder.decode(value, "UTF-8");
+			condition = URLDecoder.decode(condition, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}		
 		
 		DependencySpec spec = StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder().get(id);
 		DependencyTargetConverter converter = new DependencyTargetConverter(element);	
@@ -147,40 +166,11 @@ public class DependencySpecResource {
 	}
 	
 	
-	class DepChain {
-		public DepChain(String id, String element) {
-			this.id = id;
-			this.element = element;
-		}
-		public String id;
-		public String element;
-		
-		@Override
-		public boolean equals(Object arg0) {
-			DepChain target = (DepChain)arg0;
-			return id.equals(target.id) && element.equals(target.element);
-		}
-	}
-	class DepChainPair{
-		public DepChainPair(DepChain from, DepChain to) {
-			this.from = from;
-			this.to = to;
-		}
-		public DepChain from;
-		public DepChain to;
-		@Override
-		public boolean equals(Object arg0) {
-			DepChainPair target = (DepChainPair)arg0;
-			
-			return from.equals(target.from) && to.equals(target.to);
-		}
-	}
-	
 	@GET
 	@Path("/target")
 	@Produces(MediaType.APPLICATION_JSON)
 	public DepChainPair[] getTarget(@QueryParam("id") final String id) {
-		return createDependencyLink(id);
+		return new LinkGenerator(id).getLink();
 	}
 
 	@GET
@@ -193,16 +183,6 @@ public class DependencySpecResource {
 		return "OK";
 	}
 	
-	private DepChainPair[] createDependencyLink(final String id) {
-		DependencySpecHolder holder = StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder();
-		DependencyBuilder builder = new DependencyBuilder(id, holder);
-
-		Set<DepChainPair> set = new LinkedHashSet<>();
-		createLinkList(id, "Value", builder.getTree(), set);
-		
-		return set.toArray(new DepChainPair[0]);
-	}
-
 	@GET
 	@Path("/ids")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -226,32 +206,5 @@ public class DependencySpecResource {
 		return ret;
 	}
 	
-	private void createLinkList(String fromId, String fromElement, DependencyNode node, Set<DepChainPair> set) {
-		for (DependencyNode child : node.getChildren()) {
-			String toId = child.getDependencyProperty().getId();
-			addDepChain(fromId, fromElement, set, child, toId);
-			String toElement = getElement(child);
-			createLinkList(child.getDependencyProperty().getId(), toElement, child, set);
-		}
-	}
 
-	private void addDepChain(String fromId, String fromElement, Set<DepChainPair> set, DependencyNode child,
-			String toId) {
-		
-		DepChainPair depChain = new DepChainPair(new DepChain(fromId, fromElement), new DepChain(toId, getElement(child)));
-		boolean found = false;
-		for (DepChainPair p : set) {
-			if (p.equals(depChain)) {
-				found = true;
-				break;
-			}
-		}
-		if (!found) {
-			set.add(depChain);
-		}
-	}
-
-	private String getElement(DependencyNode child) {
-		return DependencyTargetConverter.convertToString(child.getDependencyProperty().getElement(), child.getDependencyProperty().getSelectionId());
-	}
 }

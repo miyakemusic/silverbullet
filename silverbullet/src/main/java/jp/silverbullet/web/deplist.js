@@ -37,7 +37,6 @@ class DependencySpec {
 		  startCols: 10,
 		  colHeaders: ['Element', 'Value', 'Condition', 'Confirmation'],
 		  rowHeaders: true,
-	//	  minSpareRows: 1,
 		  colWidths: function(index) {
 		        return [100, 100, 500, 100, 100, 200, 200, 200, 200][index];
 		  },
@@ -60,7 +59,12 @@ class DependencySpec {
 			type: "GET", 
 			url: "http://" + window.location.host + "/rest/dependencySpec/specTable?id=" + me.id,
 			success: function(msg) {
-				me.data = msg;
+				me.data = [];
+				for (var i = 0; i < msg.length; i++) {
+					var o = msg[i];
+					var line = [o.element, o.value, o.condition, o.confirmation];
+					me.data.push(line);
+				}
 				me.updateTable();
 			}
 		});

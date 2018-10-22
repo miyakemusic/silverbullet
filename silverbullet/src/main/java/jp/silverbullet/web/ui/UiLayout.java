@@ -24,7 +24,7 @@ public class UiLayout {
 
 	private JsWidget createRoot() {
 		JsWidget root = new JsWidget();
-		root.setWidgetType(JsWidget.PANEL);
+		root.setWidgetType(JsWidget.ROOT);
 		root.setWidth("800");
 		root.setHeight("400");
 		root.setLayout(JsWidget.ABSOLUTELAYOUT);
@@ -279,7 +279,13 @@ public class UiLayout {
 
 	public void updateProperty(String div, String propertyType, String value) {
 		JsWidget panel = getWidget(div);
-		panel.setField(propertyType, value);
+		panel.setField(propertyType, value, String.class);
+		this.fireEvent();
+	}
+
+	public void updateBooleanProperty(String div, String propertyType, Boolean value) {
+		JsWidget panel = getWidget(div);
+		panel.setField(propertyType, value, Boolean.class);
 		this.fireEvent();
 	}
 }

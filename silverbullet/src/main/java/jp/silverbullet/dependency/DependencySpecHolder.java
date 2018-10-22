@@ -56,4 +56,8 @@ public class DependencySpecHolder {
 			this.specs.remove(prevId);
 		}
 	}
+
+	public DependencySpec getSpec(String id) {
+		return this.specs.get(id);
+	}
 }

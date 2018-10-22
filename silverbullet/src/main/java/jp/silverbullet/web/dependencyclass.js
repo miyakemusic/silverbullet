@@ -34,12 +34,14 @@ class DependencyClass {
 			'<div>' +
 			'	<button class="copyValue" value="true">true</button>' +
 			'	<button class="copyValue" value="false">false</button>' +
-			'	<button class="copyValue" value="==">==</button>' +
-			'	<button class="copyValue" value=">">></button>' +
-			'	<button class="copyValue" value=">=">>=</button>' +
-			'	<button class="copyValue" value="<"><</button>' +
-			'	<button class="copyValue" value="<="><=</button>' +
-			'	<button class="copyValue" value="!=">!=</button>' +
+			'	<button class="copyValue" value=" == ">==</button>' +
+			'	<button class="copyValue" value=" > ">></button>' +
+			'	<button class="copyValue" value=" >= ">>=</button>' +
+			'	<button class="copyValue" value=" < "><</button>' +
+			'	<button class="copyValue" value=" <= "><=</button>' +
+			'	<button class="copyValue" value=" != ">!=</button>' +
+			'	<button class="copyValue" value=" || ">||</button>' +
+			'	<button class="copyValue" value=" ( ) ">()</button>' +
 			'	<button class="copyValue" value="*any">*any</button>' +
 			'	<button class="copyValue" value="*else">*else</button>' +
 			'	<button class="copyValue" value="*script">*SCRIPT()</button>' +
@@ -157,7 +159,6 @@ class DependencyClass {
 				else {
 					text = '$' + id + '.Value';
 				}
-				
 				$('#' + me.activeTextArea).val($('#' + me.activeTextArea).val() + text);			
 			});
 		});
@@ -213,6 +214,7 @@ class DependencyClass {
 			
 			$('#valueText').val(me.currentValue);
 			$('#conditionText').val(me.currentCondition);
+			$('#targetIdElement').val(me.currentElement); 
 			$('#depDialog').dialog("open");
 		});
 		

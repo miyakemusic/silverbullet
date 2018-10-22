@@ -42,6 +42,7 @@ td.unused {
 
 div.panel {
  	background-color: white;
+ 	border: 1px transparent solid;
  }
 
 div.design {
@@ -117,6 +118,8 @@ div.AbsoluteLayout {
 	position:absolute;
 	display:none;
 }
+
+
 div.AbsoluteLayout .title {
 	display:inline-block;
 	width:40%;

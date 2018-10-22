@@ -366,7 +366,7 @@ class JsCheckBox extends JsSubWidget {
 	
 	updateValue(property) {
 		$('#' + this.titleId).text(property.title);
-		$('#' + this.checkId).val(property.currentValue);
+		$('#' + this.checkId).prop('checked', property.currentValue == 'true');
 	}
 	
 	updateLayout(property) {
@@ -377,6 +377,12 @@ class JsCheckBox extends JsSubWidget {
 		var html = '<input type="checkbox" id="' + this.checkId + '"' + ' name="' + this.checkId + '"><label for="' + this.checkId + '" id=' + this.titleId + '></label>';
 		$('#' + this.baseId).append(html);
 		$('#' + this.checkId).checkboxradio();
+		
+		var me = this;
+		$('#' + this.checkId).change(function() {
+			me.change($(this).prop('checked'));
+		});
+		
 		this.updateValue(property);
 	}
 	
@@ -393,27 +399,18 @@ class JsChartCanvasJs extends JsSubWidget {
 	
 	updateValue(property) {
 		var me = this;
-		this.chart.data[0].remove();
 		if (property.currentValue == 'REQUEST_AGAIN') {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/design/getProperty?id=" + me.info.id + '&ext=501',
+			   url: "http://" + window.location.host + "/rest/design/getProperty?id=" + me.info.id + '&ext=1001',
 			   success: function(property){
 					var trace = JSON.parse(property.currentValue);
 					var list = [];
 					for (var i = 0; i < trace.y.length; i++) {
-						var obj = new Object();
-						obj.x = parseFloat(i);
-						obj.y = parseFloat(trace.y[i])+
-						list.push(obj);
-						//me.chart.options.data[0].dataPoints.push({ x: parseFloat(i), y: parseFloat(trace.y[i])});
+						list.push({y: parseFloat(trace.y[i])});
 					}	
-					var data = new Object();
-					data.type = 'spline';
-					data.dataPoints = list;
-					me.chart.options.data.push(data);
+					me.chart.options.data[0].dataPoints = list;
 					me.chart.render();   
-		//			me.chart.options.data[0].dataPoints.push({ x:i, y: 25 - Math.random() * 10});
 			   }
 			});
 		}	
@@ -421,20 +418,15 @@ class JsChartCanvasJs extends JsSubWidget {
 	
 	updateLayout(property) {
 		$('#' + this.baseId).empty();
-	
+		var me = this;
 		this.chart = new CanvasJS.Chart(this.baseId, { 
 			title: {
-				text: "Adding & Updating dataPoints"
+				text: property.title
 			},
 			data: [
 			{
-				type: "spline",
-				dataPoints: [
-					{ y: 3000 },
-					{ y:  4 },
-					{ y: 18 },
-					{ y: -3000 }	
-				]
+				type: "line",
+				dataPoints: null
 			}
 			]
 		});

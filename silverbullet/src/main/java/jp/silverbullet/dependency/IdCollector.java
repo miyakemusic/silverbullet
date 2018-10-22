@@ -5,12 +5,14 @@ import java.util.List;
 
 public class IdCollector {
 
+	
+
 	public List<String> collectIds(String value) {
 		List<String> ret = new ArrayList<>();
 		if (!value.contains("$")) {
 			return ret;
 		}
-		String[] tmp = value.split("[\\<>\\[\\]+/\\-=\\s();]");
+		String[] tmp = value.split(DependencyExpression.ID_SPLIT_CHARS);
 		for (String t : tmp) {
 			if (t.startsWith("$")) {
 				ret.add(t.replace("$", ""));
@@ -25,7 +27,7 @@ public class IdCollector {
 		if (!value.contains("%")) {
 			return ret;
 		}
-		String[] tmp = value.split("[\\<>\\[\\]+/\\-=\\s();]");
+		String[] tmp = value.split(DependencyExpression.ID_SPLIT_CHARS/*"[\\<>\\[\\]+/\\-=\\s();\\|]"*/);
 		for (String t : tmp) {
 			if (t.startsWith("%")) {
 				ret.add(t.replace("%", ""));

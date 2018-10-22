@@ -1,9 +1,14 @@
 package jp.silverbullet.dependency;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 public class DependencyExpression {
+	public static final String ID_SPLIT_CHARS = "[\\<>\\[\\]+/\\-=\\s();\\|]";
+	
 	@XmlTransient
 	private DependencyExpressionListener listener;
 	protected void targetValueAdded(String targetValue) {
@@ -58,6 +63,18 @@ public class DependencyExpression {
 
 	public void setConfirmationRequired(boolean confirmationRequired) {
 		this.confirmationRequired = confirmationRequired;
+	}
+
+	public List<IdElement> getIdElement() {
+		List<IdElement> ret = new ArrayList<>();
+		for (String word : this.getExpression().getExpression().split(ID_SPLIT_CHARS)) {
+			if (!word.startsWith("$")) {
+				continue;
+			}
+			String[] tmp = word.split("\\.");
+			ret.add(new IdElement(tmp[0].replace("$", ""), tmp[1]));
+		}
+		return ret;
 	}
 
 	

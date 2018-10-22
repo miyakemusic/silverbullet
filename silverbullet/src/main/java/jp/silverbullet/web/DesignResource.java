@@ -199,6 +199,14 @@ public class DesignResource {
 		StaticInstances.getInstance().getBuilderModel().getUiLayout().updateProperty(div, propertyType, value);
 		return "OK";
 	}
+
+	@GET
+	@Path("/updateGuiBooleanProperty")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String updateGuiBooleanProperty(@QueryParam("div") String div, @QueryParam("propertyType") String propertyType, @QueryParam("value") Boolean value) {
+		StaticInstances.getInstance().getBuilderModel().getUiLayout().updateBooleanProperty(div, propertyType, value);
+		return "OK";
+	}
 	
 	@GET
 	@Path("/layoutTypes")

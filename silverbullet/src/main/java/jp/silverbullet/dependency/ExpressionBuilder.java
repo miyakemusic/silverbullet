@@ -6,7 +6,6 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 public class ExpressionBuilder {
 	public static final String SCRIPT = "*SCRIPT";
-//	public static final String EXPRESSION = "*EXPRESSION";
 	private String expression = "";
 	
 	@XmlTransient
