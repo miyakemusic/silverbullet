@@ -64,7 +64,7 @@ public class SvTexHtml {
 			if (line.contains("\\minmaxdef") || line.contains("\\texttt")) {
 				line = line.split("[\\{\\}]+")[1];
 			}
-			line = line.replace("$\\rightarrow$", "â†?");
+			line = line.replace("$\\rightarrow$", "->");
 			ret += line;
 		}
 		return ret;
