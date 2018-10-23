@@ -178,10 +178,9 @@ public class JsWidget {
 			throw new RuntimeException(e);
 		}
 
-		Object ret; //戻り値
+		Object ret; 
 		try {
 			ret = method.invoke(this, value);
-			//  = object.メソッド(1); と同じ
 		} catch (IllegalArgumentException e) {
 			throw e;
 		} catch (ReflectiveOperationException e) {
