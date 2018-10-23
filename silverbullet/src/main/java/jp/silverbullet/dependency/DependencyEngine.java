@@ -67,8 +67,11 @@ public abstract class DependencyEngine {
 			this.cachedPropertyStore.commit();
 		}
 		
-		for (DependencyListener listener : this.listeners) {
-			listener.onCompleted(this.getChangedIds().toString().replace("[", "").replace("]", "").replaceAll(" ", ""));
+		String changedIds = this.getChangedIds().toString().replace("[", "").replace("]", "").replaceAll(" ", "");
+		if (!changedIds.isEmpty()) {
+			for (DependencyListener listener : this.listeners) {
+				listener.onCompleted(changedIds);
+			}
 		}
 	}
 	
@@ -80,12 +83,10 @@ public abstract class DependencyEngine {
 				if (!spec.getSelectionId().equals(DependencySpec.DefaultItem)){
 					Boolean v = !Boolean.valueOf(calcResult(spec));
 					prop.addListMask(spec.getSelectionId(), v);
-//					changed.add(new ChangedProperty(prop.getId(), spec.getSelectionId(), spec.getElement(), spec.isConfirmationRequired()));
 					
 					// if masked item was current, it should be change
 					if (v && prop.getCurrentValue().equals(spec.getSelectionId())) {
 						prop.setCurrentValue(prop.getAvailableListDetail().get(0).getId());
-//						changed.add(new ChangedProperty(prop.getId(), spec.getElement(), spec.isConfirmationRequired()));
 					}
 				}
 				else {
@@ -122,13 +123,11 @@ public abstract class DependencyEngine {
 						}
 						prop.setCurrentValue(v);
 					}
-//					changed.add(new ChangedProperty(prop.getId(), spec.getElement(), spec.isConfirmationRequired()));
 				}
 				
 				spec.cosumed();
 			}
 		}
-//		return changed;
 		return null;
 	}
 	

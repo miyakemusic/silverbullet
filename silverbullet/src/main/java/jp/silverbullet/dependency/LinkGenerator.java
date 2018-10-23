@@ -1,6 +1,7 @@
 package jp.silverbullet.dependency;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,16 +27,24 @@ public class LinkGenerator {
 		DependencySpec spec = holder.getSpec(id);
 		if (spec != null) {
 			for (DependencyTargetElement e : spec.getDepExpHolderMap().keySet()) {
-				for (String value : spec.getDependencyExpressionHolder(e).getExpressions().keySet()) {
-					DependencyExpressionList list = spec.getDependencyExpressionHolder(e).getExpressions().get(value);
-					for (DependencyExpression expression : list.getDependencyExpressions()) {
-						List<IdElement> depChains = expression.getIdElement();
-						for (IdElement depChain : depChains) {
-							DepChainPair pair = new DepChainPair(depChain, new IdElement(id, e.toString()));
-							set.add(pair);
+				DependencyExpressionHolderMap exHolderMap = spec.getDepExpHolderMap().get(e);
+				for (String selectionId : exHolderMap.keySet()) {
+					DependencyExpressionHolderList list = exHolderMap.getDependencyExpressionHolderMap().get(selectionId);
+					for (DependencyExpressionHolder exHolder : list.getDependencyExpressionHolders()) {
+						for (String value : exHolder.getExpressions().keySet()) {
+							DependencyExpressionList exList = exHolder.getExpressions().get(value);
+							for (DependencyExpression expression : exList.getDependencyExpressions()) {
+								List<IdElement> depChains = expression.getIdElement();
+								for (IdElement depChain : depChains) {
+									DepChainPair pair = new DepChainPair(depChain, new IdElement(id, DependencyTargetConverter.convertToString(e, selectionId)));
+									set.add(pair);
+								}								
+							}
 						}
 					}
+
 				}
+
 			}
 		}
 		return set.toArray(new DepChainPair[0]);
@@ -74,6 +83,15 @@ public class LinkGenerator {
 
 	public DepChainPair[] getLink() {
 		return this.link;
+	}
+
+	public Set<String> getRelatedIds() {
+		Set<String> ret = new HashSet<>();
+		for (DepChainPair pair : this.link) {
+			ret.add(pair.from.id);
+			ret.add(pair.to.id);
+		}
+		return ret;
 	}
 }
 

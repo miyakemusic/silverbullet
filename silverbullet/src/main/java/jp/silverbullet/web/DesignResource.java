@@ -219,7 +219,7 @@ public class DesignResource {
 	@Path("getWidgetTypes")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<String> getWidgetTypes() {
-		return Arrays.asList(JsWidget.TOGGLEBUTTON, JsWidget.CSSBUTTON, JsWidget.ACTIONBUTTON, JsWidget.COMBOBOX, JsWidget.RADIOBUTTON, JsWidget.TEXTFIELD,
+		return Arrays.asList(JsWidget.ROOT, JsWidget.TOGGLEBUTTON, JsWidget.CSSBUTTON, JsWidget.ACTIONBUTTON, JsWidget.COMBOBOX, JsWidget.RADIOBUTTON, JsWidget.TEXTFIELD,
 				JsWidget.CHART, JsWidget.CHART_CANVASJS, JsWidget.CHECKBOX, JsWidget.GUI_DIALOG, JsWidget.PANEL, JsWidget.TAB, JsWidget.LABEL, JsWidget.MESSAGEBOX);
 	}
 

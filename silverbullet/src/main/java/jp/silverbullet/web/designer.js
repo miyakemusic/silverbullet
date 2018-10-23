@@ -125,7 +125,7 @@ class DesignerClass {
 				$('#' + idUid).text(baseId);
 				$('#' + idIndex).val(info.index);
 				$('#' + idFontSize).val(info.fontsize);
-				$('#' + idEditable).val(info.editable);
+				$('#' + idEditable).prop('checked', info.editable);
 				updateCustomPropTable(widgetType, info.custom);
 			},
 			function(msg) {
@@ -205,7 +205,7 @@ class DesignerClass {
 		function initWebSocket() {
 			new MyWebSocket(function(msg) {
 				var ids = msg.split(',');
-	      		layout.onPropertyUpdate(ids);
+	      		layout.requestUpdate(ids);
 			}
 			, 'VALUES');
 		}

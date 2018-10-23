@@ -1,6 +1,14 @@
 class DependencyClass {
 	constructor(div) {
-	
+		var idIds = div + 'ids';
+		
+		$('#' + div).append('<div>ID: <select id="' + idIds + '"></select></div>');
+		$('#' + idIds).change(function() {
+			var id = $('#' + idIds).val();
+			diagram.update(id);
+			updateMainTable(id);
+		});
+		
 		$('#' + div).append('<div id="myDiagramDiv" style="width:1000px; height:300px; background-color: #DAE4E4;"></div>');
 		$('#' + div).append('<div id="idListPanel" style="width:1000px; height:100px; background-color: lightBlue;"></div>');
 		$('#' + div).append('<div id="specSummary"></div>');
@@ -12,7 +20,7 @@ class DependencyClass {
 				   type: "GET", 
 				   url: "http://" + window.location.host + "/rest/dependencySpec/createNew?id=" + id,
 				   success: function(msg){
-						updateMainTable();
+						updateMainTable($('#' + idIds).val());
 				   }
 				});		
 			});
@@ -222,19 +230,35 @@ class DependencyClass {
 			removeSpec();
 		});
 		
-		function updateMainTable() {
+		updateComboBox();
+		function updateComboBox() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/dependencySpec/ids?id=",
+			   success: function(msg) {
+			   		$('#' + idIds).empty();	
+		   			for (var index in msg.table) {
+						var row = msg.table[index];
+						$('#' + idIds).append('<option text="' + row[1] + '" val="' + row[1] + '">' + row[1] + '</option>');
+					}
+			   }
+			});
+		}
+		
+		function updateMainTable(selectedId) {
 			$('#idListPanel').empty();
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/dependencySpec/ids",
-			   success: function(msg) {
+			   url: "http://" + window.location.host + "/rest/dependencySpec/ids?id=" + selectedId,
+			   success: function(msg) {			   	
 					for (var index in msg.table) {
 						var row = msg.table[index];
+
 						var idPanel = row[1] + "_panel";
 
 						$('#idListPanel').append('<div id = "' + idPanel + '" class="depPane">' + 
 							'<input class="small" id="' + row[1] + '" type="button" value="' + row[1] + '"/>' + '<br>'+
-							row[2] + '<br>' + row[4] + '<br>' + row[3] + '</div>');						
+							row[0] + '<br>' + row[2] + '</div>');						
 
 						var id = '#' + row[1];
 						idPanel = '#' + idPanel;
@@ -301,9 +325,7 @@ class DependencyClass {
 			});
 		}
 		
-		updateMainTable();
-					
-
+		updateMainTable('');
 		
 		function addDepSpecTmp() {
 			var element = $('#targetIdElement').val();
@@ -346,7 +368,8 @@ class DependencyClass {
 		}
 		
 		function encode(s) {
-			var ret = encodeURI(s).replace('+', '%2B');
+	//		var ret = encodeURI(s).replace('+', '%2B');
+			var ret = encodeURIComponent(s);
 			return ret;
 		}
 		

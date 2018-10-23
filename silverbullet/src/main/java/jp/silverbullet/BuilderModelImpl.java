@@ -412,4 +412,29 @@ public class BuilderModelImpl implements BuilderModel {
 		this.uiLayout.changeId(prevId, newId);
 		
 	}
+
+	@Override
+	public void saveParameters(String filename) {
+		this.getPropertyStore().save(filename);
+	}
+
+	@Override
+	public void loadParameters(String filename) {
+		try {
+			List<String> lines = Files.readAllLines(Paths.get(filename));
+			
+			for (String line : lines) { 
+				String[] tmp = line.split("[<>]");
+				String id = tmp[1].split("@")[0];
+				String value = tmp[2];
+				try {
+					this.dependency.requestChange(id, value);
+				} catch (RequestRejectedException e) {
+					e.printStackTrace();
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }

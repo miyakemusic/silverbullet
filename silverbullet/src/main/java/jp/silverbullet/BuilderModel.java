@@ -73,4 +73,8 @@ public interface BuilderModel {
 	UiLayout getUiLayout();
 
 	void changeId(String id, String value);
+
+	void saveParameters(String filename);
+
+	void loadParameters(String filename);
 }

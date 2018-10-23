@@ -1,5 +1,6 @@
 class LayoutBuilder {
 	constructor (base, root, callback, debugCallback) {
+		this.idSet = new Set();
 		this.root = root;
 		this.base = base;
 		this.map = new Map();
@@ -36,13 +37,21 @@ class LayoutBuilder {
 	  	}			
 	}
 		
-	onPropertyUpdate(ids) {
-		for (var i in ids) {
-			var widgets = this.map.get(ids[i]);
-		  	for (var j in widgets) {
-				widgets[j].updateValue();
-		  	}
+	requestUpdate(ids) {
+		for (var i = 0; i < ids.length; i++) {
+			this.idSet.add(ids[i]);
 		}
+		var me = this;
+		setTimeout(function() {
+			for (let id of me.idSet) {
+				var widgets = me.map.get(id);
+			  	for (var j in widgets) {
+					widgets[j].updateValue();
+			  	}
+			}
+			me.idSet.clear();
+		}, 10);
+
 	}
 	
 	createWidget(parent, pane) {

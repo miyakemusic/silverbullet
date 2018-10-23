@@ -5,7 +5,6 @@ import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,9 +20,7 @@ import jp.silverbullet.StaticInstances;
 import jp.silverbullet.SvProperty;
 import jp.silverbullet.SvPropertyStore;
 import jp.silverbullet.dependency.DepChainPair;
-import jp.silverbullet.dependency.DependencyBuilder;
 import jp.silverbullet.dependency.DependencyEditorModel;
-import jp.silverbullet.dependency.DependencyNode;
 import jp.silverbullet.dependency.DependencySpec;
 import jp.silverbullet.dependency.DependencySpecHolder;
 import jp.silverbullet.dependency.DependencySpecTableGenerator;
@@ -108,14 +105,7 @@ public class DependencySpecResource {
 		DependencyTargetConverter converter = new DependencyTargetConverter(element);
 		
 		DependencySpec spec = StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder().get(id);
-		try {
-			String value2 = URLDecoder.decode(value, "UTF-8");
-			String condition2 = URLDecoder.decode(condition, "UTF-8");
-		
-			spec.add(converter.getElement(), converter.getSelectionId(), value2, condition2);
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
+		spec.add(converter.getElement(), converter.getSelectionId(), value, condition);
 		return "OK";
 	}
 	
@@ -186,16 +176,27 @@ public class DependencySpecResource {
 	@GET
 	@Path("/ids")
 	@Produces(MediaType.APPLICATION_JSON)
-	public JsonTable getIds() {
+	public JsonTable getIds(@QueryParam("id") String id) {
 		DependencySpecHolder holder = StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder();
 		
 		JsonTable ret = new JsonTable();
 		
+		Set<String> list = null;
+		if (id.isEmpty()) {
+			list = StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder().getSpecs().keySet();
+		}
+		else {
+			list = new LinkGenerator(id).getRelatedIds();
+			list.add(id);
+		}
+		
+		
 		Set<String> tmps = new HashSet<String>();
-		for (String id : holder.getSpecs().keySet()) {
-			DependencySpec spec = holder.getSpecs().get(id);
+//		for (String id : holder.getSpecs().keySet()) {
+		for (String id2 : list) {
+ 			DependencySpec spec = holder.getSpecs().get(id2);
 			tmps.addAll(spec.getTriggerIds());
-			tmps.add(id);
+			tmps.add(id2);
 		}
 		
 		for (String id2 : tmps) {

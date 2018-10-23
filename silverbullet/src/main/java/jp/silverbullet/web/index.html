@@ -51,6 +51,22 @@ $(function() {
 			   }
 			});
 		});
+		$('#saveParameters').click(function() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/system/saveParameters?filename=data.txt",
+			   success: function(property){
+			   }
+			});
+		});
+		$('#loadParameters').click(function() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/system/loadParameters?filename=data.txt",
+			   success: function(property){
+			   }
+			});
+		});
 	});
 })
 </script>
@@ -63,6 +79,7 @@ $(function() {
 </head>
 <body> 
 <button id="save">Save</button><button id="generateSource">Generate Source</button>
+<button id="saveParameters">Save Parameters</button><button id="loadParameters">Load Parameters</button>
 <div id="tab">
   <ul>
   	<li><a href="#tab_id">ID</a></li>

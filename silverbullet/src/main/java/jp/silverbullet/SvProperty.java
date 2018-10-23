@@ -35,7 +35,6 @@ public class SvProperty implements Cloneable {
 			ret.listMask = tmpListMask;
 			return ret;
 		} catch (CloneNotSupportedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
@@ -62,8 +61,6 @@ public class SvProperty implements Cloneable {
 	private PropertyDef property;
 	private String currentValue = "";
 	private String prevValue = "";
-//	private String min = "";
-//	private String max = "";
 	private Set<SvPropertyListener> listeners = new HashSet<SvPropertyListener>();
 	private Map<String, Boolean> listMask = new HashMap<String, Boolean>();
 	private boolean enabled = true;
@@ -72,8 +69,7 @@ public class SvProperty implements Cloneable {
 	
 	@XmlTransient
 	private boolean listenerTouching = false;
-//	private ReadWriteLock lock = new ReentrantReadWriteLock();
-	
+
 	public SvProperty(PropertyDef prop) {
 		initialize(prop, 0);
 	}
@@ -100,7 +96,6 @@ public class SvProperty implements Cloneable {
 
 	
 	public String getCurrentValue() {
-//		lock.readLock();
 		return currentValue;
 	}
 
@@ -130,7 +125,6 @@ public class SvProperty implements Cloneable {
 	}
 
 	public void setCurrentValue(String value) {		
-//		lock.writeLock();
 		if (this.isDoubleProperty()) {
 			if (value.isEmpty()) {
 				value = "0";
@@ -200,9 +194,6 @@ public class SvProperty implements Cloneable {
 
 	public void addListMask(String id, boolean b) {
 		listMask.put(id, b);
-//		if (b && this.currentValue.equals(id)) {
-//			this.setCurrentValue(this.getAvailableListDetail().get(0).getId());
-//		}
 		this.fireListMaskChanged(id, id + "," + String.valueOf(b));
 	}
 	
@@ -212,7 +203,6 @@ public class SvProperty implements Cloneable {
 	}
 
 	public void setListMask(Map<String, Boolean> listMask2) {
-//		lock.writeLock();
 		boolean changed = false;
 		for (String id : listMask2.keySet()) {
 			if (!listMask2.get(id).equals(this.listMask.get(id))) {
@@ -244,7 +234,6 @@ public class SvProperty implements Cloneable {
 	}
 
 	public List<ListDetailElement> getAvailableListDetail() {
-//		lock.readLock();
 		List<ListDetailElement> ret = new ArrayList<ListDetailElement>();
 		for (ListDetailElement e : this.property.getListDetail()) {
 			if (!isListElementMasked(e.getId())) {
@@ -301,7 +290,6 @@ public class SvProperty implements Cloneable {
 	}
 
 	public void setMin(String min) {
-		//this.min = min;
 		property.updateArgument("min", min);
 		this.fireFlagChanged(Flag.MIN);
 	}
@@ -386,4 +374,11 @@ public class SvProperty implements Cloneable {
 		this.index = index;
 	}
 
+	public String getPersistentData() {
+		return this.getCurrentValue();
+	}
+
+	public void setPersistentData(String value) {
+		this.setCurrentValue(value);
+	}
 }

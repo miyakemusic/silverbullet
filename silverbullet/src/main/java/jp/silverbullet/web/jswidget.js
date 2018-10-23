@@ -118,7 +118,7 @@ class JsWidget {
 				me.requestChange(me.info.id, id, dependency);
 			});
 		}
-		else if (this.info.widgetType == 'PANEL') {
+		else if ((this.info.widgetType == 'PANEL') || (this.info.widgetType == 'ROOT')) {
 			$('#' + this.baseId).addClass('panel');
 			if (me.info.custom['background-color'] != null) {
 				$('#' + this.baseId).css('background-color', me.info.custom['background-color']);
@@ -296,7 +296,7 @@ class JsWidget {
 		}
 
 		if (this.subWidget != null) {
-			this.subWidget.setEditable(enabled);
+			this.subWidget.setEditable(enabled && this.info.editable);
 		}	
 		if (!this.info.editable) {
 			return;
@@ -309,6 +309,7 @@ class JsWidget {
 	    });    
 	    $('#' + this.baseId).resizable(enabled);
 		
+		// Root panel cannot drag panel
 		if (this.info.widgetType == 'ROOT') {
 			return;
 		}

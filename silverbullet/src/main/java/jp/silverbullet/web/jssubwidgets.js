@@ -366,7 +366,7 @@ class JsCheckBox extends JsSubWidget {
 	
 	updateValue(property) {
 		$('#' + this.titleId).text(property.title);
-		$('#' + this.checkId).prop('checked', property.currentValue == 'true');
+		$('#' + this.checkId).prop('checked',property.currentValue == 'true').button('refresh')
 	}
 	
 	updateLayout(property) {
@@ -376,7 +376,7 @@ class JsCheckBox extends JsSubWidget {
 		
 		var html = '<input type="checkbox" id="' + this.checkId + '"' + ' name="' + this.checkId + '"><label for="' + this.checkId + '" id=' + this.titleId + '></label>';
 		$('#' + this.baseId).append(html);
-		$('#' + this.checkId).checkboxradio();
+		$('#' + this.checkId).button();//.checkboxradio();
 		
 		var me = this;
 		$('#' + this.checkId).change(function() {
@@ -404,7 +404,11 @@ class JsChartCanvasJs extends JsSubWidget {
 			   type: "GET", 
 			   url: "http://" + window.location.host + "/rest/design/getProperty?id=" + me.info.id + '&ext=1001',
 			   success: function(property){
+			   		if (property == null) {
+			   			return;
+			   		}
 					var trace = JSON.parse(property.currentValue);
+					if (trace == null)return;
 					var list = [];
 					for (var i = 0; i < trace.y.length; i++) {
 						list.push({y: parseFloat(trace.y[i])});
@@ -546,6 +550,7 @@ class JsTable extends JsSubWidget {
 		var headers = ['COL#1', 'COL#2', 'COL#3', 'COL#4'];
 		this.createTable(headers);
 		
+		this.resize();
 		this.updateValue(property);
 	}
 	

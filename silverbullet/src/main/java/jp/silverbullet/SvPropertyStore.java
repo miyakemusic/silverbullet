@@ -1,5 +1,10 @@
 package jp.silverbullet;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,13 +18,10 @@ import jp.silverbullet.property.PropertyHolderListener;
 public class SvPropertyStore {
 	private Map<String, SvProperty> map = new HashMap<String, SvProperty>();
 	private List<String> types = new ArrayList<String>();
-	private PropertyHolder propertiesHolder;
-	
 	public SvPropertyStore(PropertyHolder propertiesHolder) {		
 		registerProperties(propertiesHolder);
 	}
 	private void registerProperties(PropertyHolder propertiesHolder) {
-		this.propertiesHolder = propertiesHolder;
 		for (PropertyDef prop : propertiesHolder.getProperties()) {
 			addProperty(prop);
 		}
@@ -157,4 +159,34 @@ public class SvPropertyStore {
 		registerProperties(propertiesHolder);
 	}
 
+	public void save(String filename) {
+		List<String> lines = new ArrayList<>();
+		for (String id : this.map.keySet()) {
+			SvProperty property = this.map.get(id);
+			lines.add("<" + id + ">" + property.getPersistentData() + "</" + id + ">");
+		}
+		try {
+			Files.deleteIfExists(Paths.get(filename));
+			Files.write(Paths.get(filename), lines,
+                Charset.forName("UTF-8"), StandardOpenOption.CREATE);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void load(String filename) {
+		try {
+			List<String> lines = Files.readAllLines(Paths.get(filename));
+			
+			for (String line : lines) { 
+				String[] tmp = line.split("[<>]");
+				String id = tmp[1];
+				String value = tmp[2];
+				this.map.get(id).setPersistentData(value);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }

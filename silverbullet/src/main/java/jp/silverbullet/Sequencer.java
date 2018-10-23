@@ -30,14 +30,13 @@ public abstract class Sequencer implements DependencyInterface {
 	abstract protected RegisterAccess getRegisterAccess();
 	
 	private List<AbstractSvHandler> handlers = new ArrayList<>();
-	private long myThreadId;
 	private Set<SequencerListener> listeners = new HashSet<SequencerListener>();
 	
 	LinkedHashMap<String, List<ChangedItemValue>> history = new LinkedHashMap<>();
 	private List<String> debugDepLog;
 	
 	public Sequencer() {
-		myThreadId = Thread.currentThread().getId();
+		Thread.currentThread().getId();
 	}
 	
 	@Override

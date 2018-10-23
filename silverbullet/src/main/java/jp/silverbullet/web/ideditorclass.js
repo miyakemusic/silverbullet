@@ -1,7 +1,7 @@
 class IdEditorClass {    
     constructor(div) {
     	var prefix = div + 'ideditorclass';
-    	
+        	
     	var idAdd = prefix + "add";
     	var idRemove = prefix + "remove";
     	this.idPropType = prefix + "propType";
@@ -18,7 +18,8 @@ class IdEditorClass {
 		$('#' + this.idCurrentId).text('ID');
 		
 		$('#' + div).append('<div id="' + this.idTable + '"></div>');
-
+  	 	$('#' + this.idTable).resizable(true);
+   	
 		$('#' + div).append('<Button id="' + this.idAddChoice + '">Add</Button>');
 		$('#' + div).append('<div id="' + this.idSubTable + '"></div>');
 

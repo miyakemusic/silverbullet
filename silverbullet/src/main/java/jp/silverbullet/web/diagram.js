@@ -11,12 +11,13 @@ class DependencyDiagram {
 	          initialContentAlignment: go.Spot.Center,
 	          // disable user copying of parts
 	          allowCopy: false,
+	          "animationManager.isEnabled": false,
 	          // position all of the nodes and route all of the links
 	          layout:
 	            $(go.LayeredDigraphLayout,
 	              { direction: 0,
-	                layerSpacing: 110,
-	                columnSpacing: 25,
+	                layerSpacing: 150,
+	                columnSpacing: 30,
 	                setsPortSpots: false })
 	      });
 	
@@ -42,8 +43,9 @@ class DependencyDiagram {
 	          { toArrow: "Standard", stroke: null }),
 	        $(go.TextBlock, new go.Binding("text", "text"))
 	      );
+	      
 	}
-	
+		
 	update(id) {
 		var me = this;
 		$.ajax({
@@ -51,7 +53,6 @@ class DependencyDiagram {
 		   url: "http://" + window.location.host + "/rest/dependencySpec/target?id=" + id,
 		   success: function(msg){
 			   var link = [];
-			   
 				for (var i in msg) {
 					var from = msg[i].from.id + "(" + msg[i].from.element + ")";
 					var to = msg[i].to.id + "(" + msg[i].to.element + ")";
@@ -67,6 +68,7 @@ class DependencyDiagram {
 
 					var path = {from:msg[i].from.id, to:msg[i].to.id, text: msg[i].to.element};
 					link.push(path);
+					
 				}
 				
 				me.draw(link)
