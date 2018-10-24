@@ -29,7 +29,7 @@ $(function() {
 		function initWebSocket() {
 			new MyWebSocket(function(msg) {
 				var ids = msg.split(',');
-	      		layout.onPropertyUpdate(ids);
+	      		layout.requestUpdate(ids);
 			}
 			, 'VALUES');
 		}

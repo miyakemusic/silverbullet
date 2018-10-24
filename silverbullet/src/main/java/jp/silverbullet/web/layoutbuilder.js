@@ -7,6 +7,7 @@ class LayoutBuilder {
 		this.widgetMap = new Map();
 		this.callback = callback;
 		this.debugCallback = debugCallback;
+		this.enableEdit = 'disable';
 		this.updateUI();
 	}
 	
@@ -28,6 +29,7 @@ class LayoutBuilder {
 		   		}
 		   }
 		});	
+		
 	}
 	
 	updateAllWidgetsValue() {
@@ -35,6 +37,7 @@ class LayoutBuilder {
 	  		var widget = this.allWidgets[j];
 			widget.updateValue();
 	  	}			
+	  	this.applyEnableEdit();
 	}
 		
 	requestUpdate(ids) {
@@ -51,7 +54,6 @@ class LayoutBuilder {
 			}
 			me.idSet.clear();
 		}, 10);
-
 	}
 	
 	createWidget(parent, pane) {
@@ -92,15 +94,19 @@ class LayoutBuilder {
 	
 	set enableEdit(enableEdit) {
 		this._enableEdit = enableEdit;
-		for (var i in this.allWidgets) {
-		    this.allWidgets[i].editable(enableEdit);
-		};
+		this.applyEnableEdit();
 	}
 	
 	get enableEdit() {
 		return this._enableEdit;
 	}
-					
+	
+	applyEnableEdit() {
+		for (var i in this.allWidgets) {
+		    this.allWidgets[i].editable(this.enableEdit);
+		};
+	}
+	
 	getRealId(div) {
 		var tmp = div.split('-');
 		var ret = tmp[tmp.length-1];

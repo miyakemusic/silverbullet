@@ -7,7 +7,7 @@ class JsSubWidget {
 		$('#' + this.baseId).width('100%');
 	}
 	
-	setEditable(editable) { 
+	setEditable(boolean) { 
 	}
 		
 	setDisabled(disabled) {

@@ -280,6 +280,7 @@ class JsWidget {
 	    var baseId = this.baseId;
 	    var me = this;
 	    
+	    // can clicked
 	    if (enabled == 'enable') {
 	    	$('#' + this.baseId).click(function(e){
 				$('.base').removeClass('selected');
@@ -295,25 +296,27 @@ class JsWidget {
 			$('#' + this.baseId).off('click');
 		}
 
-		if (this.subWidget != null) {
-			this.subWidget.setEditable(enabled && this.info.editable);
-		}	
-		if (!this.info.editable) {
-			return;
-		}
+		var editable = this.info.editable && (enabled == 'enable');
 		
+		if (this.subWidget != null) {
+			this.subWidget.setEditable(editable);
+		}	
+		
+		var arg = editable ? 'enable' : 'destroy';
+		
+		// can resize
 		$('#' + this.baseId).resizable({
 	      stop: function( event, ui ) {
 	      	me.setSize();
 	      }
 	    });    
-	    $('#' + this.baseId).resizable(enabled);
 		
 		// Root panel cannot drag panel
 		if (this.info.widgetType == 'ROOT') {
 			return;
 		}
-		
+
+ 		$('#' + this.baseId).resizable(arg);
 		if ($('#' + this.baseId).parent().hasClass('Absolute')) {	    
 			$('#' + this.baseId).draggable({
 				start : function (event , ui){
@@ -324,8 +327,7 @@ class JsWidget {
 					me.setPosition(event);
 				} 
 			});
-			$('#' + this.baseId).draggable(enabled);		
+			$('#' + this.baseId).draggable(arg);		
 		}
-
 	}
 }
