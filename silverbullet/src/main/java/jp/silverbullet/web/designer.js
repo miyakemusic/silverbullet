@@ -15,14 +15,18 @@ class DesignerClass {
 		var idDialog = prefix + 'dialog';
 		
 		var idToolbar2 = prefix + 'toolBar2';
-		var idStyleClass = prefix + 'styleClass';
+		var idStyleClass = prefix + '_styleClass';
 		var idStyleClasses = prefix + 'styleClasses';
-		var idFontSize = prefix + 'fontsize';
+		var idFontSize = prefix + '_fontsize';
 		var idAddStyleClass = prefix + 'addStyleClasses';
-		var idCss = prefix + 'css';
-		var idId = prefix + 'id';
+		var idCss = prefix + '_css';
+		var idTop = prefix + '_top';
+		var idLeft = prefix + '_left';
+		var idWidth = prefix + '_width';
+		var idHeight = prefix + '_height';
+		var idId = prefix + '_id';
 		var idCustom = prefix + 'custom';
-		var idPresentation = prefix + 'presentation';
+		var idPresentation = prefix + '_presentation';
 		var idUpdate = prefix + 'update';
 		var idClear = prefix + 'clear';
 		var idCut = prefix + 'cut';
@@ -34,7 +38,7 @@ class DesignerClass {
 		var idCustomPropTable = prefix + 'customPropTable';
 		var idDependencyDialog = prefix + 'dependencyDialog';
 		var idDependencyDialogPanel = prefix + 'dependencyDialogPanel';
-		var idIndex = prefix + 'index';
+		var idIndex = prefix + '_index';
 		var idEditable = prefix + 'editable';
 									
 		var idBase = prefix + '_base';		
@@ -77,16 +81,22 @@ class DesignerClass {
 		$('#' + idWest).append('<div id="' + idPropPane + '"></div>');
 		$('#' + idPropPane).css({'background-color': 'lightgray', 'font-size':'12px', 'width':'200px', 'height':'100%'});
 		
+		$('#' + idPropPane).append('<div id="' + idId + '"></div>');
 		$('#' + idPropPane).append('<div>type:<select id="' + idWidgetType + '"></select></div>');
 		$('#' + idPropPane).append('<div>Layout:<select id="' + idLayout + '"></select></div>');
 		
-		$('#' + idPropPane).append('<div>Index:<input type="text" id="' + idIndex + '"></div>');
-		$('#' + idPropPane).append('<div>Caption<input type="text" id="' + idPresentation + '"></div>');	
+		$('#' + idPropPane).append('<div>Index:<input type="text" id="' + idIndex + '" class="widgetField"></div>');
+		$('#' + idPropPane).append('<div>Caption<input type="text" id="' + idPresentation + '" class="widgetField"></div>');	
 		
-		$('#' + idPropPane).append('<div>CSS<input type="text" id="' + idCss + '"></div>');
-		$('#' + idPropPane).append('<div>Style Class<input type="text" id="' + idStyleClass + '"></div>');
+		$('#' + idPropPane).append('<div>Top:<input type="text" id="' + idTop + '" class="widgetField"></div>');
+		$('#' + idPropPane).append('<div>Left:<input type="text" id="' + idLeft + '" class="widgetField"></div>');
+		$('#' + idPropPane).append('<div>Width:<input type="text" id="' + idWidth + '" class="widgetField"></div>');
+		$('#' + idPropPane).append('<div>Height:<input type="text" id="' + idHeight + '" class="widgetField"></div>');
 		
-		$('#' + idPropPane).append('<div>Font Size<input type="text" id="' + idFontSize + '"></div>');
+		$('#' + idPropPane).append('<div>CSS<input type="text" id="' + idCss + '" class="widgetField"></div>');
+		$('#' + idPropPane).append('<div>Style Class<input type="text" id="' + idStyleClass + '" class="widgetField"></div>');
+		
+		$('#' + idPropPane).append('<div>Font Size<input type="text" id="' + idFontSize + '" class="widgetField"></div>');
 		$('#' + idPropPane).append('<div>Editable<input type="checkbox" id="' + idEditable + '"></div>');
 		
 		var idAddClassDiv= prefix+'addClassDiv';
@@ -119,13 +129,18 @@ class DesignerClass {
 				$('#' + idLayout).val(info.layout);
 				$('#' + idStyleClass).val(info.styleClass);
 				$('#' + idCss).val(info.css);
-//				$('#' + idId).val(info.id);
+				$('#' + idId).val(info.id);
 				$('#' + idPresentation).val(info.presentation);
 //				$('#' + idCustom).val(info.custom);
 				$('#' + idUid).text(baseId);
 				$('#' + idIndex).val(info.index);
 				$('#' + idFontSize).val(info.fontsize);
 				$('#' + idEditable).prop('checked', info.editable);
+				
+				$('#' + idTop).val(info.top);
+				$('#' + idLeft).val(info.left);
+				$('#' + idWidth).val(info.width);
+				$('#' + idHeight).val(info.height);
 				updateCustomPropTable(widgetType, info.custom);
 			},
 			function(msg) {
@@ -275,31 +290,15 @@ class DesignerClass {
 		$('#' + idAddTab).click(function(e) {
 			addTab();
 		});
-		
-		$('#' + idStyleClass).keydown(function(e) {
+
+		$('.widgetField').keydown(function(e) {
 		    if (e.keyCode == 13) {
-		        updateGuiProperty('styleClass', $('#' + idStyleClass).val());
-		    }
-		});
-		
-		$('#' + idCss).keydown(function(e) {
-		    if (e.keyCode == 13) {
-		        updateGuiProperty('css', $('#' + idCss).val());
+		    	var id = $(this).prop('id').split('_')[1];
+		    	var val = $(this).val();
+		        updateGuiProperty(id, val);
 		    }
 		});
 
-
-		$('#' + idPresentation).keydown(function(e) {
-		    if (e.keyCode == 13) {
-		        updateGuiProperty('presentation', $('#' + idPresentation).val());
-		    }
-		});
-		$('#' + idFontSize).keydown(function(e) {
-		    if (e.keyCode == 13) {
-		        updateGuiProperty('fontsize', $('#' + idFontSize).val());
-		    }
-		});
-				
 		$('#' + idEditable).change(function() {
 			updateGuiBooleanProperty('editable', $('#' + idEditable).prop('checked'));
 		});
