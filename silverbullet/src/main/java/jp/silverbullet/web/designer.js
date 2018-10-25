@@ -63,7 +63,6 @@ class DesignerClass {
 		$('#' + idToolbar).append('<button id="' + idAdd + '">Add Id</button>');
 		$('#' + idToolbar).append('<button id="' + idAddPanel + '">Add Panel</button>');
 		$('#' + idToolbar).append('<button id="' + idAddTab + '">Add Tab</button>');
-		$('#' + idToolbar).append('<button id="' + idRemove + '">Remove</button>');
 		$('#' + idToolbar).append('<button id="' + idAddDialog + '">Add Dialog</button>');
 		$('#' + idToolbar).append('<button id="' + idDependencyLog + '">Dependency</button>');
 		
@@ -72,6 +71,7 @@ class DesignerClass {
 		$('#' + idToolbar2).append('<button id="' + idClear + '">Clear</button>');
 		$('#' + idToolbar2).append('<button id="' + idCut + '">Cut</button>');
 		$('#' + idToolbar2).append('<button id="' + idPaste + '">Paste</button>');
+		$('#' + idToolbar2).append('<button id="' + idRemove + '">Remove</button>');
 		$('#' + idToolbar2).append('<input type="checkbox" id="' + idEdit + '">Edit');
 
 		$('#' + idCenter).append('<table><tr><td><div id="' + idEast + '" class="panel"></div></td><td valign="top"><div id="' + idWest + '" class="panel"></div></td></tr></table>');
