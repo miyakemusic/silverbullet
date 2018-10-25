@@ -50,16 +50,24 @@ public class WebClientManager {
 		StaticInstances.getInstance().getRegisterMapModel().addListener(new RegisterMapListener() {
 			@Override
 			public void onInterrupt() {
+				try {
+					RegisterUpdates updates = new RegisterUpdates();
+					updates.setName("@Interrupt@");
+					String val = new ObjectMapper().writeValueAsString(updates);
+					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("REGVAL", val));
+					WebSocketBroadcaster.getInstance().sendMessage(str);
+				} catch (JsonGenerationException e) {
+					e.printStackTrace();
+				} catch (JsonMappingException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 
 			@Override
 			public void onDataUpdate(int regIndex, int blockNumber, int value, long address, BitSet bitSet, RegisterUpdates updates) {
 				try {
-					SvRegister register = StaticInstances.getInstance().getBuilderModel().getRegisterProperty().getRegisterByAddress(address);
-					String name = register.getName();
-					for (RegisterBit bit : register.getBits().getBits()) {
-						
-					}
 					String val = new ObjectMapper().writeValueAsString(updates);
 					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("REGVAL", val));
 					WebSocketBroadcaster.getInstance().sendMessage(str);

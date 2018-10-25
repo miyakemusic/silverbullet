@@ -13,7 +13,12 @@ public class UiLayout {
 	public UiLayout() {
 		root = createRoot();
 	}
-	
+
+	public UiLayout(PropertyGetter propertyGetter2) {
+		root = createRoot();
+		this.propertyGetter = propertyGetter2;
+	}
+
 	private void fireEvent() {
 		WebSocketBroadcaster.getInstance().sendMessage("layoutChanged");
 	}

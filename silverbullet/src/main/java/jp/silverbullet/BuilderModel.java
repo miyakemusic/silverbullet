@@ -77,4 +77,10 @@ public interface BuilderModel {
 	void saveParameters(String filename);
 
 	void loadParameters(String filename);
+
+	List<String> getUiFiles();
+
+	List<String> createUiFile(String filename);
+
+	UiLayout switchUiFile(String filename);
 }

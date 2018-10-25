@@ -8,15 +8,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class RegisterProperty {
 	private List<SvRegister> registers = new ArrayList<SvRegister>();
+	private int registerWidth = 32;
 	
 	public RegisterProperty(){}
 	
 	public SvRegister addRegister(String name, String address, String description) {
 		SvRegister register = new SvRegister(name, description, address);
 		this.registers.add(register);
+		sort();
 		return register;
 	}
-
+	
 	public void sort() {
 		Collections.sort(this.registers, new AddressComparator());
 	}
@@ -56,4 +58,13 @@ public class RegisterProperty {
 		}
 		return null;
 	}
+
+	public int getLastDecAddess() {
+		return this.registers.get(this.registers.size()-1).getDecAddress();
+	}
+
+	public int getRegisterWidth() {
+		return this.registerWidth ;
+	}
+
 }

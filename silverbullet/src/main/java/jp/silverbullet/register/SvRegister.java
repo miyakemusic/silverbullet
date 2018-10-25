@@ -75,7 +75,6 @@ public class SvRegister {
 			hexAddress = this.getAddress();
 		}
 		return Integer.parseInt(hexAddress.replace("0x", ""), 16);
-	}
-	
+	}	
 	
 }

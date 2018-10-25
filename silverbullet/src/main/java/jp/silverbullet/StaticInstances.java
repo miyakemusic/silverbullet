@@ -15,7 +15,6 @@ public class StaticInstances {
 	private RegisterMapModel registerMapModel = null;
 	private PropertyListModel propertyListModel = null;
 	
-//	private static Map<String, BuilderModel> models = new HashMap<>();
 	private BuilderModel builderModel;
 	private String currentFilename = "";
 
@@ -31,7 +30,6 @@ public class StaticInstances {
 	}
 
 	private SvSimulator simulator;
-	
 	
 	public BuilderModel getBuilderModel() {
 		return builderModel;

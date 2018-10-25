@@ -30,9 +30,7 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 	private BuilderModel builderModel;
 	private Set<RegisterMapListener> listeners = new HashSet<>();
 	private Set<InterruptHandler> interruptHandlers = new HashSet<>();
-//	private SvSimulator currentDevice;
 	private List<SvSimulator> simulators = new ArrayList<>();
-//	private SvSimulator nullSimulator = new NullSimulator();
 	private Map<Long, byte[]> blockData = new HashMap<>();
 	private Map<Long, String> blockNameMap = new HashMap<>();
 	private RegisterMonitor monitor = new NullMonitor();
@@ -46,7 +44,6 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 	
 	public RegisterMapModel(BuilderModel builderModel) {
 		this.builderModel = builderModel;
-//		this.currentDevice = nullSimulator;
 		update();
 	}
 
@@ -54,12 +51,17 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 		this.monitor = monitor;
 	}
 	
+	public List<SvSimulator> getSimulators() {
+		return simulators;
+	}
+
+	public void setSimulators(List<SvSimulator> simulators) {
+		this.simulators = simulators;
+	}
+
 	public void addSimulator(SvSimulator simulator) {
 		simulator.setDevice(this);
 		this.simulators.add(simulator);
-//		if (this.currentDevice != this.nullSimulator) {
-//			this.currentDevice = this.simulator;
-//		}
 		this.monitor.setSimulator(simulator.getClass().getSimpleName().replace(".class", ""));
 	}
 	
@@ -71,7 +73,6 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 			long address = 0;
 			if (register.isBlock()) {
 				String[] tmp = register.getAddress().split("-");
-				//long start = Long.valueOf(tmp[0]);
 				address = Long.parseLong(tmp[0].replace("0x", ""), 16);
 			}
 			else {
@@ -148,7 +149,7 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 		final int regIndex = getIndex(address);	
 		SvRegister register = this.map.get(address);
 		Set<RegisterBit> changed = new HashSet<>();
-		for (int i = 0; i < RegisterBitArray.REGISTER_WIDTH; i++) {
+		for (int i = 0; i < builderModel.getRegisterProperty().getRegisterWidth(); i++) {
 			if (mask.get(i)) {
 				if (current.get(i) != data.get(i)) {
 					current.set(i, data.get(i));
@@ -186,15 +187,9 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 	}
 		
 	public String getValue(int regIndex, int block) {
-		long address = this.getAddAt(regIndex);
-//		if ((this.currentDevice == this.nullSimulator) && (this.blockNameMap.get(address) != null)) {
-//			return "File:" + blockNameMap.get(address);
-//		}
-//		else {
-			BitSet current = getCurrentValue(regIndex);
-			String ret = getCurrentValue(getBits(regIndex, block), current);
-			return ret;
-//		}
+		BitSet current = getCurrentValue(regIndex);
+		String ret = getCurrentValue(getBits(regIndex, block), current);
+		return ret;
 	}
 
 	protected String getCurrentValue(String bits, BitSet current) {

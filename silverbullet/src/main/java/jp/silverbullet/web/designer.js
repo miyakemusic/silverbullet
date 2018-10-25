@@ -51,6 +51,10 @@ class DesignerClass {
 		$('#' + div).append('<div id="' + idBase + '"></div>');
 		$('#' + idBase).css({'width':'100%', 'height':'100%'});
 		
+		var idFile = prefix + '_file';
+		var idAddNewFile = prefix + '_addNewFile';
+		$('#' + idBase).append('<div><select id="' + idFile + '"></select><button id="' + idAddNewFile + '">Add File</button></div>');
+		
 		$('#' + idBase).append('<div id="' + idNorth + '" class="panel"></div>');
 		$('#' + idBase).append('<div id="' + idCenter + '" class="panel"></div>');
 
@@ -129,7 +133,7 @@ class DesignerClass {
 				$('#' + idLayout).val(info.layout);
 				$('#' + idStyleClass).val(info.styleClass);
 				$('#' + idCss).val(info.css);
-				$('#' + idId).val(info.id);
+				$('#' + idId).text(info.id);
 				$('#' + idPresentation).val(info.presentation);
 //				$('#' + idCustom).val(info.custom);
 				$('#' + idUid).text(baseId);
@@ -448,6 +452,48 @@ class DesignerClass {
 					layout.updateUI();
 			   }
 			});			
+		}
+		
+		getFiles();
+		function getFiles() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/design/getFiles",
+			   success: function(msg){
+					$('#' + idFile).empty();
+					for (var s of msg) {
+						$('#' + idFile).append($("<option>").val(s).text(s));
+					}
+			   }
+			});			
+		}
+		
+		$('#' + idFile).change(function() {
+			switchFile($(this).val());
+		});
+		function switchFile(filename) {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/design/switchFile?filename=" + filename,
+			   success: function(msg){
+					layout.updateUI();
+			   }
+			});			
+		}
+		
+		
+		$('#' + idAddNewFile).click(function() {
+			createNewFile();
+		});
+		
+		function createNewFile() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/design/createNewFile?filename=",
+			   success: function(msg){
+					getFiles();
+			   }
+			});	
 		}
 		
 		$('#' + idEdit).trigger('click');

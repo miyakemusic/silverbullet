@@ -10,7 +10,14 @@ import jp.silverbullet.register.RegisterBit.ReadWriteType;
 public class RegisterBitArray {
 	private BitComparator comparator = new BitComparator();
 	private List<RegisterBit> bits = new ArrayList<RegisterBit>();
-	public static int REGISTER_WIDTH = 32;
+	public int register_width = 32;
+	
+	public RegisterBitArray() {
+		
+	}
+	public RegisterBitArray(int registerWidth) {
+		this.register_width = registerWidth;
+	}
 	
 	public List<RegisterBit> getBits() {
 		return bits;
@@ -50,7 +57,7 @@ public class RegisterBitArray {
 
 	public void add(String name, ReadWriteType rw, String description2, String definition2) {
 		int startBit = 0;
-		int endBit = REGISTER_WIDTH-1;
+		int endBit = register_width - 1;
 		if (this.bits.size() > 0) {
 			// Searches vacant bits
 			for (int i = this.bits.size()-1; i >= 0; i--) {

@@ -3,18 +3,19 @@ package jp.silverbullet;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import jp.silverbullet.property.PropertyHolder;
-import jp.silverbullet.property.StringArray;
-import jp.silverbullet.register.RegisterProperty;
-import jp.silverbullet.register.RegisterShortCutHolder;
-import jp.silverbullet.remote.SvTexHolder;
-import jp.silverbullet.spec.SpecElement;
-import jp.silverbullet.web.ui.PropertyGetter;
-import jp.silverbullet.web.ui.UiLayout;
+import javax.xml.bind.JAXBException;
+
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jp.silverbullet.dependency.DepPropertyStore;
 import jp.silverbullet.dependency.DependencyEngine;
 import jp.silverbullet.dependency.DependencyInterface;
@@ -24,13 +25,14 @@ import jp.silverbullet.handlers.EasyAccessModel;
 import jp.silverbullet.handlers.HandlerPropertyHolder;
 import jp.silverbullet.handlers.RegisterAccess;
 import jp.silverbullet.handlers.SvDevice;
-
-import javax.xml.bind.JAXBException;
-
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import jp.silverbullet.property.PropertyHolder;
+import jp.silverbullet.property.StringArray;
+import jp.silverbullet.register.RegisterProperty;
+import jp.silverbullet.register.RegisterShortCutHolder;
+import jp.silverbullet.remote.SvTexHolder;
+import jp.silverbullet.spec.SpecElement;
+import jp.silverbullet.web.ui.PropertyGetter;
+import jp.silverbullet.web.ui.UiLayout;
 
 public class BuilderModelImpl implements BuilderModel {
 	
@@ -58,6 +60,12 @@ public class BuilderModelImpl implements BuilderModel {
 	private DependencySpecHolder dependencySpecHolder = new DependencySpecHolder();
 	private SpecElement userStory = new SpecElement();
 	private RegisterShortCutHolder registerShortCuts = new RegisterShortCutHolder();
+	private UiLayoutHolder uiLayoutHolder = new UiLayoutHolder(new PropertyGetter() {
+		@Override
+		public SvProperty getProperty(String id) {
+			return store.getProperty(id);
+		}
+	});
 	
 	@Override
 	public HandlerPropertyHolder getHandlerPropertyHolder() {
@@ -104,7 +112,6 @@ public class BuilderModelImpl implements BuilderModel {
 	};
 	
 	private RegisterAccess regiseterAccess;
-	private UiLayout uiLayout;
 
 	public BuilderModelImpl() {
 		store = new SvPropertyStore(propertiesHolder);	
@@ -205,45 +212,13 @@ public class BuilderModelImpl implements BuilderModel {
 		this.userStory = load(SpecElement.class, folder + "/" + USERSTORY_XML);
 		this.registerShortCuts = load(RegisterShortCutHolder.class, folder + "/" + REGISTERSHORTCUT);
 		this.dependencySpecHolder = load(DependencySpecHolder.class, folder + "/" + DEPENDENCYSPEC2_XML);
-		this.uiLayout = loadJson(UiLayout.class, folder + "/" + GUI_LAYOUT_JSON);
-		this.uiLayout.setPropertyGetter(new PropertyGetter() {
-			@Override
-			public SvProperty getProperty(String id) {
-				return store.getProperty(id);
-			}
-		});
+		
+		uiLayoutHolder.load(folder);
+
+
 //		UiLayout.getInstance().initialize();
 	}
 
-	private <T> T loadJson(Class<T> clazz, String filename) {
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			T ret = mapper.readValue(new File(filename), clazz);
-			if (ret == null) {
-				try {
-					ret = clazz.newInstance();
-				} catch (InstantiationException | IllegalAccessException e) {
-					e.printStackTrace();
-				}
-			}
-			return ret;
-		} catch (JsonParseException e) {
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (Exception e2) {
-			e2.printStackTrace();
-		}
-
-		try {
-			return clazz.newInstance();
-		} catch (InstantiationException | IllegalAccessException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
 	@Override
 	public void save(String folder) {
 		save(this.propertiesHolder, PropertyHolder.class, folder + "/" + ID_DEF_XML);
@@ -254,25 +229,11 @@ public class BuilderModelImpl implements BuilderModel {
 		save(this.userStory, SpecElement.class, folder + "/" + USERSTORY_XML);
 		save(this.registerShortCuts, RegisterShortCutHolder.class, folder + "/" + REGISTERSHORTCUT);
 		save(this.dependencySpecHolder, DependencySpecHolder.class, folder + "/" + DEPENDENCYSPEC2_XML);
-		saveJson(this.uiLayout, folder + "/" + GUI_LAYOUT_JSON);
+//		saveJson(this.uiLayout, folder + "/" + "default.ui");
+		this.uiLayoutHolder.save(folder);
 	}
 	
-	private void saveJson(Object object, String filename) {
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			String s = mapper.writeValueAsString(object);
-			Files.write(Paths.get(filename), Arrays.asList(s));
-		} catch (JsonGenerationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+
 	@Override
 	public void importFile(String folder) {
 		PropertyHolder tmpProps = loadTestProp(folder + "/" + ID_DEF_XML);
@@ -303,9 +264,6 @@ public class BuilderModelImpl implements BuilderModel {
 		this.propertiesHolder.getTypes().getDefinitions().put("ChartProperty", new StringArray());
 		this.propertiesHolder.getTypes().getDefinitions().put("TableProperty", new StringArray());
 		
-		uiLayout = new UiLayout();
-		
-	
 	}
 	
 	private <T> T load(Class<T> clazz, String filename) {
@@ -401,7 +359,7 @@ public class BuilderModelImpl implements BuilderModel {
 	}
 	@Override
 	public UiLayout getUiLayout() {
-		return this.uiLayout;
+		return uiLayoutHolder.getCurrentUi();
 	}
 
 	@Override
@@ -409,7 +367,7 @@ public class BuilderModelImpl implements BuilderModel {
 		this.dependencySpecHolder.changeId(prevId, newId);
 	    this.propertiesHolder.changeId(prevId, newId);
 	// TODO	this.handlerPropertyHolder.changeId(prevId, newId);
-		this.uiLayout.changeId(prevId, newId);
+		this.uiLayoutHolder.changeId(prevId, newId);
 		
 	}
 
@@ -436,5 +394,20 @@ public class BuilderModelImpl implements BuilderModel {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public List<String> getUiFiles() {
+		return uiLayoutHolder.getFileList();
+	}
+
+	@Override
+	public List<String> createUiFile(String filename) {
+		return uiLayoutHolder.createNewFile(filename);
+	}
+
+	@Override
+	public UiLayout switchUiFile(String filename) {
+		return this.uiLayoutHolder.switchFile(filename);
 	}
 }

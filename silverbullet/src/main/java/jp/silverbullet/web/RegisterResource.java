@@ -3,6 +3,7 @@ package jp.silverbullet.web;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -127,13 +128,10 @@ public class RegisterResource {
 	public String addNew() {
 		RegisterProperty registerProperty = StaticInstances.getInstance().getBuilderModel().getRegisterProperty();
 		
-		if (registerProperty.getRegisters().size() == 0) {
-			
-		}
-		else {
-			
-		}
-		registerProperty.addRegister("New", "0x00", "New");
+		int last = registerProperty.getLastDecAddess();
+		int address = last + StaticInstances.getInstance().getBuilderModel().getRegisterProperty().getRegisterWidth()/8;
+		
+		registerProperty.addRegister("NewReg" + Calendar.getInstance().getTimeInMillis(), "0x"+Integer.toHexString(address), "NewRegister");
 		return "OK";
 	}
 	
@@ -144,7 +142,7 @@ public class RegisterResource {
 		List<SvRegister> registers = StaticInstances.getInstance().getBuilderModel().getRegisterProperty().getRegisters();
 		
 		SvRegister newRegister = new SvRegister();
-		newRegister.setName("NEW");
+		newRegister.setName("NEW" + Calendar.getInstance().getTimeInMillis());
 		int iRow = Integer.valueOf(row);
 			
 		String currentAddress = registers.get(iRow).getAddress();
@@ -242,14 +240,23 @@ public class RegisterResource {
 	@Path("/getSimulators")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<String> getSimulators() {
-		//return new ArrayList<String>();
 		return StaticInstances.getInstance().getRegisterMapModel().getSimulatorClasses(StaticInstances.getInstance().getBuilderModel().getUserApplicationPath());
 	}
 	
 	@GET
-	@Path("setSimulator")
+	@Path("getAddedSimulators")
+	List<String> getAddedSimulators() {
+		List<String> ret = new ArrayList<>();
+		for (SvSimulator simulator : StaticInstances.getInstance().getRegisterMapModel().getSimulators()) {
+			ret.add(simulator.getClass().getSimpleName());
+		}
+		return ret;
+	}
+	
+	@GET
+	@Path("addSimulator")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String setSimulator(@QueryParam("simulator") final String simulator) {
+	public String addSimulator(@QueryParam("simulator") final String simulator) {
 		try {
 			Class<?> c = Class.forName(StaticInstances.getInstance().getBuilderModel().getUserApplicationPath() + ".test." + simulator);	
 			SvSimulator object = (SvSimulator)c.getConstructor(RegisterAccess.class).newInstance(StaticInstances.getInstance().getBuilderModel().getRegisterAccess());

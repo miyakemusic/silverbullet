@@ -1,10 +1,13 @@
 class RegisterClass {
 
 	constructor(div) {
+		var idAddesSimulators = div + 'addesSim';
 		$('#' + div).append('<div><select id="spec"><option value="spec">Specification</option><option value="map">Map</option></select></div>');
-		$('#' + div).append('<button id="commit">Commit</button>');
+//		$('#' + div).append('<button id="commit">Commit</button>');
 		$('#' + div).append('<select id="idSimulator">Simulator</select><button id="simButton">Apply</button><button id="addNew">Add New</button>');
-		$('#' + div).append('<div><button id="idInterrupt">Interrupt</button></div>');
+		$('#' + div).append('<div id="' + idAddesSimulators + '"></div>');
+		
+		$('#' + div).append('<div><button id="idInterrupt" class="regButton">Interrupt</button></div>');
 		$('#' + div).append('<div id="mainDiv" class="regtable"></div>');
 		
 		this.changes = new Map();
@@ -60,16 +63,33 @@ class RegisterClass {
 			});		
 		}
 		
+		getAddesSimulators();
+		function getAddesSimulators() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/register/getAddedSimulators",
+			   success: function(msg){
+			   		var val = '';
+			   		for (var i = 0; i < msg.length; i++) {
+						var sim = msg[i];
+						val += sim + " ";
+					}
+					$('#' + idAddesSimulators).append('<label>' + val + '</label>');
+			   }
+			});				
+		}
+		
 		function getSimulators() {
 			$('#simButton').click(function() {
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/register/setSimulator?simulator=" + $('#idSimulator').val(),
+				   url: "http://" + window.location.host + "/rest/register/addSimulator?simulator=" + $('#idSimulator').val(),
 				   success: function(msg){
 				   		for (var i = 0; i < msg.length; i++) {
 							var sim = msg[i];
 							$('#idSimulator').append('<option value="' + sim + '">' + sim + '</option>');
 						}
+						getAddesSimulators();
 				   }
 				});				
 			});
@@ -87,10 +107,17 @@ class RegisterClass {
 		}
 		
 		function initWebSocket() {
-			new MyWebSocket(function(msg) {
+			new MyWebSocket(function(msg) {				
 				var obj = JSON.parse(msg);
-				var address = obj.address;
+				
 				var regName = obj.name;
+				if (regName == '@Interrupt@') {
+					$('.regButton').removeClass('changed');
+					$('#idInterrupt').addClass('changed');
+					return;
+				}
+				var address = obj.address;
+				
 				for (var i = 0; i < obj.bits.length; i++) {
 					var bit = obj.bits[i];
 					var bitName = bit.name;

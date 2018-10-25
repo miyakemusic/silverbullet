@@ -2,6 +2,7 @@ package jp.silverbullet.web;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +25,7 @@ import jp.silverbullet.property.ChartContent;
 import jp.silverbullet.web.ui.CustomProperties;
 import jp.silverbullet.web.ui.JsProperty;
 import jp.silverbullet.web.ui.JsWidget;
+import jp.silverbullet.web.ui.UiLayout;
 
 @Path("/design")
 public class DesignResource {
@@ -261,4 +263,27 @@ public class DesignResource {
 		return "OK";
 	}
 	
+	@GET
+	@Path("getFiles")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public List<String> getFiles() {
+		return StaticInstances.getInstance().getBuilderModel().getUiFiles();
+	}
+	
+	@GET
+	@Path("createNewFile")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public List<String> createNewFile(@QueryParam("filename") String filename) {
+		if (filename.isEmpty()) {
+			filename = Calendar.getInstance().getTimeInMillis() + ".ui";
+		}
+		return StaticInstances.getInstance().getBuilderModel().createUiFile(filename);
+	}
+	
+	@GET
+	@Path("switchFile")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public UiLayout switchFile(@QueryParam("filename") String filename) {
+		return StaticInstances.getInstance().getBuilderModel().switchUiFile(filename);
+	}
 }
