@@ -9,6 +9,23 @@ class LayoutBuilder {
 		this.debugCallback = debugCallback;
 		this.enableEdit = 'disable';
 		this.updateUI();
+		
+		initWebSocket();
+		
+		var me = this;
+		function initWebSocket() {
+			new MyWebSocket(function(msg) {
+				var ids = msg.split(',');
+	      		me.requestUpdate(ids);
+			}
+			, 'VALUES');
+			new MyWebSocket(function(msg) {
+				if (msg == 'layoutChanged') {
+	      			me.updateUI();
+	      		}
+			}
+			, 'DESIGN');
+		}
 	}
 	
 	updateUI() {

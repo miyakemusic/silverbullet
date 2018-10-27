@@ -309,7 +309,7 @@ public class RegisterIoGenerator {
 					source.add("    public void write_" + convertName(register.getName()) + "_" + convertName(bit.getName()) + "(int value) {};");
 				}
 //				if (bit.isReadEnabled()) {
-//					source.add("    abstract void read_" + convertName(bit.getName()) + "();");
+//					source.add("    public void read_" + convertName(bit.getName()) + "();");
 //				}
 			}
 			source.add("    public void read_" + convertName(register.getName()) + "_" + convertName(register.getName()) + "() {};");

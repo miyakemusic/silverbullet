@@ -177,8 +177,6 @@ public class RegisterResource {
 		SvRegister register  = StaticInstances.getInstance().getBuilderModel().getRegisterProperty().getRegisterByName(regName);
 		RegisterBit bit = register.getBits().get(bitName);
 		
-		Map<Long, BitSet> map = StaticInstances.getInstance().getRegisterMapModel().getMapValue();
-
 		String address = register.getAddress().replace("0x", "");
 		if (address.contains("-")) {
 			address = address.split("-")[0];
@@ -196,10 +194,21 @@ public class RegisterResource {
 		}
 
 		StaticInstances.getInstance().getSimulator().updateRegister(intAddress, dataSet, mask);
+		
 		return "OK";
 	}
 	
-	
+	@GET
+	@Path("/triggerShortcut")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String triggerShortcut(@QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName) {
+		setCurrentValue(regName, bitName, "1");
+		if (StaticInstances.getInstance().getBuilderModel().getRegisterShortCut().isInterruptEnabled(regName, bitName)) {
+			this.interupt();
+		}
+		return "OK";
+	}
+
 	@GET
 	@Path("/createShortCut")
 	@Produces(MediaType.TEXT_PLAIN) 
@@ -245,7 +254,7 @@ public class RegisterResource {
 	
 	@GET
 	@Path("getAddedSimulators")
-	List<String> getAddedSimulators() {
+	public List<String> getAddedSimulators() {
 		List<String> ret = new ArrayList<>();
 		for (SvSimulator simulator : StaticInstances.getInstance().getRegisterMapModel().getSimulators()) {
 			ret.add(simulator.getClass().getSimpleName());

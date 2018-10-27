@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -169,6 +170,15 @@ public class DesignResource {
 		StaticInstances.getInstance().getBuilderModel().getUiLayout().addTab(div);
 		return "OK";
 	}
+
+	@GET
+	@Path("/addRegisterShortcut")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String addRegisterShortcut(@QueryParam("div") String div, @QueryParam("register") String register) {
+		StaticInstances.getInstance().getBuilderModel().getUiLayout().addRegisterShortcut(div, register);
+		return "OK";
+	}
+	
 	
 	@GET
 	@Path("/clearLayout")
@@ -221,8 +231,10 @@ public class DesignResource {
 	@Path("getWidgetTypes")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<String> getWidgetTypes() {
-		return Arrays.asList(JsWidget.ROOT, JsWidget.TOGGLEBUTTON, JsWidget.CSSBUTTON, JsWidget.ACTIONBUTTON, JsWidget.COMBOBOX, JsWidget.RADIOBUTTON, JsWidget.TEXTFIELD,
-				JsWidget.CHART, JsWidget.CHART_CANVASJS, JsWidget.CHECKBOX, JsWidget.GUI_DIALOG, JsWidget.PANEL, JsWidget.TAB, JsWidget.LABEL, JsWidget.MESSAGEBOX);
+		return Arrays.asList(JsWidget.ROOT, JsWidget.TOGGLEBUTTON, JsWidget.CSSBUTTON, JsWidget.ACTIONBUTTON, 
+				JsWidget.COMBOBOX, JsWidget.RADIOBUTTON, JsWidget.TEXTFIELD,
+				JsWidget.CHART, JsWidget.CHART_CANVASJS, JsWidget.CHECKBOX, JsWidget.GUI_DIALOG, 
+				JsWidget.PANEL, JsWidget.TAB, JsWidget.LABEL, JsWidget.MESSAGEBOX, JsWidget.ROOT, JsWidget.REGISTERSHORTCUT);
 	}
 
 	@GET
@@ -277,7 +289,20 @@ public class DesignResource {
 		if (filename.isEmpty()) {
 			filename = Calendar.getInstance().getTimeInMillis() + ".ui";
 		}
+		else if (!filename.toUpperCase().endsWith(".UI")){
+			Pattern illegalFileNamePattern = Pattern.compile("[(\\|/|:|\\*|?|\"|<|>|\\\\|)]");
+			String fileName = illegalFileNamePattern.matcher(filename).replaceAll("-");
+			filename = filename + ".ui";
+		}
 		return StaticInstances.getInstance().getBuilderModel().createUiFile(filename);
+	}
+	
+	@GET
+	@Path("removeFile")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public String removeFile(@QueryParam("filename") String filename) {
+		StaticInstances.getInstance().getBuilderModel().removeUiFile(filename);
+		return "OK";
 	}
 	
 	@GET

@@ -3,8 +3,12 @@ package jp.silverbullet.web.ui;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jp.silverbullet.SvProperty;
 import jp.silverbullet.web.WebSocketBroadcaster;
+import jp.silverbullet.web.WebSocketMessage;
 
 public class UiLayout {
 
@@ -20,7 +24,14 @@ public class UiLayout {
 	}
 
 	private void fireEvent() {
-		WebSocketBroadcaster.getInstance().sendMessage("layoutChanged");
+		try {
+			String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("DESIGN", "layoutChanged"));
+			WebSocketBroadcaster.getInstance().sendMessage(str);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 	public void setPropertyGetter(PropertyGetter propertyGetter) {
@@ -149,12 +160,16 @@ public class UiLayout {
 		panel.setHeight("200");
 		this.getDiv(unique).addChild(panel);
 	}
-	
-//	public void setLayout(String div, String layout) {
-//		JsWidget panel = getWidget(div);
-//		panel.setLayout(layout);
-//		this.fireEvent();
-//	}
+
+	public void addRegisterShortcut(String div, String register) {
+		int unique = extractUnique(div);
+		JsWidget panel = new JsWidget();
+		panel.setWidgetType(JsWidget.REGISTERSHORTCUT);
+		panel.getCustom().put(CustomProperties.REGISTER_SHORTCUT, register);
+		panel.setWidth("100");
+		panel.setHeight("50");
+		this.getDiv(unique).addChild(panel);
+	}
 
 	private JsWidget getWidget(String div) {
 		int unique = extractUnique(div);
@@ -180,24 +195,6 @@ public class UiLayout {
 		}
 		return false;
 	}
-
-//	public void setWidgetType(String div, String widgetType) {
-//		JsWidget panel = getWidget(div);
-//		panel.setWidgetType(widgetType);
-//		this.fireEvent();
-//	}
-
-//	public void setSyle(String div, String style) {
-//		JsWidget panel = getWidget(div);
-//		panel.setStyleClass(style);
-//		this.fireEvent();
-//	}
-
-//	public void setCss(String div, String css) {
-//		JsWidget panel = getWidget(div);
-//		panel.setCss(css);
-//		this.fireEvent();	
-//	}
 
 	public void setId(String div, String id) {
 		JsWidget panel = getWidget(div);
@@ -293,6 +290,7 @@ public class UiLayout {
 		panel.setField(propertyType, value, Boolean.class);
 		this.fireEvent();
 	}
+
 }
 
 abstract class WalkThrough {

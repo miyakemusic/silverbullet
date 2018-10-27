@@ -49,6 +49,11 @@ div.design {
  	border: 1px black solid;
 }
 
+div.register {
+ 	border: 1px gray solid;
+ 	background-color:transparent;
+}
+
 div.selected {
  	border: 1px black solid;
  	background-color: gray;

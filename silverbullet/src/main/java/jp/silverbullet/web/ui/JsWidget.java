@@ -30,6 +30,7 @@ public class JsWidget {
 	public static final String MESSAGEBOX = "MESSAGEBOX";
 	public static final String CSSBUTTON = "CSSBUTTON";
 	public static final String ROOT = "ROOT";
+	public static final String REGISTERSHORTCUT = "REGISTERSHORTCUT";
 	
 	private String id = "";
 	private String presentation = "";

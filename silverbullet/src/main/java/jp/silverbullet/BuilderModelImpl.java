@@ -1,20 +1,11 @@
 package jp.silverbullet;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
-
 import javax.xml.bind.JAXBException;
-
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jp.silverbullet.dependency.DepPropertyStore;
 import jp.silverbullet.dependency.DependencyEngine;
@@ -44,8 +35,7 @@ public class BuilderModelImpl implements BuilderModel {
 	private static final String USERSTORY_XML = "userstory.xml";
 	private static final String REGISTERSHORTCUT = "registershortcuts.xml";
 	private static final String DEPENDENCYSPEC2_XML = "dependencyspec2.xml";
-	private static final String GUI_LAYOUT_JSON = "layout.json";	
-	
+
 	private static BuilderModelImpl instance;
 	
 	private List<String> selectedId;
@@ -221,6 +211,19 @@ public class BuilderModelImpl implements BuilderModel {
 
 	@Override
 	public void save(String folder) {
+		try {
+			Files.newDirectoryStream(Paths.get(folder)).forEach(path -> {
+					try {
+						Files.delete(path);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+			});
+		}
+		catch(Exception e) {
+			
+		}
 		save(this.propertiesHolder, PropertyHolder.class, folder + "/" + ID_DEF_XML);
 		save(this.handlerPropertyHolder, HandlerPropertyHolder.class, folder + "/" + HANDLER_XML);
 		save(this.texHolder, SvTexHolder.class, folder + "/" + REMOTE_XML);
@@ -409,5 +412,10 @@ public class BuilderModelImpl implements BuilderModel {
 	@Override
 	public UiLayout switchUiFile(String filename) {
 		return this.uiLayoutHolder.switchFile(filename);
+	}
+
+	@Override
+	public void removeUiFile(String filename) {
+		this.uiLayoutHolder.removeFile(filename);
 	}
 }

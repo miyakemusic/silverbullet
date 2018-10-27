@@ -162,7 +162,12 @@ class JsWidget {
 			this.subWidget = new JsMessageBox(this.baseId, this.info, function(id) {
 				me.requestChange(me.info.id, id, dependency);
 			});
-		}					
+		}	
+		else if (this.info.widgetType == 'REGISTERSHORTCUT') {
+			this.subWidget = new JsRegisterShortcut(this.baseId, this.info, function(id) {
+				me.requestChange(me.info.id, id, dependency);
+			});
+		}				
 		$('#' + this.baseId).addClass('base');
 		if ((this.info.styleClass != null) && (this.info.styleClass != '')) {
 			$('#' + this.baseId).addClass(this.info.styleClass);

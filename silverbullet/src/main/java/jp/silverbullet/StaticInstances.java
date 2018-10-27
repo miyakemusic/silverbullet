@@ -42,6 +42,8 @@ public class StaticInstances {
 
 	private void createOtherInstances() {
 		registerMapModel = new RegisterMapModel(builderModel);
+		propertyListModel = new PropertyListModel(getBuilderModel().getPropertyHolder());
+		
 		getBuilderModel().setDeviceDriver(registerMapModel);
 		
 		simulator = new SvSimulator() {
@@ -54,7 +56,7 @@ public class StaticInstances {
 			}
 		};
 		registerMapModel.addSimulator(simulator);
-		propertyListModel = new PropertyListModel(getBuilderModel().getPropertyHolder());
+		
 	}
 	
 	public RegisterMapModel getRegisterMapModel() {

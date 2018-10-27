@@ -83,4 +83,6 @@ public interface BuilderModel {
 	List<String> createUiFile(String filename);
 
 	UiLayout switchUiFile(String filename);
+
+	void removeUiFile(String filename);
 }

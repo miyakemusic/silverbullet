@@ -61,15 +61,15 @@ class DebugClass {
 
 			   }
 			});			
-			if (item.interrupt == true) {
-				$.ajax({
-				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/register/interrupt",
-				   success: function(msg){
-	
-				   }
-				});			
-			}	
+//			if (item.interrupt == true) {
+//				$.ajax({
+//				   type: "GET", 
+//				   url: "http://" + window.location.host + "/rest/register/interrupt",
+//				   success: function(msg){
+//	
+//				   }
+//				});			
+//			}	
 		}
 	}
 }

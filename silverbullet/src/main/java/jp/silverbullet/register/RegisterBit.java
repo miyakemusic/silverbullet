@@ -2,9 +2,10 @@ package jp.silverbullet.register;
 
 public class RegisterBit {
 	public enum ReadWriteType {
-		RO,
-		WO,
-		RW,
+		RO, // Read Only
+		WO, // Write Only
+		RW, // Read / Write
+		RC, // Read and clear
 		UNUSED
 	}
 	private String name;
@@ -91,7 +92,7 @@ public class RegisterBit {
 	}
 
 	public boolean isReadEnabled() {
-		return type.equals(ReadWriteType.RO) || type.equals(ReadWriteType.RW);
+		return type.equals(ReadWriteType.RO) || type.equals(ReadWriteType.RW) || type.equals(ReadWriteType.RC);
 	}
 	
 	public boolean isWriteEnabled() {

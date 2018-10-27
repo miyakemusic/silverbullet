@@ -4,14 +4,15 @@ class DesignerClass {
 		var prefix = 'designer';
 		var idToolbar = prefix + 'toolBar';
 		var idAdd = prefix + 'add';
-		var idAddPanel = prefix + 'addPanel';
-		var idRemove = prefix + 'remove';
-		var idAddDialog = prefix + 'addDialog';
+		var idAddPanel = prefix + '_addPanel';
+		var idRemove = prefix + '_remove';
+		var idAddDialog = prefix + '_addDialog';
+		var idAddRegisterShortcut = prefix + '_addRegisterShortcut';
 		var idLayout = prefix + 'layout';
 		var idWidgetType = prefix + 'widgetType';
 		var idDependencyLog = prefix + 'dependency';
 		var idEdit = prefix + 'edit';
-		var idAddTab = prefix + 'addTab';
+		var idAddTab = prefix + '_addTab';
 		var idDialog = prefix + 'dialog';
 		
 		var idToolbar2 = prefix + 'toolBar2';
@@ -27,8 +28,8 @@ class DesignerClass {
 		var idId = prefix + '_id';
 		var idCustom = prefix + 'custom';
 		var idPresentation = prefix + '_presentation';
-		var idUpdate = prefix + 'update';
-		var idClear = prefix + 'clear';
+		var idUpdate = prefix + '_update';
+		var idClear = prefix + '_clearLayout';
 		var idCut = prefix + 'cut';
 		var idPaste = prefix + 'paste';
 		var idUid = prefix + 'udi';
@@ -53,7 +54,8 @@ class DesignerClass {
 		
 		var idFile = prefix + '_file';
 		var idAddNewFile = prefix + '_addNewFile';
-		$('#' + idBase).append('<div><select id="' + idFile + '"></select><button id="' + idAddNewFile + '">Add File</button></div>');
+		var idRemoveFile = prefix + '_removeFile';
+		$('#' + idBase).append('<div><select id="' + idFile + '"></select><button id="' + idAddNewFile + '">Add File</button><button id="' + idRemoveFile + '">Remove</button></div>');
 		
 		$('#' + idBase).append('<div id="' + idNorth + '" class="panel"></div>');
 		$('#' + idBase).append('<div id="' + idCenter + '" class="panel"></div>');
@@ -65,17 +67,18 @@ class DesignerClass {
 		$('#' + idNorth).append('<div id="' + idToolbar + '" class="panel"></div>');
 
 		$('#' + idToolbar).append('<button id="' + idAdd + '">Add Id</button>');
-		$('#' + idToolbar).append('<button id="' + idAddPanel + '">Add Panel</button>');
-		$('#' + idToolbar).append('<button id="' + idAddTab + '">Add Tab</button>');
-		$('#' + idToolbar).append('<button id="' + idAddDialog + '">Add Dialog</button>');
+		$('#' + idToolbar).append('<button id="' + idAddPanel + '" class="layoutAction">Add Panel</button>');
+		$('#' + idToolbar).append('<button id="' + idAddTab + '" class="layoutAction">Add Tab</button>');
+		$('#' + idToolbar).append('<button id="' + idAddDialog + '" class="layoutAction">Add Dialog</button>');
+		$('#' + idToolbar).append('<button id="' + idAddRegisterShortcut + '">Add Register Shortcut</button>');
 		$('#' + idToolbar).append('<button id="' + idDependencyLog + '">Dependency</button>');
 		
 		$('#' + idNorth).append('<div id="' + idToolbar2 + '" class="panel"></div>');
 		$('#' + idToolbar2).append('<button id="' + idUpdate + '">Update</button>');
-		$('#' + idToolbar2).append('<button id="' + idClear + '">Clear</button>');
+		$('#' + idToolbar2).append('<button id="' + idClear + '" class="layoutAction">Clear</button>');
 		$('#' + idToolbar2).append('<button id="' + idCut + '">Cut</button>');
 		$('#' + idToolbar2).append('<button id="' + idPaste + '">Paste</button>');
-		$('#' + idToolbar2).append('<button id="' + idRemove + '">Remove</button>');
+		$('#' + idToolbar2).append('<button id="' + idRemove + '" class="layoutAction">Remove</button>');
 		$('#' + idToolbar2).append('<input type="checkbox" id="' + idEdit + '">Edit');
 
 		$('#' + idCenter).append('<table><tr><td><div id="' + idEast + '" class="panel"></div></td><td valign="top"><div id="' + idWest + '" class="panel"></div></td></tr></table>');
@@ -218,17 +221,7 @@ class DesignerClass {
 		$('#' + idAdd).click(function(e) {
 			dialog.showModal();
 		});
-				
-		initWebSocket();
-		
-		function initWebSocket() {
-			new MyWebSocket(function(msg) {
-				var ids = msg.split(',');
-	      		layout.requestUpdate(ids);
-			}
-			, 'VALUES');
-		}
-	
+					
 		$.ajax({
 		   type: "GET", 
 		   url: "http://" + window.location.host + "/rest/design/layoutTypes",
@@ -264,35 +257,15 @@ class DesignerClass {
 		   url: "http://" + window.location.host + "/rest/design/getCustromDefinition",
 		   success: function(msg){
 		       customDef = msg;
-		       
-				for (var i in msg) {
-					var list = msg[i];
-					for (var j in list) {
-						var o = list[j];
-						console.log(o);
-					}
-				}
 		   }
 		});			
 		
 		$('#' + idUpdate).click(function(e) {
 			layout.updateUI();
 		});
-		
-		$('#' + idAddPanel).click(function(e) {
-			addPanel();
-		});
-		
-		$('#' + idClear).click(function(e) {
-			clearLayout();
-		});	
-		
-		$('#' + idRemove).click(function(e) {
-			removeWidget();
-		});
-		
-		$('#' + idAddTab).click(function(e) {
-			addTab();
+			
+		$('.layoutAction').click(function(e) {
+			doGuiAction($(this).prop('id').split('_')[1]);
 		});
 
 		$('.widgetField').keydown(function(e) {
@@ -320,7 +293,6 @@ class DesignerClass {
 		});
 		
 		$('#' + idAddDialog).click(function(e) {
-			//$('#' + idDialog).dialog("open");
 			addDialog('');
 			
 		});
@@ -337,6 +309,56 @@ class DesignerClass {
 			$('#' + idDependencyDialog).dialog("open");
 		});
 
+		// Register shortcut
+		var idRegisterShortcutDiv = div + 'registerShortcutDiv';
+		var idRegisterShortcutList = div + 'registerShortcutList';
+		$('#' + div).append('<div id="' + idRegisterShortcutDiv + '"><select id="' + idRegisterShortcutList + '"></select></div>');
+
+		$('#' + idAddRegisterShortcut).click(function(e) {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/register/getShortCuts",
+			   success: function(msg){
+					$('#' + idRegisterShortcutList).empty();
+					for (var s of msg) {
+						var text = s.bitName + "@" + s.regName;
+						$('#' + idRegisterShortcutList).append($('<option>').val(text).text(text));
+					}
+			   }
+			});		
+			$('#' + idRegisterShortcutDiv).dialog("open");
+		});
+		
+		function addRegisterShortcut(reg) {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/design/addRegisterShortcut?div=" + layout.getSelectedDiv() + '&register=' + reg,
+			   success: function(msg){
+					layout.updateUI();
+			   }
+			});		
+		}
+		
+		$('#' + idRegisterShortcutDiv).dialog({
+			  autoOpen: false,
+			  title: 'Register Shortcut',
+			  closeOnEscape: false,
+			  modal: true,
+			  buttons: {
+			    "OK": function(){
+			      addRegisterShortcut($('#' + idRegisterShortcutList).val());
+			      $(this).dialog('close');
+			    }
+			    ,
+			    "Cancel": function(){
+			      $(this).dialog('close');
+			    }
+			  },
+			width: 400,
+			height: 300
+		});	
+		
+		
 		function addTab() {
 			$.ajax({
 			   type: "GET", 
@@ -346,26 +368,6 @@ class DesignerClass {
 			   }
 			});	
 		}	
-		
-		function clearLayout() {
-			$.ajax({
-			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/design/clearLayout",
-			   success: function(msg){
-					layout.updateUI();
-			   }
-			});	
-		}
-				
-		function removeWidget() {
-			$.ajax({
-			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/design/remove?div=" + layout.getSelectedDiv(),
-			   success: function(msg){
-					layout.updateUI();
-			   }
-			});	
-		}
 				
 		function addDialog(id) {
 			$.ajax({
@@ -386,6 +388,16 @@ class DesignerClass {
 			   }
 			});			
 		}	
+		function doGuiAction(apiName) {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/design/" + apiName + "?div=" + layout.getSelectedDiv(),
+			   success: function(msg){
+					layout.updateUI();
+			   }
+			});			
+		}	
+		
 		function updateGuiBooleanProperty(fieldType, value) {
 			$.ajax({
 			   type: "GET", 
@@ -409,17 +421,7 @@ class DesignerClass {
 			   }
 			});			
 		}	
-	
-		function addPanel() {
-			$.ajax({
-			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/design/addPanel?div=" + layout.getSelectedDiv(),
-			   success: function(msg){
-					layout.updateUI();
-			   }
-			});	
-		}	
-		
+			
 		function updateCustomPropTable(widgetType, custom) {
 		
 			$('#' + idCustom).empty();
@@ -483,13 +485,34 @@ class DesignerClass {
 		
 		
 		$('#' + idAddNewFile).click(function() {
-			createNewFile();
+			var dialog = new TextInputDialog(div, 'New Filename', 'Filename', function() {
+				createNewFile(dialog.getText());
+			});
+			dialog.showModal();
+
 		});
 		
-		function createNewFile() {
+		$('#' + idRemoveFile).click(function() {
+			var dialog = new CommonDialog(div, 'Confirm', 'Are you sure you want to remove?', function() {
+				removeFile($('#' + idFile).val());
+			});
+			dialog.showModal();
+		});
+		
+		function createNewFile(filename) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/design/createNewFile?filename=",
+			   url: "http://" + window.location.host + "/rest/design/createNewFile?filename=" + filename,
+			   success: function(msg){
+					getFiles();
+			   }
+			});	
+		}
+		
+		function removeFile(filename) {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/design/removeFile?filename=" + filename,
 			   success: function(msg){
 					getFiles();
 			   }

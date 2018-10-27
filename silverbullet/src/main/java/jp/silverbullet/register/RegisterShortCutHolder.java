@@ -29,4 +29,13 @@ public class RegisterShortCutHolder {
 		}
 	}
 
+	public boolean isInterruptEnabled(String regName, String bitName) {
+		for (RegisterShortCut reg : this.shortcuts) {
+			if (reg.getRegName().equals(regName) && reg.getBitName().equals(bitName)) {
+				return reg.isInterrupt();
+			}
+		}
+		return false;
+	}
+
 }

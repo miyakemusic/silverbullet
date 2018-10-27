@@ -685,3 +685,28 @@ class JsTabPanel extends JsSubWidget {
 		}
 	}
 }
+
+class JsRegisterShortcut extends JsSubWidget {
+	constructor(baseId, info, change) {
+		super(baseId, change);
+		
+		$('#' + this.baseId).addClass('register');
+		var reg = info.custom['register_shortcut'];
+		var regName = reg.split('@')[1];
+		var bitName = reg.split('@')[0];
+		$('#' + this.baseId).click(function() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/register/triggerShortcut?regName=" + regName + "&bitName=" + bitName,
+			   success: function(msg){
+
+			   }
+			});			
+		});
+	}
+	updateValue(property) {
+	}
+	updateLayout(property) {
+		$('#' + this.baseId).append('<div>REGISTER</div>');
+	}
+}

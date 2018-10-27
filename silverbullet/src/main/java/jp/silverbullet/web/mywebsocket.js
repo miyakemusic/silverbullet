@@ -16,10 +16,14 @@ class MyWebSocket {
 		var me = this;
 		// Log messages from the server
 		connection.onmessage = function (e) {
-		
-			var obj = JSON.parse(e.data);
-			if (obj.type == me.type) {
-		  		callback(obj.value);
+			try {
+				var obj = JSON.parse(e.data);
+				if (obj.type == me.type) {
+			  		callback(obj.value);
+			  	}
+		  	}
+		  	catch(e) {
+		  		console.log(e);
 		  	}
 	    };
 	    

@@ -24,15 +24,7 @@ $(function() {
 		
 		layout.updateUI();
 		layout.enableEdit = 'disable';
-		initWebSocket();
-		
-		function initWebSocket() {
-			new MyWebSocket(function(msg) {
-				var ids = msg.split(',');
-	      		layout.requestUpdate(ids);
-			}
-			, 'VALUES');
-		}
+
 	});
 })
 </script>

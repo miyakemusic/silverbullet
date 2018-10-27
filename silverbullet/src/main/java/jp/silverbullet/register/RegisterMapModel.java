@@ -30,7 +30,7 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 	private BuilderModel builderModel;
 	private Set<RegisterMapListener> listeners = new HashSet<>();
 	private Set<InterruptHandler> interruptHandlers = new HashSet<>();
-	private List<SvSimulator> simulators = new ArrayList<>();
+	private Set<SvSimulator> simulators = new HashSet<>();
 	private Map<Long, byte[]> blockData = new HashMap<>();
 	private Map<Long, String> blockNameMap = new HashMap<>();
 	private RegisterMonitor monitor = new NullMonitor();
@@ -52,14 +52,17 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 	}
 	
 	public List<SvSimulator> getSimulators() {
-		return simulators;
+		return new ArrayList<SvSimulator>(simulators);
 	}
 
-	public void setSimulators(List<SvSimulator> simulators) {
-		this.simulators = simulators;
-	}
 
 	public void addSimulator(SvSimulator simulator) {
+		for (SvSimulator sim : this.simulators) {
+			if (sim.getClass().getName().equals(simulator.getClass().getName())) {
+				return ;
+			}
+		}
+	//	this.simulators.forEach(sim -> {if (sim.getClass().getName().equals(simulator.getClass().getName()))return;});
 		simulator.setDevice(this);
 		this.simulators.add(simulator);
 		this.monitor.setSimulator(simulator.getClass().getSimpleName().replace(".class", ""));

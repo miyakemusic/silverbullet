@@ -23,6 +23,7 @@ public class UiLayoutHolder {
 	private PropertyGetter propertyGetter;
 	private Map<String, UiLayout> layouts = new HashMap<>();
 	private UiLayout currentUi;
+	private String currentFilename;
 	
 	public UiLayoutHolder(PropertyGetter propertyGetter) {
 		this.propertyGetter = propertyGetter;
@@ -45,7 +46,8 @@ public class UiLayoutHolder {
 //			if (layouts.size() == 0) {
 //				layouts.put("default.ui", new UiLayout());
 //			}
-			this.currentUi = layouts.get(layouts.keySet().iterator().next());
+			this.currentFilename = layouts.keySet().iterator().next();
+			this.currentUi = layouts.get(this.currentFilename);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -112,7 +114,10 @@ public class UiLayoutHolder {
 	}
 
 	public List<String> getFileList() {
-		return new ArrayList<String>(this.layouts.keySet());
+		List<String> ret = new ArrayList<String>(this.layouts.keySet());
+		ret.remove(this.currentFilename);
+		ret.add(0, this.currentFilename);
+		return ret;
 	}
 
 	public List<String> createNewFile(String filename) {
@@ -121,7 +126,12 @@ public class UiLayoutHolder {
 	}
 
 	public UiLayout switchFile(String filename) {
+		this.currentFilename = filename;
 		this.currentUi = this.layouts.get(filename);
 		return this.currentUi;
+	}
+
+	public void removeFile(String filename) {
+		this.layouts.remove(filename);
 	}
 }

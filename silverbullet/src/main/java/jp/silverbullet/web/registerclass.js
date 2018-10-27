@@ -69,6 +69,7 @@ class RegisterClass {
 			   type: "GET", 
 			   url: "http://" + window.location.host + "/rest/register/getAddedSimulators",
 			   success: function(msg){
+			   		$('#' + idAddesSimulators).empty();
 			   		var val = '';
 			   		for (var i = 0; i < msg.length; i++) {
 						var sim = msg[i];
