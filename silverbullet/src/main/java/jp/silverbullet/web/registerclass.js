@@ -1,7 +1,8 @@
 class RegisterClass {
 	constructor(div) {
 		var selectId = div + '_depselect';		
-		$('#' + div).append('<div>Type:<select id="' + selectId + '"></select></div>');
+		var showExternalId = div + '_external';
+		$('#' + div).append('<div>Type:<select id="' + selectId + '"></select><button id="' + showExternalId + '">Show Map</button></div>');
 		
 		var regDiv = div + '_regDiv';
 		$('#' + div).append('<div id="' + regDiv + '"></div>');
@@ -16,6 +17,31 @@ class RegisterClass {
 			else {
 				new RegisterMap(regDiv);
 			}
-		})
+		});
+		
+		new RegisterSpec(regDiv);
+		
+		var dialogId = div + '_mapDialog';
+		var dialogPaneId = dialogId + '_pane';
+		$('#' + div).append('<div id="' + dialogId + '"><div id="' + dialogPaneId + '">Map</div></div>');
+		$('#' + dialogId).dialog({
+			　　dialogClass: "no-titlebar", 
+			  autoOpen: false,
+			  title: 'Register Map',
+			  closeOnEscape: false,
+			  modal: false,
+//			  buttons: {
+//			    "Close": function(){
+//			    	$(this).dialog('close');
+//			    }
+//			  },
+			width: 1200,
+			height: 300
+		});	
+		
+		$('#' + showExternalId).click(function() {
+			$('#' + dialogId).dialog('open');
+			new RegisterMap(dialogPaneId);
+		});
 	}
 }

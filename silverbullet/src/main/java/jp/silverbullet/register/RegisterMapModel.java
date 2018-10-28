@@ -333,7 +333,18 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 			e.printStackTrace();
 		}
 	}
-
+	
+	public void setBlockData(String regName, byte[] b) {
+		for (long addr : this.map.keySet()) {
+			SvRegister reg = this.map.get(addr);
+			if (reg.getName().equals(regName)) {
+				this.blockData.put(addr, b);
+				break;
+			}
+		}
+			
+	}
+	
 //	public void setSimulatorEnabled(boolean enabled) {
 //		if (enabled) {
 //			this.currentDevice = this.simulator;
@@ -386,4 +397,5 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 	public Map<Long, BitSet> getMapValue() {
 		return this.mapValue;
 	}
+
 }

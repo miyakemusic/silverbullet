@@ -18,6 +18,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import com.sun.jersey.core.util.Base64;
+
 import jp.silverbullet.StaticInstances;
 import jp.silverbullet.handlers.RegisterAccess;
 import jp.silverbullet.register.BitSetToIntConverter;
@@ -161,6 +163,14 @@ public class RegisterResource {
 		
 		StaticInstances.getInstance().getBuilderModel().getRegisterProperty().getRegisters().add(iRow, newRegister);
 	
+		return "OK";
+	}
+	
+	@GET
+	@Path("/deleteRow")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String deleteRow(@QueryParam("row") final Integer row) {
+		StaticInstances.getInstance().getBuilderModel().getRegisterProperty().remove(row);
 		return "OK";
 	}
 	
@@ -309,14 +319,17 @@ public class RegisterResource {
 
 	@POST
 	@Path("/setBlockData")
-	@Consumes(MediaType.APPLICATION_OCTET_STREAM)
+	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_PLAIN)
-	public String setBlockData(byte[] data, @QueryParam("regName") final String regName) {
-		try {
-			Files.write(Paths.get(regName + ".bin"), data);
-		} catch (IOException e2) {
-			e2.printStackTrace();
-		}
-			return "OK";
-		}
+	public String setBlockData(String data, @QueryParam("regName") final String regName) {
+		byte[] b = Base64.decode(data.replace("data:application/octet-stream;base64,", ""));
+		StaticInstances.getInstance().getRegisterMapModel().setBlockData(regName, b);
+//		try {
+//			Files.write(Paths.get(regName + "2.bin"), b);
+//			
+//		} catch (IOException e2) {
+//			e2.printStackTrace();
+//		}
+		return "OK";
+	}
 }

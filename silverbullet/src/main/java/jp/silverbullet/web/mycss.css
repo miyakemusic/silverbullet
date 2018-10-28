@@ -335,3 +335,9 @@ div.float {
 .transparent {
 	background-color:transparent;
 }
+
+.no-titlebar {
+    .ui-dialog-titlebar {
+        display: none;
+    }
+}

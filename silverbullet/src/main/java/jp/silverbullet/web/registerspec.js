@@ -45,7 +45,8 @@ class RegisterSpec {
 				var descId = "desc" + sign + i;
 				
 				var addButton = "add_" + i;
-				var row	= '<tr><td><button id="' + addButton + '">+</button><div id="' + addrId + '"></div></td><td><div id="' + nameId + '"></div></td><td><div id="' + descId + '"></div></td><td>' + bitTable+ '</td></tr>';
+				var delButton = "del_" + i;
+				var row	= '<tr><td><button id="' + addButton + '">+</button><button id="' + delButton + '">-</button><div id="' + addrId + '"></div></td><td><div id="' + nameId + '"></div></td><td><div id="' + descId + '"></div></td><td>' + bitTable+ '</td></tr>';
 				$("#regTable > tbody").append(row);
 				
 				createEditable(register.address, addrId, 'field');
@@ -66,6 +67,11 @@ class RegisterSpec {
 					var obj = $(this);
 					var id = $(this).prop('id');
 					addRow(id.split('_')[1]);
+				});
+				$('#' + delButton).click(function() {
+					var obj = $(this);
+					var id = $(this).prop('id');
+					delRow(id.split('_')[1]);
 				});
 				$('#' + addBitId).click(function() {
 					var obj = $(this);
@@ -166,7 +172,15 @@ class RegisterSpec {
 			   }
 			});	
 		}
-		
+		function delRow(row) {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/register/deleteRow?row=" + row,
+			   success: function(msg){
+					getListAsync();
+			   }
+			});	
+		}		
 		function addBitRow(row) {
 			$.ajax({
 			   type: "GET", 

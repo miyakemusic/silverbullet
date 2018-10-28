@@ -2,11 +2,16 @@ class RegisterMap {
 
 	constructor(div) {
 		var idAddesSimulators = div + 'addesSim';
-		$('#' + div).append('<select id="idSimulator">Simulator</select><button id="simButton">Apply</button>');
+		var idSimulator = div + '_simulator';
+		var simButton = div + '_simButton';
+		
+		$('#' + div).append('<select id="' + idSimulator+ '">Simulator</select><button id="' + simButton + '">Apply</button>');
 		$('#' + div).append('<div id="' + idAddesSimulators + '"></div>');
 		
-		$('#' + div).append('<div><button id="idInterrupt" class="regButton">Interrupt</button></div>');
-		$('#' + div).append('<div id="mainDiv" class="regtable"></div>');
+		var idInterrupt = div + '_interrupt';
+		$('#' + div).append('<div><button id="' + idInterrupt + '" class="regButton">Interrupt</button></div>');
+		var mainDiv = div + '_mainDiv';
+		$('#' + div).append('<div id="' + mainDiv + '" class="regtable"></div>');
 			
 		this.bitInfo = new Map();
 		
@@ -45,7 +50,7 @@ class RegisterMap {
 		initWebSocket();
 		getSimulators();
 		
-		$('#idInterrupt').click(function() {
+		$('#' + idInterrupt).click(function() {
 			interrupt();	
 		});
 		
@@ -76,14 +81,14 @@ class RegisterMap {
 		}
 		
 		function getSimulators() {
-			$('#simButton').click(function() {
+			$('#' + simButton).click(function() {
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/register/addSimulator?simulator=" + $('#idSimulator').val(),
+				   url: "http://" + window.location.host + "/rest/register/addSimulator?simulator=" + $('#' + idSimulator).val(),
 				   success: function(msg){
 				   		for (var i = 0; i < msg.length; i++) {
 							var sim = msg[i];
-							$('#idSimulator').append('<option value="' + sim + '">' + sim + '</option>');
+							$('#' + idSimulator).append('<option value="' + sim + '">' + sim + '</option>');
 						}
 						getAddesSimulators();
 				   }
@@ -96,7 +101,7 @@ class RegisterMap {
 			   success: function(msg){
 			   		for (var i = 0; i < msg.length; i++) {
 						var sim = msg[i];
-						$('#idSimulator').append('<option value="' + sim + '">' + sim + '</option>');
+						$('#' + idSimulator).append('<option value="' + sim + '">' + sim + '</option>');
 					}
 			   }
 			});	
@@ -109,7 +114,7 @@ class RegisterMap {
 				var regName = obj.name;
 				if (regName == '@Interrupt@') {
 					$('.regButton').removeClass('changed');
-					$('#idInterrupt').addClass('changed');
+					$('#' + idInterrupt).addClass('changed');
 					return;
 				}
 				var address = obj.address;
@@ -129,7 +134,7 @@ class RegisterMap {
 			, 'REGVAL');
 		}
 		function createMap() {
-			$('#mainDiv').empty();
+			$('#' + mainDiv).empty();
 			$.ajax({
 			   type: "GET", 
 			   url: "http://" + window.location.host + "/rest/register/getRegisters",
@@ -141,7 +146,7 @@ class RegisterMap {
 		
 		function createMapContent(obj) {
 			var mapTableId = 'mapTable';
-			$('#mainDiv').append('<table id="' + mapTableId + '"><thead></thead><tbody></tbody></table>');
+			$('#' + mainDiv).append('<table id="' + mapTableId + '"><thead></thead><tbody></tbody></table>');
 			
 			$('#' + mapTableId + ' > thead').append('<td>Address</td>'); 
 			$('#' + mapTableId + ' > thead').append('<td>Name</td>'); 
@@ -242,7 +247,8 @@ class RegisterMap {
 				    reader.onload = function(event) {
 						$.ajax({
 						   type: "POST", 
-						   contentType: 'application/octet-stream',
+		//				   contentType: 'application/octet-stream'
+						   contentType: 'text/plain',
 						   data: event.target.result,
 		//				   contentType: false,
         				   processData: false,
@@ -251,7 +257,7 @@ class RegisterMap {
 						   }
 						});	
 				    }
-					
+//					$(this).val('');
 				});
 			}
 		}
