@@ -168,7 +168,18 @@ class RegisterMap {
 				var unusedColSpan = 0;
 				
 				if (register.address.match(/-/)) {
-					row += '<td colspan="' + 32 + '"><button>Load File...</button></td>';
+					var buttonId = getButtonId(register.name, '');
+					var buttonInfoObj = new Object();
+					buttonInfoObj.address = register.address;
+					buttonInfoObj.register = register.name;
+					//buttonInfoObj.bitName = ;''
+					//buttonInfoObj.bit = bit.bit;
+					me.bitInfo.set(buttonId, buttonInfoObj);
+							
+					var name = '<div>' + bit.name + '</div><div><input type="file" id="' + register.name + '"class="blockData"></div>';
+					//getCurrentValue(buttonId, register.name, bit.name);
+					colSpan = 32;
+					row += '<td colspan="' + colSpan + '">' + name + '</td>';
 				}
 				else {
 					for (var j = 31; j >= 0; j--) {
@@ -220,6 +231,27 @@ class RegisterMap {
 					'Bit: ' + obj.bitName + '[' + obj.bit + ']');
 					$('#' + editValue).val(text);
 					$('#' + dialogId).dialog('open');
+				});
+				
+				$('.blockData').change(function(e) {
+					var reg = $(this).prop('id');
+					var file = $(this)[0].files[0];
+					console.log(file.name);
+					var reader = new FileReader();
+				    reader.readAsDataURL(file);
+				    reader.onload = function(event) {
+						$.ajax({
+						   type: "POST", 
+						   contentType: 'application/octet-stream',
+						   data: event.target.result,
+		//				   contentType: false,
+        				   processData: false,
+						   url: "http://" + window.location.host + "/rest/register/setBlockData?regName=" + reg,
+						   success: function(msg){
+						   }
+						});	
+				    }
+					
 				});
 			}
 		}

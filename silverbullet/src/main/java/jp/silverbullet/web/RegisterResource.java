@@ -1,6 +1,9 @@
 package jp.silverbullet.web;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Calendar;
@@ -293,9 +296,6 @@ public class RegisterResource {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-//		StaticInstances.getInstance().getRegisterMapModel().setSimulatorClass(simulator);
-//		StaticInstances.getInstance().getRegisterMapModel().setSimulatorEnabled(true);
-		
 		return "OK";
 	}
 	
@@ -307,4 +307,16 @@ public class RegisterResource {
 		return "OK";
 	}
 
+	@POST
+	@Path("/setBlockData")
+	@Consumes(MediaType.APPLICATION_OCTET_STREAM)
+	@Produces(MediaType.TEXT_PLAIN)
+	public String setBlockData(byte[] data, @QueryParam("regName") final String regName) {
+		try {
+			Files.write(Paths.get(regName + ".bin"), data);
+		} catch (IOException e2) {
+			e2.printStackTrace();
+		}
+			return "OK";
+		}
 }
