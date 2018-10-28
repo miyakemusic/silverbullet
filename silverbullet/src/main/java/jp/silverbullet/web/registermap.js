@@ -107,13 +107,20 @@ class RegisterMap {
 			});	
 		}
 		
+		function resetButtonColor() {
+			setTimeout(function() {
+				$('.regButton').removeClass('changed');
+			}, 200);
+		}
+		
 		function initWebSocket() {
 			new MyWebSocket(function(msg) {				
 				var obj = JSON.parse(msg);
 				
 				var regName = obj.name;
 				if (regName == '@Interrupt@') {
-					$('.regButton').removeClass('changed');
+					//$('.regButton').removeClass('changed');
+					resetButtonColor();
 					$('#' + idInterrupt).addClass('changed');
 					return;
 				}
@@ -127,7 +134,8 @@ class RegisterMap {
 					var buttonId = '#' + getButtonId(regName, bitName);
 					$(buttonId).html(bitVal);
 					
-					$('.regButton').removeClass('changed');
+					//$('.regButton').removeClass('changed');
+					resetButtonColor();
 					$(buttonId).addClass('changed');
 				}
 			}
