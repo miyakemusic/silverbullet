@@ -22,6 +22,8 @@ import jp.silverbullet.register.RegisterProperty;
 import jp.silverbullet.register.RegisterShortCutHolder;
 import jp.silverbullet.remote.SvTexHolder;
 import jp.silverbullet.spec.SpecElement;
+import jp.silverbullet.test.TestItem;
+import jp.silverbullet.test.TestRecorder;
 import jp.silverbullet.web.ui.PropertyGetter;
 import jp.silverbullet.web.ui.UiLayout;
 
@@ -103,6 +105,8 @@ public class BuilderModelImpl implements BuilderModel {
 	
 	private RegisterAccess regiseterAccess;
 
+	private TestRecorder testRecorder = new TestRecorder();
+	
 	public BuilderModelImpl() {
 		store = new SvPropertyStore(propertiesHolder);	
 		
@@ -139,6 +143,7 @@ public class BuilderModelImpl implements BuilderModel {
 			}
 		};
 
+		sequencer.addSequencerListener(testRecorder);
 		this.loadDefault();
 	}
 	
@@ -417,5 +422,10 @@ public class BuilderModelImpl implements BuilderModel {
 	@Override
 	public void removeUiFile(String filename) {
 		this.uiLayoutHolder.removeFile(filename);
+	}
+
+	@Override
+	public List<TestItem> getTest() {
+		return this.testRecorder.getItems();
 	}
 }

@@ -22,6 +22,9 @@ public abstract class DependencyEngine {
 	private List<DependencyListener> listeners = new ArrayList<>();
 	
 	public void requestChange(String id, String value) throws RequestRejectedException {
+		for (DependencyListener listener : this.listeners) {
+			listener.onStart(id, value);
+		}
 		this.cachedPropertyStore = new CachedPropertyStore(getPropertiesStore());
 		
 		this.cachedPropertyStore.getProperty(id).setCurrentValue(value);

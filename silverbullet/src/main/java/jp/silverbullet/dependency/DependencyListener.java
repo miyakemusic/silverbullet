@@ -11,4 +11,6 @@ public interface DependencyListener {
 
 	void onCompleted(String message);
 
+	void onStart(String id, String value);
+
 }

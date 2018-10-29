@@ -117,15 +117,6 @@ public abstract class Sequencer implements DependencyInterface {
 			listener.onChangedByUser(id, value);
 		}
 	}
-	private List<ChangedItemValue> getRelatedChanges(List<String> ids, Map<String, List<ChangedItemValue>> map) {
-		List<ChangedItemValue> ret = new ArrayList<ChangedItemValue>();
-		for (String id : ids) {
-			if (map.get(id) != null) {
-				ret.addAll(map.get(id));
-			}
-		}
-		return ret;
-	}
 
 	@Override
 	public void addDependencyListener(DependencyListener dependencyListener) {

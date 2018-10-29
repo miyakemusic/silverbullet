@@ -45,6 +45,12 @@ public class WebClientManager {
 				// TODO Auto-generated method stub
 				
 			}
+
+			@Override
+			public void onStart(String id, String value) {
+				// TODO Auto-generated method stub
+				
+			}
 		});
 		
 		StaticInstances.getInstance().getRegisterMapModel().addListener(new RegisterMapListener() {

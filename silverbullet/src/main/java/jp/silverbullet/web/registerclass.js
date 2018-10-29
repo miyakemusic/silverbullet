@@ -25,7 +25,7 @@ class RegisterClass {
 		var dialogPaneId = dialogId + '_pane';
 		$('#' + div).append('<div id="' + dialogId + '"><div id="' + dialogPaneId + '">Map</div></div>');
 		$('#' + dialogId).dialog({
-			　　dialogClass: "no-titlebar", 
+			  dialogClass: "no-titlebar", 
 			  autoOpen: false,
 			  title: 'Register Map',
 			  closeOnEscape: false,

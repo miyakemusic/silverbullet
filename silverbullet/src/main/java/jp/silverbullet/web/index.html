@@ -17,6 +17,7 @@
 <script type="text/javascript" src="designer.js"></script>
 <script type="text/javascript" src="controllerclass.js"></script>
 
+<script type="text/javascript" src="test.js"></script>
 <script type="text/javascript" src="deplist.js"></script>
 <script type="text/javascript" src="diagram.js"></script>
 <script type="text/javascript" src="registerspec.js"></script>
@@ -37,6 +38,7 @@ $(function() {
 		new RegisterClass('tab_register');
 		new ControllerClass('tab_control');
 		new DebugClass('tab_debug');
+		new TestClass('tab_test');
 		
 		$('#save').click(function() {
 			$.ajax({
@@ -91,6 +93,7 @@ $(function() {
   	<li><a href="#tab_register">Register</a></li>
   	<li><a href="#tab_control">Control</a></li>
   	<li><a href="#tab_debug">Debug</a></li>
+  	<li><a href="#tab_test">Test</a></li>
   </ul>
   <div id="tab_id"></div>
   <div id="tab_dependency"></div>
@@ -98,6 +101,7 @@ $(function() {
   <div id="tab_register"></div>
   <div id="tab_control"></div>
   <div id="tab_debug"></div>
+  <div id="tab_test"></div>
 </div>
 
 </body>

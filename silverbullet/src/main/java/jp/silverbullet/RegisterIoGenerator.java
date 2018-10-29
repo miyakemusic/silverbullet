@@ -56,32 +56,6 @@ public class RegisterIoGenerator {
 			source.add("         super(registerAccess2);");
 			source.add("         this.registerAccess = registerAccess2;");
 			source.add("    }");
-//			source.add("    private Object lock = new Object();");
-		
-//			source.add("    public void waitIntrrupt() {");
-//			source.add("    InterruptHandler interruptHandler = new InterruptHandler() {");
-//			source.add("        @Override");
-//			source.add("        public void onTrigger() {");
-//			source.add("            synchronized(lock) {");
-//			source.add("    	        lock.notifyAll();");
-//			source.add("            }");
-//			source.add("        }  ");  
-//			source.add("    };");
-//			source.add("    this.registerAccess.addInterruptHandler(interruptHandler);");
-//			source.add("    try {");
-//			source.add("       synchronized(lock) {");
-//			source.add("           lock.wait();");
-//			source.add("           Platform.runLater(new Runnable() {");
-//			source.add("              @Override");
-//			source.add("              public void run() {");
-//			source.add("           	   registerAccess.removeInteruptHandler(interruptHandler);");
-//			source.add("              }");
-//			source.add("           });");
-//			source.add("      }");
-//			source.add("    } catch (InterruptedException e) {");
-//			source.add("        e.printStackTrace();");
-//			source.add("    }");
-//			source.add("    }");
 			
 			for (SvRegister register : registerProperty.getRegisters()) {
 				if (register.isBlock()) {
@@ -96,7 +70,7 @@ public class RegisterIoGenerator {
 						continue;
 					}
 					if (isReadEnabled(bit)) {
-						generateRead(source, bit, register);
+						generateRead(source, bit, register, isWriteEnabled(bit));
 					}
 					if (isWriteEnabled(bit)) {
 						generateWrite(source, bit, register);
@@ -108,22 +82,7 @@ public class RegisterIoGenerator {
 						regClassName.replaceFirst(String.valueOf(regClassName.charAt(0)), String.valueOf(regClassName.charAt(0)).toLowerCase())
 						+ " = new " + getClassName(register.getName()) + "();");
 			}
-			
-//			source.add("    private boolean readIoBoolean(long address, int bit) {");
-//			source.add("        return registerAccess.readIoBoolean(address, bit);");
-//			source.add("    }");
-//			source.add("    private int readIoInteger(long address, int bitFrom, int bitTo) {");
-//			source.add("        return registerAccess.readIoInteger(address, bitFrom, bitTo);");
-//			source.add("    }");
-//			source.add("    private void writeIo(long address, boolean value, int bit) {");
-//			source.add("        registerAccess.writeIo(address, value, bit);");
-//			source.add("    }");
-//			source.add("    private void writeIo(long address, int value, int bitFrom, int bitTo) {");
-//			source.add("        registerAccess.writeIo(address, value, bitFrom, bitTo);");
-//			source.add("    }");
-//			source.add("    private void writeIo(long address, float value, int bitFrom, int bitTo) {");
-//			source.add("        registerAccess.writeIo(address, value, bitFrom, bitTo);");
-//			source.add("    }");
+
 			source.add("}");
 			
 			try {
@@ -195,7 +154,7 @@ public class RegisterIoGenerator {
 
 	private void generateWrite(List<String> source, RegisterBit bit, SvRegister register) {
 		createComment(source, bit);
-		source.add("        public void set_" + createMethodName(register, bit) + "(" + getType(bit) + " value) {");
+		source.add("        public void write_" + createMethodName(register, bit) + "(" + getType(bit) + " value) {");
 		String[] tmp = getBitRange(bit);
 		String bit2 = tmp[0];
 		String bit1 = "";
@@ -214,11 +173,27 @@ public class RegisterIoGenerator {
 		return ret;
 	}
 
-	private void generateRead(List<String> source, RegisterBit bit, SvRegister register) {
+	private void generateRead(List<String> source, RegisterBit bit, SvRegister register, boolean writable) {
 		createComment(source, bit);
-		source.add("        public " + getType(bit) + " get_" + createMethodName(register, bit) + "() {");
+		source.add("        public " + getType(bit) + " read_" + createMethodName(register, bit) + "() {");
 		source.add("    	    return " + readIo(bit, getAddressDef(register.getAddress())) + ";");
 		source.add("        }");
+		
+		if (writable) {
+			String type = getType(bit);
+			String value = "";
+			if (type.equals("boolean")) {
+				value = "false";
+			}
+			else if (type.equals("int")) {
+				value = "0";
+			}
+			source.add("        public " + type + " read_and_reset_" + createMethodName(register, bit) + "() {");
+			source.add("    	    " + type + " ret = " + readIo(bit, getAddressDef(register.getAddress())) + ";");
+			source.add("             write_" + createMethodName(register, bit) + "(" + value + ");");
+			source.add("    	    return ret;");
+			source.add("        }");
+		}
 	}
 
 	protected String createMethodName(SvRegister register, RegisterBit bit) {

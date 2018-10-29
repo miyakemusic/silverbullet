@@ -8,6 +8,7 @@ import jp.silverbullet.register.RegisterShortCutHolder;
 import jp.silverbullet.register.SvRegister;
 import jp.silverbullet.remote.SvTexHolder;
 import jp.silverbullet.spec.SpecElement;
+import jp.silverbullet.test.TestItem;
 import jp.silverbullet.web.ui.UiLayout;
 import jp.silverbullet.dependency.DependencyInterface;
 import jp.silverbullet.dependency.DependencySpecHolder;
@@ -85,4 +86,6 @@ public interface BuilderModel {
 	UiLayout switchUiFile(String filename);
 
 	void removeUiFile(String filename);
+
+	List<TestItem> getTest();
 }
