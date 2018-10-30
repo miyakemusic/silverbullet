@@ -56,6 +56,7 @@ public class StaticInstances {
 			}
 		};
 		registerMapModel.addSimulator(simulator);
+		registerMapModel.addListener(builderModel.getTestRecorder());
 		
 	}
 	

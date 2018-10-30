@@ -3,9 +3,9 @@ package jp.silverbullet.register;
 public class BitUpdates {
 
 	private String name;
-	private int val;
+	private String val;
 
-	public BitUpdates(String name, int val) {
+	public BitUpdates(String name, String val) {
 		this.name = name;
 		this.val = val;
 	}
@@ -14,7 +14,7 @@ public class BitUpdates {
 		return name;
 	}
 
-	public int getVal() {
+	public String getVal() {
 		return val;
 	}
 
@@ -22,7 +22,7 @@ public class BitUpdates {
 		this.name = name;
 	}
 
-	public void setVal(int val) {
+	public void setVal(String val) {
 		this.val = val;
 	}
 

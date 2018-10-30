@@ -9,7 +9,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import jp.silverbullet.dependency.RequestRejectedException;
+import jp.silverbullet.handlers.EasyAccessInterface;
 import jp.silverbullet.handlers.EasyAccessModel;
+import jp.silverbullet.handlers.SvHandlerModel;
 import jp.silverbullet.property.ListDetailElement;
 
 public class JavaFileGenerator {
@@ -52,10 +55,13 @@ public class JavaFileGenerator {
 	public List<String> generateSimple(String path) {
 		List<String> source = new ArrayList<String>();
 		source.add("package " + path +";");
-		source.add("import " + EasyAccessModel.class.getName() + ";");
+//		source.add("import " + EasyAccessModel.class.getName() + ";");
+		source.add("import " + RequestRejectedException.class.getName() + ";");
+		source.add("import " + EasyAccessInterface.class.getName() + ";");
+		
 		source.add("public class UserEasyAccess {");
-		source.add("    private EasyAccessModel model;");
-		source.add("    public UserEasyAccess(EasyAccessModel model2) {");
+		source.add("    private EasyAccessInterface model;");
+		source.add("    public UserEasyAccess(EasyAccessInterface model2) {");
 		source.add("        this.model = model2;");
 		source.add("    }");
 		for (SvProperty prop : properties) {
@@ -63,7 +69,7 @@ public class JavaFileGenerator {
 				continue;
 			}
 			if (prop.getType().equals("DoubleProperty")) {
-				source.add("    public void set" + getMethodName(prop.getId()) + "(double value" + ") {");
+				source.add("    public void set" + getMethodName(prop.getId()) + "(double value" + ") throws RequestRejectedException {");
 				source.add("        model.requestChange(ID." + prop.getId() + ", String.valueOf(value));");
 				source.add("    }");
 				source.add("    public double get" + getMethodName(prop.getId()) + "() {");
@@ -71,7 +77,7 @@ public class JavaFileGenerator {
 				source.add("    }");
 			}
 			else if (prop.getType().equals("LongProperty")) {
-				source.add("    public void set" + getMethodName(prop.getId()) + "(long value" + ") {");
+				source.add("    public void set" + getMethodName(prop.getId()) + "(long value" + ") throws RequestRejectedException {");
 				source.add("        model.requestChange(ID." + prop.getId() + ", String.valueOf(value));");
 				source.add("    }");
 				source.add("    public long get" + getMethodName(prop.getId()) + "() {");
@@ -79,7 +85,7 @@ public class JavaFileGenerator {
 				source.add("    }");	
 			}
 			else if (prop.getType().equals("IntProperty")) {
-				source.add("    public void set" + getMethodName(prop.getId()) + "(int value" + ") {");
+				source.add("    public void set" + getMethodName(prop.getId()) + "(int value" + ") throws RequestRejectedException {");
 				source.add("        model.requestChange(ID." + prop.getId() + ", String.valueOf(value));");
 				source.add("    }");
 				source.add("    public int get" + getMethodName(prop.getId()) + "() {");
@@ -87,7 +93,7 @@ public class JavaFileGenerator {
 				source.add("    }");	
 			}
 			else if (prop.isTextProperty() || prop.isTableProperty()) {
-				source.add("    public void set" + getMethodName(prop.getId()) + "(String value" + ") {");
+				source.add("    public void set" + getMethodName(prop.getId()) + "(String value" + ") throws RequestRejectedException {");
 				source.add("        model.requestChange(ID." + prop.getId() + ", value);");
 				source.add("    }");
 				source.add("    public String get" + getMethodName(prop.getId()) + "() {");
@@ -102,7 +108,7 @@ public class JavaFileGenerator {
 					source.add("        " + e.getId() + ",");
 				}
 				source.add("    };");	
-				source.add("    public void set" + getMethodName(prop.getId()) + "(Enum" + methodName + " value" + ") {");
+				source.add("    public void set" + getMethodName(prop.getId()) + "(Enum" + methodName + " value" + ") throws RequestRejectedException {");
 				source.add("        model.requestChange(ID." + prop.getId() + ", value.toString());");
 				source.add("    }");
 				source.add("    public Enum" + methodName + " get" + getMethodName(prop.getId()) + "() {");

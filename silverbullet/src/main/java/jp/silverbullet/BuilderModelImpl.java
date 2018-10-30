@@ -282,7 +282,6 @@ public class BuilderModelImpl implements BuilderModel {
 			try {
 				return clazz.newInstance();
 			} catch (InstantiationException | IllegalAccessException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		}
@@ -340,7 +339,6 @@ public class BuilderModelImpl implements BuilderModel {
 	@Override
 	public void setDeviceDriver(SvDevice deviceDriver) {
 		regiseterAccess = new RegisterAccess(deviceDriver);
-//		userRegisterAccess = new UserRegisterControl(regiseterAccess);
 	}
 
 	@Override
@@ -425,7 +423,7 @@ public class BuilderModelImpl implements BuilderModel {
 	}
 
 	@Override
-	public List<TestItem> getTest() {
-		return this.testRecorder.getItems();
+	public TestRecorder getTestRecorder() {
+		return this.testRecorder;
 	}
 }

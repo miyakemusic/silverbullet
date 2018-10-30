@@ -17,6 +17,6 @@ public class TestResource {
 	@Path("/getTest")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<TestItem> saveParameters(@QueryParam("testName") final String testName) {
-		return StaticInstances.getInstance().getBuilderModel().getTest();
+		return StaticInstances.getInstance().getBuilderModel().getTestRecorder().getItems();
 	}
 }

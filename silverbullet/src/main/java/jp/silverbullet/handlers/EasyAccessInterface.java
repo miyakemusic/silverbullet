@@ -3,17 +3,10 @@ package jp.silverbullet.handlers;
 import jp.silverbullet.SvProperty;
 import jp.silverbullet.dependency.RequestRejectedException;
 
-public interface SvHandlerModel extends EasyAccessInterface {
+public interface EasyAccessInterface {
 
-	@Override
 	SvProperty getProperty(String id);
 
-	@Override
 	void requestChange(String id, String value) throws RequestRejectedException;
 
-	String getUserApplicationPath();
-
-//	EasyAccessModel getEasyAccessModel();
-
-	RegisterAccess getRegisterAccess();
 }

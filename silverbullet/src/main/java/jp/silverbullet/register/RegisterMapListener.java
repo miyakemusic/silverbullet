@@ -4,8 +4,10 @@ import java.util.BitSet;
 
 public interface RegisterMapListener {
 
-	void onDataUpdate(int regIndex, int blockNumber, int value, long address, BitSet bitSet, RegisterUpdates updates);
+	void onUpdate(/*int regIndex, int blockNumber, int value, long address, BitSet bitSet, */RegisterUpdates updates);
 
 	void onInterrupt();
+
+	void onUpdatedByHardware(RegisterUpdates updates);
 
 }

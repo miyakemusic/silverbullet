@@ -72,7 +72,7 @@ public class WebClientManager {
 			}
 
 			@Override
-			public void onDataUpdate(int regIndex, int blockNumber, int value, long address, BitSet bitSet, RegisterUpdates updates) {
+			public void onUpdate(/*int regIndex, int blockNumber, int value, long address, BitSet bitSet, */RegisterUpdates updates) {
 				try {
 					String val = new ObjectMapper().writeValueAsString(updates);
 					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("REGVAL", val));
@@ -84,6 +84,12 @@ public class WebClientManager {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+			}
+
+			@Override
+			public void onUpdatedByHardware(RegisterUpdates updates) {
+				// TODO Auto-generated method stub
+				
 			}
 		});
 	}

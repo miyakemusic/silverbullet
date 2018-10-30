@@ -17,14 +17,15 @@ public class SampleMain extends SilverBulletServer {
 		return null;
 	}
 
-	@Override
-	protected void onStart(EasyAccessModel easyAccess, RegisterAccess registerAccess) {
-		// TODO Auto-generated method stub
-
-	}
 
 	public static void main(String[] args) {
 		new SampleMain().start(args[0]);
+	}
+
+	@Override
+	protected void onStart(BuilderModel model) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -42,7 +42,7 @@ public abstract class Sequencer implements DependencyInterface {
 	@Override
 	public void requestChange(String id, String value)
 			throws RequestRejectedException {
-		fireRequestChange(id, value);
+		fireRequestChangeByUser(id, value);
 		
 		// resolves dependencies
 		
@@ -86,11 +86,6 @@ public abstract class Sequencer implements DependencyInterface {
 			}
 
 			@Override
-			public EasyAccessModel getEasyAccessModel() {
-				return Sequencer.this.getEasyAccessModel();
-			}
-
-			@Override
 			public RegisterAccess getRegisterAccess() {
 				return Sequencer.this.getRegisterAccess();
 			}
@@ -112,7 +107,7 @@ public abstract class Sequencer implements DependencyInterface {
 			listener.onChangedBySystem(id, value);
 		}
 	}
-	private void fireRequestChange(String id, String value) {
+	private void fireRequestChangeByUser(String id, String value) {
 		for (SequencerListener listener : this.listeners) {
 			listener.onChangedByUser(id, value);
 		}

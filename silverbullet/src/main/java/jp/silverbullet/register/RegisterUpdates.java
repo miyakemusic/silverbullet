@@ -25,6 +25,9 @@ public class RegisterUpdates {
 	public void setBits(List<BitUpdates> bits) {
 		this.bits = bits;
 	}
+	public void addBit(BitUpdates bit) {
+		this.bits.add(bit);
+	}
 	
 	
 }

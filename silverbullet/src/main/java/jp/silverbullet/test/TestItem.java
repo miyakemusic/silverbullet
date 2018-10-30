@@ -2,11 +2,13 @@ package jp.silverbullet.test;
 
 public class TestItem {
 
+	private String type;
 	private String value;
 	private String id;
 
 	public TestItem() {}
-	public TestItem(String id, String value) {
+	public TestItem(String type, String id, String value) {
+		this.type = type;
 		this.id = id;
 		this.value = value;
 	}
@@ -21,6 +23,12 @@ public class TestItem {
 	}
 	public void setId(String id) {
 		this.id = id;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
 	}
 
 }

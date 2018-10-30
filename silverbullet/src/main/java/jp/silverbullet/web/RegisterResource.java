@@ -1,9 +1,6 @@
 package jp.silverbullet.web;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Calendar;
@@ -195,7 +192,6 @@ public class RegisterResource {
 			address = address.split("-")[0];
 		}
 		long intAddress = Integer.parseInt(address, 16);
-//		BitSet dataSet = map.get(intAddress);
 		BitSet dataSet = new BitSet();
 		
 		int iValue = Integer.valueOf(value);
@@ -208,6 +204,19 @@ public class RegisterResource {
 
 		StaticInstances.getInstance().getSimulator().updateRegister(intAddress, dataSet, mask);
 		
+		return "OK";
+	}
+	
+
+	@POST
+	@Path("/setBlockData")
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.TEXT_PLAIN)
+	public String setBlockData(String data, @QueryParam("regName") final String regName) {
+		byte[] b = Base64.decode(data.replace("data:application/octet-stream;base64,", ""));
+		
+		SvRegister register  = StaticInstances.getInstance().getBuilderModel().getRegisterProperty().getRegisterByName(regName);
+		StaticInstances.getInstance().getSimulator().updateBlockData(register.getDecAddress(), b);
 		return "OK";
 	}
 	
@@ -317,19 +326,4 @@ public class RegisterResource {
 		return "OK";
 	}
 
-	@POST
-	@Path("/setBlockData")
-	@Consumes(MediaType.TEXT_PLAIN)
-	@Produces(MediaType.TEXT_PLAIN)
-	public String setBlockData(String data, @QueryParam("regName") final String regName) {
-		byte[] b = Base64.decode(data.replace("data:application/octet-stream;base64,", ""));
-		StaticInstances.getInstance().getRegisterMapModel().setBlockData(regName, b);
-//		try {
-//			Files.write(Paths.get(regName + "2.bin"), b);
-//			
-//		} catch (IOException e2) {
-//			e2.printStackTrace();
-//		}
-		return "OK";
-	}
 }

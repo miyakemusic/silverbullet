@@ -26,14 +26,14 @@ public abstract class SilverBulletServer {
 
 	protected abstract String getDefaultFilename();
 	protected abstract String getUserPath();
-	protected abstract void onStart(EasyAccessModel easyAccess, RegisterAccess registerAccess);
+	protected abstract void onStart(BuilderModel model);
 	
 	protected void startWebServer(Integer port) {
 		new WebClientManager();
 		webServer = new BuilderServer(port, new BuilderServerListener() {
 			@Override
 			public void onStarted() {
-				SilverBulletServer.this.onStart(builderModel.getEasyAccess(), builderModel.getRegisterAccess());
+				SilverBulletServer.this.onStart(builderModel);
 			}
 		});
 	}

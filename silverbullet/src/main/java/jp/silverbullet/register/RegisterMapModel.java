@@ -18,6 +18,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 
+import com.sun.jersey.core.util.Base64;
+
 import jp.silverbullet.BuilderModel;
 import jp.silverbullet.handlers.InterruptHandler;
 import jp.silverbullet.handlers.SvDevice;
@@ -33,7 +35,7 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 	private Set<SvSimulator> simulators = new HashSet<>();
 	private Map<Long, byte[]> blockData = new HashMap<>();
 	private Map<Long, String> blockNameMap = new HashMap<>();
-	private RegisterMonitor monitor = new NullMonitor();
+
 	public long getMinAddress() {
 		return minAddress;
 	}
@@ -45,10 +47,6 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 	public RegisterMapModel(BuilderModel builderModel) {
 		this.builderModel = builderModel;
 		update();
-	}
-
-	public void setMonitor(RegisterMonitor monitor) {
-		this.monitor = monitor;
 	}
 	
 	public List<SvSimulator> getSimulators() {
@@ -65,7 +63,7 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 	//	this.simulators.forEach(sim -> {if (sim.getClass().getName().equals(simulator.getClass().getName()))return;});
 		simulator.setDevice(this);
 		this.simulators.add(simulator);
-		this.monitor.setSimulator(simulator.getClass().getSimpleName().replace(".class", ""));
+//		this.monitor.setSimulator(simulator.getClass().getSimpleName().replace(".class", ""));
 	}
 	
 	public void update() {
@@ -137,7 +135,7 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 		if (map.isEmpty()) {
 			return -1;
 		}
-		updateBits(address, data, mask);
+		updateBits(address, data, mask, true);
 		
 		for (SvSimulator simulator : this.simulators) {
 			simulator.writeIo(address, data, mask);
@@ -147,7 +145,7 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 		return 0;
 	}
 
-	protected void updateBits(long address, BitSet data, BitSet mask) {		
+	protected void updateBits(long address, BitSet data, BitSet mask, boolean bySoftware) {		
 		BitSet current = this.mapValue.get(address);
 		final int regIndex = getIndex(address);	
 		SvRegister register = this.map.get(address);
@@ -168,11 +166,11 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 		
 		for (RegisterBit bit : changed) {
 			int val = new BitSetToIntConverter().convert(current.get(bit.getStartBit(), bit.getEndBit() + 1));
-			BitUpdates info = new BitUpdates(bit.getName(), val);
+			BitUpdates info = new BitUpdates(bit.getName(), String.valueOf(val));
 			updates.getBits().add(info);
 		}
 
-		fireUpdate(regIndex, 0, 0, address, current, updates);
+		fireUpdate(/*regIndex, 0, 0, address, current, */updates, bySoftware);
 	}
 
 	private int getIndex(long address) {
@@ -218,7 +216,6 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 		for (RegisterMapListener listener :this.listeners) {
 			listener.onInterrupt();
 		}
-		monitor.interrupt();
 	}
 
 	@Override
@@ -235,42 +232,6 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 		lock.writeLock().unlock();
 	}
 	
-//	public void setValue(int regIndex, int block, int value) {
-//		long address = this.getAddAt(regIndex);
-//		String bits = getBits(regIndex, block);
-//		BitSet current = getCurrentValue(regIndex);
-//		RangeGetter range = new RangeGetter(bits);
-//		if (range.isRange()) {
-//			for (int index = range.getStart(); index <= range.getStop(); index++) {
-//				long v = (value >> (index-range.getStart())) & 0x01;
-//				current.set(index, v == 1);
-//			}
-//			fireUpdate(regIndex, block, value, address, current);
-//		}
-//		else {
-//			String tmp = bits.replace("[", "").replace("]", "");
-//			current.set(Integer.valueOf(tmp), value == 1 ? true : false);
-//			fireUpdate(regIndex, block, value, address, current);
-//		}
-//		monitor.writeIo(this.getAddAt(regIndex), current, getBitSet(this.getAddAt(regIndex), block));
-//	}
-
-	private BitSet getBitSet(long address, int block) {
-		List<RegisterBit> bits = this.map.get(address).getBits().getBits();
-		RegisterBit bit = bits.get(bits.size() - block);
-		RangeGetter range = new RangeGetter(bit.getBit());
-		BitSet ret = new BitSet();
-		if (range.isRange()) {
-			for (int i = range.getStart(); i <= range.getStop(); i++) {
-				ret.set(i);
-			}
-		}
-		else {
-			ret.set(range.getStart());
-		}
-		return ret;
-	}
-
 	protected String getBits(int regIndex, int block) {
 		String bits = this.getRegAt(regIndex).getBits().getBits().get(block).getBit();
 		return bits;
@@ -292,13 +253,15 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 
 	@Override
 	public void onUpdateRegister(long address, BitSet data, BitSet mask) {
-		updateBits(address, data, mask);
-		monitor.updateIo(address, data, mask);
+		updateBits(address, data, mask, false);
 	}
 
-	protected void fireUpdate(int regIndex, int num, int val, long address, BitSet bitSet, RegisterUpdates updates) {
+	protected void fireUpdate(/*int regIndex, int num, int val, long address, BitSet bitSet, */RegisterUpdates updates, boolean bySoftware) {
 		for (RegisterMapListener listener :this.listeners) {
-			listener.onDataUpdate(regIndex, num, val, address, bitSet, updates);
+			listener.onUpdate(/*regIndex, num, val, address, bitSet,*/ updates);
+			if (!bySoftware) {
+				listener.onUpdatedByHardware(updates);
+			}
 		}
 	}
 
@@ -306,55 +269,21 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 	public void onInterrupt() {
 		this.triggerInterrupt();	
 	}
-
-	public void setBlock(int regIndex, int block, File file) {
-	    byte[] fileData = new byte[(int) file.length()];
-	    
-		try {
-		    DataInputStream dis = new DataInputStream(new FileInputStream(file));
-		    dis.readFully(fileData);
-		    dis.close();
-		    
-		    long address = this.getAddAt(regIndex);
-		    this.blockData.put(address, fileData);
-		    this.blockNameMap.put(address, file.getAbsolutePath());
-		    monitor.updateBlock(address, fileData);
-
-		    RegisterUpdates updates = new RegisterUpdates();
-		    updates.setAddress((int)address);
-		    updates.setName(this.map.get(address).getName());
-		    
-		    this.fireUpdate(regIndex, block, -1, address, new BitSet(), updates);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 	
-	public void setBlockData(String regName, byte[] b) {
+	private long getAddress(String regName) {
 		for (long addr : this.map.keySet()) {
 			SvRegister reg = this.map.get(addr);
 			if (reg.getName().equals(regName)) {
-				this.blockData.put(addr, b);
-				break;
+				return addr;
 			}
-		}
-			
+		}	
+		return 0;
 	}
 	
-//	public void setSimulatorEnabled(boolean enabled) {
-//		if (enabled) {
-//			this.currentDevice = this.simulator;
-//		}
-//		else {
-//			this.currentDevice = this.nullSimulator ;
-//		}
-//		this.monitor.setSimulatorEnabled(enabled);
-//	}
-
+	public void setBlockData(String regName, byte[] b) {
+		this.blockData.put(getAddress(regName), b);
+	}
+	
 	public List<String> getSimulatorClasses(String userApplicationPackage) {
 		Reflections reflections = new Reflections(userApplicationPackage + ".test", new SubTypesScanner(false));
 		Set<Class<?>> allClasses = reflections.getSubTypesOf(Object.class);
@@ -365,33 +294,19 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 			}
 		}
 		return ret;
-//System.out.println("this.getClass().getSimpleName()=" + this.getClass().getSimpleName());
-//System.out.println("this.getClass().getResource(this.getClass().getSimpleName() + \".class\")=" + this.getClass().getResource(this.getClass().getSimpleName() + ".class"));
-//		String p = this.getClass().getResource(this.getClass().getSimpleName() + ".class").toExternalForm();
-//System.out.println("p=" + p);
-//		String pp = p.replace(this.getClass().getName().replace(".", "/") + ".class", "").replace("file:/", "");
-//System.out.println("pp=" + pp);
-//		pp += builderModel.getUserApplicationPath().replaceAll("\\.", "/") + "/test";
-//System.out.println("pp=" + pp);
-//		//String p = builderModel.getUserApplicationPath().
-//		if (System.getProperty("os.name").toLowerCase().equals("linux")) {
-//			pp = "/" + pp;
-//		}
-//		List<String> ret = new ArrayList<String>();
-//		for (File file : new File(pp).listFiles()) {
-//			String name =file.getName().replace(".class", "");
-//			if (name.contains("$") || !name.startsWith("Sim")) {
-//				continue;
-//			}
-//			ret.add(name);
-//		}
-//		return ret;
 	}
 
 	@Override
 	public void onUpdateBlockData(long address, byte[] data) {
 		this.blockData.put(address, data);
-		this.monitor.updateBlock(address, data);
+		RegisterUpdates updates = new RegisterUpdates();
+		updates.setAddress((int)address);
+		
+		SvRegister register = this.map.get(address);
+		updates.setName(register.getName());
+		BitUpdates bit = new BitUpdates(register.getBits().getRegisterBit(0).getName(), new String(Base64.encode((data))));
+		updates.addBit(bit);
+		this.fireUpdate(updates, false);
 	}
 
 	public Map<Long, BitSet> getMapValue() {
