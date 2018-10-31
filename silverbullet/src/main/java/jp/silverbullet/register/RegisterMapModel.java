@@ -1,10 +1,5 @@
 package jp.silverbullet.register;
 
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
@@ -34,8 +29,6 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 	private Set<InterruptHandler> interruptHandlers = new HashSet<>();
 	private Set<SvSimulator> simulators = new HashSet<>();
 	private Map<Long, byte[]> blockData = new HashMap<>();
-	private Map<Long, String> blockNameMap = new HashMap<>();
-
 	public long getMinAddress() {
 		return minAddress;
 	}
@@ -147,7 +140,7 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 
 	protected void updateBits(long address, BitSet data, BitSet mask, boolean bySoftware) {		
 		BitSet current = this.mapValue.get(address);
-		final int regIndex = getIndex(address);	
+		getIndex(address);	
 		SvRegister register = this.map.get(address);
 		Set<RegisterBit> changed = new HashSet<>();
 		for (int i = 0; i < builderModel.getRegisterProperty().getRegisterWidth(); i++) {
@@ -170,7 +163,7 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 			updates.getBits().add(info);
 		}
 
-		fireUpdate(/*regIndex, 0, 0, address, current, */updates, bySoftware);
+		fireUpdate(updates, bySoftware);
 	}
 
 	private int getIndex(long address) {
@@ -256,9 +249,9 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 		updateBits(address, data, mask, false);
 	}
 
-	protected void fireUpdate(/*int regIndex, int num, int val, long address, BitSet bitSet, */RegisterUpdates updates, boolean bySoftware) {
+	protected void fireUpdate(RegisterUpdates updates, boolean bySoftware) {
 		for (RegisterMapListener listener :this.listeners) {
-			listener.onUpdate(/*regIndex, num, val, address, bitSet,*/ updates);
+			listener.onUpdate(updates);
 			if (!bySoftware) {
 				listener.onUpdatedByHardware(updates);
 			}
@@ -304,7 +297,7 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 		
 		SvRegister register = this.map.get(address);
 		updates.setName(register.getName());
-		BitUpdates bit = new BitUpdates(register.getBits().getRegisterBit(0).getName(), new String(Base64.encode((data))));
+		BitUpdates bit = new BitUpdates(register.getBits().getRegisterBit(0).getName(), "data:application/octet-stream;base64," + new String(Base64.encode((data))));
 		updates.addBit(bit);
 		this.fireUpdate(updates, false);
 	}

@@ -19,4 +19,28 @@ public class TestResource {
 	public List<TestItem> saveParameters(@QueryParam("testName") final String testName) {
 		return StaticInstances.getInstance().getBuilderModel().getTestRecorder().getItems();
 	}
+	
+	@GET
+	@Path("/startRecording")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public String startRecording() {
+		StaticInstances.getInstance().getBuilderModel().getTestRecorder().startRecording();
+		return "OK";
+	}
+	
+	@GET
+	@Path("/stopRecording")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public String stopRecording() {
+		StaticInstances.getInstance().getBuilderModel().getTestRecorder().stopRecording();
+		return "OK";
+	}
+	
+	@GET
+	@Path("/playBack")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public String playBack() {
+		StaticInstances.getInstance().getBuilderModel().getTestRecorder().playBack();
+		return "OK";
+	}
 }

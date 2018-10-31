@@ -22,8 +22,8 @@ import jp.silverbullet.register.RegisterProperty;
 import jp.silverbullet.register.RegisterShortCutHolder;
 import jp.silverbullet.remote.SvTexHolder;
 import jp.silverbullet.spec.SpecElement;
-import jp.silverbullet.test.TestItem;
 import jp.silverbullet.test.TestRecorder;
+import jp.silverbullet.test.TestRecorderInterface;
 import jp.silverbullet.web.ui.PropertyGetter;
 import jp.silverbullet.web.ui.UiLayout;
 
@@ -105,7 +105,23 @@ public class BuilderModelImpl implements BuilderModel {
 	
 	private RegisterAccess regiseterAccess;
 
-	private TestRecorder testRecorder = new TestRecorder();
+	private TestRecorder testRecorder = new TestRecorder(new TestRecorderInterface() {
+		@Override
+		public void saveParameters(String filename) {
+			BuilderModelImpl.this.saveParameters(filename);
+		}
+
+		@Override
+		public void requestChange(String id, String value) throws RequestRejectedException {
+			sequencer.requestChange(id, value);
+		}
+
+		@Override
+		public void setRegisterValue(String id, String value) {
+			// TODO Auto-generated method stub
+			
+		}
+	});
 	
 	public BuilderModelImpl() {
 		store = new SvPropertyStore(propertiesHolder);	

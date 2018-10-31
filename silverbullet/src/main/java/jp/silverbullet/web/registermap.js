@@ -247,6 +247,7 @@ class RegisterMap {
 				});
 				
 				$('.blockData').change(function(e) {
+					e.stopImmediatePropagation();
 					var reg = $(this).prop('id');
 					var file = $(this)[0].files[0];
 					console.log(file.name);

@@ -205,8 +205,7 @@ public class RegisterResource {
 		StaticInstances.getInstance().getSimulator().updateRegister(intAddress, dataSet, mask);
 		
 		return "OK";
-	}
-	
+	}	
 
 	@POST
 	@Path("/setBlockData")
