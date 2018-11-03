@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.List;
 import javax.xml.bind.JAXBException;
 
@@ -18,8 +19,11 @@ import jp.silverbullet.handlers.RegisterAccess;
 import jp.silverbullet.handlers.SvDevice;
 import jp.silverbullet.property.PropertyHolder;
 import jp.silverbullet.property.StringArray;
+import jp.silverbullet.register.RegisterMapModel;
+import jp.silverbullet.register.RegisterMapModelInterface;
 import jp.silverbullet.register.RegisterProperty;
 import jp.silverbullet.register.RegisterShortCutHolder;
+import jp.silverbullet.register.SvSimulator;
 import jp.silverbullet.remote.SvTexHolder;
 import jp.silverbullet.spec.SpecElement;
 import jp.silverbullet.test.TestRecorder;
@@ -38,8 +42,6 @@ public class BuilderModelImpl implements BuilderModel {
 	private static final String REGISTERSHORTCUT = "registershortcuts.xml";
 	private static final String DEPENDENCYSPEC2_XML = "dependencyspec2.xml";
 
-	private static BuilderModelImpl instance;
-	
 	private List<String> selectedId;
 	private SvPropertyStore store;
 	private SpecElement hardSpec = new SpecElement();
@@ -59,6 +61,12 @@ public class BuilderModelImpl implements BuilderModel {
 		}
 	});
 	
+	private RegisterMapModel registerMapModel = new RegisterMapModel(new RegisterMapModelInterface() {
+		@Override
+		public RegisterProperty getRegisterProperty() {
+			return registerProperty;
+		}
+	});
 	@Override
 	public HandlerPropertyHolder getHandlerPropertyHolder() {
 		return handlerPropertyHolder;
@@ -117,14 +125,42 @@ public class BuilderModelImpl implements BuilderModel {
 		}
 
 		@Override
-		public void setRegisterValue(String id, String value) {
-			// TODO Auto-generated method stub
-			
+		public SvSimulator createSimulator() {
+			SvSimulator simulator = new SvSimulator() {
+				@Override
+				protected void writeIo(long address, BitSet data, BitSet mask) {
+				}
+
+				@Override
+				protected void writeBlock(long address, byte[] data) {
+				}
+			};
+			BuilderModelImpl.this.registerMapModel.addSimulator(simulator);
+			return simulator;
 		}
+
+		@Override
+		public long getAddress(String regName) {
+			return registerProperty.getRegisterByName(regName).getDecAddress();
+		}
+
+		@Override
+		public List<SvProperty> getProperties() {
+			return store.getAllProperties();
+		}
+
+		@Override
+		public SvProperty getProperty(String id) {
+			return store.getProperty(id);
+		}
+
 	});
 	
 	public BuilderModelImpl() {
 		store = new SvPropertyStore(propertiesHolder);	
+		
+		this.setDeviceDriver(registerMapModel);
+		registerMapModel.addListener(this.testRecorder);
 		
 		this.sequencer = new Sequencer() {
 			@Override
@@ -441,5 +477,10 @@ public class BuilderModelImpl implements BuilderModel {
 	@Override
 	public TestRecorder getTestRecorder() {
 		return this.testRecorder;
+	}
+
+	@Override
+	public RegisterMapModel getRegisterMapModel() {
+		return this.registerMapModel;
 	}
 }

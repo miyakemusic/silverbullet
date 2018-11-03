@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -16,6 +17,7 @@ import jp.silverbullet.register.RegisterBit;
 import jp.silverbullet.register.RegisterMapListener;
 import jp.silverbullet.register.RegisterUpdates;
 import jp.silverbullet.register.SvRegister;
+import jp.silverbullet.test.TestRecorderListener;
 
 public class WebClientManager {
 
@@ -72,7 +74,7 @@ public class WebClientManager {
 			}
 
 			@Override
-			public void onUpdate(/*int regIndex, int blockNumber, int value, long address, BitSet bitSet, */RegisterUpdates updates) {
+			public void onUpdate(RegisterUpdates updates) {
 				try {
 					String val = new ObjectMapper().writeValueAsString(updates);
 					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("REGVAL", val));
@@ -90,6 +92,24 @@ public class WebClientManager {
 			public void onUpdatedByHardware(RegisterUpdates updates) {
 				// TODO Auto-generated method stub
 				
+			}
+		});
+		
+		StaticInstances.getInstance().getBuilderModel().getTestRecorder().addListener(new TestRecorderListener() {
+			@Override
+			public void onTestFinished() {
+				try {
+					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("TEST", "TestFinished"));
+					WebSocketBroadcaster.getInstance().sendMessage(str);
+				} catch (JsonProcessingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+
+			@Override
+			public void onTestStart() {
 			}
 		});
 	}

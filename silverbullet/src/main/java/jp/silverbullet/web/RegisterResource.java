@@ -21,6 +21,7 @@ import jp.silverbullet.StaticInstances;
 import jp.silverbullet.handlers.RegisterAccess;
 import jp.silverbullet.register.BitSetToIntConverter;
 import jp.silverbullet.register.RegisterBit;
+import jp.silverbullet.register.RegisterInfo;
 import jp.silverbullet.register.RegisterBit.ReadWriteType;
 import jp.silverbullet.register.RegisterProperty;
 import jp.silverbullet.register.RegisterShortCut;
@@ -184,26 +185,8 @@ public class RegisterResource {
 	@Path("/setCurrentValue")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setCurrentValue(@QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName, @QueryParam("value") final String value) {
-		SvRegister register  = StaticInstances.getInstance().getBuilderModel().getRegisterProperty().getRegisterByName(regName);
-		RegisterBit bit = register.getBits().get(bitName);
-		
-		String address = register.getAddress().replace("0x", "");
-		if (address.contains("-")) {
-			address = address.split("-")[0];
-		}
-		long intAddress = Integer.parseInt(address, 16);
-		BitSet dataSet = new BitSet();
-		
-		int iValue = Integer.valueOf(value);
-		BitSet tmp = BitSet.valueOf(new long[]{iValue});
-		BitSet mask = new BitSet();
-		for (int i = bit.getStartBit(); i <= bit.getEndBit(); i++) {
-			dataSet.set(i, tmp.get(i - bit.getStartBit()));
-			mask.set(i);
-		}
-
-		StaticInstances.getInstance().getSimulator().updateRegister(intAddress, dataSet, mask);
-		
+		RegisterInfo regInfo = new RegisterInfo(regName, bitName, value, StaticInstances.getInstance().getBuilderModel().getRegisterProperty());
+		StaticInstances.getInstance().getSimulator().updateRegister(regInfo.getIntAddress(), regInfo.getDataSet(), regInfo.getMask());	
 		return "OK";
 	}	
 

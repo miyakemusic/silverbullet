@@ -4,6 +4,7 @@ import java.util.List;
 
 import jp.silverbullet.property.PropertyHolder;
 import jp.silverbullet.register.RegisterMapListener;
+import jp.silverbullet.register.RegisterMapModel;
 import jp.silverbullet.register.RegisterProperty;
 import jp.silverbullet.register.RegisterShortCutHolder;
 import jp.silverbullet.register.SvRegister;
@@ -90,4 +91,6 @@ public interface BuilderModel {
 	void removeUiFile(String filename);
 
 	TestRecorder getTestRecorder();
+
+	RegisterMapModel getRegisterMapModel();
 }

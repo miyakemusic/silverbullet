@@ -15,7 +15,6 @@ import org.reflections.scanners.SubTypesScanner;
 
 import com.sun.jersey.core.util.Base64;
 
-import jp.silverbullet.BuilderModel;
 import jp.silverbullet.handlers.InterruptHandler;
 import jp.silverbullet.handlers.SvDevice;
 
@@ -24,11 +23,11 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 	private Map<Long, BitSet> mapValue = new LinkedHashMap<>();
 	private long minAddress;
 	private long maxAddress;
-	private BuilderModel builderModel;
 	private Set<RegisterMapListener> listeners = new HashSet<>();
 	private Set<InterruptHandler> interruptHandlers = new HashSet<>();
 	private Set<SvSimulator> simulators = new HashSet<>();
 	private Map<Long, byte[]> blockData = new HashMap<>();
+	private RegisterMapModelInterface builderModel;
 	public long getMinAddress() {
 		return minAddress;
 	}
@@ -37,8 +36,8 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 		return maxAddress;
 	}
 	
-	public RegisterMapModel(BuilderModel builderModel) {
-		this.builderModel = builderModel;
+	public RegisterMapModel(RegisterMapModelInterface registerMapModelInterface) {
+		this.builderModel = registerMapModelInterface;
 		update();
 	}
 	

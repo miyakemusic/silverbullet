@@ -9,7 +9,7 @@ class RegisterMap {
 		$('#' + div).append('<div id="' + idAddesSimulators + '"></div>');
 		
 		var idInterrupt = div + '_interrupt';
-		$('#' + div).append('<div><button id="' + idInterrupt + '" class="regButton">Interrupt</button></div>');
+		$('#' + div).append('<div><button id="' + idInterrupt + '" class="interruptButton">Interrupt</button></div>');
 		var mainDiv = div + '_mainDiv';
 		$('#' + div).append('<div id="' + mainDiv + '" class="regtable"></div>');
 			
@@ -110,6 +110,7 @@ class RegisterMap {
 		function resetButtonColor() {
 			setTimeout(function() {
 				$('.regButton').removeClass('changed');
+				$('.interruptButton').removeClass('changed');
 			}, 200);
 		}
 		
@@ -119,7 +120,6 @@ class RegisterMap {
 				
 				var regName = obj.name;
 				if (regName == '@Interrupt@') {
-					//$('.regButton').removeClass('changed');
 					resetButtonColor();
 					$('#' + idInterrupt).addClass('changed');
 					return;
@@ -134,7 +134,6 @@ class RegisterMap {
 					var buttonId = '#' + getButtonId(regName, bitName);
 					$(buttonId).html(bitVal);
 					
-					//$('.regButton').removeClass('changed');
 					resetButtonColor();
 					$(buttonId).addClass('changed');
 				}

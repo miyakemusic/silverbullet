@@ -6,13 +6,15 @@ import java.nio.file.Paths;
 import java.util.BitSet;
 import jp.silverbullet.property.editor.PropertyListModel;
 import jp.silverbullet.register.RegisterMapModel;
+import jp.silverbullet.register.RegisterMapModelInterface;
+import jp.silverbullet.register.RegisterProperty;
 import jp.silverbullet.register.SvSimulator;
 
 public class StaticInstances {
 	public static final String TMP_FOLDER = "./sv_tmp";
 	
 	private static StaticInstances instance;
-	private RegisterMapModel registerMapModel = null;
+//	private RegisterMapModel registerMapModel = null;
 	private PropertyListModel propertyListModel = null;
 	
 	private BuilderModel builderModel;
@@ -41,10 +43,7 @@ public class StaticInstances {
 	}
 
 	private void createOtherInstances() {
-		registerMapModel = new RegisterMapModel(builderModel);
 		propertyListModel = new PropertyListModel(getBuilderModel().getPropertyHolder());
-		
-		getBuilderModel().setDeviceDriver(registerMapModel);
 		
 		simulator = new SvSimulator() {
 			@Override
@@ -55,13 +54,13 @@ public class StaticInstances {
 			protected void writeBlock(long address, byte[] data) {
 			}
 		};
-		registerMapModel.addSimulator(simulator);
-		registerMapModel.addListener(builderModel.getTestRecorder());
-		
+
+		builderModel.getRegisterMapModel().addSimulator(simulator);
+		simulator.setDevice(builderModel.getRegisterMapModel());
 	}
 	
 	public RegisterMapModel getRegisterMapModel() {
-		return registerMapModel;
+		return builderModel.getRegisterMapModel();
 	}
 
 	public void save() {
@@ -91,7 +90,7 @@ public class StaticInstances {
 		else {
 			builderModel.loadDefault();
 		}
-		registerMapModel.update();
+		builderModel.getRegisterMapModel().update();
 	}
 
 	public PropertyListModel getPropertyListModel() {

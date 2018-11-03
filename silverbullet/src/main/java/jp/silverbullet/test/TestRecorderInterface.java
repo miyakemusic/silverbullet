@@ -1,6 +1,10 @@
 package jp.silverbullet.test;
 
+import java.util.List;
+
+import jp.silverbullet.SvProperty;
 import jp.silverbullet.dependency.RequestRejectedException;
+import jp.silverbullet.register.SvSimulator;
 
 public interface TestRecorderInterface {
 
@@ -8,6 +12,13 @@ public interface TestRecorderInterface {
 
 	void requestChange(String id, String value) throws RequestRejectedException;
 
-	void setRegisterValue(String id, String value);
+	SvSimulator createSimulator();
+
+	long getAddress(String id);
+
+	List<SvProperty> getProperties();
+
+	SvProperty getProperty(String target);
+
 
 }
