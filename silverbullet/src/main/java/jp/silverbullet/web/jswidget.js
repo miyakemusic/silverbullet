@@ -292,12 +292,13 @@ class JsWidget {
 	    
 	    // can clicked
 	    if (enabled == 'enable') {
-	    	$('#' + this.baseId).click(function(e){
+	    	$('#' + this.baseId).mousedown(function(e){
 				$('.base').removeClass('selected');
 				$(this).addClass('selected');
 				e.stopPropagation();
 				me.selected(baseId, me.info);
 			});
+
 			$('.panel').addClass('design');
 		}
 		else {

@@ -26,13 +26,64 @@ public class TestScript {
 	public void clear() {
 		this.script.clear();
 	}
-	public void remove(long serial) {
-		for (TestItem item : script) {
-			if (item.getSerial() == serial) {
-				script.remove(item);
-				break;
+	
+	private TestItem getTestItem(long serial) {
+		for (TestItem testItem : this.script) {
+			if (testItem.getSerial() == serial) {
+				return testItem;
 			}
 		}
+		return null;
+	}
+	
+	private int getIndex(long serial) {
+		return this.script.indexOf(getTestItem(serial));
+	}
+	
+	public void remove(long serial) {
+		this.script.remove(getTestItem(serial));
+	}
+	public void add(TestItem testItem, long serial) {
+		int index = getIndex(serial);
+		if ((this.script.size() - 1) > index) {
+			index++;
+		}
+		this.script.add(index, testItem);
+	}
+	
+	abstract class Mover {
+		public Mover(long serial) {
+			TestItem item = getTestItem(serial);
+			int index = getIndex(serial);
+			index = calcIndex(index);
+			script.remove(item);
+			script.add(index, item);		
+		}
+
+		abstract protected int calcIndex(int index);
+	}
+	public void moveUp(long serial) {
+		new Mover(serial) {
+			@Override
+			protected int calcIndex(int index) {
+				if (index > 1) {
+					index--;
+				}
+				return index;
+			}
+		};
+	}
+	
+	public void moveDown(long serial) {
+		new Mover(serial) {
+			@Override
+			protected int calcIndex(int index) {
+				if (index < (script.size()-1)) {
+					index++;
+				}
+				return index;
+			}
+		};
 	}
 	
 }

@@ -1,11 +1,13 @@
 package jp.silverbullet.property;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 @XmlRootElement
 public class PropertyHolder {
@@ -27,6 +29,16 @@ public class PropertyHolder {
 		}
 	};
 	
+	public PropertyHolder() {
+		getTypes().getDefinitions().put("ListProperty", new StringArray(Arrays.asList("unit", "choices", "defaultKey", "persistent")));
+		getTypes().getDefinitions().put("ImageProperty", new StringArray(Arrays.asList("persistent")));
+		getTypes().getDefinitions().put("TextProperty", new StringArray(Arrays.asList("defaultValue", "maxLength", "persistent")));
+		getTypes().getDefinitions().put("BooleanProperty", new StringArray(Arrays.asList("defaultValue", "persistent")));
+		getTypes().getDefinitions().put("LongProperty", new StringArray(Arrays.asList("unit", "defaultValue", "min", "max", "persistent")));
+		getTypes().getDefinitions().put("DoubleProperty", new StringArray(Arrays.asList("unit", "defaultValue", "min", "max", "decimals", "persistent")));
+		getTypes().getDefinitions().put("ChartProperty", new StringArray());
+		getTypes().getDefinitions().put("TableProperty", new StringArray());
+	}
 	public void addPropertyHolderListener(PropertyHolderListener listener) {
 		this.listeners.add(listener);
 	}
@@ -43,6 +55,7 @@ public class PropertyHolder {
 		}
 	}
 
+	@XmlTransient
 	public PropertyType getTypes() {
 		return types;
 	}

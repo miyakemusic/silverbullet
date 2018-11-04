@@ -316,13 +316,7 @@ public class BuilderModelImpl implements BuilderModel {
 	
 	@Override
 	public void loadDefault() {
-		this.propertiesHolder.getTypes().getDefinitions().put("ListProperty", new StringArray(Arrays.asList("unit", "choices", "defaultKey", "persistent")));
-		this.propertiesHolder.getTypes().getDefinitions().put("ImageProperty", new StringArray(Arrays.asList("persistent")));
-		this.propertiesHolder.getTypes().getDefinitions().put("TextProperty", new StringArray(Arrays.asList("defaultValue", "maxLength", "persistent")));
-		this.propertiesHolder.getTypes().getDefinitions().put("BooleanProperty", new StringArray(Arrays.asList("defaultValue", "persistent")));
-		this.propertiesHolder.getTypes().getDefinitions().put("LongProperty", new StringArray(Arrays.asList("unit", "defaultValue", "min", "max", "persistent")));
-		this.propertiesHolder.getTypes().getDefinitions().put("ChartProperty", new StringArray());
-		this.propertiesHolder.getTypes().getDefinitions().put("TableProperty", new StringArray());
+
 		
 	}
 	

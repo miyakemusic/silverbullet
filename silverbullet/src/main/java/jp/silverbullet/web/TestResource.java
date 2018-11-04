@@ -67,5 +67,25 @@ public class TestResource {
 		StaticInstances.getInstance().getBuilderModel().getTestRecorder().addPropertyTest(widget.getId());
 		return "OK";
 	}
+
+	@GET
+	@Path("/addCommand")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public String addCommand(@QueryParam("type") final String type, @QueryParam("target") final String target, @QueryParam("value") final String value, @QueryParam("serial") final long serial) {
+		StaticInstances.getInstance().getBuilderModel().getTestRecorder().addCommand(type, target, value, serial);
+		return "OK";
+	}
 	
+	@GET
+	@Path("/move")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public String move(@QueryParam("type") final String type, @QueryParam("serial") final long serial) {
+		if (type.equals("up")) {
+			StaticInstances.getInstance().getBuilderModel().getTestRecorder().moveUp(serial);
+		}
+		else if (type.equals("down")) {
+			StaticInstances.getInstance().getBuilderModel().getTestRecorder().moveDown(serial);
+		}
+		return "OK";
+	}
 }

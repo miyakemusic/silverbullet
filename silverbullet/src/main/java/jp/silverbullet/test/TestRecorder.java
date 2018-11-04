@@ -75,7 +75,7 @@ public class TestRecorder implements SequencerListener, RegisterMapListener {
 	@Override
 	public void onInterrupt() {
 		if (this.redording) {
-			this.script.add(new TestItem(TestItem.TYPE_CONTROL, TestItem.WAIT, "100"));
+//			this.script.add(new TestItem(TestItem.TYPE_CONTROL, TestItem.WAIT, "100"));
 			this.script.add(new TestItem(TestItem.TYPE_REGISTER, TestItem.INTERRPT, "ON"));
 		}
 	}
@@ -314,5 +314,21 @@ public class TestRecorder implements SequencerListener, RegisterMapListener {
 
 	public void addPropertyTest(String id) {
 		addQueryTest(this.testRecorderInterface.getProperty(id));
+		overwrite();
+	}
+
+	public void addCommand(String type, String target, String value, long serial) {
+		this.script.add(new TestItem(type, target, value), serial);
+		overwrite();
+	}
+
+	public void moveUp(long serial) {
+		this.script.moveUp(serial);
+		overwrite();
+	}
+	
+	public void moveDown(long serial) {
+		this.script.moveDown(serial);
+		overwrite();
 	}
 }

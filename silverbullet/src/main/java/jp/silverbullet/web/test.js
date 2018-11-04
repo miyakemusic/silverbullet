@@ -57,6 +57,7 @@ class TestClass {
 						
 		var selectedData;
 		var selectedCol;	
+		var selectedSerial;
 		
 		var table;
 			
@@ -171,7 +172,7 @@ class TestClass {
 				
 				$('#' + tableId + ' tbody').on( 'click', 'tr', function () {
 					selectedData =  table.row( this ).data();
-
+					selectedSerial = selectedData[8];
 			        if ( $(this).hasClass('selected') ) {
 			            $(this).removeClass('selected');
 			        }
@@ -211,18 +212,27 @@ class TestClass {
 			      ],
 			    // Handle menu selection to implement a fake-clipboard
 			    select: function(event, ui) {
-			      var $target = ui.target;
-			      switch(ui.cmd){
-			      case "delete":
-			      	deleteRow();
-			      	break;
-			      case "edit":
-			      	editRow();
-			      	break;
-			      case "copy":
+					var $target = ui.target;
+					switch(ui.cmd){
+					case "delete":
+						deleteRow();
+						break;
+					case "edit":
+						editRow();
+						break;
+					case "addWait":
+						addCommand('CONTROL', 'WAIT', '100');
+						break;
+					case "moveUp":
+						move('up');
+						break;
+					case "moveDown":
+						move('down');
+						break;
+					case "copy":
 //			        CLIPBOARD = $target.text();
 			        break;
-			      case "paste":
+					case "paste":
 //			        CLIPBOARD = "";
 			        break;
 			      }
@@ -241,13 +251,32 @@ class TestClass {
 			  function deleteRow() {
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/test/deleteRow?serial=" + selectedData[8],
+				   url: "http://" + window.location.host + "/rest/test/deleteRow?serial=" + selectedSerial,
 				   success: function(msg){
 						update();
 				   }
 				});				  
 			  }
 			  
+			  function addCommand(type, target, value) {
+				$.ajax({
+				   type: "GET", 
+				   url: "http://" + window.location.host + "/rest/test/addCommand?type=" + type + "&target=" + target + "&value=" + value + "&serial=" + selectedSerial,
+				   success: function(msg){
+						update();
+				   }
+				});	
+			  }
+			  
+			  function move(type) {
+				$.ajax({
+				   type: "GET", 
+				   url: "http://" + window.location.host + "/rest/test/move?type=" + type + "&serial=" + selectedSerial,
+				   success: function(msg){
+						update();
+				   }
+				});	
+			  }			  
 			  function editRow() {
 			  	$('#' + editId).val(selectedData[selectedCol]);
 			  	$('#' + dialogId).dialog('open');
@@ -255,7 +284,6 @@ class TestClass {
 		}	
 		function dialogClosed() {
 			var sel = headers[selectedCol];
-			var serial = selectedData[8];
 			var value = $('#' + editId).val();
 			
 		  	if (sel == 'Target') {
@@ -264,7 +292,7 @@ class TestClass {
 		  	else if (sel == 'Value') {
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/test/updateValue?serial=" + serial + "&value=" + value,
+				   url: "http://" + window.location.host + "/rest/test/updateValue?serial=" + selectedSerial + "&value=" + value,
 				   success: function(msg){
 						update();
 				   }
