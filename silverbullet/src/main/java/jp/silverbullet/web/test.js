@@ -182,7 +182,8 @@ class TestClass {
 			        }
 			    });
 		    }
-			$(document).contextmenu({
+		    $('#' + div2).contextmenu({
+			//$(document).contextmenu({
 				delegate: "#" + tableId + " tr",
 				autoFocus: true,
 				preventContextMenuForPopup: true,

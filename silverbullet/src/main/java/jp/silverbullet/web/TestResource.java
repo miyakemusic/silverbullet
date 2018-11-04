@@ -8,6 +8,7 @@ import javax.ws.rs.core.MediaType;
 
 import jp.silverbullet.StaticInstances;
 import jp.silverbullet.test.TestScriptPresentation;
+import jp.silverbullet.web.ui.JsWidget;
 
 @Path("/test")
 public class TestResource {
@@ -57,4 +58,14 @@ public class TestResource {
 		StaticInstances.getInstance().getBuilderModel().getTestRecorder().updateValue(serial, value);
 		return "OK";
 	}
+
+	@GET
+	@Path("/addPropertyTest")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public String addPropertyTest(@QueryParam("div") final String div) {
+		JsWidget widget = StaticInstances.getInstance().getBuilderModel().getUiLayout().getWidget(div);
+		StaticInstances.getInstance().getBuilderModel().getTestRecorder().addPropertyTest(widget.getId());
+		return "OK";
+	}
+	
 }

@@ -13,9 +13,13 @@ class JsWidget {
 			$('#' + this.parent).append('<div id=' + this.baseId + '></div>');
 		}
 			
+		$('#' + this.baseId).addClass('Widget');
+		$('#' + this.baseId).attr('title', info.id);
+		
 		this.createBase(dependency);		
 		
 		this.updateLayout();
+
 	}
 	
 	get baseId() {
@@ -68,6 +72,7 @@ class JsWidget {
 		
 	createBase(dependency) {			
 		var me = this;
+		
 		if (this.info.widgetType == 'COMBOBOX') {
 			this.subWidget = new JsComboBox(this.baseId, function(id) {
 				me.requestChange(me.info.id, id, dependency);

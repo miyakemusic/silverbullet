@@ -26,6 +26,49 @@ class LayoutBuilder {
 			}
 			, 'DESIGN');
 		}
+		
+	}
+	
+	setContextmenu() {
+	    $('#' + this.base).contextmenu({
+			delegate: '.Widget',
+			autoFocus: true,
+			preventContextMenuForPopup: true,
+			preventSelect: true,
+			taphold: true,
+			menu: [
+					{title: "Add as Test <kbd>[F2]</kbd>", cmd: "addTest"},
+					{title: "Add as Command <kbd>Ctrl+D</kbd>", cmd: "addCommand"},
+		      ],
+			// Handle menu selection to implement a fake-clipboard
+			select: function(event, ui) {
+				var target = ui.target;
+				switch(ui.cmd) {
+				case "addTest":
+					addTestQuery();
+					break;
+				case "addCommand":
+					break;
+				}
+			},
+			 // Implement the beforeOpen callback to dynamically change the entries
+			beforeOpen: function(event, ui) {
+				var $menu = ui.menu,
+				$target = ui.target,
+				extraData = ui.extraData; // passed when menu was opened by call to open()
+				// Optionally return false, to prevent opening the menu now
+			}
+		});
+		
+		var me = this;
+		function addTestQuery() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/test/addPropertyTest?div=" + me.getSelectedDiv(),
+			   success: function(msg){
+			   }
+			});	
+		}
 	}
 	
 	updateUI() {
@@ -44,6 +87,8 @@ class LayoutBuilder {
 		   			me.createWidget(me.base, msg);
 		   			me.updateAllWidgetsValue();
 		   		}
+		   		
+		   		me.setContextmenu();
 		   }
 		});	
 		

@@ -25,6 +25,7 @@ class JsRadio extends JsSubWidget {
 	
 	updateValue(property) {
 		$('#' + this.baseId).empty();
+		$('#' + this.baseId).attr('title', property.id);
 		this.updateLayout(property);
 	}
 	
@@ -111,7 +112,9 @@ class JsComboBox extends JsSubWidget {
 		} );
 
 		$('#' + this.baseId + ' > *').css({'margin':'2px'});
-
+	
+		$('#' + this.baseId).attr('title', property.id);
+		
 		this.updateValue2(property);
 	}
 	

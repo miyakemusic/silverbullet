@@ -171,7 +171,7 @@ public class UiLayout {
 		this.getDiv(unique).addChild(panel);
 	}
 
-	private JsWidget getWidget(String div) {
+	public JsWidget getWidget(String div) {
 		int unique = extractUnique(div);
 		JsWidget panel =  this.getDiv(unique);
 		return panel;

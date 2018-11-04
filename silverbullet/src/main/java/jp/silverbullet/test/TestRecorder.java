@@ -129,13 +129,17 @@ public class TestRecorder implements SequencerListener, RegisterMapListener {
 
 	public void stopRecording() {
 		this.redording = false;
-		for (SvProperty prop : this.testRecorderInterface.getProperties()) {
-			TestItem test = new TestItem(TestItem.TYPE_PROPERTY_TEST, prop.getId() + "?", "", prop.getCurrentValue());
-			this.script.add(test);
-		}
+//		for (SvProperty prop : this.testRecorderInterface.getProperties()) {
+//			addQueryTest(prop);
+//		}
 		overwrite();
 		
 		this.result = new TestResult(this.script);
+	}
+
+	private void addQueryTest(SvProperty prop) {
+		TestItem test = new TestItem(TestItem.TYPE_PROPERTY_TEST, prop.getId() + "?", "", prop.getCurrentValue());
+		this.script.add(test);
 	}
 
 	private void overwrite() {
@@ -306,5 +310,9 @@ public class TestRecorder implements SequencerListener, RegisterMapListener {
 			}
 		}
 		overwrite();
+	}
+
+	public void addPropertyTest(String id) {
+		addQueryTest(this.testRecorderInterface.getProperty(id));
 	}
 }
