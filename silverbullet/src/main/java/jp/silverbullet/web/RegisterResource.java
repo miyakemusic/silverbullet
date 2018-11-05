@@ -258,11 +258,13 @@ public class RegisterResource {
 	
 	@GET
 	@Path("getAddedSimulators")
+	@Produces(MediaType.APPLICATION_JSON)
 	public List<String> getAddedSimulators() {
 		List<String> ret = new ArrayList<>();
 		for (SvSimulator simulator : StaticInstances.getInstance().getRegisterMapModel().getSimulators()) {
 			ret.add(simulator.getClass().getSimpleName());
 		}
+
 		return ret;
 	}
 	
@@ -272,7 +274,9 @@ public class RegisterResource {
 	public String addSimulator(@QueryParam("simulator") final String simulator) {
 		try {
 			Class<?> c = Class.forName(StaticInstances.getInstance().getBuilderModel().getUserApplicationPath() + ".test." + simulator);	
+//System.out.println(c);
 			SvSimulator object = (SvSimulator)c.getConstructor(RegisterAccess.class).newInstance(StaticInstances.getInstance().getBuilderModel().getRegisterAccess());
+//System.out.println(object);
 			StaticInstances.getInstance().getRegisterMapModel().addSimulator(object);
 			StaticInstances.getInstance().getRegisterMapModel().update();
 		} catch (ClassNotFoundException e) {
