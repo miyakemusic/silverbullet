@@ -70,7 +70,7 @@ public class TestItem {
 	}
 
 	public String bitValue() {
-		return this.value.split("=")[1];
+		return this.value;
 	}
 	public long getSerial() {
 		return serial;

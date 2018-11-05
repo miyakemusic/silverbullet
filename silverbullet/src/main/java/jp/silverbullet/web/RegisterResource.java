@@ -29,6 +29,7 @@ import jp.silverbullet.register.SvRegister;
 import jp.silverbullet.register.SvSimulator;
 import jp.silverbullet.register.json.SvRegisterJson;
 import jp.silverbullet.register.json.SvRegisterJsonHolder;
+import jp.silverbullet.test.TestItem;
 
 @Path("/register")
 public class RegisterResource {
@@ -218,6 +219,15 @@ public class RegisterResource {
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String createShortCut(@QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName) {
 		StaticInstances.getInstance().getBuilderModel().getRegisterShortCut().add(regName, bitName);
+		return "OK";
+	}
+
+	@GET
+	@Path("/addToTest")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String addToTest(@QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName) {
+		int value = StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().getValue(regName, bitName);
+		StaticInstances.getInstance().getBuilderModel().getTestRecorder().addRegisterQuery(TestItem.TYPE_REGISTER, regName, bitName, value);
 		return "OK";
 	}
 	

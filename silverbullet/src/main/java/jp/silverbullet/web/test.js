@@ -14,7 +14,8 @@ class TestClass {
 				modal: false,
 				buttons: {
 					"OK": function(){
-						$(this).dialog('close');
+						$(this).dialog('destroy');
+						
 					}
 
 				},
@@ -58,9 +59,9 @@ class TestClass {
 		var selectedData;
 		var selectedCol;	
 		var selectedSerial;
-		
-		var table;
 			
+		var table;
+		
 		build(mainId);
 		
 		function build(div2) {
@@ -159,32 +160,28 @@ class TestClass {
 			}
 			, 'TEST');
 			
-			setDataTable();
+			table = $('#' + tableId).DataTable({
+				ordering: false,
+				paging: false
+			});
+			$('#' + tableId + ' tbody').on( 'click', 'td', function () {
+				selectedCol = $(this).index();
+			});
 			
-			function setDataTable() {
-				table = $('#' + tableId).DataTable({
-					ordering: false,
-					paging: false
-				});
-				$('#' + tableId + ' tbody').on( 'click', 'td', function () {
-					selectedCol = $(this).index();
-				});
-				
-				$('#' + tableId + ' tbody').on( 'click', 'tr', function () {
-					selectedData =  table.row( this ).data();
-					selectedSerial = selectedData[8];
-			        if ( $(this).hasClass('selected') ) {
-			            $(this).removeClass('selected');
-			        }
-			        else {
-			            //table.$('tr.selected').removeClass('selected');
-			            $('#' + tableId + ' tr.selected').removeClass('selected');
-			            $(this).addClass('selected');
-			        }
-			    });
-		    }
+			$('#' + tableId + ' tbody').on( 'click', 'tr', function () {
+				selectedData =  table.row( this ).data();
+				selectedSerial = selectedData[8];
+		        if ( $(this).hasClass('selected') ) {
+		            $(this).removeClass('selected');
+		        }
+		        else {
+		            //table.$('tr.selected').removeClass('selected');
+		            $('#' + tableId + ' tr.selected').removeClass('selected');
+		            $(this).addClass('selected');
+		        }
+		    });
+
 		    $('#' + div2).contextmenu({
-			//$(document).contextmenu({
 				delegate: "#" + tableId + " tr",
 				autoFocus: true,
 				preventContextMenuForPopup: true,
@@ -301,7 +298,9 @@ class TestClass {
 		  	else if (sel == 'Expected') {
 		  		
 		  	}
+		  			  	
 		}
+		
 		function update() {
 			clearTable();
 			$.ajax({
@@ -314,8 +313,9 @@ class TestClass {
 			   }
 			});	
 		}
+		
 		function clearTable() {
 			table.clear().draw();
-		}		
+		}	
 	}
 }

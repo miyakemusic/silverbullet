@@ -185,6 +185,16 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 		return ret;
 	}
 
+	public int getValue(String regName, String bitName) {
+		long address = this.getAddress(regName);
+		SvRegister register = this.map.get(address);
+		RegisterBit bit = register.getBits().get(bitName);
+		
+		BitSet currentValue = this.mapValue.get(address);
+		
+		return RegisterValueCalculator.getValue(currentValue, bit.getStartBit(), bit.getSize());
+	}
+	
 	protected String getCurrentValue(String bits, BitSet current) {
 		return RegisterValueCalculator.getValue(bits, current);
 	}
@@ -304,5 +314,7 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 	public Map<Long, BitSet> getMapValue() {
 		return this.mapValue;
 	}
+
+
 
 }

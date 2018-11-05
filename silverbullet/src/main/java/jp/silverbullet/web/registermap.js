@@ -42,6 +42,11 @@ class RegisterMap {
 			    	$(this).dialog('close');
 			    	createShortCut(selectedValueId);
 			    }
+			    ,
+			    "Add to Test": function() {
+			    	$(this).dialog('close');
+			    	addToTest(selectedValueId);
+			    }
 			  },
 			width: 400,
 			height: 300
@@ -283,6 +288,15 @@ class RegisterMap {
 			$.ajax({
 			   type: "GET", 
 			   url: "http://" + window.location.host + "/rest/register/createShortCut?regName=" + obj.register + '&bitName=' + obj.bitName,
+			   success: function(msg){
+			   }
+			});		
+		}	
+		function addToTest(buttonId) {
+			var obj = me.bitInfo.get(buttonId);
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/register/addToTest?regName=" + obj.register + '&bitName=' + obj.bitName,
 			   success: function(msg){
 			   }
 			});		

@@ -7,7 +7,6 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.swing.SwingUtilities;
@@ -52,6 +51,9 @@ public class TestRecorder implements SequencerListener, RegisterMapListener {
 			}
 		}
 		simulator = testRecorderInterface.createSimulator();
+		
+		this.script = this.loadScript(TEST_FOLDER + "test.json");
+		this.result = new TestResult(this.script);
 	}
 
 	@Override
@@ -85,18 +87,18 @@ public class TestRecorder implements SequencerListener, RegisterMapListener {
 		if (!this.redording) {
 			return;
 		}
-		String val = "";
+		
 		for (BitUpdates bit : updates.getBits()) {
+			String val = "";
 			if (bit.getVal().startsWith("data:application/octet-stream;base64,")) {
-				val += convertBlockData(bit.getVal());
+				val = convertBlockData(bit.getVal());
 			}
 			else {
-				val += bit.getName() + "=" + bit.getVal();
+				val = bit.getVal();
 			}
-		}
-		System.out.println(updates.getName() + " " + val);
-		
-		this.script.add(new TestItem(TestItem.TYPE_REGISTER, updates.getName(), val));
+			
+			this.script.add(new TestItem(TestItem.TYPE_REGISTER, updates.getName() + "::" + bit.getName(), val));
+		}		
 	}
 
 	private String convertBlockData(String val) {
@@ -129,11 +131,6 @@ public class TestRecorder implements SequencerListener, RegisterMapListener {
 
 	public void stopRecording() {
 		this.redording = false;
-//		for (SvProperty prop : this.testRecorderInterface.getProperties()) {
-//			addQueryTest(prop);
-//		}
-		overwrite();
-		
 		this.result = new TestResult(this.script);
 	}
 
@@ -142,7 +139,7 @@ public class TestRecorder implements SequencerListener, RegisterMapListener {
 		this.script.add(test);
 	}
 
-	private void overwrite() {
+	public void overwrite() {
 		saveScript(TEST_FOLDER + "test.json");
 	}
 	
@@ -160,7 +157,7 @@ public class TestRecorder implements SequencerListener, RegisterMapListener {
 		} catch (Exception e2) {
 			e2.printStackTrace();
 		}
-		return null;
+		return new TestScript();
 	}
 	
 	private void saveScript(String filename) {
@@ -178,7 +175,6 @@ public class TestRecorder implements SequencerListener, RegisterMapListener {
 	}
 
 	public void playBack() {
-		this.script = this.loadScript(TEST_FOLDER + "test.json");
 		this.result = new TestResult(this.script);
 		fireTestStart();
 		new Thread() {
@@ -215,12 +211,13 @@ public class TestRecorder implements SequencerListener, RegisterMapListener {
 				this.result.addResult(item.getSerial(), prop.getCurrentValue(), item.getExpected().equals(prop.getCurrentValue()));
 			}
 			else if (item.getType().equals(TestItem.TYPE_REGISTER)) {
-				String bitName = item.getValue().split("=")[0];
+				String tmp[] = item.getTarget().split("::");
+				String regName = tmp[0];
 				if (item.isFile()) {
 					String filename = item.blockFilename();
 					try {
 						byte[] data = Files.readAllBytes(Paths.get(TEST_FOLDER + filename));
-						long address = StaticInstances.getInstance().getBuilderModel().getRegisterProperty().getRegisterByName(item.getTarget()).getDecAddress();
+						long address = StaticInstances.getInstance().getBuilderModel().getRegisterProperty().getRegisterByName(regName).getDecAddress();
 						updateBlockData(data, address);
 
 					} catch (IOException e) {
@@ -231,8 +228,9 @@ public class TestRecorder implements SequencerListener, RegisterMapListener {
 					triggerInterrupt();
 				}
 				else {
+					String bitName = tmp[1];
 					String bitValue = item.bitValue();
-					RegisterInfo regInfo = new RegisterInfo(item.getTarget(), bitName, bitValue, StaticInstances.getInstance().getBuilderModel().getRegisterProperty());
+					RegisterInfo regInfo = new RegisterInfo(regName, bitName, bitValue, StaticInstances.getInstance().getBuilderModel().getRegisterProperty());
 					StaticInstances.getInstance().getSimulator().updateRegister(regInfo.getIntAddress(), regInfo.getDataSet(), regInfo.getMask());	
 					
 					updateRegister(regInfo);
@@ -309,26 +307,30 @@ public class TestRecorder implements SequencerListener, RegisterMapListener {
 				break;
 			}
 		}
-		overwrite();
 	}
 
 	public void addPropertyTest(String id) {
 		addQueryTest(this.testRecorderInterface.getProperty(id));
-		overwrite();
 	}
 
 	public void addCommand(String type, String target, String value, long serial) {
 		this.script.add(new TestItem(type, target, value), serial);
-		overwrite();
 	}
-
+	public void addCommand(String type, String target, String value) {
+		this.script.add(new TestItem(type, target, value));
+	}
+	
 	public void moveUp(long serial) {
 		this.script.moveUp(serial);
-		overwrite();
 	}
 	
 	public void moveDown(long serial) {
 		this.script.moveDown(serial);
-		overwrite();
 	}
+
+	public void addRegisterQuery(String typeRegister, String regName, String bitName, int value) {
+		this.addCommand(typeRegister, regName + "::" + bitName + "?", String.valueOf(value));
+	}
+
+
 }
