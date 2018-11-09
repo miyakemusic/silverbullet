@@ -19,7 +19,7 @@ public abstract class SilverBulletServer {
 		builderModel = StaticInstances.getInstance().getBuilderModel();
 		builderModel.setUserPath(getUserPath());
 
-		registerMapModel = StaticInstances.getInstance().getRegisterMapModel();
+		registerMapModel = StaticInstances.getInstance().getBuilderModel().getRegisterMapModel();
 			
 		startWebServer(Integer.valueOf(port));
 	}

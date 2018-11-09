@@ -58,7 +58,15 @@ public class TestResource {
 		StaticInstances.getInstance().getBuilderModel().getTestRecorder().updateValue(serial, value);
 		return "OK";
 	}
-
+	
+	@GET
+	@Path("/updateExpected")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public String updateExpected(@QueryParam("serial") final long serial, @QueryParam("value") final String value) {
+		StaticInstances.getInstance().getBuilderModel().getTestRecorder().updateExpected(serial, value);
+		return "OK";
+	}
+	
 	@GET
 	@Path("/addPropertyTest")
 	@Produces(MediaType.APPLICATION_JSON) 
@@ -86,6 +94,14 @@ public class TestResource {
 		else if (type.equals("down")) {
 			StaticInstances.getInstance().getBuilderModel().getTestRecorder().moveDown(serial);
 		}
+		return "OK";
+	}
+	
+	@GET
+	@Path("/save")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public String save() {
+		StaticInstances.getInstance().getBuilderModel().getTestRecorder().save();
 		return "OK";
 	}
 }

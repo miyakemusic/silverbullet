@@ -59,9 +59,6 @@ public class StaticInstances {
 		simulator.setDevice(builderModel.getRegisterMapModel());
 	}
 	
-	public RegisterMapModel getRegisterMapModel() {
-		return builderModel.getRegisterMapModel();
-	}
 
 	public void save() {
 		createTmpFolderIfNotExists();

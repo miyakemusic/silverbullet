@@ -69,6 +69,7 @@ class TestClass {
 			var recordId = div2 + '_testRecord';
 			var stopId = div2 + '_testStop';
 			var playId = div2 + '_testPlay';
+			var saveId = div2 + '_save';
 			var tableId = div2 + '_testTable';
 
 			
@@ -76,6 +77,9 @@ class TestClass {
 			$('#' + div2).append('<button id="' + updateId + '">Update</button>');
 			$('#' + div2).append('<input type="checkbox" id="' + recordId + '"><label for="' + recordId + '">Record</label>');
 			$('#' + div2).append('<input type="checkbox" id="' + playId + '"><label for="' + playId + '">Play</label>');
+
+			$('#' + div2).append('<button id="' + saveId + '">Save</button>');
+
 
 			var mainId2 = div + '_testMmain2';
 			$('#' + div2).append('<div id="' + mainId2 + '"></div>');
@@ -101,8 +105,10 @@ class TestClass {
 			$('#' + tableId).append('<colgroup><col style="width:50px"></colgroup>');
 			$('#' + tableId).append('<colgroup><col style="width:1px"></colgroup>');
 			
+			$('#' + updateId).button();
 			$('#' + recordId).button();
 			$('#' + playId).button();
+			$('#' + saveId).button();
 			
 			$('#' + updateId).click(function() {
 				update();
@@ -121,7 +127,10 @@ class TestClass {
 			$('#' + playId).change(function() {
 				play();
 			});	
-			
+			$('#' + saveId).click(function() {
+				save();
+			});	
+						
 			function record() {
 				clearTable();
 				$.ajax({
@@ -151,7 +160,15 @@ class TestClass {
 				   }
 				});	
 			}
-						
+			function save() {
+				$.ajax({
+				   type: "GET", 
+				   url: "http://" + window.location.host + "/rest/test/save",
+				   success: function(msg){
+	
+				   }
+				});	
+			}					
 			new MyWebSocket(function(msg) {
 				if (msg == 'TestFinished') {
 					update();
@@ -283,22 +300,24 @@ class TestClass {
 			var sel = headers[selectedCol];
 			var value = $('#' + editId).val();
 			
-		  	if (sel == 'Target') {
-		  		
-		  	}
-		  	else if (sel == 'Value') {
+			if (sel == 'Value') {		
 				$.ajax({
 				   type: "GET", 
 				   url: "http://" + window.location.host + "/rest/test/updateValue?serial=" + selectedSerial + "&value=" + value,
 				   success: function(msg){
 						update();
 				   }
-				});			  		
-		  	}
-		  	else if (sel == 'Expected') {
-		  		
-		  	}
-		  			  	
+				});	 
+			}
+			else if (sel == 'Expected') {		
+				$.ajax({
+				   type: "GET", 
+				   url: "http://" + window.location.host + "/rest/test/updateExpected?serial=" + selectedSerial + "&value=" + value,
+				   success: function(msg){
+						update();
+				   }
+				});	 
+			}		  			  	
 		}
 		
 		function update() {

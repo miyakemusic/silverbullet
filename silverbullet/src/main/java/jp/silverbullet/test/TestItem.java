@@ -10,6 +10,7 @@ public class TestItem {
 	public static final String FILE = "file:";
 	public static final String INTERRPT = "*INTERRPT*";
 	public static final String TYPE_PROPERTY_TEST = "PROPERTY_TEST";
+	public static final String TYPE_REGISTER_TEST = "REGISTER_TEST";
 	public static final String WAIT = "WAIT";
 	
 	private long serial;

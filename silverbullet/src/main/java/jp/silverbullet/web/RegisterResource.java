@@ -38,7 +38,7 @@ public class RegisterResource {
 	@Path("/interrupt")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String interupt() {
-		StaticInstances.getInstance().getRegisterMapModel().triggerInterrupt();
+		StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().triggerInterrupt();
 		return "OK";
 	}
 	
@@ -227,7 +227,7 @@ public class RegisterResource {
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String addToTest(@QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName) {
 		int value = StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().getValue(regName, bitName);
-		StaticInstances.getInstance().getBuilderModel().getTestRecorder().addRegisterQuery(TestItem.TYPE_REGISTER, regName, bitName, value);
+		StaticInstances.getInstance().getBuilderModel().getTestRecorder().addRegisterQuery(regName, bitName, value);
 		return "OK";
 	}
 	
@@ -243,7 +243,7 @@ public class RegisterResource {
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String getCurrentValue(@QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName) {
 		SvRegister register  = StaticInstances.getInstance().getBuilderModel().getRegisterProperty().getRegisterByName(regName);
-		Map<Long, BitSet> value = StaticInstances.getInstance().getRegisterMapModel().getMapValue();
+		Map<Long, BitSet> value = StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().getMapValue();
 		String address = register.getAddress().replace("0x", "");
 		if (address.contains("-")) {
 			address = address.split("-")[0];
@@ -263,7 +263,7 @@ public class RegisterResource {
 	@Path("/getSimulators")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<String> getSimulators() {
-		return StaticInstances.getInstance().getRegisterMapModel().getSimulatorClasses(StaticInstances.getInstance().getBuilderModel().getUserApplicationPath());
+		return StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().getSimulatorClasses(StaticInstances.getInstance().getBuilderModel().getUserApplicationPath());
 	}
 	
 	@GET
@@ -271,7 +271,7 @@ public class RegisterResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<String> getAddedSimulators() {
 		List<String> ret = new ArrayList<>();
-		for (SvSimulator simulator : StaticInstances.getInstance().getRegisterMapModel().getSimulators()) {
+		for (SvSimulator simulator : StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().getSimulators()) {
 			ret.add(simulator.getClass().getSimpleName());
 		}
 
@@ -287,8 +287,8 @@ public class RegisterResource {
 //System.out.println(c);
 			SvSimulator object = (SvSimulator)c.getConstructor(RegisterAccess.class).newInstance(StaticInstances.getInstance().getBuilderModel().getRegisterAccess());
 //System.out.println(object);
-			StaticInstances.getInstance().getRegisterMapModel().addSimulator(object);
-			StaticInstances.getInstance().getRegisterMapModel().update();
+			StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().addSimulator(object);
+			StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().update();
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

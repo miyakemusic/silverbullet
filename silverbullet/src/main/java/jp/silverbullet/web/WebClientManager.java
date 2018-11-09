@@ -55,7 +55,7 @@ public class WebClientManager {
 			}
 		});
 		
-		StaticInstances.getInstance().getRegisterMapModel().addListener(new RegisterMapListener() {
+		StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().addListener(new RegisterMapListener() {
 			@Override
 			public void onInterrupt() {
 				try {

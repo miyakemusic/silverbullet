@@ -236,6 +236,13 @@ public class TestRecorder implements SequencerListener, RegisterMapListener {
 					updateRegister(regInfo);
 				}
 			}
+			else if (item.getType().equals(TestItem.TYPE_REGISTER_TEST)) {
+				String[] tmp = item.getTarget().split("::");
+				String regName = tmp[0];
+				String bitName = tmp[1].replace("?", "");
+				int value = StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().getValue(regName, bitName);
+				this.result.addResult(item.getSerial(), String.valueOf(value), value == Integer.valueOf(item.getExpected()));
+			}
 			else if (item.getType().equals(TestItem.TYPE_CONTROL)) {
 				if (item.getTarget().equals("WAIT")) {
 					try {
@@ -245,6 +252,11 @@ public class TestRecorder implements SequencerListener, RegisterMapListener {
 						e.printStackTrace();
 					}
 				}
+			}
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 		}
 	}
@@ -300,13 +312,17 @@ public class TestRecorder implements SequencerListener, RegisterMapListener {
 		this.script.remove(serial);
 	}
 
-	public void updateValue(long serial, String value) {
+	private TestItem getItem(long serial) {
 		for (TestItem item : this.script.getScript()) {
 			if (item.getSerial() == serial) {
-				item.setValue(value);
-				break;
+				return item;
 			}
-		}
+		}	
+		return null;
+	}
+	
+	public void updateValue(long serial, String value) {
+		this.getItem(serial).setValue(value);
 	}
 
 	public void addPropertyTest(String id) {
@@ -328,8 +344,17 @@ public class TestRecorder implements SequencerListener, RegisterMapListener {
 		this.script.moveDown(serial);
 	}
 
-	public void addRegisterQuery(String typeRegister, String regName, String bitName, int value) {
-		this.addCommand(typeRegister, regName + "::" + bitName + "?", String.valueOf(value));
+	public void addRegisterQuery(String regName, String bitName, int value) {
+		TestItem test = new TestItem(TestItem.TYPE_REGISTER_TEST, regName + "::" + bitName + "?", "", String.valueOf(value));
+		this.script.add(test);
+	}
+
+	public void save() {
+		this.overwrite();
+	}
+
+	public void updateExpected(long serial, String value) {
+		this.getItem(serial).setExpected(value);
 	}
 
 

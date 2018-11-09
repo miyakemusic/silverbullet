@@ -1,7 +1,6 @@
 package jp.silverbullet.test;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 public class TestScript {
@@ -48,6 +47,7 @@ public class TestScript {
 		if ((this.script.size() - 1) > index) {
 			index++;
 		}
+		testItem.setSerial(testItem.hashCode());
 		this.script.add(index, testItem);
 	}
 	
