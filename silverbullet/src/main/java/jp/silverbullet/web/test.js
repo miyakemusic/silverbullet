@@ -65,6 +65,7 @@ class TestClass {
 		build(mainId);
 		
 		function build(div2) {
+			var testListId = div2 + '_testList';
 			var updateId = div2 + '_testUpdate';
 			var recordId = div2 + '_testRecord';
 			var stopId = div2 + '_testStop';
@@ -73,7 +74,7 @@ class TestClass {
 			var tableId = div2 + '_testTable';
 
 			
-			
+			$('#' + div2).append('Test: <select id="' + testListId + '">');
 			$('#' + div2).append('<button id="' + updateId + '">Update</button>');
 			$('#' + div2).append('<input type="checkbox" id="' + recordId + '"><label for="' + recordId + '">Record</label>');
 			$('#' + div2).append('<input type="checkbox" id="' + playId + '"><label for="' + playId + '">Play</label>');
@@ -111,6 +112,7 @@ class TestClass {
 			$('#' + saveId).button();
 			
 			$('#' + updateId).click(function() {
+				getTestList();
 				update();
 			});
 			$('#' + recordId).change(function() {
@@ -130,7 +132,34 @@ class TestClass {
 			$('#' + saveId).click(function() {
 				save();
 			});	
-						
+		
+			getTestList();
+			
+			$('#' + testListId).change(function() {
+				var test = $(this).val();
+				$.ajax({
+				   type: "GET", 
+				   url: "http://" + window.location.host + "/rest/test/selectTest?testName=" + test,
+				   success: function(msg){
+						update();
+				   }
+				});	
+			});
+			
+			function getTestList() {
+				$('#' + testListId).empty();
+				$.ajax({
+				   type: "GET", 
+				   url: "http://" + window.location.host + "/rest/test/getTestList",
+				   success: function(msg){
+				   		for (var test of msg) {
+					   		var option = $('<option>').val(test).text(test);
+							$('#' + testListId).append(option);
+						}
+				   }
+				});					
+			}
+			
 			function record() {
 				clearTable();
 				$.ajax({
@@ -142,7 +171,6 @@ class TestClass {
 				});	
 			}
 			function stop() {
-				clearTable();
 				$.ajax({
 				   type: "GET", 
 				   url: "http://" + window.location.host + "/rest/test/stopRecording",

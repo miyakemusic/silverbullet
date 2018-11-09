@@ -61,7 +61,7 @@ class DesignerClass {
 		$('#' + idBase).append('<div id="' + idCenter + '" class="panel"></div>');
 
 		$('#' + idNorth).append('<a href="http://' + window.location.host + '/runtime.html" target="_blank">runtime</a>');
-
+		
 		var customDef;			
 		
 		$('#' + idNorth).append('<div id="' + idToolbar + '" class="panel"></div>');
@@ -81,6 +81,10 @@ class DesignerClass {
 		$('#' + idToolbar2).append('<button id="' + idRemove + '" class="layoutAction">Remove</button>');
 		$('#' + idToolbar2).append('<input type="checkbox" id="' + idEdit + '">Edit');
 
+		new UiTree(idNorth, function(baseId) {
+			layout.selectedDiv = baseId;
+		});
+		
 		$('#' + idCenter).append('<table><tr><td><div id="' + idEast + '" class="panel"></div></td><td valign="top"><div id="' + idWest + '" class="panel"></div></td></tr></table>');
 	
 		// Widget Propertty

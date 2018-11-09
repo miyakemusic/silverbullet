@@ -1,5 +1,7 @@
 package jp.silverbullet.web;
 
+import java.util.List;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -102,6 +104,21 @@ public class TestResource {
 	@Produces(MediaType.APPLICATION_JSON) 
 	public String save(@QueryParam("testName") final String testName) {
 		StaticInstances.getInstance().getBuilderModel().getTestRecorder().save(testName);
+		return "OK";
+	}
+	
+	@GET
+	@Path("/getTestList")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public List<String> getTestList() {
+		return StaticInstances.getInstance().getBuilderModel().getTestRecorder().getTestList();
+	}
+	
+	@GET
+	@Path("/selectTest")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public String selectTest(@QueryParam("testName") final String testName) {
+		StaticInstances.getInstance().getBuilderModel().getTestRecorder().loadTest(testName);
 		return "OK";
 	}
 }

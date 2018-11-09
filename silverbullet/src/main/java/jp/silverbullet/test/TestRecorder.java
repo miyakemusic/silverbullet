@@ -4,9 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.swing.SwingUtilities;
@@ -53,6 +56,10 @@ public class TestRecorder implements SequencerListener, RegisterMapListener {
 		}
 		simulator = testRecorderInterface.createSimulator();
 		
+		load();
+	}
+
+	private void load() {
 		this.script = this.loadScript(TEST_FOLDER + "test.json");
 		this.result = new TestResult(this.script);
 	}
@@ -360,6 +367,27 @@ public class TestRecorder implements SequencerListener, RegisterMapListener {
 
 	public void updateExpected(long serial, String value) {
 		this.getItem(serial).setExpected(value);
+	}
+
+	public List<String> getTestList() {
+		String[] extensions = new String[] { "test" };
+		Collection<File> files = FileUtils.listFiles(new File("."), extensions, true);
+		List<String> ret = new ArrayList<>();
+		for (File file : files) {
+			ret.add(file.getName());
+		}
+		return ret;
+	}
+
+	public void loadTest(String testName) {
+		try {
+			FileUtils.cleanDirectory(new File(TEST_FOLDER));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Zip.unzip(testName, TEST_FOLDER);
+		load();
 	}
 
 
