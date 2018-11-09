@@ -22,6 +22,7 @@ import com.sun.jersey.core.util.Base64;
 import jp.silverbullet.SequencerListener;
 import jp.silverbullet.StaticInstances;
 import jp.silverbullet.SvProperty;
+import jp.silverbullet.Zip;
 import jp.silverbullet.dependency.RequestRejectedException;
 import jp.silverbullet.register.BitUpdates;
 import jp.silverbullet.register.RegisterInfo;
@@ -349,8 +350,12 @@ public class TestRecorder implements SequencerListener, RegisterMapListener {
 		this.script.add(test);
 	}
 
-	public void save() {
+	public void save(String testName) {
 		this.overwrite();
+		if (!testName.toUpperCase().endsWith(".TEST")) {
+			testName += ".test";
+		}
+		Zip.zip(TestRecorder.TEST_FOLDER, testName);
 	}
 
 	public void updateExpected(long serial, String value) {

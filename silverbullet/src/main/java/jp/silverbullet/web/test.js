@@ -160,14 +160,20 @@ class TestClass {
 				   }
 				});	
 			}
+			
+			
 			function save() {
-				$.ajax({
-				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/test/save",
-				   success: function(msg){
-	
-				   }
-				});	
+				var dialog = new TextInputDialog(div2, "test name", "test name", function() {
+					var name = this.getText();
+					$.ajax({
+					   type: "GET", 
+					   url: "http://" + window.location.host + "/rest/test/save?testName=" + name,
+					   success: function(msg){
+		
+					   }
+					});					
+				});
+				dialog.showModal();
 			}					
 			new MyWebSocket(function(msg) {
 				if (msg == 'TestFinished') {

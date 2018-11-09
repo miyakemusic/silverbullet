@@ -17,11 +17,13 @@ class CommonDialog {
 			buttons: {
 				"OK": function(){
 					me.okHandler();
-					$(this).dialog('close');
+					$(this).dialog('destroy');
+					$('#' + me.dialogId).remove();
 				}
 				,
 				"Cancel": function(){
-					$(this).dialog('close');
+					$(this).dialog('destroy');
+					$('#' + me.dialogId).remove();
 				}
 			},
 			width: 400,

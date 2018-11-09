@@ -100,8 +100,8 @@ public class TestResource {
 	@GET
 	@Path("/save")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public String save() {
-		StaticInstances.getInstance().getBuilderModel().getTestRecorder().save();
+	public String save(@QueryParam("testName") final String testName) {
+		StaticInstances.getInstance().getBuilderModel().getTestRecorder().save(testName);
 		return "OK";
 	}
 }
