@@ -57,7 +57,6 @@ class IdEditorClass {
 			});		
 		});
 		
-		
 		$.ajax({
 		   type: "GET", 
 		   url: "http://" + window.location.host + "/rest/id/typeNames",
@@ -110,7 +109,7 @@ class IdEditorClass {
 		   		me.headers = msg.header;	
 		   		
 				$("#" + me.idTable).handsontable({
-				  height: 200,
+				  height: 400,
 				  manualColumnResize: true,
 				  startRows: 10,
 				  startCols: 10,

@@ -233,7 +233,7 @@ public class DesignResource {
 	public List<String> getWidgetTypes() {
 		return Arrays.asList(JsWidget.ROOT, JsWidget.TOGGLEBUTTON, JsWidget.CSSBUTTON, JsWidget.ACTIONBUTTON, 
 				JsWidget.COMBOBOX, JsWidget.RADIOBUTTON, JsWidget.TEXTFIELD,
-				JsWidget.CHART, JsWidget.CHART_CANVASJS, JsWidget.TABLE, JsWidget.CHECKBOX, JsWidget.GUI_DIALOG, 
+				JsWidget.CHART, JsWidget.CHART_CANVASJS, JsWidget.TABLE, JsWidget.DATATABLE, JsWidget.CHECKBOX, JsWidget.GUI_DIALOG, 
 				JsWidget.PANEL, JsWidget.TAB, JsWidget.LABEL, JsWidget.MESSAGEBOX, JsWidget.ROOT, JsWidget.REGISTERSHORTCUT);
 	}
 

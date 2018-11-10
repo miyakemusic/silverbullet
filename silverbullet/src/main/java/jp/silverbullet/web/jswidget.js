@@ -131,6 +131,11 @@ class JsWidget {
 				me.requestChange(me.info.id, id, dependency);
 			});
 		}
+		else if (this.info.widgetType == 'DATATABLE') {
+			this.subWidget = new JsDataTable(this.baseId, this.info, function(id) {
+				me.requestChange(me.info.id, id, dependency);
+			});
+		}
 		else if ((this.info.widgetType == 'PANEL') || (this.info.widgetType == 'ROOT')) {
 			$('#' + this.baseId).addClass('panel');
 			if (me.info.custom['background-color'] != null) {

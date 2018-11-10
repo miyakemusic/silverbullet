@@ -583,6 +583,88 @@ class JsTable extends JsSubWidget {
 	}
 }
 
+class JsDataTable extends JsSubWidget {
+	constructor(baseId, info, change) {
+		super(baseId, change);
+		this.info = info;
+		this.headers = [];
+	}
+	
+	updateValue(property) {
+		if (property.currentValue == '') {
+			return;
+		}
+		var table = JSON.parse(property.currentValue);
+		
+		if (this.headers.length != table.headers.length) {
+			this.createTable(table.headers);
+		}
+		this.headers = table.headers;
+	
+		var me = this;
+
+		$('#' + this.tableid + ' tbody').empty();
+		for (var row of table.data) {
+//			this.table.row.add(row).draw(false);
+			var line = '<tr>';
+			for (var col of row) {
+				line += '<td>' + col + '</td>';
+			}
+			line += '</tr>';
+			$('#' + this.tableid + ' tbody').append(line);
+		}
+//		this.table.draw();
+
+//		if (this.table != null) {
+//			this.table.destroy();
+//		}
+		var me = this;
+		this.table = $('#' + this.tableid).DataTable({
+			ordering: false,
+			paging: false,
+			retrieve: true,
+			searching: false,
+	        scrollY:     this.info.height +   "px",
+	        scrollX:        true,
+	        scrollCollapse: true,
+	        info: false,
+	        'drawCallback': function () {
+			        $( '#' + me.tableid + ' tbody tr td' ).css( 'padding', '1px 1px 1px 1px' );
+			    }
+		});	
+		
+	}
+	
+	updateLayout(property) {
+		$('#' + this.baseId).empty();
+		this.tableid = this.baseId + "_table";
+		$('#' + this.baseId).append('<table id="' + this.tableid + '"><thead><tr><td></td></tr></thead><tbody></tbody></table>');
+//		this.table = $('#' + this.tableid).DataTable({
+//			ordering: false,
+//			paging: false
+//			destroy: true,
+//		});	
+//		$('#' + this.tableid + ' thead tr').css( "height", "12px");
+//		$('#' + this.tableid + ' tbody tr').css( "height", "12px");
+						
+		var headers = ['COL#1', 'COL#2', 'COL#3', 'COL#4'];
+		this.createTable(headers);
+
+		this.updateValue(property);
+	}
+	createTable(headers) {
+		$('#' + this.tableid + ' thead').empty();
+		$('#' + this.tableid + ' thead').append($('<tr>'));
+		for (var i = 0; i < headers.length; i++) {
+			var head = headers[i];
+			$('#' + this.tableid + ' thead tr').append("<th>"+ head +"</th>");
+//			$( this.table.column( i ).header() ).text( headers[i] );
+		}
+
+//		this.table.columns().header(headers);		
+//		this.table.draw();
+	}
+}
 class JsDialogButton extends JsSubWidget {
 	constructor(baseId, info, change) {
 		super(baseId, change);
