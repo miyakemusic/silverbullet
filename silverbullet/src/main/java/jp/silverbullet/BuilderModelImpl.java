@@ -3,7 +3,6 @@ package jp.silverbullet;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
 import javax.xml.bind.JAXBException;
@@ -18,7 +17,6 @@ import jp.silverbullet.handlers.HandlerPropertyHolder;
 import jp.silverbullet.handlers.RegisterAccess;
 import jp.silverbullet.handlers.SvDevice;
 import jp.silverbullet.property.PropertyHolder;
-import jp.silverbullet.property.StringArray;
 import jp.silverbullet.register.RegisterMapModel;
 import jp.silverbullet.register.RegisterMapModelInterface;
 import jp.silverbullet.register.RegisterProperty;
@@ -32,7 +30,7 @@ import jp.silverbullet.web.ui.PropertyGetter;
 import jp.silverbullet.web.ui.UiLayout;
 
 public class BuilderModelImpl implements BuilderModel {
-	
+
 	private static final String ID_DEF_XML = "id_def.xml";
 	private static final String HANDLER_XML = "handlers.xml";
 	private static final String REMOTE_XML = "remote.xml";
@@ -60,18 +58,19 @@ public class BuilderModelImpl implements BuilderModel {
 			return store.getProperty(id);
 		}
 	});
-	
+
 	private RegisterMapModel registerMapModel = new RegisterMapModel(new RegisterMapModelInterface() {
 		@Override
 		public RegisterProperty getRegisterProperty() {
 			return registerProperty;
 		}
 	});
+
 	@Override
 	public HandlerPropertyHolder getHandlerPropertyHolder() {
 		return handlerPropertyHolder;
 	}
-	
+
 	private DependencyEngine dependency = new DependencyEngine() {
 		@Override
 		protected DependencySpecHolder getDependencyHolder() {
@@ -94,7 +93,7 @@ public class BuilderModelImpl implements BuilderModel {
 		}
 
 	};
-	
+
 	private EasyAccessModel easyAccessModel = new EasyAccessModel() {
 		@Override
 		public void requestChange(final String id, final String value) {
@@ -110,7 +109,7 @@ public class BuilderModelImpl implements BuilderModel {
 			return store.getProperty(id);
 		}
 	};
-	
+
 	private RegisterAccess regiseterAccess;
 
 	private TestRecorder testRecorder = new TestRecorder(new TestRecorderInterface() {
@@ -155,13 +154,13 @@ public class BuilderModelImpl implements BuilderModel {
 		}
 
 	});
-	
+
 	public BuilderModelImpl() {
-		store = new SvPropertyStore(propertiesHolder);	
-		
+		store = new SvPropertyStore(propertiesHolder);
+
 		this.setDeviceDriver(registerMapModel);
 		registerMapModel.addListener(this.testRecorder);
-		
+
 		this.sequencer = new Sequencer() {
 			@Override
 			protected SvPropertyStore getPropertiesStore() {
@@ -177,7 +176,6 @@ public class BuilderModelImpl implements BuilderModel {
 			protected DependencyEngine getDependency() {
 				return dependency;
 			}
-
 
 			@Override
 			protected String getUserApplicationPath() {
@@ -198,7 +196,7 @@ public class BuilderModelImpl implements BuilderModel {
 		sequencer.addSequencerListener(testRecorder);
 		this.loadDefault();
 	}
-	
+
 	@Override
 	public SvProperty getProperty(String id) {
 		return store.getProperty(id);
@@ -218,7 +216,6 @@ public class BuilderModelImpl implements BuilderModel {
 	public PropertyHolder getPropertyHolder() {
 		return this.propertiesHolder;
 	}
-
 
 	@Override
 	public SvPropertyStore getPropertyStore() {
@@ -259,27 +256,25 @@ public class BuilderModelImpl implements BuilderModel {
 		this.userStory = load(SpecElement.class, folder + "/" + USERSTORY_XML);
 		this.registerShortCuts = load(RegisterShortCutHolder.class, folder + "/" + REGISTERSHORTCUT);
 		this.dependencySpecHolder = load(DependencySpecHolder.class, folder + "/" + DEPENDENCYSPEC2_XML);
-		
+
 		uiLayoutHolder.load(folder);
 
-
-//		UiLayout.getInstance().initialize();
+		// UiLayout.getInstance().initialize();
 	}
 
 	@Override
 	public void save(String folder) {
 		try {
 			Files.newDirectoryStream(Paths.get(folder)).forEach(path -> {
-					try {
-						Files.delete(path);
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+				try {
+					Files.delete(path);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			});
-		}
-		catch(Exception e) {
-			
+		} catch (Exception e) {
+
 		}
 		save(this.propertiesHolder, PropertyHolder.class, folder + "/" + ID_DEF_XML);
 		save(this.handlerPropertyHolder, HandlerPropertyHolder.class, folder + "/" + HANDLER_XML);
@@ -289,10 +284,9 @@ public class BuilderModelImpl implements BuilderModel {
 		save(this.userStory, SpecElement.class, folder + "/" + USERSTORY_XML);
 		save(this.registerShortCuts, RegisterShortCutHolder.class, folder + "/" + REGISTERSHORTCUT);
 		save(this.dependencySpecHolder, DependencySpecHolder.class, folder + "/" + DEPENDENCYSPEC2_XML);
-//		saveJson(this.uiLayout, folder + "/" + "default.ui");
+		// saveJson(this.uiLayout, folder + "/" + "default.ui");
 		this.uiLayoutHolder.save(folder);
 	}
-	
 
 	@Override
 	public void importFile(String folder) {
@@ -302,24 +296,23 @@ public class BuilderModelImpl implements BuilderModel {
 		this.store.importProperties(tmpProps);
 		RegisterProperty tmpRegister = load(RegisterProperty.class, folder + "/" + REGISTER_XML);
 		this.registerProperty.addAll(tmpRegister.getRegisters());
-		
+
 		HandlerPropertyHolder tmpHandler = load(HandlerPropertyHolder.class, folder + "/" + HANDLER_XML);
 		if (handlerPropertyHolder == null) {
 			handlerPropertyHolder = new HandlerPropertyHolder();
 		}
 		handlerPropertyHolder.addAll(tmpHandler);
-		
+
 		this.texHolder.addAll(load(SvTexHolder.class, folder + "/" + REMOTE_XML));
 		this.hardSpec.addAll(load(SpecElement.class, folder + "/" + HARDSPEC_XML));
-		this.userStory.addAll(load(SpecElement.class, folder + "/" + USERSTORY_XML));	
+		this.userStory.addAll(load(SpecElement.class, folder + "/" + USERSTORY_XML));
 	}
-	
+
 	@Override
 	public void loadDefault() {
-
 		
 	}
-	
+
 	private <T> T load(Class<T> clazz, String filename) {
 		XmlPersistent<T> propertyPersister = new XmlPersistent<>();
 		try {
@@ -333,16 +326,16 @@ public class BuilderModelImpl implements BuilderModel {
 		}
 		return null;
 	}
-	
+
 	private <T> void save(T object, Class<T> clazz, String filename) {
 		XmlPersistent<T> propertyPersister = new XmlPersistent<>();
 		try {
 			propertyPersister.save(object, filename, clazz);
 		} catch (JAXBException e) {
 			e.printStackTrace();
-		}		
+		}
 	}
-	
+
 	private PropertyHolder loadTestProp(String filename) {
 		XmlPersistent<PropertyHolder> propertyPersister = new XmlPersistent<PropertyHolder>();
 		try {
@@ -401,14 +394,17 @@ public class BuilderModelImpl implements BuilderModel {
 	public DependencySpecHolder getDependencySpecHolder() {
 		return dependencySpecHolder;
 	}
+
 	@Override
 	public RegisterShortCutHolder getRegisterShortCut() {
 		return this.registerShortCuts;
 	}
+
 	@Override
 	public EasyAccessModel getEasyAccess() {
 		return this.easyAccessModel;
 	}
+
 	@Override
 	public UiLayout getUiLayout() {
 		return uiLayoutHolder.getCurrentUi();
@@ -417,10 +413,10 @@ public class BuilderModelImpl implements BuilderModel {
 	@Override
 	public void changeId(String prevId, String newId) {
 		this.dependencySpecHolder.changeId(prevId, newId);
-	    this.propertiesHolder.changeId(prevId, newId);
-	// TODO	this.handlerPropertyHolder.changeId(prevId, newId);
+		this.propertiesHolder.changeId(prevId, newId);
+		// TODO this.handlerPropertyHolder.changeId(prevId, newId);
 		this.uiLayoutHolder.changeId(prevId, newId);
-		
+
 	}
 
 	@Override
@@ -432,8 +428,8 @@ public class BuilderModelImpl implements BuilderModel {
 	public void loadParameters(String filename) {
 		try {
 			List<String> lines = Files.readAllLines(Paths.get(filename));
-			
-			for (String line : lines) { 
+
+			for (String line : lines) {
 				String[] tmp = line.split("[<>]");
 				String id = tmp[1].split("@")[0];
 				String value = tmp[2];

@@ -14,7 +14,6 @@ public class StaticInstances {
 	public static final String TMP_FOLDER = "./sv_tmp";
 	
 	private static StaticInstances instance;
-//	private RegisterMapModel registerMapModel = null;
 	private PropertyListModel propertyListModel = null;
 	
 	private BuilderModel builderModel;

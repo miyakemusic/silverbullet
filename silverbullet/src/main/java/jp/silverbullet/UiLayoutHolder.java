@@ -22,11 +22,12 @@ public class UiLayoutHolder {
 
 	private PropertyGetter propertyGetter;
 	private Map<String, UiLayout> layouts = new HashMap<>();
-	private UiLayout currentUi;
+	private UiLayout currentUi = new UiLayout();
 	private String currentFilename;
 	
 	public UiLayoutHolder(PropertyGetter propertyGetter) {
 		this.propertyGetter = propertyGetter;
+		currentUi.setPropertyGetter(propertyGetter);
 //		layouts.put("default.ui", new UiLayout());
 	}
 	
