@@ -87,15 +87,18 @@ public class TestResource {
 	}
 	
 	@GET
-	@Path("/move")
+	@Path("/moveUp")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public String move(@QueryParam("type") final String type, @QueryParam("serial") final long serial) {
-		if (type.equals("up")) {
-			StaticInstances.getInstance().getBuilderModel().getTestRecorder().moveUp(serial);
-		}
-		else if (type.equals("down")) {
-			StaticInstances.getInstance().getBuilderModel().getTestRecorder().moveDown(serial);
-		}
+	public String moveUp(@QueryParam("serial") final long serial) {
+		StaticInstances.getInstance().getBuilderModel().getTestRecorder().moveUp(serial);
+		return "OK";
+	}
+	
+	@GET
+	@Path("/moveDown")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public String moveDown(@QueryParam("serial") final long serial) {
+		StaticInstances.getInstance().getBuilderModel().getTestRecorder().moveDown(serial);
 		return "OK";
 	}
 	

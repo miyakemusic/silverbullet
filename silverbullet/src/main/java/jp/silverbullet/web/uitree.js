@@ -31,7 +31,7 @@ class UiTree {
 				
 				var space = '';
 				for (var i = 0; i < layer; i++) {
-					space += '_';
+					space += '>';
 				}
 				var obj = new Object();
 				obj.id = myId;

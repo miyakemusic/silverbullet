@@ -124,12 +124,12 @@ class LayoutBuilder {
 		var widget = new JsWidget(pane, parent, 
 			function(div, info) {
 				me.selectedDiv = div;
-				var obj = me.widgetMap.get(div);
-				var widgetType = "";
-				if (obj != null) {
-					widgetType = obj.widgetType;
-				}
-				me.callback(widgetType, div, info);
+//				var obj = me.widgetMap.get(div);
+//				var widgetType = "";
+//				if (obj != null) {
+//					widgetType = obj.widgetType;
+//				}
+//				me.callback(widgetType, div, info);
 			},
 			function(msg) {
 				me.debugCallback(msg);
@@ -151,7 +151,7 @@ class LayoutBuilder {
 			this.map.set(pane.id, []);
 		}
 		this.map.get(pane.id).push(widget);
-		this.widgetMap.set(widget.baseId, pane);
+		this.widgetMap.set(this.getRealId(widget.baseId), pane);
 	}	
 	
 	set enableEdit(enableEdit) {
@@ -187,7 +187,15 @@ class LayoutBuilder {
 		return this._selectedDiv;
 	}
 	
-	set selectedDiv(val) {
-		this._selectedDiv = val;
+	set selectedDiv(div) {
+		this._selectedDiv = this.getRealId(div);
+
+		var obj = this.widgetMap.get(this.selectedDiv);
+		var widgetType = "";
+		if (obj != null) {
+			widgetType = obj.widgetType;
+		}
+		this.callback(widgetType, div, obj);
+				
 	}
 }

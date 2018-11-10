@@ -72,7 +72,8 @@ class TestClass {
 			var playId = div2 + '_testPlay';
 			var saveId = div2 + '_save';
 			var tableId = div2 + '_testTable';
-
+			var upId = div2 + '_moveUp';
+			var downId = div2 + '_moveDown';
 			
 			$('#' + div2).append('Test: <select id="' + testListId + '">');
 			$('#' + div2).append('<button id="' + updateId + '">Update</button>');
@@ -80,6 +81,9 @@ class TestClass {
 			$('#' + div2).append('<input type="checkbox" id="' + playId + '"><label for="' + playId + '">Play</label>');
 
 			$('#' + div2).append('<button id="' + saveId + '">Save</button>');
+
+			$('#' + div2).append('<button id="' + upId + '"  class="action">Move Up</button>');
+			$('#' + div2).append('<button id="' + downId + '"  class="action">Move Down</button>');
 
 
 			var mainId2 = div + '_testMmain2';
@@ -110,6 +114,7 @@ class TestClass {
 			$('#' + recordId).button();
 			$('#' + playId).button();
 			$('#' + saveId).button();
+			$('.action').button();
 			
 			$('#' + updateId).click(function() {
 				getTestList();
@@ -132,8 +137,23 @@ class TestClass {
 			$('#' + saveId).click(function() {
 				save();
 			});	
-		
+			
+			$('.action').click(function() {
+				action($(this).prop('id'));
+			});	
+			
 			getTestList();
+			
+			function action(id) {
+				var url = id.split('_')[id.split('_').length-1];
+				$.ajax({
+				   type: "GET", 
+				   url: "http://" + window.location.host + '/rest/test/' + url + '?serial=' + selectedSerial,
+				   success: function(msg){
+						update();
+				   }
+				});	
+			}
 			
 			$('#' + testListId).change(function() {
 				var test = $(this).val();

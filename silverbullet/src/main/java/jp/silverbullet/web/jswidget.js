@@ -30,6 +30,14 @@ class JsWidget {
 		this._baseId = baseId;
 	}
 	
+	get info() {
+		return this._info;
+	}
+	
+	set info(info) {
+		this._info = info;
+	}
+	
 	getRealBaseId() {
 		var tmp = this.baseId.split('-');
 		var ret = tmp[tmp.length-1];
@@ -305,6 +313,7 @@ class JsWidget {
 			$('.base').removeClass('selected');
 			$('.panel').removeClass('design');
 			$('#' + this.baseId).off('click');
+			$('#' + this.baseId).off('mousedown');
 		}
 
 		var editable = this.info.editable && (enabled == 'enable');
