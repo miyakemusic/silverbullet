@@ -1,8 +1,5 @@
 package jp.silverbullet;
 
-import jp.silverbullet.handlers.EasyAccessModel;
-import jp.silverbullet.handlers.RegisterAccess;
-
 public class SampleMain extends SilverBulletServer {
 
 	@Override
