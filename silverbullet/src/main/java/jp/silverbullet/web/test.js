@@ -180,6 +180,15 @@ class TestClass {
 				});					
 			}
 			
+			function selectRow() {
+				$.ajax({
+				   type: "GET", 
+				   url: "http://" + window.location.host + "/rest/test/selectRow?serial=" + selectedSerial,
+				   success: function(msg){
+	
+				   }
+				});	
+			}			
 			function record() {
 				clearTable();
 				$.ajax({
@@ -211,7 +220,8 @@ class TestClass {
 			
 			
 			function save() {
-				var dialog = new TextInputDialog(div2, "test name", "test name", function() {
+				var defaultValue = $('#' + testListId).val();
+				var dialog = new TextInputDialog(div2, "test name", "test name", defaultValue, function() {
 					var name = this.getText();
 					$.ajax({
 					   type: "GET", 
@@ -250,6 +260,7 @@ class TestClass {
 		            $('#' + tableId + ' tr.selected').removeClass('selected');
 		            $(this).addClass('selected');
 		        }
+		        selectRow();
 		    });
 
 		    $('#' + div2).contextmenu({

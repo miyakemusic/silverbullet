@@ -489,7 +489,7 @@ class DesignerClass {
 		
 		
 		$('#' + idAddNewFile).click(function() {
-			var dialog = new TextInputDialog(div, 'New Filename', 'Filename', function() {
+			var dialog = new TextInputDialog(div, 'New Filename', 'Filename', '', function() {
 				createNewFile(dialog.getText());
 			});
 			dialog.showModal();

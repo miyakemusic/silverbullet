@@ -33,10 +33,11 @@ class CommonDialog {
 }
 
 class TextInputDialog extends CommonDialog{
-	constructor(div, title, message, okHandler) {
+	constructor(div, title, message, defaultValue, okHandler) {
 		super(div, title, message, okHandler);
 		this.textId = this.dialogId + 'text';
 		$('#' + this.dialogId).append('<input type="text" id="' + this.textId + '">');
+		$('#' + this.textId).val(defaultValue);
 	}
 	
 	getText() {

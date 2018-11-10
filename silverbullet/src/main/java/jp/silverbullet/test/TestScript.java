@@ -36,6 +36,9 @@ public class TestScript {
 	}
 	
 	private int getIndex(long serial) {
+		if (serial < 0) {
+			return this.script.size() - 1;
+		}
 		return this.script.indexOf(getTestItem(serial));
 	}
 	
@@ -44,7 +47,7 @@ public class TestScript {
 	}
 	public void add(TestItem testItem, long serial) {
 		int index = getIndex(serial);
-		if ((this.script.size() - 1) > index) {
+		if ((this.script.size()) > index) {
 			index++;
 		}
 		testItem.setSerial(testItem.hashCode());

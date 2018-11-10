@@ -44,6 +44,8 @@ public class TestRecorder implements SequencerListener, RegisterMapListener {
 
 	
 	private Set<TestRecorderListener> listeners = new HashSet<>();
+
+	private long currentRowSerial = -1;
 	
 	public TestRecorder(TestRecorderInterface testRecorderInterface) {
 		this.testRecorderInterface = testRecorderInterface;
@@ -123,6 +125,7 @@ public class TestRecorder implements SequencerListener, RegisterMapListener {
 
 	public void startRecording() {
 		this.script.clear();
+		this.currentRowSerial = -1;
 		try {
 			FileUtils.cleanDirectory(new File(TEST_FOLDER));
 		} catch (IOException e) {
@@ -143,8 +146,8 @@ public class TestRecorder implements SequencerListener, RegisterMapListener {
 	}
 
 	private void addQueryTest(SvProperty prop) {
-		TestItem test = new TestItem(TestItem.TYPE_PROPERTY_TEST, prop.getId() + "?", "", prop.getCurrentValue());
-		this.script.add(test);
+		TestItem test = new TestItem(TestItem.TYPE_PROPERTY_TEST, prop.getId() + "?", "", prop.getCurrentValue()); 
+		this.script.add(test, this.currentRowSerial);
 	}
 
 	public void overwrite() {
@@ -341,7 +344,7 @@ public class TestRecorder implements SequencerListener, RegisterMapListener {
 		this.script.add(new TestItem(type, target, value), serial);
 	}
 	public void addCommand(String type, String target, String value) {
-		this.script.add(new TestItem(type, target, value));
+		this.script.add(new TestItem(type, target, value), this.currentRowSerial);
 	}
 	
 	public void moveUp(long serial) {
@@ -354,7 +357,7 @@ public class TestRecorder implements SequencerListener, RegisterMapListener {
 
 	public void addRegisterQuery(String regName, String bitName, int value) {
 		TestItem test = new TestItem(TestItem.TYPE_REGISTER_TEST, regName + "::" + bitName + "?", "", String.valueOf(value));
-		this.script.add(test);
+		this.script.add(test, this.currentRowSerial);
 	}
 
 	public void save(String testName) {
@@ -388,6 +391,10 @@ public class TestRecorder implements SequencerListener, RegisterMapListener {
 		}
 		Zip.unzip(testName, TEST_FOLDER);
 		load();
+	}
+
+	public void selectRow(long serial) {
+		this.currentRowSerial  = serial;
 	}
 
 

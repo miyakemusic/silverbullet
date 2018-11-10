@@ -124,4 +124,12 @@ public class TestResource {
 		StaticInstances.getInstance().getBuilderModel().getTestRecorder().loadTest(testName);
 		return "OK";
 	}
+	
+	@GET
+	@Path("/selectRow")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public String selectRow(@QueryParam("serial") final long serial) {
+		StaticInstances.getInstance().getBuilderModel().getTestRecorder().selectRow(serial);
+		return "OK";
+	}
 }
