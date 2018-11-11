@@ -64,6 +64,9 @@ public class RegisterProperty {
 	}
 
 	public int getLastDecAddess() {
+		if (this.registers.size() == 0) {
+			return 0;
+		}
 		return this.registers.get(this.registers.size()-1).getDecAddress();
 	}
 

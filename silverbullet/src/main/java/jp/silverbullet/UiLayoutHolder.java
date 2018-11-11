@@ -22,12 +22,11 @@ public class UiLayoutHolder {
 
 	private PropertyGetter propertyGetter;
 	private Map<String, UiLayout> layouts = new HashMap<>();
-	private UiLayout currentUi = new UiLayout();
+	private UiLayout currentUi;// = new UiLayout();
 	private String currentFilename;
 	
 	public UiLayoutHolder(PropertyGetter propertyGetter) {
 		this.propertyGetter = propertyGetter;
-		currentUi.setPropertyGetter(propertyGetter);
 //		layouts.put("default.ui", new UiLayout());
 	}
 	
@@ -134,5 +133,10 @@ public class UiLayoutHolder {
 
 	public void removeFile(String filename) {
 		this.layouts.remove(filename);
+	}
+
+	public void createDefault() {
+		createNewFile("default.ui");
+		this.switchFile("default.ui");
 	}
 }

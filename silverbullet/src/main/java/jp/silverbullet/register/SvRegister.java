@@ -60,9 +60,6 @@ public class SvRegister {
 	}
 
 	public void addBit(String name, ReadWriteType rw, String description2, String definition2) {
-		//for (RegisterBit bit : this.bits.getBits()) {
-			
-		//}
 		this.bits.add(name, rw, description2, definition2);
 	}
 

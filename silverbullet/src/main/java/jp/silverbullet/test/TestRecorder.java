@@ -62,6 +62,9 @@ public class TestRecorder implements SequencerListener, RegisterMapListener {
 	}
 
 	private void load() {
+		if (!Files.exists(Paths.get(TEST_FOLDER + "test.json"))) {
+			return;
+		}
 		this.script = this.loadScript(TEST_FOLDER + "test.json");
 		this.result = new TestResult(this.script);
 	}

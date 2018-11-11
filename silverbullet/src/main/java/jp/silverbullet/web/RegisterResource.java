@@ -135,6 +135,8 @@ public class RegisterResource {
 		int address = last + StaticInstances.getInstance().getBuilderModel().getRegisterProperty().getRegisterWidth()/8;
 		
 		registerProperty.addRegister("NewReg" + Calendar.getInstance().getTimeInMillis(), "0x"+Integer.toHexString(address), "NewRegister");
+		
+		StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().update();
 		return "OK";
 	}
 	
@@ -160,7 +162,9 @@ public class RegisterResource {
 		}
 		
 		StaticInstances.getInstance().getBuilderModel().getRegisterProperty().getRegisters().add(iRow, newRegister);
-	
+
+		StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().update();
+
 		return "OK";
 	}
 	
@@ -169,6 +173,8 @@ public class RegisterResource {
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String deleteRow(@QueryParam("row") final Integer row) {
 		StaticInstances.getInstance().getBuilderModel().getRegisterProperty().remove(row);
+		StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().update();
+
 		return "OK";
 	}
 	
@@ -178,6 +184,9 @@ public class RegisterResource {
 	public String addBitRow(@QueryParam("row") final int row) {
 		SvRegister register = StaticInstances.getInstance().getBuilderModel().getRegisterProperty().getRegisters().get(row);
 		register.addBit("new bit", ReadWriteType.RW, "new bit", "new bit");
+		
+		StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().update();
+
 		return "OK";
 	}
 

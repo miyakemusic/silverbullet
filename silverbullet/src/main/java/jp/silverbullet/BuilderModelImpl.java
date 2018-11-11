@@ -310,7 +310,7 @@ public class BuilderModelImpl implements BuilderModel {
 
 	@Override
 	public void loadDefault() {
-		
+		this.uiLayoutHolder.createDefault();
 	}
 
 	private <T> T load(Class<T> clazz, String filename) {
