@@ -52,10 +52,18 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 				return ;
 			}
 		}
-	//	this.simulators.forEach(sim -> {if (sim.getClass().getName().equals(simulator.getClass().getName()))return;});
 		simulator.setDevice(this);
 		this.simulators.add(simulator);
-//		this.monitor.setSimulator(simulator.getClass().getSimpleName().replace(".class", ""));
+	}
+	
+
+	public void removeSimulator(String simulator) {
+		for (SvSimulator sim : this.simulators) {
+			if (sim.getClass().getSimpleName().equals(simulator)) {
+				this.simulators.remove(sim);
+				return;
+			}
+		}
 	}
 	
 	public void update() {
@@ -314,7 +322,5 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 	public Map<Long, BitSet> getMapValue() {
 		return this.mapValue;
 	}
-
-
 
 }

@@ -1,12 +1,12 @@
 class RegisterMap {
 
 	constructor(div) {
-		var idAddesSimulators = div + 'addesSim';
+		var idEnabledSimulators = div + 'addesSim';
 		var idSimulator = div + '_simulator';
 		var simButton = div + '_simButton';
 		
-		$('#' + div).append('<select id="' + idSimulator+ '">Simulator</select><button id="' + simButton + '">Apply</button>');
-		$('#' + div).append('<div id="' + idAddesSimulators + '"></div>');
+		$('#' + div).append('<select id="' + idSimulator+ '">Simulator</select><button id="' + simButton + '">Load Simulator</button>');
+		$('#' + div).append('<div id="' + idEnabledSimulators + '"></div>');
 		
 		var idInterrupt = div + '_interrupt';
 		$('#' + div).append('<div><button id="' + idInterrupt + '" class="interruptButton">Interrupt</button></div>');
@@ -74,22 +74,38 @@ class RegisterMap {
 			   type: "GET", 
 			   url: "http://" + window.location.host + "/rest/register/getAddedSimulators",
 			   success: function(msg){
-			   		$('#' + idAddesSimulators).empty();
-			   		var val = '';
+			   		$('#' + idEnabledSimulators).empty();
+			   		$('#' + idEnabledSimulators).append('Loaded Simulators:');
+//			   		var val = '';
 			   		for (var i = 0; i < msg.length; i++) {
-						var sim = msg[i];
-						val += sim + " ";
+						var val = msg[i];
+//						val += sim + " ";
+						$('#' + idEnabledSimulators).append('<button name="' + val + '" class="simulatorDisable">Unload ' + val + '</button>');
+
 					}
-					$('#' + idAddesSimulators).append('<label>' + val + '</label>');
+					$('.simulatorDisable').click(function() {
+						unloadSimulator($(this).prop('name'));
+					});
+					
 			   }
 			});				
+		}
+		
+		function unloadSimulator(sim) {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/register/unloadSimulator?simulator=" + sim,
+			   success: function(msg){
+					getAddesSimulators();
+			   }
+			});			
 		}
 		
 		function getSimulators() {
 			$('#' + simButton).click(function() {
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/register/addSimulator?simulator=" + $('#' + idSimulator).val(),
+				   url: "http://" + window.location.host + "/rest/register/loadSimulator?simulator=" + $('#' + idSimulator).val(),
 				   success: function(msg){
 				   		for (var i = 0; i < msg.length; i++) {
 							var sim = msg[i];

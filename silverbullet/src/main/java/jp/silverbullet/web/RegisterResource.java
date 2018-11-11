@@ -29,7 +29,6 @@ import jp.silverbullet.register.SvRegister;
 import jp.silverbullet.register.SvSimulator;
 import jp.silverbullet.register.json.SvRegisterJson;
 import jp.silverbullet.register.json.SvRegisterJsonHolder;
-import jp.silverbullet.test.TestItem;
 
 @Path("/register")
 public class RegisterResource {
@@ -272,16 +271,19 @@ public class RegisterResource {
 	public List<String> getAddedSimulators() {
 		List<String> ret = new ArrayList<>();
 		for (SvSimulator simulator : StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().getSimulators()) {
-			ret.add(simulator.getClass().getSimpleName());
+			String sim = simulator.getClass().getSimpleName();
+			if (!sim.isEmpty()) {
+				ret.add(sim);
+			}
 		}
 
 		return ret;
 	}
 	
 	@GET
-	@Path("addSimulator")
+	@Path("loadSimulator")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String addSimulator(@QueryParam("simulator") final String simulator) {
+	public String loadSimulator(@QueryParam("simulator") final String simulator) {
 		try {
 			Class<?> c = Class.forName(StaticInstances.getInstance().getBuilderModel().getUserApplicationPath() + ".test." + simulator);	
 //System.out.println(c);
@@ -311,6 +313,14 @@ public class RegisterResource {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return "OK";
+	}
+	
+	@GET
+	@Path("unloadSimulator")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String unloadSimulator(@QueryParam("simulator") final String simulator) {
+		StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().removeSimulator(simulator);
 		return "OK";
 	}
 	
