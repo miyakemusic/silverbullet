@@ -20,7 +20,8 @@ class DependencyClass {
 				   type: "GET", 
 				   url: "http://" + window.location.host + "/rest/dependencySpec/createNew?id=" + id,
 				   success: function(msg){
-						updateMainTable($('#' + idIds).val());
+						//updateMainTable($('#' + idIds).val());
+						updateComboBox();
 				   }
 				});		
 			});
@@ -241,6 +242,8 @@ class DependencyClass {
 						var row = msg.table[index];
 						$('#' + idIds).append('<option text="' + row[1] + '" val="' + row[1] + '">' + row[1] + '</option>');
 					}
+					var last = msg.table[msg.table.length-1];
+					updateMainTable(last[1]);
 			   }
 			});
 		}
