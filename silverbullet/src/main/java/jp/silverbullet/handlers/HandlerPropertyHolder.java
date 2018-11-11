@@ -36,5 +36,15 @@ public class HandlerPropertyHolder {
 		this.handlers.remove(row);
 		return this.handlers;
 	}
+
+	public void addHandler(boolean async, String id, Class<?> class1) {
+		HandlerProperty handler = new HandlerProperty();
+		handler.setAsync(async);
+		handler.addId(id);
+		String classMethod = class1.getSimpleName().replaceAll(".class", ".handle");
+		
+		handler.setExternalClass(classMethod);
+		this.handlers.add(handler);
+	}
 	
 }

@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import jp.silverbullet.dependency.ChangedItemValue;
@@ -93,7 +92,7 @@ public abstract class Sequencer implements DependencyInterface {
 		};
 		
 		for (HandlerProperty handler : toRunHandlers) {
-			new CommonSvHandler(model, handler).execute(/*getRelatedChanges(handler.getIds(), getDependency().getChagedItems()),*/
+			new CommonSvHandler(model, handler).execute(
 					getDependency().getChagedItems());
 		}
 		
