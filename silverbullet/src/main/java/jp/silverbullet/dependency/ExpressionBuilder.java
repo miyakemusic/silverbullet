@@ -47,12 +47,14 @@ public class ExpressionBuilder {
 		return "$" + id + "." + DependencyTargetElement.Value.toString();
 	}
 
-	public void conditionElse() {
+	public ExpressionBuilder conditionElse() {
 		this.expression += DependencyExpression.ELSE;
+		return this;
 	}
 
-	public void anyValue() {
+	public ExpressionBuilder anyValue() {
 		this.expression += DependencyExpression.AnyValue;
+		return this;
 	}
 
 //	public ExpressionBuilder resultValue(String targetValue) {
@@ -89,6 +91,10 @@ public class ExpressionBuilder {
 
 	public ExpressionBuilder resultScript(String script) {
 		targetValueAdded(SCRIPT + "[" + script + "]");
+		return this;
+	}
+	public ExpressionBuilder or() {
+		this.expression += " || ";
 		return this;
 	}
 	

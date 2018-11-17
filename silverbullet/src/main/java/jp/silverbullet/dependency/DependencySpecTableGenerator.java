@@ -18,11 +18,11 @@ public class DependencySpecTableGenerator {
 			for (String key : map.keySet()) {
 				for (DependencyExpressionHolder h : map.get(key)) {
 					for (String k : h.getExpressions().keySet()) {
-						DependencyExpressionList list = h.getExpressions().get(k);
-						for (DependencyExpression exp : list.getDependencyExpressions()) {
+						DependencyExpression exp = h.getExpressions().get(k);
+//						for (DependencyExpression exp : list.getDependencyExpressions()) {
 							String presentation = this.dependencyEditorModel.convertPresentationElement(key, e);
 							ret.add(new DependencyTableRowData(presentation, k, exp.getExpression().getExpression(),  exp.isConfirmationRequired(), exp));
-						}
+//						}
 					}
 				}
 			}

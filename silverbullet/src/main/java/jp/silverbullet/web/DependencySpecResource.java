@@ -207,5 +207,11 @@ public class DependencySpecResource {
 		return ret;
 	}
 	
-
+	@GET
+	@Path("/switch")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String switchDependency(@QueryParam("type") final String type) {
+		StaticInstances.getInstance().getBuilderModel().switchDependency(type);
+		return "OK";
+	}
 }

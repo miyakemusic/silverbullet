@@ -18,12 +18,12 @@ public class DependencyExpressionHolder {
 	private DependencyExpressionListener listener = new DependencyExpressionListener() {
 		@Override
 		public void onTargetValueAdded(String targetValue, DependencyExpression dependencyExpression) {
-			getExpressionList(targetValue).add(dependencyExpression);
+			expressions.put(targetValue, dependencyExpression);
 		}
 	};
 	private DependencyTargetElement targetElement;
 	
-	private HashMap<String, DependencyExpressionList> expressions = new HashMap<>();
+	private HashMap<String, DependencyExpression> expressions = new HashMap<>();
 
 	private SettingDisabledBehavior settingDisabledBehavior = SettingDisabledBehavior.Reject;
 	
@@ -41,7 +41,7 @@ public class DependencyExpressionHolder {
 		this.targetElement = targetElement;
 	}
 
-	public HashMap<String, DependencyExpressionList> getExpressions() {
+	public HashMap<String, DependencyExpression> getExpressions() {
 		return expressions;
 	}
 	
@@ -50,11 +50,12 @@ public class DependencyExpressionHolder {
 		return expression.getExpression();
 	}
 	
-	private List<DependencyExpression> getExpressionList(String targetValue) {
+	public DependencyExpression getExpression(String targetValue) {
 		if (!this.expressions.containsKey(targetValue)) {
-			this.expressions.put(targetValue, new DependencyExpressionList());
+			this.addExpression().targetValueAdded(targetValue);
 		}
-		return this.expressions.get(targetValue).getDependencyExpressions();
+		
+		return this.expressions.get(targetValue);//.getDependencyExpressions();
 	}
 
 	public boolean containsToBeChangedBy(String id, DependencyTargetElement element) {
@@ -63,12 +64,12 @@ public class DependencyExpressionHolder {
 
 	private List<DependencyExpression> findToBeChangedBy(String id, DependencyTargetElement element) {
 		List<DependencyExpression> ret = new ArrayList<DependencyExpression>();
-		for (DependencyExpressionList list : this.expressions.values()) {
-			for (DependencyExpression expression : list.getDependencyExpressions()) {
+		for (DependencyExpression expression : this.expressions.values()) {
+//			for (DependencyExpression expression : list.getDependencyExpressions()) {
 				if (expression.containsId(id, element)) {
 					ret.add(expression);
 				}
-			}
+//			}
 		}
 		return ret;
 	}
@@ -79,21 +80,22 @@ public class DependencyExpressionHolder {
 
 		DependencyProperty elseCondition = null;
 		for (String resultValue : getExpressions().keySet()) {
-			for (DependencyExpression condition : getExpressions().get(resultValue).getDependencyExpressions()) {
-				if (condition.isEmpty()) {
-					if (resultValue.contains("$"+triggerId + "." + triggerElement.name())) {
-						ret.add(new DependencyProperty(targetId, selectionId, targetElement, "", resultValue, condition));
-					}
-				}
-				else if (condition.containsId(triggerId, getTargetElement()) 
-						) {
-					ret.add(new DependencyProperty(targetId, selectionId, targetElement, condition.getExpression().getExpression(), resultValue, condition));
-				}
-				else if (condition.getExpression().getExpression().contains(DependencyExpression.ELSE)) {
-					elseCondition = new DependencyProperty(targetId, selectionId, targetElement, condition.getExpression().getExpression(), resultValue, condition);					
-					//ret.add(elseCondition);
+//			for (DependencyExpression condition : getExpressions().get(resultValue).getDependencyExpressions()) {
+			DependencyExpression condition = getExpressions().get(resultValue);
+			if (condition.isEmpty()) {
+				if (resultValue.contains("$"+triggerId + "." + triggerElement.name())) {
+					ret.add(new DependencyProperty(targetId, selectionId, targetElement, "", resultValue, condition));
 				}
 			}
+			else if (condition.containsId(triggerId, getTargetElement()) 
+					) {
+				ret.add(new DependencyProperty(targetId, selectionId, targetElement, condition.getExpression().getExpression(), resultValue, condition));
+			}
+			else if (condition.getExpression().getExpression().contains(DependencyExpression.ELSE)) {
+				elseCondition = new DependencyProperty(targetId, selectionId, targetElement, condition.getExpression().getExpression(), resultValue, condition);					
+				//ret.add(elseCondition);
+			}
+//			}
 		}
 
 		if (!ret.isEmpty() && (elseCondition != null)) {
@@ -113,26 +115,26 @@ public class DependencyExpressionHolder {
 		return settingDisabledBehavior;
 	}
 
-	public void setExpressions(HashMap<String, DependencyExpressionList> expressions) {
+	public void setExpressions(HashMap<String, DependencyExpression> expressions) {
 		this.expressions = expressions;
 	}
 
 	public boolean remove(DependencyExpression pointer) {
 		String removedKey = "";
 		for (String key : this.expressions.keySet()) {
-			DependencyExpressionList list = this.expressions.get(key);
-			if (list.remove(pointer)) {
-				removedKey = key;
-				break;
-			}
+			DependencyExpression expression = this.expressions.get(key);
+//			if (list.remove(pointer)) {
+//				removedKey = key;
+//				break;
+//			}
 		}
 		
-		if (!removedKey.isEmpty()) {
-			if (expressions.get(removedKey).getDependencyExpressions().size() == 0) {
-				this.expressions.remove(removedKey);
-			}
-			return true;
-		}
+//		if (!removedKey.isEmpty()) {
+//			if (expressions.get(removedKey).getDependencyExpressions().size() == 0) {
+//				this.expressions.remove(removedKey);
+//			}
+//			return true;
+//		}
 		return false;
 	}
 
@@ -141,8 +143,8 @@ public class DependencyExpressionHolder {
 		IdCollector collector = new IdCollector();
 		for (String key : this.expressions.keySet()) {
 			ret.addAll(collector.collectIds(key));
-			DependencyExpressionList list = this.expressions.get(key);
-			ret.addAll(list.getTriggerIds());
+			DependencyExpression expression = this.expressions.get(key);
+			ret.addAll(expression.getTriggerIds());
 		}
 		return ret;
 	}
@@ -152,19 +154,7 @@ public class DependencyExpressionHolder {
 	}
 
 	public void remove(String value, String condition) {
-		//this.expressions.remove(value);
-		for (String key: this.expressions.keySet()) {
-			DependencyExpressionList list = this.expressions.get(key);
-			for (DependencyExpression e : list.getDependencyExpressions()) {
-				if (e.getExpression().getExpression().equals(condition)) {
-					list.remove(e);
-					break;
-				}
-			}
-			if (list.getDependencyExpressions().isEmpty()) {
-				this.expressions.remove(key);
-				break;
-			}
-		}
+		this.expressions.remove(value);
 	}
+
 }

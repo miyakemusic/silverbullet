@@ -4,10 +4,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.BitSet;
+
+import jp.silverbullet.dependency.alternative.AlternativeDependencyGenerator;
 import jp.silverbullet.property.editor.PropertyListModel;
-import jp.silverbullet.register.RegisterMapModel;
-import jp.silverbullet.register.RegisterMapModelInterface;
-import jp.silverbullet.register.RegisterProperty;
 import jp.silverbullet.register.SvSimulator;
 
 public class StaticInstances {

@@ -194,7 +194,25 @@ public class SvProperty implements Cloneable {
 
 	public void addListMask(String id, boolean b) {
 		listMask.put(id, b);
+		
+//		if (currentValue.isEmpty()) {
+//			findAvailableSelection();
+//		}		
+//		else if (id.equals(currentValue) && b) {
+//			this.currentValue = "";
+//			findAvailableSelection();
+//		}
+
 		this.fireListMaskChanged(id, id + "," + String.valueOf(b));
+	}
+
+	private void findAvailableSelection() {
+		for (ListDetailElement e: this.getListDetail()) {
+			if (!listMask.keySet().contains(e.getId()) || !listMask.get(e.getId())) {
+				this.setCurrentValue(e.getId());
+				break;
+			}
+		}
 	}
 	
 	
@@ -380,5 +398,9 @@ public class SvProperty implements Cloneable {
 
 	public void setPersistentData(String value) {
 		this.setCurrentValue(value);
+	}
+
+	public void resetMask() {
+		this.listMask.clear();
 	}
 }

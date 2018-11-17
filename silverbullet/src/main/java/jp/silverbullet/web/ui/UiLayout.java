@@ -226,7 +226,7 @@ public class UiLayout {
 		return null;
 	}
 	public JsWidget getSubTree(String id) {
-		if (this.root.getCustom(CustomProperties.GUI_ID).equals(id)) {
+		if (this.root.getCustomElement(CustomProperties.GUI_ID).equals(id)) {
 			return root;
 		}
 		return this.findPanel(this.root, id);

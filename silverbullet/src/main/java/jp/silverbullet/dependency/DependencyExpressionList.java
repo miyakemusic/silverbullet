@@ -22,9 +22,10 @@ public class DependencyExpressionList {
 
 	public Set<String> getTriggerIds() {
 		Set<String> ret = new HashSet<>();
-		IdCollector collector = new IdCollector();
+//		IdCollector collector = new IdCollector();
 		for (DependencyExpression e: this.dependencyExpressions) {
-			ret.addAll(collector.collectIds(e.getExpression().getExpression()));
+			//ret.addAll(collector.collectIds(e.getExpression().getExpression()));
+			ret.addAll(e.getTriggerIds());
 		}
 		return ret;
 	}

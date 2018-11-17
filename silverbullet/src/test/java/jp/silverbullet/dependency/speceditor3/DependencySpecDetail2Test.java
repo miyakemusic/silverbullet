@@ -28,10 +28,12 @@ import jp.silverbullet.dependency.DependencySpecHolder;
 import jp.silverbullet.dependency.DependencyTargetElement;
 import jp.silverbullet.dependency.RequestRejectedException;
 import jp.silverbullet.dependency.DependencyExpressionHolder.SettingDisabledBehavior;
+import jp.silverbullet.dependency.alternative.AlternativeDependencyGenerator;
 import jp.silverbullet.property.ArgumentDefInterface;
 import jp.silverbullet.property.ListDetailElement;
 import jp.silverbullet.property.PropertyDef;
 import jp.silverbullet.spec.SpecElement;
+import jp.silverbullet.web.ui.PropertyGetter;
 
 class DependencySpecDetail2Test {
 
@@ -119,9 +121,8 @@ class DependencySpecDetail2Test {
 	    //// Value ///
 		{
 			DependencyExpressionHolder specDetailBand = new DependencyExpressionHolder(DependencyTargetElement.Value);
-			specDetailBand.addExpression().resultExpression("%" + idBandManual).conditionIdValue(idStartWavelength).equals().anyValue();
-//			specDetailBand.addExpression().resultValue(/*"%" +*/ idBandManual).conditionIdValue(idStartWavelength).equals().anyValue();
-			specDetailBand.addExpression().resultExpression("%" + idBandManual).conditionIdValue(idStopWavelength).equals().anyValue();
+			specDetailBand.addExpression().resultExpression("%" + idBandManual).conditionIdValue(idStartWavelength).equals().anyValue().or().conditionIdValue(idStopWavelength).equals().anyValue();
+//			specDetailBand.addExpression().resultExpression("%" + idBandManual).conditionIdValue(idStopWavelength).equals().anyValue();
 			specBand.add(specDetailBand);
 		}
 		
@@ -131,8 +132,7 @@ class DependencySpecDetail2Test {
 			DependencySpec spec = new DependencySpec(idStartWavelength);
 			holder.add(spec);
 			DependencyExpressionHolder specDetailStartW = new DependencyExpressionHolder(DependencyTargetElement.Value);
-			specDetailStartW.addExpression().resultExpression("1530").conditionIdValue(idBand).equals().conditionSelectionId(idBandC);
-			
+			specDetailStartW.addExpression().resultExpression("1530").conditionIdValue(idBand).equals().conditionSelectionId(idBandC);	
 			specDetailStartW.addExpression().resultExpression("$" + idStopWavelength + ".Value").conditionExpression("$" + idStartWavelength + ".Value > " + "$" + idStopWavelength + ".Value");
 			spec.add(specDetailStartW);
 			
@@ -180,7 +180,7 @@ class DependencySpecDetail2Test {
 		
 		assertTrue(spec2.get(0).getId().equals(idBand));
 		assertTrue(spec2.get(0).getElement().equals(DependencyTargetElement.Value));
-		assertTrue(spec2.get(0).getCondition().equals("$ID_OSA_START_WAVELENGTH.Value==*any"));
+		assertTrue(spec2.get(0).getCondition().equals("$ID_OSA_START_WAVELENGTH.Value==*any || $ID_OSA_STOP_WAVELENGTH.Value==*any"));
 //		assertTrue(spec2.get(0).getValue().equals(idBandManual));
 	
 		assertTrue(spec2.get(1).getId().equals(idStopWavelength));
@@ -197,7 +197,7 @@ class DependencySpecDetail2Test {
 	
 		assertTrue(spec3.get(1).getId().equals(idBand));
 		assertTrue(spec3.get(1).getElement().equals(DependencyTargetElement.Value));
-		assertTrue(spec3.get(1).getCondition().equals("$ID_OSA_STOP_WAVELENGTH.Value==*any"));
+		assertTrue(spec3.get(1).getCondition().equals("$ID_OSA_START_WAVELENGTH.Value==*any || $ID_OSA_STOP_WAVELENGTH.Value==*any"));
 //		assertTrue(spec3.get(1).getValue().equals("ID_OSA_BAND_MANUAL"));	
 		
 		assertTrue(store.getProperty(idBand).getCurrentValue().equals(idBandC));
@@ -440,8 +440,8 @@ class DependencySpecDetail2Test {
 			DependencySpec spec = new DependencySpec(idApplication);
 			holder.add(spec);
 			DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.ListItemVisible);
-			detail.addExpression().resultExpression(DependencyExpression.True).conditionIdValue(idModel).equals().conditionSelectionId(idModel21A);
-			detail.addExpression().resultExpression(DependencyExpression.True).conditionIdValue(idModel).equals().conditionSelectionId(idModel23A);
+			detail.addExpression().resultExpression(DependencyExpression.True).conditionIdValue(idModel).equals().conditionSelectionId(idModel21A).or().conditionIdValue(idModel).equals().conditionSelectionId(idModel23A);
+//			detail.addExpression().resultExpression(DependencyExpression.True).conditionIdValue(idModel).equals().conditionSelectionId(idModel23A);
 			detail.addExpression().resultExpression(DependencyExpression.False).conditionElse();
 			spec.add(idApplicationInBand, detail);
 		}
@@ -990,12 +990,198 @@ class DependencySpecDetail2Test {
 		spec.add(DependencyTargetElement.Enabled, DependencyExpression.True, "$ID_RANGE.Value=%ID_RANGE_200KM");
 		holder.add(spec);
 		
-		assertEquals("$ID_RANGE.Value=%ID_RANGE_200KM", holder.get(idPulse).getDependencyExpressionHolder(DependencyTargetElement.Enabled).getExpressions().get(DependencyExpression.True).getDependencyExpressions().get(0).getExpression().getExpression());
-		assertEquals(DependencyExpression.ELSE, holder.get(idPulse).getDependencyExpressionHolder(DependencyTargetElement.Enabled).getExpressions().get(DependencyExpression.False).getDependencyExpressions().get(0).getExpression().getExpression());
+		assertEquals("$ID_RANGE.Value=%ID_RANGE_200KM", holder.get(idPulse).getDependencyExpressionHolder(DependencyTargetElement.Enabled).getExpressions().get(DependencyExpression.True).getExpression().getExpression());
+		assertEquals(DependencyExpression.ELSE, holder.get(idPulse).getDependencyExpressionHolder(DependencyTargetElement.Enabled).getExpressions().get(DependencyExpression.False).getExpression().getExpression());
 
 		assertEquals(2, holder.get(idPulse).getDependencyExpressionHolder(DependencyTargetElement.Enabled).getExpressions().keySet().size());
 	}
 	
+	@Test
+	void testConvert() {
+		String idMode = "ID_MODE";
+		String idModeA = "ID_MODE_A";
+		String idModeB = "ID_MODE_B";
+
+		String idRoot = "ID_ROOT";
+		String idRootA = "ID_ROOT_A";
+		String idRootB = "ID_ROOT_B";
+		
+		DependencySpecHolder holder = new DependencySpecHolder();
+		holder.get(idMode).add(DependencyTargetElement.ListItemEnabled, idModeA, DependencyExpression.True, new DependencyExpression().getExpression().conditionIdValue(idRoot).equals().conditionSelectionId(idRootA).getExpression());
+		holder.get(idMode).add(DependencyTargetElement.ListItemEnabled, idModeA, DependencyExpression.False, new DependencyExpression().getExpression().conditionElse().getExpression());
+		holder.get(idMode).add(DependencyTargetElement.ListItemEnabled, idModeB, DependencyExpression.True, new DependencyExpression().getExpression().conditionIdValue(idRoot).equals().conditionSelectionId(idRootB).getExpression());
+		holder.get(idMode).add(DependencyTargetElement.ListItemEnabled, idModeB, DependencyExpression.False, new DependencyExpression().getExpression().conditionElse().getExpression());
+
+		String idMode2 = "ID_MODE2";
+		String idMode2A = "ID_MODE2_A";
+		String idMode2B = "ID_MODE2_B";
+
+		String idRoot2 = "ID_ROOT2";
+		String idRoot2A = "ID_ROOT2_A";
+		String idRoot2B = "ID_ROOT2_B";
+		
+		holder.get(idMode2).add(DependencyTargetElement.ListItemEnabled, idMode2A, DependencyExpression.False, new DependencyExpression().getExpression().conditionIdValue(idRoot2).equals().conditionSelectionId(idRoot2A).getExpression());
+		holder.get(idMode2).add(DependencyTargetElement.ListItemEnabled, idMode2A, DependencyExpression.True, new DependencyExpression().getExpression().conditionElse().getExpression());
+		holder.get(idMode2).add(DependencyTargetElement.ListItemEnabled, idMode2B, DependencyExpression.False, new DependencyExpression().getExpression().conditionIdValue(idRoot2).equals().conditionSelectionId(idRoot2B).getExpression());
+		holder.get(idMode2).add(DependencyTargetElement.ListItemEnabled, idMode2B, DependencyExpression.True, new DependencyExpression().getExpression().conditionElse().getExpression());
+
+
+		try {
+			DepPropertyStore store = createPropertyStore();
+			store.add(createListProperty(idMode, Arrays.asList(idModeA, idModeB), idModeA));
+			store.add(createListProperty(idRoot, Arrays.asList(idRootA, idRootB), idRootA));
+			DependencyEngine engine = createEngine(holder, store);
+			CachedPropertyStore cached;
+			engine.requestChange(idRoot, idRootA);
+			cached = engine.getCachedPropertyStore();
+			
+			assertTrue(1 == cached.getProperty(idMode).getAvailableListDetail().size());
+			assertTrue(idModeA.equals(cached.getProperty(idMode).getAvailableListDetail().get(0).getId()));
+			
+			engine.requestChange(idRoot, idRootB);
+			cached = engine.getCachedPropertyStore();
+			
+			assertTrue(1 == cached.getProperty(idMode).getAvailableListDetail().size());
+			assertTrue(idModeB.equals(cached.getProperty(idMode).getAvailableListDetail().get(0).getId()));
+		}
+		catch (Exception e) {
+			
+		}
+		
+		try {
+			DepPropertyStore store = createPropertyStore();
+			PropertyGetter getter = new PropertyGetter() {
+				@Override
+				public SvProperty getProperty(String id) {
+					return store.getProperty(id);
+				}
+			};
+			store.add(createListProperty(idMode, Arrays.asList(idModeA, idModeB), idModeA));
+			store.add(createListProperty(idRoot, Arrays.asList(idRootA, idRootB), idRootA));
+			DependencySpecHolder alternativeholder = new AlternativeDependencyGenerator().convert(holder, getter);
+			DependencyEngine engine = createEngine(alternativeholder, store);
+			CachedPropertyStore cached;
+			
+			engine.requestChange(idRoot, idRootA);
+			cached = engine.getCachedPropertyStore();
+			assertTrue(2 == cached.getProperty(idMode).getAvailableListDetail().size());
+			assertTrue(idModeA.equals(cached.getProperty(idMode).getAvailableListDetail().get(0).getId()));
+			assertTrue(idModeB.equals(cached.getProperty(idMode).getAvailableListDetail().get(1).getId()));
+			
+			store.getProperty(idMode).setCurrentValue(idModeB);
+			store.getProperty(idRoot).setCurrentValue(idRootB);
+			engine.requestChange(idMode, idModeA);
+			cached = engine.getCachedPropertyStore();
+			assertEquals(idRootA, cached.getProperty(idRoot).getCurrentValue());
+
+			store.getProperty(idMode).setCurrentValue(idModeA);
+			store.getProperty(idRoot).setCurrentValue(idRootA);
+			engine.requestChange(idMode, idModeB);
+			cached = engine.getCachedPropertyStore();
+			assertEquals(idRootB, cached.getProperty(idRoot).getCurrentValue());
+		}
+		catch (Exception e) {
+			
+		}
+				
+		try {
+			DepPropertyStore store = createPropertyStore();
+			PropertyGetter getter = new PropertyGetter() {
+				@Override
+				public SvProperty getProperty(String id) {
+					return store.getProperty(id);
+				}
+			};
+			store.add(createListProperty(idMode2, Arrays.asList(idMode2A, idMode2B), idMode2A));
+			store.add(createListProperty(idRoot2, Arrays.asList(idRoot2A, idRoot2B), idRoot2A));
+			DependencySpecHolder alternativeholder = new AlternativeDependencyGenerator().convert(holder, getter);
+			
+			store.getProperty(idMode2).setCurrentValue(idMode2A);
+			store.getProperty(idRoot2).setCurrentValue(idRoot2B);
+			DependencyEngine engine = createEngine(alternativeholder, store);
+			engine.requestChange(idMode2, idMode2B);
+			CachedPropertyStore cached;	
+			cached = engine.getCachedPropertyStore();
+			assertEquals(idRoot2A, cached.getProperty(idRoot2).getCurrentValue());
+			
+			engine.requestChange(idMode2, idMode2A);
+			cached = engine.getCachedPropertyStore();
+			assertEquals(idRoot2B, cached.getProperty(idRoot2).getCurrentValue());
+		}
+		catch (Exception e) {
+			
+		}
+	}
+	
+	@Test
+	void testConvert2() {
+		String idRoot = "ID_ROOT";
+		String idRootA = "ID_ROOT_A";
+		String idRootB = "ID_ROOT_B";
+		String idRootC = "ID_ROOT_C";
+		
+		String idMiddle = "ID_MIDDLE";
+		String idMiddle1 = "ID_MIDDLE_1";
+		String idMiddle2 = "ID_MIDDLE_2";
+		String idMiddle3 = "ID_MIDDLE_3";
+	
+		String idTop = "ID_TOP";
+		String idTop1 = "ID_TOP_1";
+		String idTop2 = "ID_TOP_2";
+		String idTop3 = "ID_TOP_3";
+		String idTop4 = "ID_TOP_4";
+		String idTop5 = "ID_TOP_5";
+		String idTop6 = "ID_TOP_6";
+		
+		DependencySpecHolder holder = new DependencySpecHolder();
+		holder.get(idMiddle).add(DependencyTargetElement.ListItemEnabled, idMiddle1, DependencyExpression.True, new DependencyExpression().getExpression().conditionIdValue(idRoot).equals().conditionSelectionId(idRootA).getExpression());
+		holder.get(idMiddle).add(DependencyTargetElement.ListItemEnabled, idMiddle1, DependencyExpression.False, new DependencyExpression().getExpression().conditionElse().getExpression());
+		holder.get(idMiddle).add(DependencyTargetElement.ListItemEnabled, idMiddle2, DependencyExpression.True, new DependencyExpression().getExpression().conditionIdValue(idRoot).equals().conditionSelectionId(idRootB).getExpression());
+		holder.get(idMiddle).add(DependencyTargetElement.ListItemEnabled, idMiddle2, DependencyExpression.False, new DependencyExpression().getExpression().conditionElse().getExpression());
+		holder.get(idMiddle).add(DependencyTargetElement.ListItemEnabled, idMiddle3, DependencyExpression.True, new DependencyExpression().getExpression().conditionIdValue(idRoot).equals().conditionSelectionId(idRootC).getExpression());
+		holder.get(idMiddle).add(DependencyTargetElement.ListItemEnabled, idMiddle3, DependencyExpression.False, new DependencyExpression().getExpression().conditionElse().getExpression());
+
+		holder.get(idTop).add(DependencyTargetElement.ListItemEnabled, idTop1, DependencyExpression.False, new DependencyExpression().getExpression().conditionIdValue(idMiddle).equals().conditionSelectionId(idMiddle1).getExpression());
+		holder.get(idTop).add(DependencyTargetElement.ListItemEnabled, idTop1, DependencyExpression.True, new DependencyExpression().getExpression().conditionElse().getExpression());
+		holder.get(idTop).add(DependencyTargetElement.ListItemEnabled, idTop2, DependencyExpression.False, new DependencyExpression().getExpression().conditionIdValue(idMiddle).equals().conditionSelectionId(idMiddle1).getExpression());
+		holder.get(idTop).add(DependencyTargetElement.ListItemEnabled, idTop2, DependencyExpression.True, new DependencyExpression().getExpression().conditionElse().getExpression());
+		holder.get(idTop).add(DependencyTargetElement.ListItemEnabled, idTop3, DependencyExpression.False, new DependencyExpression().getExpression().conditionIdValue(idMiddle).equals().conditionSelectionId(idMiddle2).getExpression());
+		holder.get(idTop).add(DependencyTargetElement.ListItemEnabled, idTop3, DependencyExpression.True, new DependencyExpression().getExpression().conditionElse().getExpression());
+		holder.get(idTop).add(DependencyTargetElement.ListItemEnabled, idTop4, DependencyExpression.False, new DependencyExpression().getExpression().conditionIdValue(idMiddle).equals().conditionSelectionId(idMiddle2).getExpression());
+		holder.get(idTop).add(DependencyTargetElement.ListItemEnabled, idTop4, DependencyExpression.True, new DependencyExpression().getExpression().conditionElse().getExpression());
+		holder.get(idTop).add(DependencyTargetElement.ListItemEnabled, idTop5, DependencyExpression.False, new DependencyExpression().getExpression().conditionIdValue(idMiddle).equals().conditionSelectionId(idMiddle3).getExpression());
+		holder.get(idTop).add(DependencyTargetElement.ListItemEnabled, idTop5, DependencyExpression.True, new DependencyExpression().getExpression().conditionElse().getExpression());
+		holder.get(idTop).add(DependencyTargetElement.ListItemEnabled, idTop6, DependencyExpression.False, new DependencyExpression().getExpression().conditionIdValue(idMiddle).equals().conditionSelectionId(idMiddle3).getExpression());
+		holder.get(idTop).add(DependencyTargetElement.ListItemEnabled, idTop6, DependencyExpression.True, new DependencyExpression().getExpression().conditionElse().getExpression());
+		
+		try {
+			DepPropertyStore store = createPropertyStore();
+			store.add(createListProperty(idRoot, Arrays.asList(idRootA, idRootB, idRootC), idRootA));
+			store.add(createListProperty(idMiddle, Arrays.asList(idMiddle1, idMiddle2, idMiddle3), idMiddle1));
+			store.add(createListProperty(idTop, Arrays.asList(idTop1, idTop2, idTop3, idTop4, idTop5, idTop6), idTop1));
+			
+			holder = new AlternativeDependencyGenerator().convert(holder, new PropertyGetter() {
+				@Override
+				public SvProperty getProperty(String id) {
+					return store.getProperty(id);
+				}
+			});
+			
+			assertEquals("$" + idTop + "==%" + idTop1, holder.get(idMiddle).getDependencyExpressionHolder(DependencyTargetElement.Value).getExpressions().get(idMiddle1).getExpression().getExpression());
+
+			DependencyEngine engine = createEngine(holder, store);
+			CachedPropertyStore cached;
+			engine.requestChange(idTop, idTop6);
+			cached = engine.getCachedPropertyStore();
+			
+			assertEquals(idMiddle3, cached.getProperty(idMiddle).getCurrentValue());
+			assertEquals(idRootC, cached.getProperty(idRoot).getCurrentValue());
+		}
+		catch (Exception e) {
+			
+
+		}
+	}
 	private DependencyEngine createEngine(DependencySpecHolder holder, DepPropertyStore store) {
 		DependencyEngine engine = new DependencyEngine() {
 			@Override
@@ -1026,42 +1212,16 @@ class DependencySpecDetail2Test {
 		return store;
 	}
 
-	private ArgumentDefInterface argumentDef = new ArgumentDefInterface() {
-		private List<String> arguments = Arrays.asList("defaultKey", "defaultValue", "min", "max", "decimal");
-		@Override
-		public int indexOf(String type, String key) {
-			return arguments.indexOf(key);
-		}
 
-		@Override
-		public List<String> get(String type) {
-			return arguments;
-		}
-		
-	};
 	
 	private SvProperty createDoubleProperty(String id, double defaultValue, String unit, double min, double max, int decimal) {
-		PropertyDef def = new PropertyDef();
-		def.setType("DoubleProperty");
-		def.setOthers(Arrays.asList("", String.valueOf(defaultValue), String.valueOf(min), String.valueOf(max), String.valueOf(decimal)));
-		def.setArgumentDef(argumentDef);
-		def.setId(id);
-		SvProperty ret = new SvProperty(def);	
-		return ret;
+		return new SvPropertyFactory().getDoubleProperty(id, defaultValue, unit, min, max, decimal);
+
 	}
 
 	private SvProperty createListProperty(String id, List<String> asList, String defaultId) {
-		PropertyDef def = new PropertyDef();
-		def.setOthers(Arrays.asList(defaultId));
-		def.setArgumentDef(argumentDef);
-		def.setId(id);
-		SvProperty ret = new SvProperty(def);
-		
-		for (String e : asList) {
-			def.getListDetail().add(new ListDetailElement(e));
-		}
-		
-		return ret;
+		return new SvPropertyFactory().getListProperty(id, asList, defaultId);
 	}
 
+	
 }

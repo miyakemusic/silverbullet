@@ -62,14 +62,9 @@ public class DependencySpec {
 		for (DependencyTargetElement targetElement : this.depExpHolderMap.keySet()) {
 			DependencyExpressionHolderMap expressionHolderMap = this.depExpHolderMap.get(targetElement);
 			
-//		for (DependencyExpressionHolderMap expressionHolderMap : this.depExpHolderMap.values())  {
 			for (String selectionId : expressionHolderMap.keySet()) {
 				List<DependencyExpressionHolder> expressionHolders = expressionHolderMap.get(selectionId);
 				for (DependencyExpressionHolder expressionHolder : expressionHolders) {
-					if (dependencyTargetElement != expressionHolder.getTargetElement()) {
-				//		System.out.println("DependencySpec2");
-					}
-					//List<DependencyProperty> props = expressionHolder.getRelatedSpecs(id, selectionId, triggerId, expressionHolder.getTargetElement());
 					List<DependencyProperty> props = expressionHolder.getRelatedSpecs(id, selectionId, triggerId, dependencyTargetElement, expressionHolder.getTargetElement());
 					for (DependencyProperty p : props) {
 						p.setSettingDisabledBehavior(expressionHolder.getSettingDisabledBehavior());
@@ -169,11 +164,12 @@ public class DependencySpec {
 			selection = DefaultItem;
 		}
 		for (DependencyExpressionHolder spec : map.get(selection)) {
-			for (DependencyExpression exp : spec.getExpressions().get(value).getDependencyExpressions()) {
-				if (exp.getExpression().getExpression().equals(condition)) {
+//			for (DependencyExpression exp : spec.getExpressions().get(value).getDependencyExpressions()) {
+			DependencyExpression exp = spec.getExpressions().get(value);
+			if (exp.getExpression().getExpression().equals(condition)) {
 					return exp;
 				}
-			}
+//			}
 		}
 		return null;
 	}
@@ -214,6 +210,7 @@ public class DependencySpec {
 	
 	public void add(DependencyTargetElement element, String selectionId, String value, String condition) {
 		this.getDependencyExpressionHolder(element, selectionId).addExpression().resultExpression(value).conditionExpression(condition);
+		
 		if (getDependencyExpressionHolder(element, selectionId).getExpressions().size() == 1) {
 			if (value.equalsIgnoreCase(DependencyExpression.True)) {
 				add(element, selectionId, DependencyExpression.False, DependencyExpression.ELSE);					

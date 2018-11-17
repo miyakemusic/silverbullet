@@ -1,7 +1,9 @@
 package jp.silverbullet.dependency;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class IdCollector {
 
@@ -22,8 +24,8 @@ public class IdCollector {
 		return ret;
 	}
 
-	public List<String> collectSelectionIds(String value) {
-		List<String> ret = new ArrayList<>();
+	public Set<String> collectSelectionIds(String value) {
+		Set<String> ret = new HashSet<>();
 		if (!value.contains("%")) {
 			return ret;
 		}

@@ -189,4 +189,9 @@ public class SvPropertyStore {
 			e.printStackTrace();
 		}
 	}
+	public void resetMask() {
+		for (SvProperty prop : this.map.values()) {
+			prop.resetMask();
+		}
+	}
 }

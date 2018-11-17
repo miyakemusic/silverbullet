@@ -43,9 +43,9 @@ public class JsWidget {
 	private String layout = "";
 	private String fontsize = "";
 	private List<JsWidget> children = new ArrayList<>();
-	private int unique;
-	private String styleClass;
-	private String css;
+	private int unique = -1;
+	private String styleClass = "";
+	private String css = "";
 	private Integer index = 0;
 	private Boolean editable = true;
 	private Map<String, String> custom = new HashMap<>();
@@ -164,7 +164,7 @@ public class JsWidget {
 		this.fontsize = fontsize;
 	}
 
-	public String getCustom(String id) {
+	public String getCustomElement(String id) {
 		String v = this.custom.get(id);//CustomProperties.GUI_ID
 		if (v == null) {
 			v = "";

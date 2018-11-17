@@ -93,4 +93,5 @@ public interface BuilderModel {
 	TestRecorder getTestRecorder();
 
 	RegisterMapModel getRegisterMapModel();
+	void switchDependency(String type);
 }

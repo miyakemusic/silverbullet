@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import jp.silverbullet.SvProperty;
+import jp.silverbullet.property.ListDetailElement;
 
 
 public abstract class DependencyEngine {
@@ -89,7 +90,20 @@ public abstract class DependencyEngine {
 					
 					// if masked item was current, it should be change
 					if (v && prop.getCurrentValue().equals(spec.getSelectionId())) {
-						prop.setCurrentValue(prop.getAvailableListDetail().get(0).getId());
+						if (prop.getAvailableListDetail().size() > 0) {
+							prop.setCurrentValue(prop.getAvailableListDetail().get(0).getId());
+						}
+						else {
+							prop.setCurrentValue("");
+						}
+					}
+					else if (prop.getCurrentValue().isEmpty()) {
+						for (ListDetailElement e: prop.getListDetail()) {
+							if (!prop.getListMask().keySet().contains(e.getId()) || !prop.getListMask().get(e.getId())) {
+								prop.setCurrentValue(e.getId());
+								break;
+							}
+						}
 					}
 				}
 				else {

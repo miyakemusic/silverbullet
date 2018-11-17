@@ -16,7 +16,6 @@ import javax.ws.rs.core.MediaType;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import jp.silverbullet.Sequencer;
 import jp.silverbullet.StaticInstances;
 import jp.silverbullet.SvProperty;
@@ -114,12 +113,15 @@ public class DesignResource {
 	@Path("/getDesign")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public JsWidget getDesign(@QueryParam("root") String root) {
+		JsWidget ret;
 		if (root == null || root.isEmpty()) {
-			return StaticInstances.getInstance().getBuilderModel().getUiLayout().getRoot();// StaticInstances.getInstance().getBuilderModel().getUiLayout().getRoot();
+			ret = StaticInstances.getInstance().getBuilderModel().getUiLayout().getRoot();// StaticInstances.getInstance().getBuilderModel().getUiLayout().getRoot();
 		}
 		else {
-			return StaticInstances.getInstance().getBuilderModel().getUiLayout().getSubTree(root);
+			ret = StaticInstances.getInstance().getBuilderModel().getUiLayout().getSubTree(root);
 		}
+
+		return ret;
 	}
 	
 	@GET

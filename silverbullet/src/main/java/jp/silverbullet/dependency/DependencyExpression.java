@@ -77,5 +77,9 @@ public class DependencyExpression {
 		return ret;
 	}
 
+	public List<String> getTriggerIds() {
+		return new IdCollector().collectIds(getExpression().getExpression());
+	}
+
 	
 }

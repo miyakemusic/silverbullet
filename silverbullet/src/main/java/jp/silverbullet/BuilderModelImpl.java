@@ -12,6 +12,7 @@ import jp.silverbullet.dependency.DependencyEngine;
 import jp.silverbullet.dependency.DependencyInterface;
 import jp.silverbullet.dependency.DependencySpecHolder;
 import jp.silverbullet.dependency.RequestRejectedException;
+import jp.silverbullet.dependency.alternative.AlternativeDependencyGenerator;
 import jp.silverbullet.handlers.EasyAccessModel;
 import jp.silverbullet.handlers.HandlerPropertyHolder;
 import jp.silverbullet.handlers.RegisterAccess;
@@ -154,6 +155,7 @@ public class BuilderModelImpl implements BuilderModel {
 		}
 
 	});
+	private DependencySpecHolder defaultDependency;
 
 	public BuilderModelImpl() {
 		store = new SvPropertyStore(propertiesHolder);
@@ -257,6 +259,8 @@ public class BuilderModelImpl implements BuilderModel {
 		this.registerShortCuts = load(RegisterShortCutHolder.class, folder + "/" + REGISTERSHORTCUT);
 		this.dependencySpecHolder = load(DependencySpecHolder.class, folder + "/" + DEPENDENCYSPEC2_XML);
 
+//		dependencySpecHolder = new AlternativeDependencyGenerator().convert(dependencySpecHolder);
+		
 		uiLayoutHolder.load(folder);
 
 		// UiLayout.getInstance().initialize();
@@ -472,5 +476,24 @@ public class BuilderModelImpl implements BuilderModel {
 	@Override
 	public RegisterMapModel getRegisterMapModel() {
 		return this.registerMapModel;
+	}
+
+	@Override
+	public void switchDependency(String type) {
+		this.store.resetMask();
+		
+		if (type.equals("Normal")) {
+			this.dependencySpecHolder = this.defaultDependency;
+		}
+		else if (type.equals("Alternative")) {
+			PropertyGetter getter = new PropertyGetter() {
+				@Override
+				public SvProperty getProperty(String id) {
+					return store.getProperty(id);
+				}
+			};
+			this.defaultDependency = this.dependencySpecHolder;
+			this.dependencySpecHolder = new AlternativeDependencyGenerator().convert(this.dependencySpecHolder, getter);
+		}
 	}
 }

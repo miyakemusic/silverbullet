@@ -21,7 +21,7 @@ public class LinkGenerator {
 		Set<DepChainPair> set = new LinkedHashSet<>();
 		createLinkList(id, DependencyTargetElement.Value.toString(), builder.getTree(), set);
 		
-		DependencySpec spec = holder.getSpec(id);
+		DependencySpec spec = holder.get(id);
 		if (spec != null) {
 			for (DependencyTargetElement e : spec.getDepExpHolderMap().keySet()) {
 				DependencyExpressionHolderMap exHolderMap = spec.getDepExpHolderMap().get(e);
@@ -29,14 +29,14 @@ public class LinkGenerator {
 					DependencyExpressionHolderList list = exHolderMap.getDependencyExpressionHolderMap().get(selectionId);
 					for (DependencyExpressionHolder exHolder : list.getDependencyExpressionHolders()) {
 						for (String value : exHolder.getExpressions().keySet()) {
-							DependencyExpressionList exList = exHolder.getExpressions().get(value);
-							for (DependencyExpression expression : exList.getDependencyExpressions()) {
+							DependencyExpression expression = exHolder.getExpressions().get(value);
+//							for (DependencyExpression expression : exList.getDependencyExpressions()) {
 								List<IdElement> depChains = expression.getIdElement();
 								for (IdElement depChain : depChains) {
 									DepChainPair pair = new DepChainPair(depChain, new IdElement(id, DependencyTargetConverter.convertToString(e, selectionId)));
 									set.add(pair);
 								}								
-							}
+//							}
 						}
 					}
 

@@ -16,7 +16,13 @@ public abstract class ExpressionCalculator {
 	
 	public boolean isSatisfied(String expression) {
 		expression = replaceWithRealValue(expression);
+		try {
 		return (Boolean)getReturn(expression);
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	String replaceWithRealValue(String expression) {

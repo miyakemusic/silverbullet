@@ -1,13 +1,27 @@
 class DependencyClass {
 	constructor(div) {
 		var idIds = div + 'ids';
+		var idAlternative = div + "_alternative";
 		
-		$('#' + div).append('<div>ID: <select id="' + idIds + '"></select></div>');
+		$('#' + div).append('<div>ID: <select id="' + idIds + '"></select> Type:<select id="' + idAlternative + '">Alternative</select></div>');
 		$('#' + idIds).change(function() {
 			var id = $('#' + idIds).val();
 			diagram.update(id);
 			updateMainTable(id);
 		});
+		
+		$('#' + idAlternative).append($('<option>').html('Normal').val('Normal'));
+		$('#' + idAlternative).append($('<option>').html('Alternative').val('Alternative'))
+		
+		$('#' + idAlternative).change(function() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/dependencySpec/switch?type=" + $('#' + idAlternative).val(),
+			   success: function(msg){
+		
+			   }
+			});	
+		});		
 		
 		$('#' + div).append('<div id="myDiagramDiv" style="width:1000px; height:300px; background-color: #DAE4E4;"></div>');
 		$('#' + div).append('<div id="idListPanel" style="width:1000px; height:100px; background-color: lightBlue;"></div>');

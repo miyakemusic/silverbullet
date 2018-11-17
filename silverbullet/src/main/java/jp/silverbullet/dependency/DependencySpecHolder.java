@@ -57,7 +57,7 @@ public class DependencySpecHolder {
 		}
 	}
 
-	public DependencySpec getSpec(String id) {
-		return this.specs.get(id);
-	}
+//	public DependencySpec getSpec(String id) {
+//		return this.specs.get(id);
+//	}
 }
