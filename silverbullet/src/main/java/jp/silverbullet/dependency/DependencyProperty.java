@@ -13,12 +13,12 @@ public class DependencyProperty {
 	private String value;
 	private List<String> triggerIds = new ArrayList<>();
 	private IdCollector idCollector = new IdCollector();
-//	private List<DependencyProperty> otherSources = new ArrayList<>();
 	private DependencyProperty elseProperty;
 	private boolean otherSourceConsumed = false;
 	private SettingDisabledBehavior settingDisabledBehavior;
 	private DependencyExpression pointer;
 	private boolean consumed = false;
+	private DependencyProperty parent;
 	
 	public DependencyProperty(String id, String selectionId, DependencyTargetElement element, 
 			String condition2, String value, DependencyExpression pointer) {
@@ -91,6 +91,11 @@ public class DependencyProperty {
 		this.elseProperty = other;
 	}
 
+	
+	public DependencyProperty getElseProperty() {
+		return elseProperty;
+	}
+
 	public void cosumed() {
 		consumed  = true;
 		if (elseProperty != null) {
@@ -128,6 +133,14 @@ public class DependencyProperty {
 
 	public boolean isConsumed() {
 		return consumed;
+	}
+
+	public void setParent(DependencyProperty parent) {
+		this.parent = parent;
+	}
+
+	public DependencyProperty getParent() {
+		return parent;
 	}
 	
 }

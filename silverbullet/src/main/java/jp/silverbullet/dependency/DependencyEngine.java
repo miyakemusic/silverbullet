@@ -36,6 +36,12 @@ public abstract class DependencyEngine {
 		
 		for (int layer = 0; layer < builder.getLayerCount(); layer++) {
 			List<DependencyProperty> specs = builder.getSpecs(layer);
+			if (layer == 0) {
+//				specs = removeUnnecessarySpecs(id, value, specs);
+			}
+			else  {
+				specs = removeUnnecessarySpecs(specs);
+			}
 			doDependency(builder, specs);
 			
 			for (DependencyProperty spec : specs) {
@@ -77,6 +83,33 @@ public abstract class DependencyEngine {
 				listener.onCompleted(changedIds);
 			}
 		}
+	}
+	
+	private List<DependencyProperty> removeUnnecessarySpecs(String id, String value, List<DependencyProperty> specs) {
+		List<DependencyProperty> ret = new ArrayList<>();
+		for (DependencyProperty spec : specs) {
+			if (spec.getCondition().contains("$" + id + "." + DependencyTargetElement.Value.toString() + "==" + "%" + value)) {
+				ret.add(spec);
+				if (spec.getElseProperty() != null) {
+					ret.add(spec.getElseProperty());
+				}
+			}
+		}
+		ret = specs;
+		return ret;
+	}
+	
+	private List<DependencyProperty> removeUnnecessarySpecs(List<DependencyProperty> specs) {
+		List<DependencyProperty> ret = new ArrayList<DependencyProperty>();
+		for (DependencyProperty spec : specs) {
+			if (spec.getParent().isConsumed()) {
+				ret.add(spec);
+			}
+			else {
+				System.out.println("Don't add " + spec.getCondition());
+			}
+		}
+		return ret;
 	}
 	
 	private List<ChangedProperty> doDependency(DependencyBuilder builder, List<DependencyProperty> specs) throws RequestRejectedException {

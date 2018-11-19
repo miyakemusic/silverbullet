@@ -10,11 +10,12 @@ public class DependencyBuilder {
 		List<DependencyProperty> specs = specHolder.findSpecsToBeChangedSpecBy(id, DependencyTargetElement.Value);
 		List<String> experienced = new ArrayList<String>();
 		experienced.add(id);
-		analyze(tree, specHolder, specs, id, experienced, 0);
+		analyze(tree, specHolder, null, specs, id, experienced, 0);
 	}
 
-	private void analyze(DependencyNode node, DependencySpecHolder specHolder, List<DependencyProperty> specs, String id, List<String> experienced, int layer) {
+	private void analyze(DependencyNode node, DependencySpecHolder specHolder, DependencyProperty parent, List<DependencyProperty> specs, String id, List<String> experienced, int layer) {
 		for (DependencyProperty depProp : specs) {
+			depProp.setParent(parent);
 			DependencyNode subNode = new DependencyNode(depProp, node, layer);
 
 			if (experienced.contains(depProp.getId())) {
@@ -25,7 +26,7 @@ public class DependencyBuilder {
 				List<String> subExperienced = new ArrayList<>();
 				subExperienced.add(depProp.getId());
 				subExperienced.addAll(experienced);
-				analyze(subNode, specHolder, specHolder.findSpecsToBeChangedSpecBy(depProp.getId(), depProp.getElement()), id, subExperienced, layer+1);
+				analyze(subNode, specHolder, depProp, specHolder.findSpecsToBeChangedSpecBy(depProp.getId(), depProp.getElement()), id, subExperienced, layer+1);
 			}
 		}
 	}

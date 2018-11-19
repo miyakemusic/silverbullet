@@ -1,7 +1,6 @@
 package jp.silverbullet.dependency.alternative;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -73,6 +72,7 @@ public class AlternativeDependencyGenerator {
 				for (String condition : trueConditions) {
 					IdValue idValue = new IdValue(condition);
 					addTmp(tmp, idValue.getId(), "%" + idValue.getValue(), "$" + id + ".Value==%" + targetListItem);
+					addTmp(tmp, id, "%" + targetListItem, condition);
 				}
 				setToDependencyHolder(tmp);
 			}
@@ -97,7 +97,7 @@ public class AlternativeDependencyGenerator {
 						}
 						else {
 							for (String expression : tmp.get(id).get(value)) {
-								text += "(" + expression + ")&&";
+								text += "(" + expression + ")||";
 							}
 							text = text.substring(0, text.length()-2);
 						}
@@ -133,7 +133,6 @@ class DependecySpecController {
 	}
 	
 	public void addAsOr(String id, DependencyTargetElement element, String selectionId, String value, String expression) {
-//		holder.get(id).add(DependencyTargetElement.Value, DependencySpec.DefaultItem, value, text);
 		DependencyExpression currentExpression = this.holder.get(id).getDependencyExpressionHolder(element, selectionId).getExpression(value);
 
 		if (currentExpression.getExpression().getExpression().isEmpty()) {
@@ -141,16 +140,56 @@ class DependecySpecController {
 		}
 		else {
 			String currentText = currentExpression.getExpression().getExpression();
-			if (currentText.contains("||") || currentText.contains("&&")) {
-				currentText = currentText + "||(" + expression + ")";
+			String[] tmp = currentText.replace("||", "|").replace("&&", "&").split("[\\|&]+");
+			Map<String, List<String>> map = new HashMap<String, List<String>>();
+			IdValue idValueExp = new IdValue(expression);
+			map.put(idValueExp.getId(), new ArrayList<String>());
+			map.get(idValueExp.getId()).add(expression);
+			for (String s : tmp) {
+				s = trimBracket(s);
+				IdValue idValue = new IdValue(s);
+			
+				if (!map.keySet().contains(idValue.getId())) {
+					map.put(idValue.getId(), new ArrayList<String>());
+				}
+				map.get(idValue.getId()).add(s);
 			}
-			else {
-				currentText = "(" + currentText + ")||(" + expression + ")";
+
+			String text  = "";
+			boolean bracket = map.keySet().size() >= 2;
+			for (String trigger : map.keySet()) {
+				if (bracket) {
+					text += "(";
+				}
+				List<String> exps = map.get(trigger);
+					
+				boolean innerBracket = exps.size() >= 2;
+				for (String exp : exps) {
+					if (innerBracket) {
+						text += "(";
+					}
+					text += exp;
+					if (innerBracket) {
+						text += ")";
+					}
+					text += "||";
+				}
+				text = text.substring(0, text.length() -2);
+				if (bracket) {
+					text += ")";
+				}
+				text += "&&";
 			}
-			currentExpression.getExpression().setExpression(currentText);
+			text = text.substring(0, text.length() -2);
+
+			currentExpression.getExpression().setExpression(text);
 		}
 		
 
+	}
+
+	private String trimBracket(String s) {
+		return s.replace("(", "").replace(")", "");
 	}
 }
 abstract class DepedencyWalkThrough {
