@@ -9,7 +9,7 @@ public class IdCollector {
 
 	
 
-	public List<String> collectIds(String value) {
+	public static List<String> collectIds(String value) {
 		List<String> ret = new ArrayList<>();
 		if (!value.contains("$")) {
 			return ret;
@@ -24,7 +24,7 @@ public class IdCollector {
 		return ret;
 	}
 
-	public Set<String> collectSelectionIds(String value) {
+	public static Set<String> collectSelectionIds(String value) {
 		Set<String> ret = new HashSet<>();
 		if (!value.contains("%")) {
 			return ret;

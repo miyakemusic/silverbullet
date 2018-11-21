@@ -13,7 +13,6 @@ import javax.xml.bind.JAXBException;
 import org.junit.jupiter.api.Test;
 
 import jp.silverbullet.SvProperty;
-import jp.silverbullet.SvPropertyStore;
 import jp.silverbullet.XmlPersistent;
 import jp.silverbullet.dependency.CachedPropertyStore;
 import jp.silverbullet.dependency.ChangedItemValue;
@@ -29,10 +28,6 @@ import jp.silverbullet.dependency.DependencyTargetElement;
 import jp.silverbullet.dependency.RequestRejectedException;
 import jp.silverbullet.dependency.DependencyExpressionHolder.SettingDisabledBehavior;
 import jp.silverbullet.dependency.alternative.AlternativeDependencyGenerator;
-import jp.silverbullet.property.ArgumentDefInterface;
-import jp.silverbullet.property.ListDetailElement;
-import jp.silverbullet.property.PropertyDef;
-import jp.silverbullet.spec.SpecElement;
 import jp.silverbullet.web.ui.PropertyGetter;
 
 class DependencySpecDetail2Test {

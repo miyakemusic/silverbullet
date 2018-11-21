@@ -13,6 +13,7 @@ import jp.silverbullet.dependency.DependencyExpressionHolderMap;
 import jp.silverbullet.dependency.DependencySpec;
 import jp.silverbullet.dependency.DependencySpecHolder;
 import jp.silverbullet.dependency.DependencyTargetElement;
+import jp.silverbullet.dependency.IdValue;
 import jp.silverbullet.web.ui.PropertyGetter;
 
 public class AlternativeDependencyGenerator {
@@ -157,6 +158,7 @@ class DependecySpecController {
 
 			String text  = "";
 			boolean bracket = map.keySet().size() >= 2;
+			String splitter = "||";
 			for (String trigger : map.keySet()) {
 				if (bracket) {
 					text += "(";
@@ -172,15 +174,15 @@ class DependecySpecController {
 					if (innerBracket) {
 						text += ")";
 					}
-					text += "||";
+					text += splitter;
 				}
 				text = text.substring(0, text.length() -2);
 				if (bracket) {
 					text += ")";
 				}
-				text += "&&";
+				text += splitter;
 			}
-			text = text.substring(0, text.length() -2);
+			text = text.substring(0, text.length() - splitter.length());
 
 			currentExpression.getExpression().setExpression(text);
 		}

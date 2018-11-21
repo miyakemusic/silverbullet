@@ -11,6 +11,7 @@ import jp.silverbullet.SvProperty;
 import jp.silverbullet.dependency.DependencyExpression;
 import jp.silverbullet.dependency.DependencySpec;
 import jp.silverbullet.dependency.DependencyTargetElement;
+import jp.silverbullet.dependency.IdValue;
 import jp.silverbullet.property.ListDetailElement;
 import jp.silverbullet.web.ui.PropertyGetter;
 
@@ -171,34 +172,4 @@ public class TrueConditionGenerator {
 		return ret;
 	}
 
-}
-class IdValue {
-	private String evaluation;
-	private String id;
-	private String value;
-
-	public IdValue(String expression) {
-		expression = expression.replace("(", "").replace(")", "");
-		String[] eval = {DependencyExpression.Equals, DependencyExpression.NotEquals};
-		for (String s : eval) {
-			if (expression.contains(s)) {
-				this.evaluation = s;
-				this.id = expression.split(s)[0].replace("$", "").split("\\.")[0];
-				this.value = expression.split(s)[1].replace("%", "");
-				break;
-			}
-		}
-	}
-
-	public String getEvaluation() {
-		return evaluation;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public String getValue() {
-		return value;
-	}
 }

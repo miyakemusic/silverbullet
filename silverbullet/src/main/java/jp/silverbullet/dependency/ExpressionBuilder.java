@@ -35,6 +35,18 @@ public class ExpressionBuilder {
 		return expression;
 	}
 
+	public String getTriggerExpression(int index) {
+		String[] tmp = this.expression.split("|");
+		return trimBracket(tmp[index]);
+	}
+	
+	public int getTriggerExpressionCount() {
+		return this.expression.split("|").length;
+	}
+	
+	private String trimBracket(String string) {
+		return string.replace("(", "").replace(")", "");
+	}
 	public void setExpression(String expression2) {
 		this.expression = expression2;
 	}
@@ -56,11 +68,6 @@ public class ExpressionBuilder {
 		this.expression += DependencyExpression.AnyValue;
 		return this;
 	}
-
-//	public ExpressionBuilder resultValue(String targetValue) {
-//		targetValueAdded(targetValue);
-//		return this;
-//	}
 
 	protected void targetValueAdded(String targetValue) {
 		this.listener.onTargetValueAdded(targetValue, this);
@@ -97,5 +104,6 @@ public class ExpressionBuilder {
 		this.expression += " || ";
 		return this;
 	}
+	
 	
 }
