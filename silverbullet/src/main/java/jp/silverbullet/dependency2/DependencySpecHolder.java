@@ -16,10 +16,10 @@ public class DependencySpecHolder {
 		return this.specs.get(id);
 	}
 
-	public List<RuntimeDependencySpec> getRuntimeSpecs(String triggerId, String value) {
+	public List<RuntimeDependencySpec> getRuntimeSpecs(String triggerId) {
 		List<RuntimeDependencySpec> ret = new ArrayList<>();
 		for (DependencySpec spec : this.specs.values()) {
-			ExpressionHolder expressionHolder = spec.qualifies(triggerId, value);
+			ExpressionHolder expressionHolder = spec.qualifies(triggerId);
 
 			for (String target : expressionHolder.getExpressions().keySet()) {
 				List<RuntimeDependencySpec> tmp = new ArrayList<>();

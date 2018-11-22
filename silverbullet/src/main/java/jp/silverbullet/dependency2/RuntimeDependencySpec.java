@@ -29,7 +29,7 @@ public class RuntimeDependencySpec {
 	}
 	
 	public boolean isOptionEnabled() {
-		return !this.isValue() && !this.isEnable();
+		return this.target.startsWith("ID_");
 	}
 
 	public Expression getExpression() {
@@ -65,4 +65,11 @@ public class RuntimeDependencySpec {
 		return this.consumed;
 	}
 
+	public boolean isMin() {
+		return this.target.equals(DependencySpec.Min);
+	}
+
+	public boolean isMax() {
+		return this.target.equals(DependencySpec.Max);
+	}
 }

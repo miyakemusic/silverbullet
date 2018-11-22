@@ -2,10 +2,11 @@ package jp.silverbullet.dependency;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.util.Set;
 
 import jp.silverbullet.SvProperty;
 import jp.silverbullet.SvPropertyListener;
@@ -54,6 +55,7 @@ public class CachedPropertyStore implements DepPropertyStore {
 		}
 		
 	};
+	private Set<CachedPropertyStoreListener> cachedPropertyStoreListeners = new HashSet<>();
 	
 	public CachedPropertyStore(DepPropertyStore originalStore) {
 		original = originalStore;
@@ -62,6 +64,10 @@ public class CachedPropertyStore implements DepPropertyStore {
 	protected void appendChange(String id, ChangedItemValue changedItemValue2) {
 		getHistory(id).add(changedItemValue2);
 		this.debugLog.add(id + ":" + changedItemValue2.toString());
+		
+		for (CachedPropertyStoreListener listener : cachedPropertyStoreListeners) {
+			listener.onChanged(id, changedItemValue2);
+		}
 	}
 
 	public List<String> getDebugLog() {
@@ -89,14 +95,6 @@ public class CachedPropertyStore implements DepPropertyStore {
 	public void add(SvProperty property) {
 		this.original.add(property);
 	}
-
-//	public List<DependencyChangedLog> getLogs() {
-//		return logs;
-//	}
-//
-//	public void clearLogs() {
-//		this.logs.clear();
-//	}
 	
 	public void commit() {		
 		for (String id : this.cached.keySet()) {
@@ -167,5 +165,13 @@ public class CachedPropertyStore implements DepPropertyStore {
 		}
 		getHistory(id).removeAll(remove);
 		getHistory(id).add(new ChangedItemValue(DependencyTargetElement.Value, value));
+	}
+
+	public void addCachedPropertyStoreListener(CachedPropertyStoreListener cachedPropertyStoreListener) {
+		cachedPropertyStoreListeners.add(cachedPropertyStoreListener);
+	}
+	
+	public void removeCachedPropertyStoreListener(CachedPropertyStoreListener cachedPropertyStoreListener) {
+		cachedPropertyStoreListeners.remove(cachedPropertyStoreListener);
 	}
 }

@@ -8,8 +8,14 @@ public class OptionEnableHolder {
 		expressions.add(option, new Expression(enabled, trigger));
 	}
 
-	public ExpressionHolder qualifies(String id, String value) {
-		return this.expressions.qualifies(id, value);
+	public ExpressionHolder qualifies(String id) {
+		return this.expressions.qualifies(id);
+	}
+
+	public void addValueCalculation(String option, String enabled, String trigger) {
+		Expression expression = new Expression(enabled, trigger);
+		expression.setValueCalculationEnabled(true);
+		expressions.add(option, expression);
 	}
 
 }

@@ -1,13 +1,17 @@
 package jp.silverbullet.dependency2;
 
+import java.util.List;
+
 public class DependencySpec {
 
 	public static final String True = "True";
 	public static final String False = "False";
 	public static final String Value = "Value";
 	public static final String Enable = "Enable";
-	public static final String Else = "*Else";
+	public static final String Min = "Min";
+	public static final String Max = "Max";
 	
+	public static final String Else = "*Else";
 	private String id;
 	private OptionEnableHolder optionEnableHolder = new OptionEnableHolder();
 	
@@ -19,7 +23,7 @@ public class DependencySpec {
 		this.optionEnableHolder.add(option, enabled, trigger);
 	}
 
-	public void setEnabeld(String enabled, String trigger) {
+	public void addEnable(String enabled, String trigger) {
 		this.optionEnableHolder.add(DependencySpec.Enable, enabled, trigger);
 	}
 
@@ -32,7 +36,10 @@ public class DependencySpec {
 	}
 	
 	public void addCalculation(String calculation) {
-		this.optionEnableHolder.add(DependencySpec.Value, calculation, calculation);
+		List<String> ids = IdCollector.collectIds(calculation);
+		for (String id : ids) {
+			this.optionEnableHolder.addValueCalculation(DependencySpec.Value, calculation, "$" + id + "==" + "$" + id);
+		}
 	}
 	
 	public void addValue(String value, String trigger) {
@@ -43,8 +50,15 @@ public class DependencySpec {
 		return id;
 	}
 
-	public ExpressionHolder qualifies(String id2, String value) {
-		return optionEnableHolder.qualifies(id2, value);
+	public ExpressionHolder qualifies(String id2) {
+		return optionEnableHolder.qualifies(id2);
 	}
 
+	public void addMin(double min, String trigger) {
+		this.optionEnableHolder.add(DependencySpec.Min, String.valueOf(min), trigger);
+	}
+
+	public void addMax(double max, String trigger) {
+		this.optionEnableHolder.add(DependencySpec.Max, String.valueOf(max), trigger);
+	}
 }

@@ -33,21 +33,25 @@ public class ExpressionHolder {
 		this.addExpression(option, expression);
 	}
 
-	public ExpressionHolder qualifies(String id, String value) {
+	public ExpressionHolder qualifies(String id) {
 		ExpressionHolder ret = new ExpressionHolder();
 		for (String option : this.expressions.keySet()) {
 			
 			for (Expression expression : this.expressions.get(option)) {
-				if (expression.qualifies(id, value)) {
+				if (expression.qualifies(id)) {
 					ret.add(option, expression);
 				}
 				
-				if (ret.getExpressions().get(option).size() > 0 && expression.isElse()) {
+				if (isElseQualified(ret, option, expression)) {
 					ret.add(option, expression);
 				}
 			}
 		}
 		return ret;
+	}
+
+	private boolean isElseQualified(ExpressionHolder ret, String option, Expression expression) {
+		return ret.getExpressions().get(option) != null && ret.getExpressions().get(option).size() > 0 && expression.isElse();
 	}
 
 	public Map<String, List<Expression>> getExpressions() {
