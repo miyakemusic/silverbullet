@@ -5,10 +5,12 @@ public class Expression {
 	private String value;
 	private String trigger;
 	private boolean valueCalculationEnabled;
+	private String condition;
 	
-	public Expression(String value, String trigger) {
+	public Expression(String value, String trigger, String condition) {
 		this.value = value;
 		this.trigger = trigger;
+		this.condition = condition;
 	}
 
 	public boolean qualifies(String id) {
@@ -37,6 +39,14 @@ public class Expression {
 
 	public boolean isValueCalculationEnabled() {
 		return valueCalculationEnabled;
+	}
+
+	public String getCondition() {
+		return condition;
+	}
+
+	public void setCondition(String condition) {
+		this.condition = condition;
 	}
 	
 }

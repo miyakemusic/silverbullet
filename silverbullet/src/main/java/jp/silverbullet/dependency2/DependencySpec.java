@@ -18,34 +18,49 @@ public class DependencySpec {
 	public DependencySpec(String id) {
 		this.id = id;
 	}
-
+	
+	public void addOptionEnabled(String option, String enabled, String trigger, String condition) {
+		this.optionEnableHolder.add(option, enabled, trigger, condition);
+	}
+	
 	public void addOptionEnabled(String option, String enabled, String trigger) {
-		this.optionEnableHolder.add(option, enabled, trigger);
+		addOptionEnabled(option, enabled, trigger, "");
 	}
 
+	public void addEnable(String enabled, String trigger, String condition) {
+		this.optionEnableHolder.add(DependencySpec.Enable, enabled, trigger, condition);
+	}
+	
 	public void addEnable(String enabled, String trigger) {
-		this.optionEnableHolder.add(DependencySpec.Enable, enabled, trigger);
+		addEnable(enabled, trigger, "");
 	}
 
-	public void addOptionSelect(String option, String trigger) {
-		this.optionEnableHolder.add(DependencySpec.Value, option, trigger);
-	}
-	
 	public void addOptionSelect(String option, String trigger, String condition) {
-		this.optionEnableHolder.add(DependencySpec.Value, option, trigger);
+		this.optionEnableHolder.add(DependencySpec.Value, option, trigger, condition);
 	}
 	
-	public void addCalculation(String calculation) {
+	public void addOptionSelect(String option, String trigger) {
+		addOptionSelect(option, trigger, "");
+	}
+		
+	public void addCalculation(String calculation, String condition) {
 		List<String> ids = IdCollector.collectIds(calculation);
 		for (String id : ids) {
-			this.optionEnableHolder.addValueCalculation(DependencySpec.Value, calculation, "$" + id + "==" + "$" + id);
-		}
+			this.optionEnableHolder.addValueCalculation(DependencySpec.Value, calculation, "$" + id + "==" + "$" + id, condition);
+		}		
+	}
+	public void addCalculation(String calculation) {
+		addCalculation(calculation, "");
 	}
 	
-	public void addValue(String value, String trigger) {
-		this.optionEnableHolder.add(DependencySpec.Value, value, trigger);
+	public void addValue(String value, String trigger, String condition) {
+		this.optionEnableHolder.add(DependencySpec.Value, value, trigger, condition);
 	}
 
+	public void addValue(String value, String trigger) {
+		addValue(value, trigger, "");
+	}
+	
 	public String getId() {
 		return id;
 	}
@@ -54,11 +69,19 @@ public class DependencySpec {
 		return optionEnableHolder.qualifies(id2);
 	}
 
+	public void addMin(double min, String trigger, String condition) {
+		this.optionEnableHolder.add(DependencySpec.Min, String.valueOf(min), trigger, condition);
+	}
+	
 	public void addMin(double min, String trigger) {
-		this.optionEnableHolder.add(DependencySpec.Min, String.valueOf(min), trigger);
+		addMin(min, trigger, "");
 	}
 
+	public void addMax(double max, String trigger, String condition) {
+		this.optionEnableHolder.add(DependencySpec.Max, String.valueOf(max), trigger, condition);
+	}
+	
 	public void addMax(double max, String trigger) {
-		this.optionEnableHolder.add(DependencySpec.Max, String.valueOf(max), trigger);
+		addMax(max, trigger, "");
 	}
 }

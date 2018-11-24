@@ -15,6 +15,7 @@ public class DependencyEngine {
 	private DependencySpecHolder specHolder;
 	private CachedPropertyStore cachedPropertyStore;
 	private ExpressionCalculator calculator;
+	private String userChangedId;
 	
 	public DependencyEngine(DependencySpecHolder specHolder, DepPropertyStore store) {
 		this.store = store;
@@ -29,13 +30,14 @@ public class DependencyEngine {
 	}
 
 	public void requestChange(String id, String value) throws RequestRejectedException {
+		this.userChangedId = id;
 		this.cachedPropertyStore = new CachedPropertyStore(store);
 		
 		ChangedProperties prevChangedProperties = new ChangedProperties(Arrays.asList(id));
 		this.cachedPropertyStore.addCachedPropertyStoreListener(prevChangedProperties);
+		this.cachedPropertyStore.getProperty(id).setCurrentValue(value);
 		handle(id, value);
 		this.cachedPropertyStore.removeCachedPropertyStoreListener(prevChangedProperties);
-
 		
 		while(prevChangedProperties.getIds().size() > 0) {
 			prevChangedProperties = handleNext(prevChangedProperties);
@@ -52,32 +54,31 @@ public class DependencyEngine {
 		return changedProperties2;
 	}
 	
-	private void handle(String id, String value) {
-		
-		this.cachedPropertyStore.getProperty(id).setCurrentValue(value);
-		
+	private void handle(String id, String value) {	
 		List<RuntimeDependencySpec> specs = this.specHolder.getRuntimeSpecs(id);
-		for (RuntimeDependencySpec spec : specs) {
-			
-			boolean qualify = false;
-			
+		for (RuntimeDependencySpec spec : specs) {	
+			if (spec.getId().equals(this.userChangedId)) {
+				continue;
+			}
 			if (spec.isElse()) {
 				if (!spec.otherConsumed()) {
-					qualify = true;
+					spec.setExecutionConditionSatistied(true);
 				}
 				else {
-					qualify = false;
+					spec.setExecutionConditionSatistied(false);
 				}
 			}
 			else {
-				String ret = calculator.calculate("ret=" + spec.getExpression().getTrigger());
+				spec.setExecutionConditionSatistied(Boolean.valueOf(calculator.calculate("ret=" + spec.getExpression().getTrigger())));
 				if (spec.getExpression().isValueCalculationEnabled()) {
 					spec.getExpression().setValue(calculator.calculate("ret=" + spec.getExpression().getValue()));
 				}
-				qualify = Boolean.valueOf(ret);
 			}
 			
-			if (!qualify) {
+			if (!spec.getExpression().getCondition().isEmpty()) {
+				spec.setExecutionConditionSatistied(Boolean.valueOf(calculator.calculate("ret=" + spec.getExpression().getCondition())));
+			}
+			if (!spec.isExecutionConditionSatistied()) {
 				continue;
 			}
 			SvProperty property = this.cachedPropertyStore.getProperty(spec.getId());

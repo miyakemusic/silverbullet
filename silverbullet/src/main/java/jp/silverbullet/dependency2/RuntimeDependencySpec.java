@@ -9,6 +9,7 @@ public class RuntimeDependencySpec {
 	private Expression expression;
 	private List<RuntimeDependencySpec> elseSources = new ArrayList<>();
 	private boolean consumed = false;
+	private boolean executionConditionSatistied;
 	
 	public RuntimeDependencySpec(String id, String target, Expression expression) {
 		this.id = id;
@@ -72,4 +73,13 @@ public class RuntimeDependencySpec {
 	public boolean isMax() {
 		return this.target.equals(DependencySpec.Max);
 	}
+
+	public void setExecutionConditionSatistied(boolean executionConditionSatistied) {
+		this.executionConditionSatistied = executionConditionSatistied;
+	}
+
+	public boolean isExecutionConditionSatistied() {
+		return executionConditionSatistied;
+	}
+	
 }

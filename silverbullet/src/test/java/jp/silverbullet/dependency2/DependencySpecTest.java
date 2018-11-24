@@ -291,7 +291,7 @@ class DependencySpecTest {
 	}
 	
 	@Test
-	void testLayer() {
+	void test3Layers() {
 		DepPropertyStore store = createPropertyStore();
 		store.add(createListProperty("ID_ROOT", Arrays.asList("ID_ROOT_A", "ID_ROOT_B", "ID_ROOT_C"), "ID_ROOT_A"));
 		store.add(createListProperty("ID_MIDDLE", Arrays.asList("ID_MIDDLE_A", "ID_MIDDLE_B", "ID_MIDDLE_C"), "ID_MIDDLE_A"));
@@ -368,24 +368,40 @@ class DependencySpecTest {
 	@Test
 	void testOptionSelectWithCondition() {
 		DepPropertyStore store = createPropertyStore();
+		store.add(createListProperty("ID_MODE", Arrays.asList("ID_MODE_A", "ID_MODE_B"), "ID_MODE_A"));
 		store.add(createListProperty("ID_LEAF", Arrays.asList("LEAF_A1_1", "LEAF_A1_2", "LEAF_A2"), "LEAF_A1_1"));
 		store.add(createListProperty("ID_MIDDLE", Arrays.asList("ID_MIDDLE_A1", "ID_MIDDLE_A2", "ID_MIDDLE_B1", "ID_MIDDLE_B2"), "ID_MIDDLE_A1"));
 		store.add(createListProperty("ID_ROOT", Arrays.asList("ID_ROOTA", "ID_ROOTA2", "ID_ROOTB"), "ID_ROOTA"));
 
 		DependencySpec spec = new DependencySpec("ID_MIDDLE");
-		spec.addOptionSelect("ID_MIDDLE_A1", "$ID_ROOT==%ID_ROOTA", "$ID_MIDDLE!=%ID_MIDDLE_A2");
+		spec.addOptionSelect("ID_MIDDLE_A1", "$ID_ROOT==%ID_ROOTA", "$ID_MODE==%ID_MODE_A");
 		spec.addOptionSelect("ID_MIDDLE_A1", "$ID_LEAF==%LEAF_A1_1");
 		spec.addOptionSelect("ID_MIDDLE_A1", "$ID_LEAF==%LEAF_A1_2");
 		
-		spec.addOptionSelect("ID_MIDDLE_A2", "$ID_ROOT==%ID_ROOTA", "$ID_MIDDLE!=%ID_MIDDLE_A1");
+		spec.addOptionSelect("ID_MIDDLE_A2", "$ID_ROOT==%ID_ROOTA", "$ID_MODE==%ID_MODE_B");
 		spec.addOptionSelect("ID_MIDDLE_A2", "$ID_LEAF==%LEAF_A2");
 		DependencySpecHolder specHolder = new DependencySpecHolder();
 		specHolder.addSpec(spec);
 		
 		DependencyEngine engine = new DependencyEngine(specHolder, store);
 		try {
-			engine.requestChange("ID_LEAF", "LEAF_A1_1");
-			/// NOT YET
+			store.getProperty("ID_MIDDLE").setCurrentValue("ID_MIDDLE_A2");
+			store.getProperty("ID_MODE").setCurrentValue("ID_MODE_A");
+			engine.requestChange("ID_ROOT", "ID_ROOTA");
+			CachedPropertyStore cached = engine.getCachedPropertyStore();
+			assertEquals("ID_MIDDLE_A1", cached.getProperty("ID_MIDDLE").getCurrentValue());	
+
+		} catch (RequestRejectedException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			store.getProperty("ID_MIDDLE").setCurrentValue("ID_MIDDLE_A2");
+			store.getProperty("ID_MODE").setCurrentValue("ID_MODE_B");
+			engine.requestChange("ID_ROOT", "ID_ROOTA");
+			CachedPropertyStore cached = engine.getCachedPropertyStore();
+			assertEquals("ID_MIDDLE_A2", cached.getProperty("ID_MIDDLE").getCurrentValue());	
+
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
 		}
