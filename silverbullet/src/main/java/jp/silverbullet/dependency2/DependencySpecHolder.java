@@ -2,8 +2,10 @@ package jp.silverbullet.dependency2;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class DependencySpecHolder {
 	private Map<String, DependencySpec> specs = new HashMap<>();
@@ -48,6 +50,29 @@ public class DependencySpecHolder {
 			}
 			tmp.add(elseSpec);
 		}
+	}
+
+	public Set<String> getSpecIds() {
+		return this.specs.keySet();
+	}
+	
+	public Set<String> getTriggerIds() {
+		Set<String> triggerIds = new HashSet<>();
+		for (DependencySpec spec : this.specs.values()) {
+			triggerIds.addAll(spec.getTriggerIds());
+		}
+		return triggerIds;
+	}
+
+	public Set<String> getAllIds() {
+		Set<String> ret  =new HashSet<>();
+		ret.addAll(this.getTriggerIds());
+		ret.addAll(this.getSpecIds());
+		return ret;
+	}
+	
+	public boolean containsId(String id) {
+		return this.specs.keySet().contains(id);
 	}
 
 }

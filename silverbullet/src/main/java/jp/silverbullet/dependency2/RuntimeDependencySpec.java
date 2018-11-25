@@ -30,7 +30,7 @@ public class RuntimeDependencySpec {
 	}
 	
 	public boolean isOptionEnabled() {
-		return this.target.startsWith("ID_");
+		return this.target.startsWith(DependencySpec.OptionEnable);
 	}
 
 	public Expression getExpression() {
@@ -38,7 +38,7 @@ public class RuntimeDependencySpec {
 	}
 
 	public String getTargetOption() {
-		return this.target;
+		return this.target.split("#")[1];
 	}
 
 	public void addElseSource(RuntimeDependencySpec spec) {

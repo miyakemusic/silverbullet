@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import jp.silverbullet.SvProperty;
 import jp.silverbullet.dependency.DepPropertyStore;
 import jp.silverbullet.dependency.speceditor3.SvPropertyFactory;
+import jp.silverbullet.dependency2.LinkGenerator.LinkLevel;
 
 class DependencySpecAnalyzerTest {
 
@@ -44,23 +45,58 @@ class DependencySpecAnalyzerTest {
 		DependencySpecAnalyzer analyzer = new DependencySpecAnalyzer(specHolder);
 		
 		{
-			DependencyNode nodeRoot = analyzer.analyze("ID_ROOT");
+			DependencyNode nodeRoot = analyzer.getNode("ID_ROOT");
 			
 			List<DependencyNode> children = nodeRoot.getChildren();
 			assertEquals(1, children.size());
-			assertEquals("ID_MIDDLE", children.get(0).getId());
-			assertEquals(DependencySpec.Value, children.get(0).getTargetElement());
-			
-			List<DependencyNode> parents = nodeRoot.geParents();
+			DependencyNode firstChild = children.get(0);
+			assertEquals("ID_MIDDLE", firstChild.getId());
+			assertEquals("ID_MIDDLE", nodeRoot.getChildLinks().get(0).getId());
+			assertEquals(DependencySpec.Value, nodeRoot.getChildLinks().get(0).getTargetElement());
+
+			List<DependencyNode> parents = nodeRoot.getParents();
 			assertEquals(0, parents.size());
 		}
 		
 		{
-			DependencyNode nodeRoot = analyzer.analyze("ID_MIDDLE");
+			DependencyNode nodeRoot = analyzer.getNode("ID_MIDDLE");
 			
 			List<DependencyNode> children = nodeRoot.getChildren();
+			assertEquals(1, children.size());
+			DependencyNode child = children.get(0);
+			assertEquals(3, child.getParentLinks().size());
+			assertEquals(DependencySpec.OptionEnable + "#" + "ID_LEAF_A", child.getParentLinks().get(0).getTargetElement());
+			assertEquals(DependencySpec.OptionEnable + "#" + "ID_LEAF_C", child.getParentLinks().get(1).getTargetElement());
+			assertEquals(DependencySpec.OptionEnable + "#" + "ID_LEAF_B", child.getParentLinks().get(2).getTargetElement());
 			
-			List<DependencyNode> parents = nodeRoot.geParents();
+			List<DependencyNode> parents = nodeRoot.getParents();
+			assertEquals(1, parents.size());
+			DependencyNode parent = parents.get(0);
+			assertEquals(1, parent.getChildLinks().size());
+			assertEquals(DependencySpec.Value, parent.getChildLinks().get(0).getTargetElement());
+		}
+		
+		{
+			DependencyNode nodeRoot = analyzer.getNode("ID_LEAF");
+			
+			List<DependencyNode> parents = nodeRoot.getParents();
+			assertEquals(1, parents.size());
+			DependencyNode parent = parents.get(0);
+			assertEquals(3, parent.getChildLinks().size());
+			assertEquals(DependencySpec.OptionEnable + "#" + "ID_LEAF_A", parent.getChildLinks().get(0).getTargetElement());
+			assertEquals(DependencySpec.OptionEnable + "#" + "ID_LEAF_C", parent.getChildLinks().get(1).getTargetElement());
+			assertEquals(DependencySpec.OptionEnable + "#" + "ID_LEAF_B", parent.getChildLinks().get(2).getTargetElement());
+			
+//			List<DependencyNode> parents = nodeRoot.getParents();
+//			assertEquals(1, parents.size());
+//			DependencyNode parent = parents.get(0);
+//			assertEquals(1, parent.getChildLinks().size());
+//			assertEquals(DependencySpec.Value, parent.getChildLinks().get(0).getTargetElement());
+			
+			List<GenericLink> links = analyzer.getLinkGenerator().generateLinks(LinkLevel.Detail);
+			for (GenericLink link : links) {
+				System.out.println(link.getFrom() + " " + link.getTo() + " " + link.getType());
+			}
 		}
 	}
 

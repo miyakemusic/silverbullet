@@ -14,6 +14,7 @@ import jp.silverbullet.dependency.CachedPropertyStore;
 import jp.silverbullet.dependency.DepPropertyStore;
 import jp.silverbullet.dependency.RequestRejectedException;
 import jp.silverbullet.dependency.speceditor3.SvPropertyFactory;
+import jp.silverbullet.dependency2.LinkGenerator.LinkLevel;
 
 class DependencySpecTest {
 	private DepPropertyStore createPropertyStore() {
@@ -362,6 +363,16 @@ class DependencySpecTest {
 
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
+		}
+		
+		DependencySpecAnalyzer analyzer = new DependencySpecAnalyzer(specHolder);
+		List<GenericLink> links = analyzer.getLinkGenerator().generateLinks(LinkLevel.Detail);
+		for (GenericLink link : links) {
+			System.out.println(link.getFrom() + " " + link.getTo() + " " + link.getType());
+		}
+		
+		for (Path path : analyzer.getLinkGenerator().getWarningPaths()) {
+			System.out.println(path.getText());
 		}
 	}
 	

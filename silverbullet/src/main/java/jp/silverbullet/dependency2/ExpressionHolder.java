@@ -2,18 +2,20 @@ package jp.silverbullet.dependency2;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class ExpressionHolder {
 	private Map<String, List<Expression>> expressions = new HashMap<>();
 	
-	private void addExpression(String option, Expression expression) {
-		if (!expressions.keySet().contains(option)) {
-			expressions.put(option, new ArrayList<Expression>());
+	private void addExpression(String targetElement, Expression expression) {
+		if (!expressions.keySet().contains(targetElement)) {
+			expressions.put(targetElement, new ArrayList<Expression>());
 		}
-		expressions.get(option).add(expression);	
-		sort(expressions.get(option));
+		expressions.get(targetElement).add(expression);	
+		sort(expressions.get(targetElement));
 	}
 
 	private void sort(List<Expression> list) {
@@ -29,10 +31,14 @@ public class ExpressionHolder {
 		}
 	}
 
-	public void add(String option, Expression expression) {
-		this.addExpression(option, expression);
+	public void add(String targetElement, Expression expression) {
+		this.addExpression(targetElement, expression);
 	}
 
+	public void add(String targetElement, String targetOption, Expression expression) {
+		this.add(targetElement + "#" + targetOption, expression);
+	}	
+	
 	public ExpressionHolder qualifies(String id) {
 		ExpressionHolder ret = new ExpressionHolder();
 		for (String option : this.expressions.keySet()) {
@@ -58,5 +64,59 @@ public class ExpressionHolder {
 		return expressions;
 	}
 
-	
+	public List<String> getTargetOptions() {
+		List<String> ret = new ArrayList<>();
+		for (String option : this.expressions.keySet()) {
+			if (option.startsWith(DependencySpec.OptionEnable)) {
+				ret.add(option.split("#")[1]);
+			}
+		}
+		return ret;
+	}
+
+	public boolean containsTarget(String targetElement) {
+		for (String te : this.expressions.keySet()) {
+			if (te.contains("#")) {
+				if (te.split("#")[0].equals(targetElement)) {
+					return true;
+				}
+			}
+			else {
+				if (te.equals(targetElement)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public List<Expression> getExpressions(String targetElement) {
+		if (targetElement.equals(DependencySpec.OptionEnable)) {
+			List<Expression> ret = new ArrayList<>();
+			for (String te : this.expressions.keySet()) {
+				if (te.startsWith(DependencySpec.OptionEnable)) {
+					ret.addAll(this.expressions.get(te));
+				}
+			}
+			return ret;
+		}
+		else {
+			return this.expressions.get(targetElement);
+		}
+	}
+
+	public Set<String> getTriggerIds() {
+		Set<String> ret = new HashSet<>();
+		for (String value : this.expressions.keySet()) {
+			for (Expression expression : this.expressions.get(value)) {
+				ret.addAll(IdCollector.collectIds(expression.getTrigger()));
+				if (expression.isValueCalculationEnabled()) {
+					ret.addAll(IdCollector.collectIds(expression.getValue()));
+				}
+			}
+		}
+		return ret;
+	}
+
+
 }
