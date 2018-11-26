@@ -2,12 +2,21 @@ package jp.silverbullet.dependency2;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jp.silverbullet.SvProperty;
 import jp.silverbullet.dependency.CachedPropertyStore;
@@ -83,7 +92,10 @@ class DependencySpecTest {
 			assertEquals(true, cached.getProperty("ID_MIDDLE").isListElementMasked("ID_MIDDLE_A1"));	
 			assertEquals(true, cached.getProperty("ID_MIDDLE").isListElementMasked("ID_MIDDLE_A2"));	
 			assertEquals(false, cached.getProperty("ID_MIDDLE").isListElementMasked("ID_MIDDLE_B1"));	
-			assertEquals(false, cached.getProperty("ID_MIDDLE").isListElementMasked("ID_MIDDLE_B2"));			
+			assertEquals(false, cached.getProperty("ID_MIDDLE").isListElementMasked("ID_MIDDLE_B2"));	
+			
+			// ID_MIDDLE_A1 can no more be selected
+			assertEquals("ID_MIDDLE_B1", cached.getProperty("ID_MIDDLE").getCurrentValue());
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
 		}		
@@ -97,7 +109,8 @@ class DependencySpecTest {
 			assertEquals(true, cached.getProperty("ID_MIDDLE").isListElementMasked("ID_MIDDLE_B2"));			
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
-		}			
+		}		
+			
 	}
 
 	@Test
@@ -254,6 +267,46 @@ class DependencySpecTest {
 	}
 	
 	@Test
+	void testCalculationComplex() {
+		DepPropertyStore store = createPropertyStore();
+		store.add(createDoubleProperty("ID_MIN", 0, "unit", -1000, 1000, 0));
+		store.add(createDoubleProperty("ID_MAX", 100, "unit", -1000, 1000, 0));
+		store.add(createDoubleProperty("ID_AVERAGE", 50, "unit", -1000, 1000, 0));
+		store.add(createDoubleProperty("ID_RANGE", 100, "unit", -1000, 1000, 0));
+		
+		DependencySpec specMin = new DependencySpec("ID_MIN");		
+		specMin.addCalculation("$ID_AVERAGE - $ID_RANGE/2");
+
+		DependencySpec specMax = new DependencySpec("ID_MAX");		
+		specMax.addCalculation("$ID_AVERAGE + $ID_RANGE/2");
+
+		DependencySpec specAvg = new DependencySpec("ID_AVERAGE");		
+		specAvg.addCalculation("($ID_MAX + $ID_MIN)/2");
+		
+		DependencySpec specRange = new DependencySpec("ID_RANGE");		
+		specRange.addCalculation("$ID_MAX - $ID_MIN");
+		
+		DependencySpecHolder specHolder = new DependencySpecHolder();
+		specHolder.addSpec(specMin);
+		specHolder.addSpec(specMax);
+		specHolder.addSpec(specAvg);
+		specHolder.addSpec(specRange);
+		
+		DependencyEngine engine = new DependencyEngine(specHolder, store);
+		try {
+			engine.requestChange("ID_AVERAGE", "100");
+			CachedPropertyStore cached = engine.getCachedPropertyStore();
+			assertEquals("50", cached.getProperty("ID_MIN").getCurrentValue());	
+			assertEquals("150", cached.getProperty("ID_MAX").getCurrentValue());	
+			assertEquals("100", cached.getProperty("ID_AVERAGE").getCurrentValue());	
+			assertEquals("100", cached.getProperty("ID_RANGE").getCurrentValue());	
+			
+		} catch (RequestRejectedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
 	void testMinMax() {
 		DepPropertyStore store = createPropertyStore();
 		store.add(createDoubleProperty("ID_LEFT", 0, "unit", -1000, 1000, 0));
@@ -288,6 +341,45 @@ class DependencySpecTest {
 			assertEquals("50.0", cached.getProperty("ID_LEFT").getMax());	
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
+		}
+		
+		// input value over max
+		{
+			boolean rejected = false;
+			try {
+				store.getProperty("ID_LEFT").setCurrentValue("10");
+				engine.requestChanges(Arrays.asList(new IdValue("ID_MODE", "ID_MODE_NARROW"), new IdValue("ID_LEFT", "200")));
+			} catch (RequestRejectedException e) {
+			//	e.printStackTrace();
+				rejected = true;
+			}
+			CachedPropertyStore cached = engine.getCachedPropertyStore();
+			assertEquals("10", cached.getProperty("ID_LEFT").getCurrentValue());	
+			assertEquals(true, rejected);
+		}
+		
+		// input value under min
+		{
+			boolean rejected = false;
+			try {
+				store.getProperty("ID_LEFT").setCurrentValue("10");
+				engine.requestChanges(Arrays.asList(new IdValue("ID_MODE", "ID_MODE_NARROW"), new IdValue("ID_LEFT", "-200")));
+			} catch (RequestRejectedException e) {
+			//	e.printStackTrace();
+				rejected = true;
+			}
+			CachedPropertyStore cached = engine.getCachedPropertyStore();
+			assertEquals("10", cached.getProperty("ID_LEFT").getCurrentValue());	
+			assertEquals(true, rejected);
+		}
+		
+		// Current value became lager than max value becase max is changed.
+		try {
+			engine.requestChanges(Arrays.asList(new IdValue("ID_MODE", "ID_MODE_WIDE"), new IdValue("ID_LEFT", "70"), new IdValue("ID_MODE", "ID_MODE_NARROW")));
+			CachedPropertyStore cached = engine.getCachedPropertyStore();
+			assertEquals("50", cached.getProperty("ID_LEFT").getCurrentValue());	
+		} catch (RequestRejectedException e) {
+		//	e.printStackTrace();
 		}
 	}
 	
@@ -327,6 +419,22 @@ class DependencySpecTest {
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
 		}
+		
+		{
+			ObjectMapper mapper = new ObjectMapper();
+			try {
+				String s = mapper.writeValueAsString(specHolder);
+				Files.write(Paths.get("dependency.json"), Arrays.asList(s));
+				DependencySpecHolder obj = mapper.readValue(new File("dependency.json"), DependencySpecHolder.class);
+				
+			} catch (JsonGenerationException e) {
+				e.printStackTrace();
+			} catch (JsonMappingException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	@Test
@@ -339,7 +447,7 @@ class DependencySpecTest {
 		specBand.addOptionSelect("ID_BAND_MANUAL", "$ID_VALUE==$ID_VALUE");
 
 		DependencySpec specValue = new DependencySpec("ID_VALUE");
-		specValue.addValue("1234", "$ID_BAND==%ID_BAND_AUTO");
+		specValue.addValue("123", "$ID_BAND==%ID_BAND_AUTO");
 		
 		DependencySpecHolder specHolder = new DependencySpecHolder();
 		specHolder.addSpec(specBand);
@@ -358,7 +466,7 @@ class DependencySpecTest {
 		try {
 			engine.requestChange("ID_BAND", "ID_BAND_AUTO");
 			CachedPropertyStore cached = engine.getCachedPropertyStore();
-			assertEquals("1234", cached.getProperty("ID_VALUE").getCurrentValue());	
+			assertEquals("123", cached.getProperty("ID_VALUE").getCurrentValue());	
 			assertEquals("ID_BAND_AUTO", cached.getProperty("ID_BAND").getCurrentValue());	
 
 		} catch (RequestRejectedException e) {

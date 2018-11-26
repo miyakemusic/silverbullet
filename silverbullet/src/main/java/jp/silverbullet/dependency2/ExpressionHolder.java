@@ -10,6 +10,8 @@ import java.util.Set;
 public class ExpressionHolder {
 	private Map<String, List<Expression>> expressions = new HashMap<>();
 	
+	public ExpressionHolder() {}
+	
 	private void addExpression(String targetElement, Expression expression) {
 		if (!expressions.keySet().contains(targetElement)) {
 			expressions.put(targetElement, new ArrayList<Expression>());
@@ -116,6 +118,10 @@ public class ExpressionHolder {
 			}
 		}
 		return ret;
+	}
+
+	public void setExpressions(Map<String, List<Expression>> expressions) {
+		this.expressions = expressions;
 	}
 
 

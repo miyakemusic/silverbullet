@@ -87,12 +87,6 @@ class DependencySpecAnalyzerTest {
 			assertEquals(DependencySpec.OptionEnable + "#" + "ID_LEAF_C", parent.getChildLinks().get(1).getTargetElement());
 			assertEquals(DependencySpec.OptionEnable + "#" + "ID_LEAF_B", parent.getChildLinks().get(2).getTargetElement());
 			
-//			List<DependencyNode> parents = nodeRoot.getParents();
-//			assertEquals(1, parents.size());
-//			DependencyNode parent = parents.get(0);
-//			assertEquals(1, parent.getChildLinks().size());
-//			assertEquals(DependencySpec.Value, parent.getChildLinks().get(0).getTargetElement());
-			
 			List<GenericLink> links = analyzer.getLinkGenerator().generateLinks(LinkLevel.Detail);
 			for (GenericLink link : links) {
 				System.out.println(link.getFrom() + " " + link.getTo() + " " + link.getType());

@@ -7,8 +7,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class DependencySpecHolder {
 	private Map<String, DependencySpec> specs = new HashMap<>();
+	
+	public DependencySpecHolder() {
+	}
 	
 	public void addSpec(DependencySpec spec) {
 		this.specs.put(spec.getId(), spec);
@@ -52,10 +57,12 @@ public class DependencySpecHolder {
 		}
 	}
 
+	@JsonIgnore
 	public Set<String> getSpecIds() {
 		return this.specs.keySet();
 	}
 	
+	@JsonIgnore
 	public Set<String> getTriggerIds() {
 		Set<String> triggerIds = new HashSet<>();
 		for (DependencySpec spec : this.specs.values()) {
@@ -64,6 +71,7 @@ public class DependencySpecHolder {
 		return triggerIds;
 	}
 
+	@JsonIgnore
 	public Set<String> getAllIds() {
 		Set<String> ret  =new HashSet<>();
 		ret.addAll(this.getTriggerIds());
@@ -73,6 +81,14 @@ public class DependencySpecHolder {
 	
 	public boolean containsId(String id) {
 		return this.specs.keySet().contains(id);
+	}
+
+	public Map<String, DependencySpec> getSpecs() {
+		return specs;
+	}
+
+	public void setSpecs(Map<String, DependencySpec> specs) {
+		this.specs = specs;
 	}
 
 }

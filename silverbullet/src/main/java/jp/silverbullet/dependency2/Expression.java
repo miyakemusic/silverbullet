@@ -1,11 +1,15 @@
 package jp.silverbullet.dependency2;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class Expression {
 
 	private String value;
 	private String trigger;
 	private boolean valueCalculationEnabled;
 	private String condition;
+	
+	public Expression() {}
 	
 	public Expression(String value, String trigger, String condition) {
 		this.value = value;
@@ -25,6 +29,7 @@ public class Expression {
 		return value;
 	}
 
+	@JsonIgnore
 	public boolean isElse() {
 		return this.trigger.equals(DependencySpec.Else);
 	}

@@ -3,9 +3,13 @@ package jp.silverbullet.dependency2;
 import java.util.List;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class DependencySpecDetail {
 	
 	private ExpressionHolder expressions = new ExpressionHolder();
+	
+	public DependencySpecDetail() {}
 	
 	public void add(String targetElement, String enabled, String trigger, String condition) {
 		expressions.add(targetElement, new Expression(enabled, trigger, condition));
@@ -29,6 +33,7 @@ public class DependencySpecDetail {
 		return this.expressions.getExpressions(targetElement);
 	}
 
+	@JsonIgnore
 	public List<String> getTargetOptions() {
 		return this.expressions.getTargetOptions();
 	}
@@ -37,8 +42,18 @@ public class DependencySpecDetail {
 		return this.expressions.containsTarget(targetElement);
 	}
 
+	@JsonIgnore
 	public Set<String> getTriggerIds() {
 		return this.expressions.getTriggerIds();
 	}
+
+	public ExpressionHolder getExpressions() {
+		return expressions;
+	}
+
+	public void setExpressions(ExpressionHolder expressions) {
+		this.expressions = expressions;
+	}
+	
 
 }

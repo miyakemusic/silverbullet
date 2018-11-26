@@ -1,8 +1,9 @@
 package jp.silverbullet.dependency2;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class DependencySpec {
 
@@ -19,6 +20,8 @@ public class DependencySpec {
 	
 	private String id;
 	private DependencySpecDetail dependencySpecDetail = new DependencySpecDetail();
+	
+	public DependencySpec() {}
 	
 	public DependencySpec(String id) {
 		this.id = id;
@@ -94,6 +97,7 @@ public class DependencySpec {
 		return this.dependencySpecDetail.get(targetElement);
 	}
 
+	@JsonIgnore
 	public List<String> getTargetOptions() {
 		return this.dependencySpecDetail.getTargetOptions();
 	}
@@ -102,7 +106,18 @@ public class DependencySpec {
 		return this.dependencySpecDetail.containsTarget(targetElement);
 	}
 
+	@JsonIgnore
 	public Set<String> getTriggerIds() {
 		return this.dependencySpecDetail.getTriggerIds();
 	}
+
+	public DependencySpecDetail getDependencySpecDetail() {
+		return dependencySpecDetail;
+	}
+
+	public void setDependencySpecDetail(DependencySpecDetail dependencySpecDetail) {
+		this.dependencySpecDetail = dependencySpecDetail;
+	}
+	
+	
 }
