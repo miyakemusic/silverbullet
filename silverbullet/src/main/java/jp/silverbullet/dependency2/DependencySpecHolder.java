@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class DependencySpecHolder {
 	private Map<String, DependencySpec> specs = new HashMap<>();
+	private Map<String, Integer> priorityMap = new HashMap<>();
 	
 	public DependencySpecHolder() {
 	}
@@ -24,6 +25,7 @@ public class DependencySpecHolder {
 	}
 
 	public List<RuntimeDependencySpec> getRuntimeSpecs(String triggerId) {
+		int triggerPriority= this.getPriority(triggerId);
 		List<RuntimeDependencySpec> ret = new ArrayList<>();
 		for (DependencySpec spec : this.specs.values()) {
 			ExpressionHolder expressionHolder = spec.qualifies(triggerId);
@@ -31,7 +33,7 @@ public class DependencySpecHolder {
 			for (String target : expressionHolder.getExpressions().keySet()) {
 				List<RuntimeDependencySpec> tmp = new ArrayList<>();
 				for (Expression expression : expressionHolder.getExpressions().get(target)) {
-					tmp.add(new RuntimeDependencySpec(spec.getId(), target, expression));
+					tmp.add(new RuntimeDependencySpec(spec.getId(), target, expression, triggerPriority < this.getPriority(spec.getId())));
 				}
 				processElse(tmp);
 				ret.addAll(tmp);
@@ -89,6 +91,25 @@ public class DependencySpecHolder {
 
 	public void setSpecs(Map<String, DependencySpec> specs) {
 		this.specs = specs;
+	}
+
+	public void setPriority(String id, int priority) {
+		this.priorityMap.put(id, priority);
+	}
+
+	public int getPriority(String id) {
+		if (!this.priorityMap.keySet().contains(id)) {
+			return 0;
+		}
+		return this.priorityMap.get(id);
+	}
+	
+	public Map<String, Integer> getPriorityMap() {
+		return priorityMap;
+	}
+
+	public void setPriorityMap(Map<String, Integer> priorityMap) {
+		this.priorityMap = priorityMap;
 	}
 
 }

@@ -118,6 +118,5 @@ public class DependencySpec {
 	public void setDependencySpecDetail(DependencySpecDetail dependencySpecDetail) {
 		this.dependencySpecDetail = dependencySpecDetail;
 	}
-	
-	
+
 }

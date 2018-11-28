@@ -14,7 +14,6 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -525,5 +524,137 @@ class DependencySpecTest {
 			e.printStackTrace();
 		}
 	}
+	
+	@Test
+	void testStrongWeakList() {
+		DepPropertyStore store = createPropertyStore();
+		store.add(createListProperty("ID_STRONG", Arrays.asList("ID_STRONG_A", "ID_STRONG_B"), "ID_STRONG_A"));
+		store.add(createListProperty("ID_WEAK", Arrays.asList("ID_WEAK_A", "ID_WEAK_B"), "ID_WEAK_A"));
 
+		DependencySpec specStrong = new DependencySpec("ID_STRONG");
+		specStrong.addOptionEnabled("ID_STRONG_A", DependencySpec.True, "$ID_WEAK==%ID_WEAK_A");
+		specStrong.addOptionEnabled("ID_STRONG_A", DependencySpec.False, DependencySpec.Else);
+		
+		specStrong.addOptionEnabled("ID_STRONG_B", DependencySpec.True, "$ID_WEAK==%ID_WEAK_B");
+		specStrong.addOptionEnabled("ID_STRONG_B", DependencySpec.False, DependencySpec.Else);
+		
+		DependencySpec specWeak = new DependencySpec("ID_WEAK");
+		specWeak.addOptionEnabled("ID_WEAK_A", DependencySpec.True, "$ID_STRONG==%ID_STRONG_A");
+		specWeak.addOptionEnabled("ID_WEAK_A", DependencySpec.False, DependencySpec.Else);
+		specWeak.addOptionEnabled("ID_WEAK_B", DependencySpec.True, "$ID_STRONG==%ID_STRONG_B");
+		specWeak.addOptionEnabled("ID_WEAK_B", DependencySpec.False, DependencySpec.Else);
+		
+		DependencySpecHolder specHolder = new DependencySpecHolder();
+		specHolder.addSpec(specStrong);
+		specHolder.addSpec(specWeak);
+		
+		specHolder.setPriority("ID_WEAK", 99);
+		specHolder.setPriority("ID_STRONG", 100);
+		
+		DependencyEngine engine = new DependencyEngine(specHolder, store);
+		try {
+			store.getProperty("ID_WEAK").setCurrentValue("ID_WEAK_A");
+			engine.requestChange("ID_STRONG", "ID_STRONG_B");
+			CachedPropertyStore cached = engine.getCachedPropertyStore();
+			//assertEquals(true, cached.getProperty("ID_WEAK").isListElementMasked("ID_WEAK_A"));	
+			assertEquals("ID_WEAK_B", cached.getProperty("ID_WEAK").getCurrentValue());
+		} catch (RequestRejectedException e) {
+			e.printStackTrace();
+		}
+		
+		{
+			boolean rejected = false;
+			try {
+				store.getProperty("ID_STRONG").setCurrentValue("ID_STRONG_A");
+				engine.requestChange("ID_WEAK", "ID_WEAK_B");
+			} catch (RequestRejectedException e) {
+				rejected = true;
+			}
+			assertEquals(true, rejected);
+			CachedPropertyStore cached = engine.getCachedPropertyStore();
+			assertEquals("ID_STRONG_A", cached.getProperty("ID_STRONG").getCurrentValue());
+			
+		}
+	}
+	
+	@Test
+	void testStrongWeakMinMax() {
+		DepPropertyStore store = createPropertyStore();
+		store.add(createDoubleProperty("ID_VALUE", 0, "unit", -1000, 1000, 0));
+		store.add(createDoubleProperty("ID_VALUE_STRONG", 0, "unit", -1000, 1000, 0));
+		store.add(createListProperty("ID_STRONG", Arrays.asList("ID_STRONG_A", "ID_STRONG_B"), "ID_STRONG_A"));
+		
+		DependencySpec specValue = new DependencySpec("ID_VALUE");
+		specValue.addMin(-10, "$ID_STRONG==%ID_STRONG_A");
+
+		DependencySpecHolder specHolder = new DependencySpecHolder();
+		specHolder.addSpec(specValue);
+		
+		DependencyEngine engine = new DependencyEngine(specHolder, store);
+		try {
+			specHolder.setPriority("ID_VALUE", 10);
+			specHolder.setPriority("ID_STRONG", 11);
+			
+			store.getProperty("ID_VALUE").setCurrentValue("-100");
+			engine.requestChange("ID_STRONG", "ID_STRONG_A");
+			CachedPropertyStore cached = engine.getCachedPropertyStore();
+			assertEquals("-10", cached.getProperty("ID_VALUE").getCurrentValue());
+		} catch (RequestRejectedException e) {
+		}
+		
+		{
+			boolean rejected = false;
+			try {
+				specHolder.setPriority("ID_VALUE", 13);
+				specHolder.setPriority("ID_STRONG", 11);
+				
+				store.getProperty("ID_VALUE").setCurrentValue("-100");
+				engine.requestChange("ID_STRONG", "ID_STRONG_A");
+			} catch (RequestRejectedException e) {
+				rejected = true;
+			}
+			CachedPropertyStore cached = engine.getCachedPropertyStore();
+			assertEquals(true, rejected);
+			assertEquals("-100", cached.getProperty("ID_VALUE").getCurrentValue());
+		}
+	}
+	
+	@Test
+	void testCreateFile() {
+		DepPropertyStore store = createPropertyStore();
+		store.add(createDoubleProperty("ID_VALUE", 0, "unit", -1000, 1000, 0));
+		store.add(createDoubleProperty("ID_MIN", 0, "unit", -1000, 1000, 0));
+		store.add(createDoubleProperty("ID_MAX", 0, "unit", -1000, 1000, 0));
+		store.add(createListProperty("ID_STRONG", Arrays.asList("ID_STRONG_A", "ID_STRONG_B"), "ID_STRONG_A"));
+		store.add(createListProperty("ID_MODE", Arrays.asList("ID_MODE_A", "ID_MODE_B"), "ID_MODE_A"));
+		
+		DependencySpec specValue = new DependencySpec("ID_VALUE");
+		specValue.addMin(-10, "$ID_STRONG==%ID_STRONG_A", "$ID_MODE==%ID_MODE_A");
+		specValue.addMax(10, "$ID_STRONG==%ID_STRONG_B");
+		specValue.addEnable(DependencySpec.True, "$ID_STRONG==%ID_STRONG_A");
+		specValue.addEnable(DependencySpec.False, DependencySpec.Else);
+		specValue.addCalculation("$ID_MIN + $ID_MAX");
+		DependencySpec specStrong = new DependencySpec("ID_STRONG");
+		specStrong.addEnable(DependencySpec.True, "$ID_MODE==%ID_MODE_A");
+		specStrong.addEnable(DependencySpec.False, DependencySpec.Else);
+		specStrong.addValue("%ID_STRONG_B", "$ID_MIN > 10");
+		specStrong.addOptionEnabled("ID_STRONG_A", DependencySpec.True, "$ID_MODE==%ID_MODE_A");
+		specStrong.addOptionEnabled("ID_STRONG_A", DependencySpec.False, DependencySpec.Else);
+		
+		DependencySpecHolder specHolder = new DependencySpecHolder();
+		specHolder.addSpec(specValue);
+		specHolder.addSpec(specStrong);
+		
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			String s = mapper.writeValueAsString(specHolder);
+			Files.write(Paths.get("sample.json"), Arrays.asList(s));			
+		} catch (JsonGenerationException e) {
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }

@@ -1,8 +1,17 @@
 class JsMyTable {
 	constructor(div) {
+		this.div = div;
 		this.tableId = div + '_table';
 		$('#' + div).append('<table id="' + this.tableId + '"><thead></thead><tbody></tbody></table>');
+		$('#' + this.tableId).addClass('smalltable');
+		$('#' + this.tableId).css("table-layout","fixed");	
 		this.listenerRemove = function() {};
+	}
+	
+	setColWidth(width) {
+		for (var i = 0; i < width.length; i++) {
+			$('#' + this.tableId).append('<colgroup><col style="width:' + width[i] + 'x"></colgroup>');
+		}
 	}
 	
 	clear() {
@@ -49,8 +58,8 @@ class JsMyTable {
 				v = '--';
 			}
 			
-			var labelId = 'L' + row + '_' + k;
-			var editId = 'E' + row + '_' + k;
+			var labelId = me.div + '_L' + row + '_' + k;
+			var editId = me.div + '_E' + row + '_' + k;
 			
 			var label = '<label id="' + labelId + '"></label>';
 			var edit = '<input type="text" id="' + editId + '"></input>';
@@ -89,7 +98,7 @@ class JsMyTable {
 			});	
 		});		
 			
-		var removeId = 'R' + row;
+		var removeId = this.div + '_R' + row;
 		$('#' + me.tableId + ' > tbody tr:last').append('<td><button id="' + removeId + '">Remove</button></td>');	
 		$('#' + removeId).click(function() {
 			me.listenerRemove(row);

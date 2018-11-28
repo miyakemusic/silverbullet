@@ -10,11 +10,13 @@ public class RuntimeDependencySpec {
 	private List<RuntimeDependencySpec> elseSources = new ArrayList<>();
 	private boolean consumed = false;
 	private boolean executionConditionSatistied;
+	private boolean reject;
 	
-	public RuntimeDependencySpec(String id, String target, Expression expression) {
+	public RuntimeDependencySpec(String id, String target, Expression expression, boolean reject) {
 		this.id = id;
 		this.target = target;
 		this.expression = expression;
+		this.reject = reject;
 	}
 
 	public String getId() {
@@ -80,6 +82,10 @@ public class RuntimeDependencySpec {
 
 	public boolean isExecutionConditionSatistied() {
 		return executionConditionSatistied;
+	}
+
+	public boolean isReject() {
+		return reject;
 	}
 	
 }

@@ -105,7 +105,7 @@ public class DependencyEngine {
 				
 				// selects other one if current is masked
 				if (property.isListElementMasked(property.getCurrentValue())) {
-					if (requiresReject()) {
+					if (spec.isReject()) {
 						throw new RequestRejectedException(property.getId());
 					}
 					else {
@@ -123,7 +123,7 @@ public class DependencyEngine {
 			else if (spec.isMin()) {
 				String min = spec.getExpression().getValue();
 				if (this.isLeftLarger(min, property.getCurrentValue())) {
-					if (this.requiresReject()) {
+					if (spec.isReject()) {
 						throw new RequestRejectedException(property.getId());
 					}
 					else {
@@ -139,7 +139,7 @@ public class DependencyEngine {
 			else if (spec.isMax()) {
 				String max = spec.getExpression().getValue();
 				if (this.isLeftLarger(property.getCurrentValue(), max)) {
-					if (this.requiresReject()) {
+					if (spec.isReject()) {
 						throw new RequestRejectedException(property.getId());
 					}
 					else {
@@ -175,10 +175,6 @@ public class DependencyEngine {
 
 	private boolean isLeftLarger(String val1, String val2) {
 		return Double.valueOf(val1) > Double.valueOf(val2);
-	}
-
-	private boolean requiresReject() {
-		return false;
 	}
 
 	private void reselectNearestValue(SvProperty property) {
