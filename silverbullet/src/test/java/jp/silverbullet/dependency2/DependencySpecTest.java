@@ -473,7 +473,7 @@ class DependencySpecTest {
 		}
 		
 		DependencySpecAnalyzer analyzer = new DependencySpecAnalyzer(specHolder);
-		List<GenericLink> links = analyzer.getLinkGenerator().generateLinks(LinkLevel.Detail);
+		List<GenericLink> links = analyzer.getLinkGenerator().generateLinks(LinkLevel.Detail).getLinks();
 		for (GenericLink link : links) {
 			System.out.println(link.getFrom() + " " + link.getTo() + " " + link.getType());
 		}

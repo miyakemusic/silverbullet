@@ -23,5 +23,20 @@ public class GenericLink {
 		return type;
 	}
 
+	public boolean containsId(String id) {
+		return this.from.equals(id) || this.to.equals(id);
+	}
+
+	
+	@Override
+	public String toString() {
+		return this.from + "->" + this.to + ":" + this.type;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return obj.toString().equals(this.toString());
+	}
+	
 	
 }

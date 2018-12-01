@@ -1,18 +1,15 @@
 package jp.silverbullet.dependency2;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class DependencyNode {
 
 	private List<DependencyLink> childLinks = new ArrayList<>();
 	private List<DependencyLink> parentLinks = new ArrayList<>();
-	
+
 	private String id;
 	private DependencyNodeGenerator nodeGenerator;
 	

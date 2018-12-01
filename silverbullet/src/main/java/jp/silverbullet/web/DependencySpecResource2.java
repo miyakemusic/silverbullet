@@ -16,9 +16,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jp.silverbullet.StaticInstances;
 import jp.silverbullet.SvProperty;
+import jp.silverbullet.dependency.DepChainPair;
 import jp.silverbullet.dependency2.DependencySpec;
+import jp.silverbullet.dependency2.DependencySpecAnalyzer;
 import jp.silverbullet.dependency2.DependencySpecHolder;
 import jp.silverbullet.dependency2.Expression;
+import jp.silverbullet.dependency2.GenericLink;
+import jp.silverbullet.dependency2.GenericLinks;
+import jp.silverbullet.dependency2.LinkGenerator;
+import jp.silverbullet.dependency2.LinkGenerator.LinkLevel;
 import jp.silverbullet.dependency2.WebDataConverter;
 import jp.silverbullet.dependency2.WebDependencySpec;
 import jp.silverbullet.web.ui.PropertyGetter;
@@ -96,5 +102,18 @@ public class DependencySpecResource2 {
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<String> getIds() {
 		return StaticInstances.getInstance().getBuilderModel().getPropertyStore().getAllIds();
+	}
+	
+	@GET
+	@Path("/getLinks")
+	@Produces(MediaType.APPLICATION_JSON)
+	public GenericLinks getLinks(@QueryParam("id") final String id) {
+		LinkGenerator linkGenerator = new DependencySpecAnalyzer(StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder2()).getLinkGenerator();//.generateLinks(LinkLevel.Detail);//.filter(id).getLinks();
+		if ((id != null) && !id.isEmpty()) {
+			return linkGenerator.generateLinks(LinkLevel.Detail, id);
+		}
+		else {
+			return linkGenerator.generateLinks(LinkLevel.Detail);
+		}
 	}
 }

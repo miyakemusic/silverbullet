@@ -9,10 +9,11 @@ import java.util.Set;
 
 public class LinkGenerator {
 
-	enum LinkLevel {
+	public enum LinkLevel {
 		Detail,
 		Simple
 	}
+
 	private DependencyNodeHolder nodeHolder;
 	private List<Path> warningPaths = new ArrayList<>();
 	
@@ -20,7 +21,58 @@ public class LinkGenerator {
 		this.nodeHolder = nodeHolder;
 	}
 
-	public List<GenericLink> generateLinks(LinkLevel level) {
+	public GenericLinks generateLinks(LinkLevel level, String id) {
+		DependencyNode me = this.nodeHolder.getNode(id);
+		List<GenericLink> links = new ArrayList<>();
+		
+		createLink(me, links);
+		
+		boolean loop = false;
+		loop |= walkThroughtChild(me, links, new ArrayList<String>());
+		loop |= walkThroughtParent(me, links, new ArrayList<String>());
+		
+		return new GenericLinks(links, loop);
+	}
+
+	abstract class WalkThrough {
+		public boolean walk(DependencyNode me, List<GenericLink> links, ArrayList<String> experienced) {
+			if (experienced.contains(me.getId())) {
+				return false;
+			}
+			experienced.add(me.getId());
+			for (DependencyNode subNode : getSubNode(me)) {
+				createLink(subNode, links);
+				walkThroughtChild(subNode, links, new ArrayList<String>(experienced));
+			}
+			return true;			
+		}
+
+		abstract protected List<DependencyNode> getSubNode(DependencyNode me);
+	}
+	private boolean walkThroughtChild(DependencyNode me, List<GenericLink> links, ArrayList<String> experienced) {
+		return new WalkThrough() {
+			@Override
+			protected List<DependencyNode> getSubNode(DependencyNode me) {
+				return me.getChildren();
+			}
+		}.walk(me, links, experienced);
+	}
+	private boolean walkThroughtParent(DependencyNode me, List<GenericLink> links, ArrayList<String> experienced) {
+		return new WalkThrough() {
+			@Override
+			protected List<DependencyNode> getSubNode(DependencyNode me) {
+				return me.getParents();
+			}
+		}.walk(me, links, experienced);
+	}
+	
+	private void createLink(DependencyNode node, List<GenericLink> links) {
+		for (DependencyLink child : node.getChildLinks()) {
+			createLink(node.getId(), child.getId(), child.getTargetElement(), links);
+		}
+	}
+
+	public GenericLinks generateLinks(LinkLevel level) {
 		List<GenericLink> links = new ArrayList<>();
 		for (DependencyNode node : this.nodeHolder.getAllNodes()) {
 			for (DependencyLink child : node.getChildLinks()) {
@@ -52,7 +104,7 @@ public class LinkGenerator {
 			links = links2;
 		}
 
-		return links;
+		return new GenericLinks(links, false);
 	}
 
 	private void analyzeWarning(DependencyNode initialNode, DependencyNode node, Path path) {
@@ -68,7 +120,13 @@ public class LinkGenerator {
 	}
 
 	private void createLink(String from, String to, String targetElement, List<GenericLink> links) {
-		links.add(new GenericLink(from, to, targetElement));
+		GenericLink newLink = new GenericLink(from, to, targetElement);
+		for (GenericLink link : links) {
+			if (link.equals(newLink)) {
+				return;
+			}
+		}
+		links.add(newLink);
 	}
 
 	public List<Path> getWarningPaths() {
