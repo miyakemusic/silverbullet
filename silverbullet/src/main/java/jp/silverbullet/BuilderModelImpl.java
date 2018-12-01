@@ -40,6 +40,7 @@ public class BuilderModelImpl implements BuilderModel {
 	private static final String USERSTORY_XML = "userstory.xml";
 	private static final String REGISTERSHORTCUT = "registershortcuts.xml";
 	private static final String DEPENDENCYSPEC2_XML = "dependencyspec2.xml";
+	private static final String DEPENDENCYSPEC3_XML = "dependencyspec3.xml";
 
 	private List<String> selectedId;
 	private SvPropertyStore store;
@@ -51,6 +52,7 @@ public class BuilderModelImpl implements BuilderModel {
 	private SvTexHolder texHolder = new SvTexHolder();
 	private RegisterProperty registerProperty = new RegisterProperty();
 	private DependencySpecHolder dependencySpecHolder = new DependencySpecHolder();
+	private jp.silverbullet.dependency2.DependencySpecHolder dependencySpecHolder2 = new jp.silverbullet.dependency2.DependencySpecHolder();
 	private SpecElement userStory = new SpecElement();
 	private RegisterShortCutHolder registerShortCuts = new RegisterShortCutHolder();
 	private UiLayoutHolder uiLayoutHolder = new UiLayoutHolder(new PropertyGetter() {
@@ -258,12 +260,18 @@ public class BuilderModelImpl implements BuilderModel {
 		this.userStory = load(SpecElement.class, folder + "/" + USERSTORY_XML);
 		this.registerShortCuts = load(RegisterShortCutHolder.class, folder + "/" + REGISTERSHORTCUT);
 		this.dependencySpecHolder = load(DependencySpecHolder.class, folder + "/" + DEPENDENCYSPEC2_XML);
-
+		this.dependencySpecHolder2 = loadJson(jp.silverbullet.dependency2.DependencySpecHolder.class, folder + "/" + DEPENDENCYSPEC3_XML);
+		
 //		dependencySpecHolder = new AlternativeDependencyGenerator().convert(dependencySpecHolder);
 		
 		uiLayoutHolder.load(folder);
 
 		// UiLayout.getInstance().initialize();
+	}
+
+	private <T> T  loadJson(
+			Class<T> clazz, String filename) {
+		return new JsonPersistent().loadJson(clazz, filename);
 	}
 
 	@Override
@@ -288,8 +296,13 @@ public class BuilderModelImpl implements BuilderModel {
 		save(this.userStory, SpecElement.class, folder + "/" + USERSTORY_XML);
 		save(this.registerShortCuts, RegisterShortCutHolder.class, folder + "/" + REGISTERSHORTCUT);
 		save(this.dependencySpecHolder, DependencySpecHolder.class, folder + "/" + DEPENDENCYSPEC2_XML);
+		saveJson(this.dependencySpecHolder2, folder + "/" + DEPENDENCYSPEC3_XML);
 		// saveJson(this.uiLayout, folder + "/" + "default.ui");
 		this.uiLayoutHolder.save(folder);
+	}
+
+	private void saveJson(Object object, String filename) {
+		new JsonPersistent().saveJson(object, filename);
 	}
 
 	@Override
@@ -399,6 +412,12 @@ public class BuilderModelImpl implements BuilderModel {
 		return dependencySpecHolder;
 	}
 
+	@Override
+	public
+	jp.silverbullet.dependency2.DependencySpecHolder getDependencySpecHolder2() {
+		return dependencySpecHolder2;
+	}
+	
 	@Override
 	public RegisterShortCutHolder getRegisterShortCut() {
 		return this.registerShortCuts;

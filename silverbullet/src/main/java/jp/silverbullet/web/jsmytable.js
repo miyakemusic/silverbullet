@@ -1,5 +1,11 @@
 class JsMyTable {
-	constructor(div) {
+	constructor(div, colDef) {
+		if (colDef == null) {
+			colDef = function(col, arg) {
+				return "";
+			}
+		}
+		this.colDef = colDef;
 		this.div = div;
 		this.tableId = div + '_table';
 		$('#' + div).append('<table id="' + this.tableId + '"><thead></thead><tbody></tbody></table>');
@@ -12,6 +18,14 @@ class JsMyTable {
 		for (var i = 0; i < width.length; i++) {
 			$('#' + this.tableId).append('<colgroup><col style="width:' + width[i] + 'x"></colgroup>');
 		}
+	}
+	
+	setButtonListener(buttonListener) {
+		this.buttonListener = buttonListener;
+	}
+	
+	setSelectListener(selectListener) {
+		this.selectListener = selectListener;
 	}
 	
 	clear() {
@@ -49,53 +63,95 @@ class JsMyTable {
 	}
 	
 	appendRow(row, data) {
+	
+		function getRow(s) {
+			var tmp = s.split('_');
+			return tmp[tmp.length - 2];
+		}
+		function getCol(s) {
+			var tmp = s.split('_');
+			return tmp[tmp.length - 1];
+		}
 		var me = this;
 	
 		$('#' + this.tableId  + '> tbody').append('<tr></tr>');
 		
 		$.each(data, function(k, v) {
 			if (v == null || v == '') {
-				v = '--';
+				v = '';
 			}
 			
-			var labelId = me.div + '_L' + row + '_' + k;
-			var editId = me.div + '_E' + row + '_' + k;
+			var tdId = me.div + '_' + row + '_' + k;
+			var labelId = 'label_' + tdId; //me.div + '_L' + row + '_' + k;
+			var editId = 'edit_' + tdId; //me.div + '_E' + row + '_' + k;
 			
-			var label = '<label id="' + labelId + '"></label>';
-			var edit = '<input type="text" id="' + editId + '"></input>';
-			$('#' + me.tableId + ' > tbody tr:last').append('<td>' + label + edit + '</td>');
+			$('#' + me.tableId + ' > tbody tr:last').append('<td id="' + tdId + '"></td>');
 			
-			$('#' + labelId).text(v);
-			$('#' + editId).val(v);
-			
-			$('#' + labelId).show();
-			$('#' + editId).hide();
-			
-			$('#' + labelId).click(function() {
-				$('#' + labelId).hide();
-				$('#' + editId).show();			
-			});
-			$('#' + editId).keydown(function(event) {
-				if (event.altKey) {
-					if (event.which == 13) {
-						$('#' + editId).val($('#' + editId).val() + '\n');
+			var type = me.colDef(k, 'type');
+			if (type == 'button') {
+				var buttonId = 'button_' + tdId;
+				$('#' + tdId).append('<button id="' + buttonId + '">' + me.colDef(k, 'name') + '</button>');
+				$('#' + buttonId).text(v);
+				
+				$('#' + buttonId).click(function() {
+					if (me.buttonListener != null) {
+						me.buttonListener(getRow(tdId), getCol(tdId), v);
 					}
-				} 
-				else if (event.which == 13) { // Enter
-					$('#' + labelId).show();
-					$('#' + editId).hide();
-					$('#' + labelId).text($('#' + editId).val().replace('\n','<br>'));
-					me.listenerChange(row, k, $('#' + editId).val());
+				});
+			}
+			else if (type == 'select') {
+				var listId = 'list_' + tdId;
+				$('#' + tdId).append('<select id="' + listId + '"></select>');
+				var options = me.colDef(k, 'options');
+				for (var i = 0; i < options.length; i++) {
+					$('#' + listId).append($('<option>').html(options[i]).val(options[i]));
 				}
-				else if (event.which == 27) { // Cancel
-					$('#' + labelId).show();
-					$('#' + editId).hide();
-				}
-			});	
-			$('#' + editId).focusout(function() {
+				$('#' + listId).val(v);
+				$('#' + listId).change(function() {
+					if (me.selectListener != null) {
+						me.selectListener(getRow(tdId), getCol(tdId), $(this).val());
+					}
+				});
+
+			}
+			else {
+				$('#' + tdId).append('<label id="' + labelId + '"></label>');
+				$('#' + tdId).append('<input type="text" id="' + editId + '"></input>');
+				$('#' + labelId).text(v);
+				$('#' + editId).val(v);
+				
 				$('#' + labelId).show();
 				$('#' + editId).hide();
-			});	
+				
+				$('#' + labelId).click(function() {
+					$('#' + labelId).hide();
+					$('#' + editId).show();			
+				});
+				$('#' + editId).keydown(function(event) {
+					if (event.altKey) {
+						if (event.which == 13) {
+							$('#' + editId).val($('#' + editId).val() + '\n');
+						}
+					} 
+					else if (event.which == 13) { // Enter
+						$('#' + labelId).show();
+						$('#' + editId).hide();
+						$('#' + labelId).text($('#' + editId).val().replace('\n','<br>'));
+						me.listenerChange(row, k, $('#' + editId).val());
+					}
+					else if (event.which == 27) { // Cancel
+						$('#' + labelId).show();
+						$('#' + editId).hide();
+					}
+				});	
+				$('#' + editId).focusout(function() {
+					$('#' + labelId).show();
+					$('#' + editId).hide();
+				});	
+			}
+//			$('#' + me.tableId + ' > tbody tr:last').append('<td>' + label + edit + custom + '</td>');
+			
+
 		});		
 			
 		var removeId = this.div + '_R' + row;

@@ -94,4 +94,6 @@ public interface BuilderModel {
 
 	RegisterMapModel getRegisterMapModel();
 	void switchDependency(String type);
+
+	jp.silverbullet.dependency2.DependencySpecHolder getDependencySpecHolder2();
 }

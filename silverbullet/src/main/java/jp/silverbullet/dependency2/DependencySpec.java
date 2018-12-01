@@ -9,15 +9,15 @@ public class DependencySpec {
 
 	public static final String True = "True";
 	public static final String False = "False";
+	public static final String Else = "*Else";
+	
 	public static final String Value = "Value";
 	public static final String Enable = "Enable";
 	public static final String OptionEnable = "OptionEnable";
-	
 	public static final String Min = "Min";
 	public static final String Max = "Max";
-	
-	public static final String Else = "*Else";
-	
+	public static final String Null = "---";
+		
 	private String id;
 	private DependencySpecDetail dependencySpecDetail = new DependencySpecDetail();
 	
@@ -94,6 +94,9 @@ public class DependencySpec {
 	}
 
 	public List<Expression> getExpression(String targetElement) {
+		if (targetElement.startsWith(this.id)) {
+			targetElement = DependencySpec.OptionEnable + "#" + targetElement;
+		}
 		return this.dependencySpecDetail.get(targetElement);
 	}
 

@@ -21,6 +21,9 @@ public class DependencySpecHolder {
 	}
 
 	public DependencySpec getSpec(String id) {
+		if (!this.specs.keySet().contains(id)) {
+			this.specs.put(id, new DependencySpec(id));
+		}
 		return this.specs.get(id);
 	}
 

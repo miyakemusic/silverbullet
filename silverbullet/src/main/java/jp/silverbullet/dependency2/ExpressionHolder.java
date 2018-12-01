@@ -103,6 +103,9 @@ public class ExpressionHolder {
 			return ret;
 		}
 		else {
+			if (!this.expressions.containsKey(targetElement)) {
+				this.expressions.put(targetElement, new ArrayList<Expression>());
+			}
 			return this.expressions.get(targetElement);
 		}
 	}

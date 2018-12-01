@@ -2,9 +2,7 @@ package jp.silverbullet.web;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Arrays;
+import java.util.List;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -18,10 +16,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jp.silverbullet.StaticInstances;
 import jp.silverbullet.SvProperty;
-import jp.silverbullet.dependency.DepPropertyStore;
+import jp.silverbullet.dependency2.DependencySpec;
 import jp.silverbullet.dependency2.DependencySpecHolder;
+import jp.silverbullet.dependency2.Expression;
 import jp.silverbullet.dependency2.WebDataConverter;
 import jp.silverbullet.dependency2.WebDependencySpec;
+import jp.silverbullet.web.ui.PropertyGetter;
 
 @Path("/dependencySpec2")
 public class DependencySpecResource2 {
@@ -45,19 +45,56 @@ public class DependencySpecResource2 {
 	@Path("/getSpec")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public WebDependencySpec getSpec(@QueryParam("id") final String id) {
-		WebDataConverter converter = new WebDataConverter(loadSpec(), new DepPropertyStore() {
+		DependencySpecHolder holder = StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder2();
+		WebDataConverter converter = new WebDataConverter(holder, new PropertyGetter() {
 			@Override
 			public SvProperty getProperty(String id) {
 				return StaticInstances.getInstance().getBuilderModel().getProperty(id);
-			}
-
-			@Override
-			public void add(SvProperty createListProperty) {
-				// TODO Auto-generated method stub
-				
-			}
-			
+			}			
 		});
 		return converter.getSpec(id);
+	}
+	
+	@GET
+	@Path("/updateSpec")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String updateSpec(@QueryParam("id") final String id, @QueryParam("element") String element, 
+			@QueryParam("row") final Integer row, @QueryParam("col") final String col, @QueryParam("value") final String value) {
+	
+		DependencySpecHolder holder = StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder2();
+		DependencySpec spec = holder.getSpec(id);
+		
+//		if (element.startsWith(id)) {
+//			element = DependencySpec.OptionEnable + "#" + element;
+//		}
+		List<Expression> expressions = spec.getExpression(element);
+		Expression exp = null;
+		if (expressions.size() <= row) {
+			exp = new Expression();
+			expressions.add(exp);
+		}
+		else {
+			exp = expressions.get(row);
+		}
+		if (col.equals(DependencySpec.Value)) {
+			exp.setValue(value);
+		}
+		else if (col.equals(Expression.Trigger)) {
+			exp.setTrigger(value);
+		}
+		else if (col.equals(Expression.Condition)) {
+			exp.setCondition(value);
+		}
+		else {
+			
+		}
+		return "";
+	}
+	
+	@GET
+	@Path("/getIds")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public List<String> getIds() {
+		return StaticInstances.getInstance().getBuilderModel().getPropertyStore().getAllIds();
 	}
 }

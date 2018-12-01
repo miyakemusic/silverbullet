@@ -6,6 +6,9 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
+import jp.silverbullet.SvProperty;
+import jp.silverbullet.web.ui.PropertyGetter;
+
 class WebDataConverterTest {
 
 	@Test
@@ -34,7 +37,12 @@ class WebDataConverterTest {
 		DependencySpecHolder specHolder = new DependencySpecHolder();
 		specHolder.addSpec(spec);
 		
-		WebDataConverter converter = new WebDataConverter(specHolder, store);
+		WebDataConverter converter = new WebDataConverter(specHolder, new PropertyGetter() {
+			@Override
+			public SvProperty getProperty(String id) {
+				return store.getProperty(id);
+			}
+		});
 		WebDependencySpec webSpec = converter.getSpec("ID_MIDDLE");
 		
 	}

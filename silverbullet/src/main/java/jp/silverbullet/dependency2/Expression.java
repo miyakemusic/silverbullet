@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Expression {
 
+	public static final String Trigger = "Trigger";
+	public static final String Condition = "Condition";
+	
 	private String value;
 	private String trigger;
 	private boolean valueCalculationEnabled;
@@ -52,6 +55,10 @@ public class Expression {
 
 	public void setCondition(String condition) {
 		this.condition = condition;
+	}
+
+	public void setTrigger(String trigger) {
+		this.trigger = trigger;
 	}
 	
 }

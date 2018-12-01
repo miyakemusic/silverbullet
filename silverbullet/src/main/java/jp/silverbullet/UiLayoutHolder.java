@@ -54,55 +54,16 @@ public class UiLayoutHolder {
 		}
 	}
 
+	private UiLayout loadJson(Class<UiLayout> class1, String filename) {
+		return new JsonPersistent().loadJson(class1, filename);
+	}	
+
 	public void save(String folder) {
 		this.layouts.forEach((filename, uilayout) -> saveJson(uilayout, folder + "/" + filename));
 	}
-	
-	private <T> T loadJson(Class<T> clazz, String filename) {
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			T ret = mapper.readValue(new File(filename), clazz);
-			if (ret == null) {
-				try {
-					ret = clazz.newInstance();
-				} catch (InstantiationException | IllegalAccessException e) {
-					e.printStackTrace();
-				}
-			}
-			return ret;
-		} catch (JsonParseException e) {
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (Exception e2) {
-			e2.printStackTrace();
-		}
-
-		try {
-			return clazz.newInstance();
-		} catch (InstantiationException | IllegalAccessException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
-	private void saveJson(Object object, String filename) {
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			String s = mapper.writeValueAsString(object);
-			Files.write(Paths.get(filename), Arrays.asList(s));
-		} catch (JsonGenerationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
+	private void saveJson(UiLayout uilayout, String filename) {
+		new JsonPersistent().saveJson(uilayout, filename);;
 	}
 
 	public UiLayout getCurrentUi() {
