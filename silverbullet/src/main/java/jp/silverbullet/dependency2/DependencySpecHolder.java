@@ -115,4 +115,9 @@ public class DependencySpecHolder {
 		this.priorityMap = priorityMap;
 	}
 
+	public void changeId(String prevId, String newId) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

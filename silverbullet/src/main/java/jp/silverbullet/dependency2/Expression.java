@@ -34,7 +34,7 @@ public class Expression {
 
 	@JsonIgnore
 	public boolean isElse() {
-		return this.trigger.equals(DependencySpec.Else);
+		return this.trigger.equalsIgnoreCase(DependencySpec.Else);
 	}
 
 	public void setValue(String value) {
@@ -59,6 +59,11 @@ public class Expression {
 
 	public void setTrigger(String trigger) {
 		this.trigger = trigger;
+	}
+
+	@JsonIgnore
+	public boolean isConditionEnabled() {
+		return (this.condition != null) && !this.condition.isEmpty();
 	}
 	
 }

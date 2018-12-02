@@ -289,11 +289,15 @@ class JsWidget {
 	}
 	
 	requestChange(id, value, dependency) {
+		var me = this;
 		$.ajax({
 		   type: "GET", 
 		   url: "http://" + window.location.host + "/rest/design/setValue?id="+id + "&value=" + value,
 		   success: function(msg){
-				dependency(msg);
+				dependency(msg.debugLog);
+				if (msg.result == 'Rejected') {
+					me.updateValue();
+				}
 		   }
 		});	
 	}

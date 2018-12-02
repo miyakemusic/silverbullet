@@ -1,12 +1,15 @@
 package jp.silverbullet.dependency2;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import jp.silverbullet.SvProperty;
 import jp.silverbullet.dependency.CachedPropertyStore;
+import jp.silverbullet.dependency.ChangedItemValue;
 import jp.silverbullet.dependency.DepPropertyStore;
+import jp.silverbullet.dependency.DependencyListener;
 import jp.silverbullet.dependency.ExpressionCalculator;
 import jp.silverbullet.dependency.RequestRejectedException;
 import jp.silverbullet.property.ListDetailElement;
@@ -18,6 +21,7 @@ public class DependencyEngine {
 	private CachedPropertyStore cachedPropertyStore;
 	private ExpressionCalculator calculator;
 	private String userChangedId;
+	private List<DependencyListener> listeners = new ArrayList<>();
 	
 	public DependencyEngine(DependencySpecHolder specHolder, DepPropertyStore store) {
 		this.store = store;
@@ -27,7 +31,6 @@ public class DependencyEngine {
 			protected SvProperty getProperty(String id) {
 				return cachedPropertyStore.getProperty(id);
 			}
-			
 		};
 	}
 
@@ -36,16 +39,34 @@ public class DependencyEngine {
 		for (IdValue idValue : idValues) {
 			changeValue(idValue.getId(), idValue.getValue());
 		}
+		
+		this.cachedPropertyStore.commit();
+		fireCompleteEvent();
 	}
 	
 	public void requestChange(String id, String value) throws RequestRejectedException {
+		for (DependencyListener listener : this.listeners) {
+			listener.onStart(id, value);
+		}
 		this.cachedPropertyStore = new CachedPropertyStore(store);
 		changeValue(id, value);
+		
+		this.cachedPropertyStore.commit();
+		fireCompleteEvent();
+	}
+
+	private void fireCompleteEvent() {
+		String changedIds = this.getChangedIds().toString().replace("[", "").replace("]", "").replaceAll(" ", "");
+		if (!changedIds.isEmpty()) {
+			for (DependencyListener listener : this.listeners) {
+				listener.onCompleted(changedIds);
+			}
+		}
 	}
 
 	private void changeValue(String id, String value) throws RequestRejectedException {
 		this.userChangedId = id;
-		ChangedProperties prevChangedProperties = new ChangedProperties(Arrays.asList(id));
+		ChangedProperties prevChangedProperties = new ChangedProperties(new ArrayList<String>(Arrays.asList(id)));
 		this.cachedPropertyStore.addCachedPropertyStoreListener(prevChangedProperties);
 		setCurrentValue(cachedPropertyStore.getProperty(id), value);
 		handle(id, value);
@@ -87,7 +108,7 @@ public class DependencyEngine {
 				}
 			}
 			
-			if (!spec.getExpression().getCondition().isEmpty()) {
+			if (spec.getExpression().isConditionEnabled()) {
 				spec.setExecutionConditionSatistied(Boolean.valueOf(calculator.calculate("ret=" + spec.getExpression().getCondition())));
 			}
 			if (!spec.isExecutionConditionSatistied()) {
@@ -98,7 +119,7 @@ public class DependencyEngine {
 			if (spec.isOptionEnabled()) {
 				for (ListDetailElement e: property.getListDetail()) {
 					if (e.getId().equals(spec.getTargetOption())) {
-						property.addListMask(e.getId(), !spec.getExpression().getValue().equals(DependencySpec.True));
+						property.addListMask(e.getId(), !spec.getExpression().getValue().equalsIgnoreCase(DependencySpec.True));
 						break;
 					}
 				}
@@ -114,10 +135,13 @@ public class DependencyEngine {
 				}
 			}
 			else if (spec.isEnable()) {
-				property.setEnabled(spec.getExpression().getValue().equals(DependencySpec.True));
+				property.setEnabled(spec.getExpression().getValue().equalsIgnoreCase(DependencySpec.True));
 			}
 			else if (spec.isValue()) {
 				String val = spec.getExpression().getValue();
+				if (property.isListProperty()) {
+					val = val.replace("%", "");
+				}
 				setCurrentValue(property, val);
 			}
 			else if (spec.isMin()) {
@@ -207,6 +231,22 @@ public class DependencyEngine {
 
 	public CachedPropertyStore getCachedPropertyStore() {
 		return this.cachedPropertyStore;
+	}
+
+	public List<String> getDebugLog() {
+		return cachedPropertyStore.getDebugLog();
+	}
+
+	public List<String> getChangedIds() {
+		return cachedPropertyStore.getChangedIds();
+	}
+
+	public Map<String, List<ChangedItemValue>> getChagedItems() {
+		return cachedPropertyStore.getChangedHistory();
+	}
+
+	public void addDependencyListener(DependencyListener dependencyListener) {
+		listeners .add(dependencyListener);
 	}
 
 }

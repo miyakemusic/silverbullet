@@ -15,8 +15,8 @@ public class PropertyDef implements Cloneable {
 	public PropertyDef clone() {
 		try {
 			PropertyDef ret = (PropertyDef)super.clone();
-			List<String> others = new ArrayList<String>();
-			others.addAll(this.others);
+			List<String> others = new ArrayList<String>(this.others);
+			//others.addAll(this.others);
 			List<ListDetailElement> elements = new ArrayList<ListDetailElement>();
 			for (ListDetailElement e : this.listDetail) {
 				elements.add(e.clone());
@@ -170,7 +170,12 @@ public class PropertyDef implements Cloneable {
 	}
 	public void updateArgument(int index, String value) {
 		if (this.others.size() > index) {
+			try {
 			this.others.remove(index);
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+			}
 		}
 		this.others.add(index, value);
 	}

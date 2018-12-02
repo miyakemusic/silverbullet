@@ -15,7 +15,7 @@ public class LinkGenerator {
 	}
 
 	private DepChainPair[] createDependencyLink(final String id) {
-		DependencySpecHolder holder = StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder();
+		DependencySpecHolder holder = null;//StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder();
 		DependencyBuilder builder = new DependencyBuilder(id, holder);
 
 		Set<DepChainPair> set = new LinkedHashSet<>();

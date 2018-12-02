@@ -1,26 +1,27 @@
 class DependencyClass2 {
 	constructor(div) {
 		var me = this;
-		var rootId = div + "_root";
-		var idsId = rootId + '_ids';
-		$('#' + div).append('<select id="' + idsId + '"></select>');
+		this.rootId = div + "_root";
+		this.idsId = me.rootId + '_ids';
+		$('#' + div).append('<select id="' + this.idsId + '"></select>');
+		
+		var diagramActive = false;
 		
 		var idDiagramButton = div + "_diagamButton";
 		$('#' + div).append('<button id="' + idDiagramButton + '">Show Diagram</button>');
 		$('#' + idDiagramButton).click(function() {
 			$('#' + idDiagram).dialog('open');
+			diagramActive = true;
 		});
 		
-		var idAll = div + '_all';
+		this.idAll = div + '_all';
 		this.idLoop = div + '_loop';
-		$('#' + div).append('Show All IDs on diagram<input type="checkbox" id="' + idAll + '"></input><label id="' + me.idLoop + '"></label>');
-		$('#' + idAll).change(function() {
-			if ($(this).prop('checked') == true) {
-				me.updateLink('');
+		$('#' + div).append('Show All IDs on diagram<input type="checkbox" id="' + me.idAll + '"></input>');
+		$('#' + me.idAll).change(function() {
+			if (diagramActive == false) {
+				return;
 			}
-			else {
-				me.updateLink($('#' + idsId).val());
-			}
+			me.updateLink();
 		});
 		
 		$.ajax({
@@ -29,18 +30,18 @@ class DependencyClass2 {
 		   success: function(msg) {
 		   		for (var i = 0; i < msg.length; i++) {
 					var id = msg[i];
-					$('#' + idsId).append($('<option>').text(id).val(id));
+					$('#' + me.idsId).append($('<option>').text(id).val(id));
 				}
-				$('#' + idsId).change(function() {
+				$('#' + me.idsId).change(function() {
 					var sel = $(this).val();
 					editor.update(sel);
-					me.updateLink(sel);
+					me.updateLink();
 				});
 		   }
 		});	
 
-		$('#' + div).append('<div id="' + rootId + '"></div>');
-		var editor = new DependencySpecEditor(rootId);
+		$('#' + div).append('<div id="' + me.rootId + '"></div>');
+		var editor = new DependencySpecEditor(me.rootId);
 
 		var idSpecDialog = div + "_specDialog";
 		$('#' + div).append('<div id="' + idSpecDialog + '">' +
@@ -63,29 +64,35 @@ class DependencyClass2 {
 //			height: 600
 		});	
 		
-		var idDiagram = rootId + '_diagram';
-		$('#' + div).append('<div id="' + idDiagram + '" style="width:1000px; height:300px; background-color: #DAE4E4;">Diagram</div>');
+		var idDiagram = me.rootId + '_diagram';
+		$('#' + div).append('<div id="' + idDiagram + '"></div>');
+		
+		var idDiagramInfo = me.rootId + '_diagramInfo';
+		var idDiagramContent = me.rootId + '_diagramContent';
+		$('#' + idDiagram).append('<div><label id="' + me.idLoop + '"></label></div>');
+		$('#' + idDiagram).append('<div id="' + idDiagramContent + '" style="width:1000px; height:300px; background-color: #DAE4E4;"></div>');
 		$('#' + idDiagram).dialog({
-			  autoOpen: false,
-			  title: 'Diagram',
-			  closeOnEscape: true,
-			  modal: false,
-//			  buttons: {
-//			    "OK": function(){
-//			      $(this).dialog('close');
-//			    }
-//			    ,
-//			    "Cancel": function(){
-//			      $(this).dialog('close');
-//			    }
-//			  },
+			autoOpen: false,
+			title: 'Diagram',
+			closeOnEscape: true,
+			modal: false,
+			close: function() {
+				diagramActive = false;
+			},
 			width: 800,
-//			height: 600
+			height: 600
 		});
-		this.diagram = new DependencyDiagram2(idDiagram);	
+		this.diagram = new DependencyDiagram2(idDiagramContent);	
 	}
 	
-	updateLink(id) {
+	updateLink() {
+		var id = $('#' + this.idsId).val();
+		var all = $('#' + this.idAll).prop('checked');
+		
+		if (all == true) {
+			id = '';
+		}
+		
 		var me = this;
 		$.ajax({
 		   type: "GET", 
@@ -104,12 +111,12 @@ class DependencyClass2 {
 				
 				me.diagram.draw(link)
 				
-				if (msg.loop == true) {
-					$('#' + me.idLoop).html('<font color="red"><b>loop</b></font>');
+				var html = 'LOOP: ';
+				for (var i = 0; i < msg.loops.length; i++) {
+					html += msg.loops[i] + " / ";
 				}
-				else {
-					$('#' + me.idLoop).html('');
-				}
+				$('#' + me.idLoop).html(html);
+
 		   }
 		});	
 	}

@@ -1,7 +1,6 @@
 package jp.silverbullet.web;
 
 import java.io.IOException;
-import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
 
@@ -13,10 +12,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.silverbullet.StaticInstances;
 import jp.silverbullet.dependency.ChangedItemValue;
 import jp.silverbullet.dependency.DependencyListener;
-import jp.silverbullet.register.RegisterBit;
 import jp.silverbullet.register.RegisterMapListener;
 import jp.silverbullet.register.RegisterUpdates;
-import jp.silverbullet.register.SvRegister;
 import jp.silverbullet.test.TestRecorderListener;
 
 public class WebClientManager {

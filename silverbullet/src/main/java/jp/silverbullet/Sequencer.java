@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.Set;
 
 import jp.silverbullet.dependency.ChangedItemValue;
-import jp.silverbullet.dependency.DependencyEngine;
 import jp.silverbullet.dependency.DependencyInterface;
 import jp.silverbullet.dependency.DependencyListener;
 import jp.silverbullet.dependency.RequestRejectedException;
+import jp.silverbullet.dependency2.DependencyEngine;
 import jp.silverbullet.handlers.AbstractSvHandler;
 import jp.silverbullet.handlers.CommonSvHandler;
 import jp.silverbullet.handlers.EasyAccessModel;

@@ -48,6 +48,48 @@ class DependencySpecTest {
 	private SvProperty createListProperty(String id, List<String> asList, String defaultId) {
 		return new SvPropertyFactory().getListProperty(id, asList, defaultId);
 	}
+		
+	@Test
+	void testStrongWeakMinMax() {
+		DepPropertyStore store = createPropertyStore();
+		store.add(createDoubleProperty("ID_VALUE", 0, "unit", -1000, 1000, 0));
+		store.add(createDoubleProperty("ID_VALUE_STRONG", 0, "unit", -1000, 1000, 0));
+		store.add(createListProperty("ID_STRONG", Arrays.asList("ID_STRONG_A", "ID_STRONG_B"), "ID_STRONG_A"));
+		
+		DependencySpec specValue = new DependencySpec("ID_VALUE");
+		specValue.addMin(-10, "$ID_STRONG==%ID_STRONG_A");
+
+		DependencySpecHolder specHolder = new DependencySpecHolder();
+		specHolder.addSpec(specValue);
+		
+		DependencyEngine engine = new DependencyEngine(specHolder, store);
+		try {
+			specHolder.setPriority("ID_VALUE", 10);
+			specHolder.setPriority("ID_STRONG", 11);
+			
+			store.getProperty("ID_VALUE").setCurrentValue("-100");
+			engine.requestChange("ID_STRONG", "ID_STRONG_A");
+			CachedPropertyStore cached = engine.getCachedPropertyStore();
+			assertEquals("-10", cached.getProperty("ID_VALUE").getCurrentValue());
+		} catch (RequestRejectedException e) {
+		}
+		
+		{
+			boolean rejected = false;
+			try {
+				specHolder.setPriority("ID_VALUE", 13);
+				specHolder.setPriority("ID_STRONG", 11);
+				
+				store.getProperty("ID_VALUE").setCurrentValue("-100");
+				engine.requestChange("ID_STRONG", "ID_STRONG_A");
+			} catch (RequestRejectedException e) {
+				rejected = true;
+			}
+			CachedPropertyStore cached = engine.getCachedPropertyStore();
+			assertEquals(true, rejected);
+			assertEquals("-100", cached.getProperty("ID_VALUE").getCurrentValue());
+		}
+	}
 	
 	@Test
 	void testOptionEnabled() {
@@ -574,48 +616,6 @@ class DependencySpecTest {
 			CachedPropertyStore cached = engine.getCachedPropertyStore();
 			assertEquals("ID_STRONG_A", cached.getProperty("ID_STRONG").getCurrentValue());
 			
-		}
-	}
-	
-	@Test
-	void testStrongWeakMinMax() {
-		DepPropertyStore store = createPropertyStore();
-		store.add(createDoubleProperty("ID_VALUE", 0, "unit", -1000, 1000, 0));
-		store.add(createDoubleProperty("ID_VALUE_STRONG", 0, "unit", -1000, 1000, 0));
-		store.add(createListProperty("ID_STRONG", Arrays.asList("ID_STRONG_A", "ID_STRONG_B"), "ID_STRONG_A"));
-		
-		DependencySpec specValue = new DependencySpec("ID_VALUE");
-		specValue.addMin(-10, "$ID_STRONG==%ID_STRONG_A");
-
-		DependencySpecHolder specHolder = new DependencySpecHolder();
-		specHolder.addSpec(specValue);
-		
-		DependencyEngine engine = new DependencyEngine(specHolder, store);
-		try {
-			specHolder.setPriority("ID_VALUE", 10);
-			specHolder.setPriority("ID_STRONG", 11);
-			
-			store.getProperty("ID_VALUE").setCurrentValue("-100");
-			engine.requestChange("ID_STRONG", "ID_STRONG_A");
-			CachedPropertyStore cached = engine.getCachedPropertyStore();
-			assertEquals("-10", cached.getProperty("ID_VALUE").getCurrentValue());
-		} catch (RequestRejectedException e) {
-		}
-		
-		{
-			boolean rejected = false;
-			try {
-				specHolder.setPriority("ID_VALUE", 13);
-				specHolder.setPriority("ID_STRONG", 11);
-				
-				store.getProperty("ID_VALUE").setCurrentValue("-100");
-				engine.requestChange("ID_STRONG", "ID_STRONG_A");
-			} catch (RequestRejectedException e) {
-				rejected = true;
-			}
-			CachedPropertyStore cached = engine.getCachedPropertyStore();
-			assertEquals(true, rejected);
-			assertEquals("-100", cached.getProperty("ID_VALUE").getCurrentValue());
 		}
 	}
 	

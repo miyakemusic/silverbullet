@@ -117,7 +117,7 @@ public abstract class DependencyEngine {
 		for (DependencyProperty spec : specs) {
 			if (satisfies(spec)) {
 				SvProperty prop = getProperty(spec.getId());
-				if (!spec.getSelectionId().equals(DependencySpec.DefaultItem)){
+				if (!spec.getSelectionId().equalsIgnoreCase(DependencySpec.DefaultItem)){
 					Boolean v = !Boolean.valueOf(calcResult(spec));
 					prop.addListMask(spec.getSelectionId(), v);
 					

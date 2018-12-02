@@ -1,5 +1,6 @@
 package jp.silverbullet.dependency.speceditor3;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,7 +42,7 @@ public class SvPropertyFactory  {
 			int decimal) {
 		PropertyDef def = new PropertyDef();
 		def.setType("DoubleProperty");
-		def.setOthers(Arrays.asList("", String.valueOf(defaultValue), String.valueOf(min), String.valueOf(max), String.valueOf(decimal)));
+		def.setOthers(new ArrayList<String>(Arrays.asList("", String.valueOf(defaultValue), String.valueOf(min), String.valueOf(max), String.valueOf(decimal))));
 		def.setArgumentDef(argumentDef);
 		def.setId(id);
 		SvProperty ret = new SvProperty(def);	

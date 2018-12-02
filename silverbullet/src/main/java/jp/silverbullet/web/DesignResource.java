@@ -90,23 +90,25 @@ public class DesignResource {
 		return ret;
 	}
 	
-	private List<String> debugDepLog;
+//	private List<String> debugDepLog;
 	@GET
 	@Path("/setValue")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public List<String> setCurrentValue(@QueryParam("id") String id, @QueryParam("value") String value) {
+	public ValueSetResult setCurrentValue(@QueryParam("id") String id, @QueryParam("value") String value) {
+		ValueSetResult ret = new ValueSetResult();
 		Sequencer sequencer = null;
 		try {
 			sequencer = StaticInstances.getInstance().getBuilderModel().getSequencer();
 			sequencer.requestChange(id, value);
+			ret.result = "Accepted";
 		} catch (RequestRejectedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+//			e.printStackTrace();
+			ret.result = "Rejected";
 		} finally {
-			debugDepLog = sequencer.getDebugDepLog();		
+			ret.debugLog = sequencer.getDebugDepLog();		
 		}
 		
-		return debugDepLog;
+		return ret;
 	}
 	
 	@GET

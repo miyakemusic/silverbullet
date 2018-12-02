@@ -68,7 +68,7 @@ public interface BuilderModel {
 
 	void importFile(String filename);
 
-	DependencySpecHolder getDependencySpecHolder();
+//	DependencySpecHolder getDependencySpecHolder();
 
 	RegisterShortCutHolder getRegisterShortCut();
 	

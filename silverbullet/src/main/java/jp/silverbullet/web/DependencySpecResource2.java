@@ -32,21 +32,21 @@ import jp.silverbullet.web.ui.PropertyGetter;
 @Path("/dependencySpec2")
 public class DependencySpecResource2 {
 
-	private DependencySpecHolder loadSpec() {
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			DependencySpecHolder obj = mapper.readValue(new File("C:\\Users\\a1199022\\git3\\silverbullet\\silverbullet\\sample.json"), DependencySpecHolder.class);
-			return obj;
-		} catch (JsonGenerationException e) {
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
+//	private DependencySpecHolder loadSpec() {
+//		ObjectMapper mapper = new ObjectMapper();
+//		try {
+//			DependencySpecHolder obj = mapper.readValue(new File("C:\\Users\\a1199022\\git3\\silverbullet\\silverbullet\\sample.json"), DependencySpecHolder.class);
+//			return obj;
+//		} catch (JsonGenerationException e) {
+//			e.printStackTrace();
+//		} catch (JsonMappingException e) {
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//		return null;
+//	}
+//	
 	@GET
 	@Path("/getSpec")
 	@Produces(MediaType.APPLICATION_JSON) 

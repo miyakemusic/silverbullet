@@ -27,43 +27,47 @@ public class LinkGenerator {
 		
 		createLink(me, links);
 		
-		boolean loop = false;
-		loop |= walkThroughtChild(me, links, new ArrayList<String>());
-		loop |= walkThroughtParent(me, links, new ArrayList<String>());
+		boolean noLoop = true;
+		Set<String> loops = new HashSet<>();
 		
-		return new GenericLinks(links, loop);
+		noLoop &= walkThroughtChild(me, links, loops, new ArrayList<String>());
+		noLoop &= walkThroughtParent(me, links, loops, new ArrayList<String>());
+		
+		return new GenericLinks(links, loops);
 	}
 
 	abstract class WalkThrough {
-		public boolean walk(DependencyNode me, List<GenericLink> links, ArrayList<String> experienced) {
+		public boolean walk(DependencyNode me, List<GenericLink> links, Set<String> loops, ArrayList<String> experienced) {
 			if (experienced.contains(me.getId())) {
+				loops.add(experienced.get(experienced.size()-2) + "-" +  experienced.get(experienced.size()-1));
 				return false;
 			}
 			experienced.add(me.getId());
+			
+			boolean ret = true;
 			for (DependencyNode subNode : getSubNode(me)) {
 				createLink(subNode, links);
-				walkThroughtChild(subNode, links, new ArrayList<String>(experienced));
+				ret &= walkThroughtChild(subNode, links, loops, new ArrayList<String>(experienced));
 			}
-			return true;			
+			return ret;			
 		}
-
 		abstract protected List<DependencyNode> getSubNode(DependencyNode me);
 	}
-	private boolean walkThroughtChild(DependencyNode me, List<GenericLink> links, ArrayList<String> experienced) {
+	private boolean walkThroughtChild(DependencyNode me, List<GenericLink> links, Set<String> loops, ArrayList<String> experienced) {
 		return new WalkThrough() {
 			@Override
 			protected List<DependencyNode> getSubNode(DependencyNode me) {
 				return me.getChildren();
 			}
-		}.walk(me, links, experienced);
+		}.walk(me, links, loops, experienced);
 	}
-	private boolean walkThroughtParent(DependencyNode me, List<GenericLink> links, ArrayList<String> experienced) {
+	private boolean walkThroughtParent(DependencyNode me, List<GenericLink> links, Set<String> loops, ArrayList<String> experienced) {
 		return new WalkThrough() {
 			@Override
 			protected List<DependencyNode> getSubNode(DependencyNode me) {
 				return me.getParents();
 			}
-		}.walk(me, links, experienced);
+		}.walk(me, links, loops, experienced);
 	}
 	
 	private void createLink(DependencyNode node, List<GenericLink> links) {
@@ -104,7 +108,7 @@ public class LinkGenerator {
 			links = links2;
 		}
 
-		return new GenericLinks(links, false);
+		return new GenericLinks(links);
 	}
 
 	private void analyzeWarning(DependencyNode initialNode, DependencyNode node, Path path) {

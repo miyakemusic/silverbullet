@@ -22,11 +22,11 @@ import jp.silverbullet.SvPropertyStore;
 import jp.silverbullet.dependency.DepChainPair;
 import jp.silverbullet.dependency.DependencyEditorModel;
 import jp.silverbullet.dependency.DependencySpec;
-import jp.silverbullet.dependency.DependencySpecHolder;
 import jp.silverbullet.dependency.DependencySpecTableGenerator;
 import jp.silverbullet.dependency.DependencyTableRowData;
 import jp.silverbullet.dependency.DependencyTargetConverter;
 import jp.silverbullet.dependency.LinkGenerator;
+import jp.silverbullet.dependency2.DependencySpecHolder;
 import jp.silverbullet.property.PropertyHolder;
 
 
@@ -38,18 +38,18 @@ public class DependencySpecResource {
 	@Produces(MediaType.APPLICATION_JSON) 
 	public JsonTable getElements(@QueryParam("id") final String id) {
 		SvProperty prop = StaticInstances.getInstance().getInstance().getBuilderModel().getProperty(id);
-		DependencySpecHolder specHolder = StaticInstances.getInstance().getInstance().getBuilderModel().getDependencySpecHolder();
+		DependencySpecHolder specHolder = StaticInstances.getInstance().getInstance().getBuilderModel().getDependencySpecHolder2();
 		PropertyHolder porpHolder = StaticInstances.getInstance().getInstance().getBuilderModel().getPropertyHolder();
 		SvPropertyStore propHolder = StaticInstances.getInstance().getInstance().getBuilderModel().getPropertyStore();
-		DependencyEditorModel model = new DependencyEditorModel(prop, specHolder, porpHolder, propHolder);
+//		DependencyEditorModel model = new DependencyEditorModel(prop, specHolder, porpHolder, propHolder);
 		
 		JsonTable ret = new JsonTable();
-		ret.setHeader(Arrays.asList("Element", "Value", "Condition"));
-		for (String element :  model.getAllElements(id)) {
-			String[] row = new String[3];
-			row[0] = element;
-			ret.addRow(row);
-		}
+//		ret.setHeader(Arrays.asList("Element", "Value", "Condition"));
+//		for (String element :  model.getAllElements(id)) {
+//			String[] row = new String[3];
+//			row[0] = element;
+//			ret.addRow(row);
+//		}
 		return ret;
 	}
 	
@@ -62,10 +62,10 @@ public class DependencySpecResource {
 
 	private DependencyTableRowData[] createSpecTable(final String id) {
 		SvProperty property = StaticInstances.getInstance().getBuilderModel().getProperty(id);
-		DependencySpec spec = StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder().get(id);
+		DependencySpec spec = null;//StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder().get(id);
 		
-		DependencyEditorModel dependencyEditorModel = new DependencyEditorModel(property, StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder(),
-				StaticInstances.getInstance().getBuilderModel().getPropertyHolder(), StaticInstances.getInstance().getBuilderModel().getPropertyStore());
+		DependencyEditorModel dependencyEditorModel = null;//new DependencyEditorModel(property, StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder(),
+//				StaticInstances.getInstance().getBuilderModel().getPropertyHolder(), StaticInstances.getInstance().getBuilderModel().getPropertyStore());
 		List<DependencyTableRowData> table = new DependencySpecTableGenerator(dependencyEditorModel).get(spec);
 
 		return table.toArray(new DependencyTableRowData[0]);
@@ -104,7 +104,7 @@ public class DependencySpecResource {
 		
 		DependencyTargetConverter converter = new DependencyTargetConverter(element);
 		
-		DependencySpec spec = StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder().get(id);
+		DependencySpec spec = null;//StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder().get(id);
 		spec.add(converter.getElement(), converter.getSelectionId(), value, condition);
 		return "OK";
 	}
@@ -126,7 +126,7 @@ public class DependencySpecResource {
 			e.printStackTrace();
 		}		
 		
-		DependencySpec spec = StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder().get(id);
+		DependencySpec spec = null;//StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder().get(id);
 		DependencyTargetConverter converter = new DependencyTargetConverter(element);	
 		
 		spec.remove(converter.getElement(), converter.getSelectionId(), prevValue, prevCondition);
@@ -140,7 +140,7 @@ public class DependencySpecResource {
 	public String removeSpec(@QueryParam("id") final String id, @QueryParam("element") final String element, 
 			@QueryParam("value") final String value, @QueryParam("condition") final String condition) {
 		
-		DependencySpec spec = StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder().get(id);
+		DependencySpec spec = null;//StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder().get(id);
 		DependencyTargetConverter converter = new DependencyTargetConverter(element);
 		spec.remove(converter.getElement(), converter.getSelectionId(), value, condition);
 //		spec.remove(DependencyTargetElement.valueOf(element), value);
@@ -151,7 +151,7 @@ public class DependencySpecResource {
 	@Path("/spec")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public DependencySpec getSpec(@QueryParam("id") final String id) {
-		DependencySpec spec = StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder().get(id);
+		DependencySpec spec = null;//StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder().get(id);
 		return spec;
 	}
 	
@@ -167,8 +167,8 @@ public class DependencySpecResource {
 	@Path("/createNew")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String createNew(@QueryParam("id") final String id) {
-		DependencySpecHolder holder = StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder();
-		DependencySpec spec = holder.get(id);
+		DependencySpecHolder holder = null;//StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder();
+		DependencySpec spec = null;//holder.get(id);
 //		spec.add(DependencyTargetElement.Enabled, DependencyExpression.True, "");
 		return "OK";
 	}
@@ -177,13 +177,13 @@ public class DependencySpecResource {
 	@Path("/ids")
 	@Produces(MediaType.APPLICATION_JSON)
 	public JsonTable getIds(@QueryParam("id") String id) {
-		DependencySpecHolder holder = StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder();
+		DependencySpecHolder holder = null;//StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder();
 		
 		JsonTable ret = new JsonTable();
 		
 		Set<String> list = null;
 		if (id.isEmpty()) {
-			list = StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder().getSpecs().keySet();
+			list = null;//StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder().getSpecs().keySet();
 		}
 		else {
 			list = new LinkGenerator(id).getRelatedIds();
@@ -194,7 +194,7 @@ public class DependencySpecResource {
 		Set<String> tmps = new HashSet<String>();
 //		for (String id : holder.getSpecs().keySet()) {
 		for (String id2 : list) {
- 			DependencySpec spec = holder.getSpecs().get(id2);
+ 			DependencySpec spec = null;//holder.getSpecs().get(id2);
 			tmps.addAll(spec.getTriggerIds());
 			tmps.add(id2);
 		}

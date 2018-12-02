@@ -8,11 +8,11 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 
 import jp.silverbullet.dependency.DepPropertyStore;
-import jp.silverbullet.dependency.DependencyEngine;
 import jp.silverbullet.dependency.DependencyInterface;
 import jp.silverbullet.dependency.DependencySpecHolder;
 import jp.silverbullet.dependency.RequestRejectedException;
 import jp.silverbullet.dependency.alternative.AlternativeDependencyGenerator;
+import jp.silverbullet.dependency2.DependencyEngine;
 import jp.silverbullet.handlers.EasyAccessModel;
 import jp.silverbullet.handlers.HandlerPropertyHolder;
 import jp.silverbullet.handlers.RegisterAccess;
@@ -51,7 +51,7 @@ public class BuilderModelImpl implements BuilderModel {
 	private HandlerPropertyHolder handlerPropertyHolder = new HandlerPropertyHolder();
 	private SvTexHolder texHolder = new SvTexHolder();
 	private RegisterProperty registerProperty = new RegisterProperty();
-	private DependencySpecHolder dependencySpecHolder = new DependencySpecHolder();
+//	private DependencySpecHolder dependencySpecHolder = new DependencySpecHolder();
 	private jp.silverbullet.dependency2.DependencySpecHolder dependencySpecHolder2 = new jp.silverbullet.dependency2.DependencySpecHolder();
 	private SpecElement userStory = new SpecElement();
 	private RegisterShortCutHolder registerShortCuts = new RegisterShortCutHolder();
@@ -74,28 +74,29 @@ public class BuilderModelImpl implements BuilderModel {
 		return handlerPropertyHolder;
 	}
 
-	private DependencyEngine dependency = new DependencyEngine() {
-		@Override
-		protected DependencySpecHolder getDependencyHolder() {
-			return dependencySpecHolder;
-		}
-
-		@Override
-		protected DepPropertyStore getPropertiesStore() {
-			return new DepPropertyStore() {
-
-				@Override
-				public SvProperty getProperty(String id) {
-					return store.getProperty(id);
-				}
-
-				@Override
-				public void add(SvProperty createListProperty) {
-				}
-			};
-		}
-
-	};
+	private DependencyEngine dependency = null;
+//	private DependencyEngine dependency = new DependencyEngine() {
+//		@Override
+//		protected DependencySpecHolder getDependencyHolder() {
+//			return dependencySpecHolder;
+//		}
+//
+//		@Override
+//		protected DepPropertyStore getPropertiesStore() {
+//			return new DepPropertyStore() {
+//
+//				@Override
+//				public SvProperty getProperty(String id) {
+//					return store.getProperty(id);
+//				}
+//
+//				@Override
+//				public void add(SvProperty createListProperty) {
+//				}
+//			};
+//		}
+//
+//	};
 
 	private EasyAccessModel easyAccessModel = new EasyAccessModel() {
 		@Override
@@ -157,7 +158,7 @@ public class BuilderModelImpl implements BuilderModel {
 		}
 
 	});
-	private DependencySpecHolder defaultDependency;
+	private jp.silverbullet.dependency2.DependencySpecHolder defaultDependency;
 
 	public BuilderModelImpl() {
 		store = new SvPropertyStore(propertiesHolder);
@@ -259,7 +260,7 @@ public class BuilderModelImpl implements BuilderModel {
 		this.hardSpec = load(SpecElement.class, folder + "/" + HARDSPEC_XML);
 		this.userStory = load(SpecElement.class, folder + "/" + USERSTORY_XML);
 		this.registerShortCuts = load(RegisterShortCutHolder.class, folder + "/" + REGISTERSHORTCUT);
-		this.dependencySpecHolder = load(DependencySpecHolder.class, folder + "/" + DEPENDENCYSPEC2_XML);
+//		this.dependencySpecHolder = load(DependencySpecHolder.class, folder + "/" + DEPENDENCYSPEC2_XML);
 		this.dependencySpecHolder2 = loadJson(jp.silverbullet.dependency2.DependencySpecHolder.class, folder + "/" + DEPENDENCYSPEC3_XML);
 		
 //		dependencySpecHolder = new AlternativeDependencyGenerator().convert(dependencySpecHolder);
@@ -267,6 +268,18 @@ public class BuilderModelImpl implements BuilderModel {
 		uiLayoutHolder.load(folder);
 
 		// UiLayout.getInstance().initialize();
+		
+		dependency = new DependencyEngine(dependencySpecHolder2, new DepPropertyStore() {
+			@Override
+			public SvProperty getProperty(String id) {
+				return store.getProperty(id);
+			}
+
+			@Override
+			public void add(SvProperty createListProperty) {
+
+			}
+		});
 	}
 
 	private <T> T  loadJson(
@@ -295,7 +308,7 @@ public class BuilderModelImpl implements BuilderModel {
 		save(this.hardSpec, SpecElement.class, folder + "/" + HARDSPEC_XML);
 		save(this.userStory, SpecElement.class, folder + "/" + USERSTORY_XML);
 		save(this.registerShortCuts, RegisterShortCutHolder.class, folder + "/" + REGISTERSHORTCUT);
-		save(this.dependencySpecHolder, DependencySpecHolder.class, folder + "/" + DEPENDENCYSPEC2_XML);
+//		save(this.dependencySpecHolder, DependencySpecHolder.class, folder + "/" + DEPENDENCYSPEC2_XML);
 		saveJson(this.dependencySpecHolder2, folder + "/" + DEPENDENCYSPEC3_XML);
 		// saveJson(this.uiLayout, folder + "/" + "default.ui");
 		this.uiLayoutHolder.save(folder);
@@ -407,10 +420,10 @@ public class BuilderModelImpl implements BuilderModel {
 		userApplicationPath = userPath;
 	}
 
-	@Override
-	public DependencySpecHolder getDependencySpecHolder() {
-		return dependencySpecHolder;
-	}
+//	@Override
+//	public DependencySpecHolder getDependencySpecHolder() {
+//		return dependencySpecHolder;
+//	}
 
 	@Override
 	public
@@ -435,7 +448,7 @@ public class BuilderModelImpl implements BuilderModel {
 
 	@Override
 	public void changeId(String prevId, String newId) {
-		this.dependencySpecHolder.changeId(prevId, newId);
+		this.dependencySpecHolder2.changeId(prevId, newId);
 		this.propertiesHolder.changeId(prevId, newId);
 		// TODO this.handlerPropertyHolder.changeId(prevId, newId);
 		this.uiLayoutHolder.changeId(prevId, newId);
@@ -502,7 +515,7 @@ public class BuilderModelImpl implements BuilderModel {
 		this.store.resetMask();
 		
 		if (type.equals("Normal")) {
-			this.dependencySpecHolder = this.defaultDependency;
+			this.dependencySpecHolder2 = this.defaultDependency;
 		}
 		else if (type.equals("Alternative")) {
 			PropertyGetter getter = new PropertyGetter() {
@@ -511,8 +524,8 @@ public class BuilderModelImpl implements BuilderModel {
 					return store.getProperty(id);
 				}
 			};
-			this.defaultDependency = this.dependencySpecHolder;
-			this.dependencySpecHolder = new AlternativeDependencyGenerator().convert(this.dependencySpecHolder, getter);
+			this.defaultDependency = this.dependencySpecHolder2;
+//			this.dependencySpecHolder2 = new AlternativeDependencyGenerator().convert(this.dependencySpecHolder2, getter);
 		}
 	}
 }
