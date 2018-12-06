@@ -19,7 +19,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.silverbullet.Sequencer;
 import jp.silverbullet.StaticInstances;
 import jp.silverbullet.SvProperty;
+import jp.silverbullet.dependency.ChangedItemValue;
+import jp.silverbullet.dependency.DependencyListener;
 import jp.silverbullet.dependency.RequestRejectedException;
+import jp.silverbullet.dependency2.CommitListener;
 import jp.silverbullet.property.ChartContent;
 
 import jp.silverbullet.web.ui.CustomProperties;
@@ -91,23 +94,32 @@ public class DesignResource {
 	}
 	
 //	private List<String> debugDepLog;
+	
+	private String confirm;
 	@GET
 	@Path("/setValue")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public ValueSetResult setCurrentValue(@QueryParam("id") String id, @QueryParam("value") String value) {
 		ValueSetResult ret = new ValueSetResult();
 		Sequencer sequencer = null;
+		
 		try {
 			sequencer = StaticInstances.getInstance().getBuilderModel().getSequencer();
-			sequencer.requestChange(id, value);
+			sequencer.requestChange(id, value, new CommitListener() {
+				@Override
+				public Reply confirm(String message) {
+					return Reply.Accept;
+				}
+			});
+			
 			ret.result = "Accepted";
 		} catch (RequestRejectedException e) {
-//			e.printStackTrace();
+			ret.message = e.getMessage();
 			ret.result = "Rejected";
 		} finally {
 			ret.debugLog = sequencer.getDebugDepLog();		
 		}
-		
+
 		return ret;
 	}
 	

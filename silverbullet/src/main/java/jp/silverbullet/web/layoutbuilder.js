@@ -27,6 +27,31 @@ class LayoutBuilder {
 			, 'DESIGN');
 		}
 		
+		this.messageBaseId = this.base + "_messageBase";
+		this.messageId = this.base + "_message";
+		$('#' + this.base).append('<div id="' + this.messageBaseId + '"><label id="' + this.messageId + '"></label></div>');
+		$('#' + this.messageBaseId).dialog({
+			  autoOpen: false,
+			  title: 'Message',
+			  closeOnEscape: true,
+			  modal: false,
+			  buttons: {
+			    "OK": function(){
+			      $(this).dialog('close');
+			    }
+			    ,
+			    "Cancel": function(){
+			      $(this).dialog('close');
+			    }
+			  },
+			width: 400,
+			height: 300
+		});	
+	}
+	
+	showMessage(message) {
+		$('#' + this.messageId).text(message);
+		$('#' + this.messageBaseId).dialog('open');
 	}
 	
 	setContextmenu() {
@@ -124,15 +149,19 @@ class LayoutBuilder {
 		var widget = new JsWidget(pane, parent, 
 			function(div, info) {
 				me.selectedDiv = div;
-//				var obj = me.widgetMap.get(div);
-//				var widgetType = "";
-//				if (obj != null) {
-//					widgetType = obj.widgetType;
-//				}
-//				me.callback(widgetType, div, info);
 			},
-			function(msg) {
-				me.debugCallback(msg);
+			function(id, value) {
+				$.ajax({
+				   type: "GET", 
+				   url: "http://" + window.location.host + "/rest/design/setValue?id="+id + "&value=" + value,
+				   success: function(msg){
+						me.debugCallback(msg.debugLog);
+						if (msg.result == 'Rejected') {
+							me.showMessage(msg.message);
+							widget.updateValue();
+						}
+				   }
+				});	
 			}
 		);
 		widget.editable(this.enableEdit);

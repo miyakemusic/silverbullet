@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 public class DependencyExpression {
-	public static final String ID_SPLIT_CHARS = "[\\<>\\[\\]+/\\-=\\s();\\|]";
+	public static final String ID_SPLIT_CHARS = "[\\<>\\[\\]+/\\-=\\s();\\|!]";
 	
 	@XmlTransient
 	private DependencyExpressionListener listener;

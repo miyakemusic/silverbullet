@@ -1,7 +1,5 @@
 package jp.silverbullet.web;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 import javax.ws.rs.GET;
@@ -10,18 +8,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import jp.silverbullet.StaticInstances;
 import jp.silverbullet.SvProperty;
-import jp.silverbullet.dependency.DepChainPair;
 import jp.silverbullet.dependency2.DependencySpec;
 import jp.silverbullet.dependency2.DependencySpecAnalyzer;
 import jp.silverbullet.dependency2.DependencySpecHolder;
 import jp.silverbullet.dependency2.Expression;
-import jp.silverbullet.dependency2.GenericLink;
 import jp.silverbullet.dependency2.GenericLinks;
 import jp.silverbullet.dependency2.LinkGenerator;
 import jp.silverbullet.dependency2.LinkGenerator.LinkLevel;
@@ -32,21 +24,6 @@ import jp.silverbullet.web.ui.PropertyGetter;
 @Path("/dependencySpec2")
 public class DependencySpecResource2 {
 
-//	private DependencySpecHolder loadSpec() {
-//		ObjectMapper mapper = new ObjectMapper();
-//		try {
-//			DependencySpecHolder obj = mapper.readValue(new File("C:\\Users\\a1199022\\git3\\silverbullet\\silverbullet\\sample.json"), DependencySpecHolder.class);
-//			return obj;
-//		} catch (JsonGenerationException e) {
-//			e.printStackTrace();
-//		} catch (JsonMappingException e) {
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//		return null;
-//	}
-//	
 	@GET
 	@Path("/getSpec")
 	@Produces(MediaType.APPLICATION_JSON) 
@@ -70,31 +47,31 @@ public class DependencySpecResource2 {
 		DependencySpecHolder holder = StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder2();
 		DependencySpec spec = holder.getSpec(id);
 		
-//		if (element.startsWith(id)) {
-//			element = DependencySpec.OptionEnable + "#" + element;
+//		List<Expression> expressions = spec.getExpression(element);
+		
+		spec.update(element, row, col, value);
+//		Expression exp = null;
+//		if (expressions.size() <= row) {
+//			
+//			exp = new Expression();
+//			expressions.add(exp);
 //		}
-		List<Expression> expressions = spec.getExpression(element);
-		Expression exp = null;
-		if (expressions.size() <= row) {
-			exp = new Expression();
-			expressions.add(exp);
-		}
-		else {
-			exp = expressions.get(row);
-		}
-		if (col.equals(DependencySpec.Value)) {
-			exp.setValue(value);
-		}
-		else if (col.equals(Expression.Trigger)) {
-			exp.setTrigger(value);
-		}
-		else if (col.equals(Expression.Condition)) {
-			exp.setCondition(value);
-		}
-		else {
-			
-		}
-		return "";
+//		else {
+//			exp = expressions.get(row);
+//		}
+//		if (col.equals(DependencySpec.Value)) {
+//			exp.setValue(value);
+//		}
+//		else if (col.equals(Expression.Trigger)) {
+//			exp.setTrigger(value);
+//		}
+//		else if (col.equals(Expression.Condition)) {
+//			exp.setCondition(value);
+//		}
+//		else {
+//			
+//		}
+		return "OK";
 	}
 	
 	@GET
@@ -115,5 +92,36 @@ public class DependencySpecResource2 {
 		else {
 			return linkGenerator.generateLinks(LinkLevel.Detail);
 		}
+	}
+	
+	@GET
+	@Path("/getPriority")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Integer getPriority(@QueryParam("id") final String id) {
+		return StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder2().getPriority(id);
+	}
+	
+	@GET
+	@Path("/setPriority")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String getPriority(@QueryParam("id") final String id, @QueryParam("priority") final Integer priority) {
+		StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder2().setPriority(id, priority);
+		return "OK";
+	}
+	
+	
+	@GET
+	@Path("/setAlternative")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String setAlternative(@QueryParam("enabled") final Boolean enabled) {
+		String type = "";
+		if (enabled) {
+			type = "Alternative";
+		}
+		else {
+			type = "Normal";
+		}
+		StaticInstances.getInstance().getBuilderModel().switchDependency(type);
+		return "OK";
 	}
 }

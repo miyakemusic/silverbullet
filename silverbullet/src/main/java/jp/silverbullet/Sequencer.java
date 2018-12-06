@@ -11,6 +11,7 @@ import jp.silverbullet.dependency.ChangedItemValue;
 import jp.silverbullet.dependency.DependencyInterface;
 import jp.silverbullet.dependency.DependencyListener;
 import jp.silverbullet.dependency.RequestRejectedException;
+import jp.silverbullet.dependency2.CommitListener;
 import jp.silverbullet.dependency2.DependencyEngine;
 import jp.silverbullet.handlers.AbstractSvHandler;
 import jp.silverbullet.handlers.CommonSvHandler;
@@ -33,19 +34,30 @@ public abstract class Sequencer implements DependencyInterface {
 	
 	LinkedHashMap<String, List<ChangedItemValue>> history = new LinkedHashMap<>();
 	private List<String> debugDepLog;
-	
+
 	public Sequencer() {
 		Thread.currentThread().getId();
 	}
 	
 	@Override
-	public void requestChange(String id, String value)
+	public void requestChange(String id, String value) throws RequestRejectedException {
+		requestChange(id, value, new CommitListener() {
+			@Override
+			public Reply confirm(String message) {
+				return Reply.Accept;
+			}	
+		});
+	}
+	
+	@Override
+	public void requestChange(String id, String value, CommitListener commitListener)
 			throws RequestRejectedException {
 		fireRequestChangeByUser(id, value);
 		
 		// resolves dependencies
 		
 		DependencyEngine engine = getDependency();
+		engine.setCommitListener(commitListener);
 		engine.requestChange(id, value);
 		debugDepLog = engine.getDebugLog();
 		
@@ -128,4 +140,8 @@ public abstract class Sequencer implements DependencyInterface {
 	public void removeSequencerListener(SequencerListener sequencerListener) {
 		this.listeners.remove(sequencerListener);
 	}
+	public void removeDependencyListener(DependencyListener listener) {
+		this.getDependency().removeDependencyListener(listener);
+	}
+
 }

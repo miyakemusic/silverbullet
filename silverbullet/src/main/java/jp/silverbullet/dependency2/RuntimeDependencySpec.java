@@ -9,7 +9,7 @@ public class RuntimeDependencySpec {
 	private Expression expression;
 	private List<RuntimeDependencySpec> elseSources = new ArrayList<>();
 	private boolean consumed = false;
-	private boolean executionConditionSatistied;
+	private boolean executionConditionSatistied = true;
 	private boolean reject;
 	
 	public RuntimeDependencySpec(String id, String target, Expression expression, boolean reject) {
@@ -77,7 +77,7 @@ public class RuntimeDependencySpec {
 	}
 
 	public void setExecutionConditionSatistied(boolean executionConditionSatistied) {
-		this.executionConditionSatistied = executionConditionSatistied;
+		this.executionConditionSatistied &= executionConditionSatistied;
 	}
 
 	public boolean isExecutionConditionSatistied() {

@@ -1,7 +1,8 @@
 class JsWidget {
-	constructor(info, parent, selected, dependency) {
+	constructor(info, parent, selected, requestChange) {
 		this.info = info;
 		
+		this.requestChange = requestChange;
 		this.baseId = parent + "-" + info.unique;
 		this.selected = selected;
 		this.parent = parent;
@@ -16,7 +17,7 @@ class JsWidget {
 		$('#' + this.baseId).addClass('Widget');
 		$('#' + this.baseId).attr('title', info.id);
 		
-		this.createBase(dependency);		
+		this.createBase();		
 		
 		this.updateLayout();
 
@@ -78,62 +79,62 @@ class JsWidget {
 		}
 	}
 		
-	createBase(dependency) {			
+	createBase() {			
 		var me = this;
 		
 		if (this.info.widgetType == 'COMBOBOX') {
 			this.subWidget = new JsComboBox(this.baseId, function(id) {
-				me.requestChange(me.info.id, id, dependency);
+				me.requestChange(me.info.id, id);
 			});
 		}
 		else if (this.info.widgetType == 'RADIOBUTTON') {
 			this.subWidget = new JsRadio(this.baseId, function(id) {
-				me.requestChange(me.info.id, id, dependency);
+				me.requestChange(me.info.id, id);
 			});
 		}
 		else if (this.info.widgetType == 'TEXTFIELD') {
 			this.subWidget = new JsTextInput(this.baseId, function(id) {
-				me.requestChange(me.info.id, id, dependency);
+				me.requestChange(me.info.id, id);
 			});
 		}
 		else if (this.info.widgetType == 'CHECKBOX') {
 			this.subWidget = new JsCheckBox(this.baseId, function(id) {
-				me.requestChange(me.info.id, id, dependency);
+				me.requestChange(me.info.id, id);
 			});
 		}
 		else if (this.info.widgetType == 'TOGGLEBUTTON') {
 			this.subWidget = new JsToggleButton(this.baseId, this.info, function(id) {
-				me.requestChange(me.info.id, id, dependency);
+				me.requestChange(me.info.id, id);
 			});
 		}
 		else if (this.info.widgetType == 'CSSBUTTON') {
 			this.subWidget = new JsCssButton(this.baseId, this.info, function(id) {
-				me.requestChange(me.info.id, id, dependency);
+				me.requestChange(me.info.id, id);
 			});
 		}
 		else if (this.info.widgetType == 'ACTIONBUTTON') {
 			this.subWidget = new JsActionButton(this.baseId, function(id) {
-				me.requestChange(me.info.id, id, dependency);
+				me.requestChange(me.info.id, id);
 			});
 		}
 		else if (this.info.widgetType == 'CHART') {
 			this.subWidget = new JsChart(this.baseId, this.info, function(id) {
-				me.requestChange(me.info.id, id, dependency);
+				me.requestChange(me.info.id, id);
 			});
 		}
 		else if (this.info.widgetType == 'CHART_CANVASJS') {
 			this.subWidget = new JsChartCanvasJs(this.baseId, this.info, function(id) {
-				me.requestChange(me.info.id, id, dependency);
+				me.requestChange(me.info.id, id);
 			});
 		}
 		else if (this.info.widgetType == 'TABLE') {
 			this.subWidget = new JsTable(this.baseId, function(id) {
-				me.requestChange(me.info.id, id, dependency);
+				me.requestChange(me.info.id, id);
 			});
 		}
 		else if (this.info.widgetType == 'DATATABLE') {
 			this.subWidget = new JsDataTable(this.baseId, this.info, function(id) {
-				me.requestChange(me.info.id, id, dependency);
+				me.requestChange(me.info.id, id);
 			});
 		}
 		else if ((this.info.widgetType == 'PANEL') || (this.info.widgetType == 'ROOT')) {
@@ -163,27 +164,27 @@ class JsWidget {
 		}
 		else if (this.info.widgetType == 'TAB') {
 			this.subWidget = new JsTabPanel(this.baseId, this.info, function(id) {
-				me.requestChange(me.info.id, id, dependency);
+				me.requestChange(me.info.id, id);
 			});
 		}
 		else if (this.info.widgetType == 'GUI_DIALOG') {
 			this.subWidget = new JsDialogButton(this.baseId, this.info, function(id) {
-				me.requestChange(me.info.id, id, dependency);
+				me.requestChange(me.info.id, id);
 			});
 		}	
 		else if (this.info.widgetType == 'LABEL') {
 			this.subWidget = new JsLabel(this.baseId, this.info, function(id) {
-				me.requestChange(me.info.id, id, dependency);
+				me.requestChange(me.info.id, id);
 			});
 		}	
 		else if (this.info.widgetType == 'MESSAGEBOX') {
 			this.subWidget = new JsMessageBox(this.baseId, this.info, function(id) {
-				me.requestChange(me.info.id, id, dependency);
+				me.requestChange(me.info.id, id);
 			});
 		}	
 		else if (this.info.widgetType == 'REGISTERSHORTCUT') {
 			this.subWidget = new JsRegisterShortcut(this.baseId, this.info, function(id) {
-				me.requestChange(me.info.id, id, dependency);
+				me.requestChange(me.info.id, id);
 			});
 		}				
 		$('#' + this.baseId).addClass('base');
@@ -287,21 +288,7 @@ class JsWidget {
 			});	
 		}
 	}
-	
-	requestChange(id, value, dependency) {
-		var me = this;
-		$.ajax({
-		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/design/setValue?id="+id + "&value=" + value,
-		   success: function(msg){
-				dependency(msg.debugLog);
-				if (msg.result == 'Rejected') {
-					me.updateValue();
-				}
-		   }
-		});	
-	}
-	
+		
 	editable(enabled) {
 		
 	    var baseId = this.baseId;

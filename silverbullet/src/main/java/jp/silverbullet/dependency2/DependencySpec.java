@@ -18,6 +18,9 @@ public class DependencySpec {
 	public static final String Max = "Max";
 	public static final String Null = "---";
 		
+	public static final String Trigger = "Trigger";
+	public static final String Condition = "Condition";
+	
 	private String id;
 	private DependencySpecDetail dependencySpecDetail = new DependencySpecDetail();
 	
@@ -120,6 +123,13 @@ public class DependencySpec {
 
 	public void setDependencySpecDetail(DependencySpecDetail dependencySpecDetail) {
 		this.dependencySpecDetail = dependencySpecDetail;
+	}
+
+	public void update(String element, Integer row, String field, String value) {
+		if (element.startsWith(id)) {
+			element = DependencySpec.OptionEnable + "#" + element;
+		}
+		this.dependencySpecDetail.update(element, row, field, value);
 	}
 
 }

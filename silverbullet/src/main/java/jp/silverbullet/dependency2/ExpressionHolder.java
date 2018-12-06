@@ -127,5 +127,32 @@ public class ExpressionHolder {
 		this.expressions = expressions;
 	}
 
+	public void update(String element, Integer row, String field, String value) {
+		List<Expression> list = this.expressions.get(element);
+		Expression exp = null;
+		if (list.size() > row) {
+			exp = list.get(row);
+		}
+		else {
+			exp = new Expression();
+			list.add(exp);
+		}
+		
+		if (field.equals(DependencySpec.Trigger)) {
+			if (value.isEmpty()) {
+				list.remove(row.intValue());
+			}
+			exp.setTrigger(value);
+		}
+		else if (field.equals(DependencySpec.Value)) {
+			exp.setValue(value);
+		}
+		else if (field.equals(DependencySpec.Condition)) {
+			exp.setCondition(value);
+		}
+		
+		this.sort(list);
+	}
+
 
 }

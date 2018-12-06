@@ -5,6 +5,31 @@ class DependencyClass2 {
 		this.idsId = me.rootId + '_ids';
 		$('#' + div).append('<select id="' + this.idsId + '"></select>');
 		
+		this.priorityId = div + '_priority';
+		$('#' + div).append('Priority: <input type="text" id="' + this.priorityId + '"></input>');
+		$('#' + this.priorityId).keydown(function(event) {
+			if (event.which == 13) { // Enter
+				$.ajax({
+				   type: "GET", 
+				   url: "http://" + window.location.host + "/rest/dependencySpec2/setPriority?id=" + $('#' + me.idsId).val() + "&priority=" + $(this).val(),
+				   success: function(msg){
+				   }
+				});				
+			}
+		});
+		
+		var alternativeId = div + '_alternative';
+		$('#' + div).append('Alternative<input type="checkbox" id="' + alternativeId + '">');
+		$('#' + alternativeId).change(function() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/dependencySpec2/setAlternative?enabled=" + $('#' + alternativeId).prop('checked'),
+			   success: function(msg){
+				updateAll();
+			   }
+			});					
+		});
+		
 		var diagramActive = false;
 		
 		var idDiagramButton = div + "_diagamButton";
@@ -33,16 +58,23 @@ class DependencyClass2 {
 					$('#' + me.idsId).append($('<option>').text(id).val(id));
 				}
 				$('#' + me.idsId).change(function() {
-					var sel = $(this).val();
-					editor.update(sel);
-					me.updateLink();
+					updateAll();
 				});
 		   }
 		});	
 
+
+		
 		$('#' + div).append('<div id="' + me.rootId + '"></div>');
 		var editor = new DependencySpecEditor(me.rootId);
-
+		
+		function updateAll() {
+			var sel = $('#' + me.idsId).val();
+			editor.update(sel);
+			me.updateLink();
+			me.retrievePriority();
+		}
+		
 		var idSpecDialog = div + "_specDialog";
 		$('#' + div).append('<div id="' + idSpecDialog + '">' +
 			'</div>');
@@ -83,6 +115,18 @@ class DependencyClass2 {
 			height: 600
 		});
 		this.diagram = new DependencyDiagram2(idDiagramContent);	
+	}
+	
+	retrievePriority() {
+		var me = this;
+		var id = $('#' + this.idsId).val();
+		$.ajax({
+		   type: "GET", 
+		   url: "http://" + window.location.host + "/rest/dependencySpec2/getPriority?id=" + id,
+		   success: function(msg){
+		   	$('#' + me.priorityId).val(msg);
+		   }
+		});		
 	}
 	
 	updateLink() {

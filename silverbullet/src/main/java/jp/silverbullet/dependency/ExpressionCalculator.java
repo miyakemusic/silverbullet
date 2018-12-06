@@ -1,6 +1,12 @@
 package jp.silverbullet.dependency;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -26,10 +32,14 @@ public abstract class ExpressionCalculator {
 	}
 
 	String replaceWithRealValue(String expression) {
+		 Map<String, String> mapTmpValue = new HashMap<>();
 		String ret = expression.replace("\n", "");
 		
-		for (String sel : idCollector.collectSelectionIds(expression)) {
-			ret = ret.replace("%" + sel, "\"%" + sel + "\"");
+		List<String> options = sortByLength(idCollector.collectSelectionIds(expression));
+		for (int i = 0; i < options.size(); i++) {
+			String option = options.get(i);
+			String val = getTmpOptionValue(option, mapTmpValue);
+			ret = ret.replace("%" + option, val);
 		}
 		
 		List<String> ids = idCollector.collectIds(expression);
@@ -41,7 +51,7 @@ public abstract class ExpressionCalculator {
 			String value = "";
 			SvProperty prop = getProperty(id);
 			if (prop.isListProperty()) {
-				value = "\"%" + prop.getCurrentValue() + "\"";
+				value = getTmpOptionValue(prop.getCurrentValue(), mapTmpValue);//"\"%" + prop.getCurrentValue() + "\"";
 			}
 			else /*if (prop.isNumericProperty())*/ {
 				value = prop.getCurrentValue();
@@ -52,6 +62,26 @@ public abstract class ExpressionCalculator {
 		return ret;
 	}
 	
+	private String getTmpOptionValue(String option, Map<String, String> mapTmpValue) {
+		if (!mapTmpValue.keySet().contains(option)) {
+			mapTmpValue.put(option, "V" + mapTmpValue.keySet().size());
+		}
+		return "\"" + mapTmpValue.get(option) + "\"";
+	}
+
+	private List<String> sortByLength(Set<String> options) {
+		List<String> list = new ArrayList<>(options);
+		Collections.sort(list, new Comparator<String>() {
+
+			@Override
+			public int compare(String arg0, String arg1) {
+				return arg1.length() - arg0.length() ;
+			}
+			
+		});
+		return list;
+	}
+
 	public String calculate(String expression) {
 		String expression2 = replaceWithRealValue(expression);
 		return String.valueOf(getReturn(expression2));

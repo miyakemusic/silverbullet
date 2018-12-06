@@ -4,13 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Expression {
 
-	public static final String Trigger = "Trigger";
-	public static final String Condition = "Condition";
-	
-	private String value;
-	private String trigger;
-	private boolean valueCalculationEnabled;
-	private String condition;
+	private String value = "";
+	private String trigger = "";
+	private boolean valueCalculationEnabled = false;
+	private String condition = "";
 	
 	public Expression() {}
 	

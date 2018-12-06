@@ -54,6 +54,10 @@ public class DependencySpecDetail {
 	public void setExpressions(ExpressionHolder expressions) {
 		this.expressions = expressions;
 	}
+
+	public void update(String element, Integer row, String field, String value) {
+		this.expressions.update(element, row, field, value);
+	}
 	
 
 }

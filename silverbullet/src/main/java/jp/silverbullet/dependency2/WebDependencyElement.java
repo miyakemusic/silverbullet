@@ -6,9 +6,9 @@ public class WebDependencyElement {
 	@JsonProperty(DependencySpec.Value)
 	public String value;
 	
-	@JsonProperty(Expression.Trigger)
+	@JsonProperty(DependencySpec.Trigger)
 	public String trigger;
 	
-	@JsonProperty(Expression.Condition)
+	@JsonProperty(DependencySpec.Condition)
 	public String condition;
 }

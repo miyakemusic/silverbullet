@@ -15,7 +15,9 @@ public class Path {
 	}
 	public void add(Path path) {
 		path.setParent(this);
+		System.out.println(this.getText());
 	}
+
 	private void setParent(Path path) {
 		this.parent = path;
 	}

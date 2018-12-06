@@ -24,10 +24,10 @@ public class IdCollector {
 		return ret;
 	}
 
-	public static Set<String> collectSelectionIds(String value) {
+	public static List<String> collectSelectionIds(String value) {
 		Set<String> ret = new HashSet<>();
 		if (!value.contains("%")) {
-			return ret;
+			return new ArrayList<String>(ret);
 		}
 		String[] tmp = value.split(ID_SPLIT_CHARS/*"[\\<>\\[\\]+/\\-=\\s();\\|]"*/);
 		for (String t : tmp) {
@@ -36,6 +36,6 @@ public class IdCollector {
 			}
 		}
 
-		return ret;
+		return new ArrayList<String>(ret);
 	}
 }

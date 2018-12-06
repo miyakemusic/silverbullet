@@ -22,6 +22,7 @@ public class DependencyEngine {
 	private ExpressionCalculator calculator;
 	private String userChangedId;
 	private List<DependencyListener> listeners = new ArrayList<>();
+	private CommitListener commitListener;
 	
 	public DependencyEngine(DependencySpecHolder specHolder, DepPropertyStore store) {
 		this.store = store;
@@ -51,8 +52,23 @@ public class DependencyEngine {
 		this.cachedPropertyStore = new CachedPropertyStore(store);
 		changeValue(id, value);
 		
-		this.cachedPropertyStore.commit();
-		fireCompleteEvent();
+		if (this.commitListener != null) {
+			CommitListener.Reply reply = this.commitListener.confirm("");
+			if (reply.equals(CommitListener.Reply.Accept)) {
+				this.cachedPropertyStore.commit();
+				fireCompleteEvent();					
+			}
+			else if (reply.equals(CommitListener.Reply.Reject)) {
+				// Do nothing
+			}
+			else if (reply.equals(CommitListener.Reply.Pending)) {
+				
+			}
+		}
+		else {
+			this.cachedPropertyStore.commit();
+			fireCompleteEvent();			
+		}
 	}
 
 	private void fireCompleteEvent() {
@@ -88,7 +104,7 @@ public class DependencyEngine {
 	}
 	
 	private void handle(String id, String value) throws RequestRejectedException {	
-		List<RuntimeDependencySpec> specs = this.specHolder.getRuntimeSpecs(id);
+		List<RuntimeDependencySpec> specs = this.getSpecHolder().getRuntimeSpecs(id);
 		for (RuntimeDependencySpec spec : specs) {	
 			if (spec.getId().equals(this.userChangedId)) {
 				continue;
@@ -127,7 +143,7 @@ public class DependencyEngine {
 				// selects other one if current is masked
 				if (property.isListElementMasked(property.getCurrentValue())) {
 					if (spec.isReject()) {
-						throw new RequestRejectedException(property.getId());
+						throw new RequestRejectedException(property.getId() + "Selection is valid");
 					}
 					else {
 						reselectNearestValue(property);
@@ -148,7 +164,7 @@ public class DependencyEngine {
 				String min = spec.getExpression().getValue();
 				if (this.isLeftLarger(min, property.getCurrentValue())) {
 					if (spec.isReject()) {
-						throw new RequestRejectedException(property.getId());
+						throw new RequestRejectedException(property.getId()+ ":  Changing Min. is rejected");
 					}
 					else {
 						property.setMin(min);
@@ -164,7 +180,7 @@ public class DependencyEngine {
 				String max = spec.getExpression().getValue();
 				if (this.isLeftLarger(property.getCurrentValue(), max)) {
 					if (spec.isReject()) {
-						throw new RequestRejectedException(property.getId());
+						throw new RequestRejectedException(property.getId() + ": Changing Max. is rejected");
 					}
 					else {
 						property.setMax(max);
@@ -180,13 +196,17 @@ public class DependencyEngine {
 		}
 	}
 
+	protected DependencySpecHolder getSpecHolder() {
+		return this.specHolder;
+	}
+
 	private void setCurrentValue(SvProperty property, String val) throws RequestRejectedException {
 		if (property.isNumericProperty()) {
 			if (isLeftLarger(property.getMin(), val)) {
-				throw new RequestRejectedException(property.getId() + " Under Min.");
+				throw new RequestRejectedException(property.getId() + " Under Min. " + property.getMin());
 			}
 			else if (isLeftLarger(val, property.getMax())) {
-				throw new RequestRejectedException(property.getId() + " Over Max.");
+				throw new RequestRejectedException(property.getId() + " Over Max. " + property.getMax());
 			}
 			else {
 				property.setCurrentValue(val);
@@ -247,6 +267,14 @@ public class DependencyEngine {
 
 	public void addDependencyListener(DependencyListener dependencyListener) {
 		listeners .add(dependencyListener);
+	}
+
+	public void removeDependencyListener(DependencyListener listener) {
+		this.listeners.remove(listener);
+	}
+
+	public void setCommitListener(CommitListener commitListener) {
+		this.commitListener = commitListener;
 	}
 
 }
