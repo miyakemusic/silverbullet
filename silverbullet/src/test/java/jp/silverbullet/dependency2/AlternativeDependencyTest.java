@@ -45,7 +45,7 @@ class AlternativeDependencyTest {
 		specHolder.addSpec(specMiddle);
 		specHolder.addSpec(specLeaf);
 		
-		AlternativeDependency alternative = new AlternativeDependency(specHolder, store);
+		DependencySpecRebuilder alternative = new DependencySpecRebuilder(specHolder, store);
 		DependencySpecHolder newHolder = alternative.getNewHolder();
 		
 		DependencySpec newRootSpec = newHolder.getSpec("ID_ROOT");
@@ -140,7 +140,7 @@ class AlternativeDependencyTest {
 		specHolder.addSpec(specMiddle);
 		specHolder.addSpec(specLeaf);
 		
-		AlternativeDependency alternative = new AlternativeDependency(specHolder, store);
+		DependencySpecRebuilder alternative = new DependencySpecRebuilder(specHolder, store);
 		DependencySpecHolder newHolder = alternative.getNewHolder();
 		
 		List<Expression> newMid = newHolder.getSpec("ID_MIDDLE").getExpression(DependencySpec.Value);

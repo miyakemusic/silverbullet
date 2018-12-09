@@ -12,7 +12,7 @@ import jp.silverbullet.dependency.DependencyInterface;
 import jp.silverbullet.dependency.DependencySpecHolder;
 import jp.silverbullet.dependency.RequestRejectedException;
 import jp.silverbullet.dependency.alternative.AlternativeDependencyGenerator;
-import jp.silverbullet.dependency2.AlternativeDependency;
+import jp.silverbullet.dependency2.DependencySpecRebuilder;
 import jp.silverbullet.dependency2.DependencyEngine;
 import jp.silverbullet.handlers.EasyAccessModel;
 import jp.silverbullet.handlers.HandlerPropertyHolder;
@@ -537,7 +537,7 @@ public class BuilderModelImpl implements BuilderModel {
 				public void add(SvProperty createListProperty) {
 				}
 			};
-			this.dependencySpecHolder2 = new AlternativeDependency(this.dependencySpecHolder2, getter).getNewHolder();
+			this.dependencySpecHolder2 = new DependencySpecRebuilder(this.dependencySpecHolder2, getter).getNewHolder();
 		}
 	}
 }

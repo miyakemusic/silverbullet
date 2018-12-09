@@ -263,11 +263,14 @@ public class DependencyEngine {
 					targetSpec = spec;
 				}
 			}
+			
+			if (targetSpec != null) {
+				ret.add(targetSpec);
+				targetSpec = null;
+			}
 		}
 
-		if (targetSpec != null) {
-			ret.add(targetSpec);
-		}
+
 	}
 
 	protected DependencySpecHolder getSpecHolder() {

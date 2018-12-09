@@ -6,29 +6,35 @@ import java.util.Map;
 
 import jp.silverbullet.dependency.DepPropertyStore;
 
-public class AlternativeDependency {
+public class DependencySpecRebuilder {
 
 	private DependencySpecHolder newHolder = new DependencySpecHolder();
 	
-	public AlternativeDependency(DependencySpecHolder depHolder, DepPropertyStore store) {
+	public DependencySpecRebuilder(DependencySpecHolder depHolder, DepPropertyStore store) {
 
 		for (String id : depHolder.getSpecs().keySet()) {
 			DependencySpec spec = depHolder.getSpecs().get(id);
 			Map<String, List<Expression>> expressionHolder = spec.getDependencySpecDetail().getExpressions().getExpressions();
 			for (String targetElement : expressionHolder.keySet()) {
 				List<Expression> expressions = expressionHolder.get(targetElement);
-				if (targetElement.startsWith(DependencySpec.OptionEnable + "#")) {
+				
+				if (targetElement.startsWith(DependencySpec.OptionEnable + "#") ) {
 					String option = targetElement.replace(DependencySpec.OptionEnable + "#", "");
 
 					List<String> trueCondition = new ArrayList<>();
 					List<String> falseCondition = new ArrayList<>();
 					for (Expression expression : expressions) {
-
-						if (expression.getValue().equals(DependencySpec.True)) {
-							trueCondition.add(expression.getTrigger());
+						ExpressionParser parser = new ExpressionParser(expression.getTrigger());
+						if (isPriority(id, parser.getId(), depHolder)) {
+							if (expression.getValue().equals(DependencySpec.True)) {
+								trueCondition.add(expression.getTrigger());
+							}
+							else if (expression.getValue().equals(DependencySpec.False)) {
+								falseCondition.add(expression.getTrigger());
+							}
 						}
-						else if (expression.getValue().equals(DependencySpec.False)) {
-							falseCondition.add(expression.getTrigger());
+						else {
+							newHolder.getSpec(id).getExpression(targetElement).add(expression);
 						}
 					}
 					
@@ -39,6 +45,10 @@ public class AlternativeDependency {
 				}
 			}
 		}
+	}
+
+	private boolean isPriority(String id, String triggerId, DependencySpecHolder depHolder) {
+		return depHolder.getPriority(id) <= depHolder.getPriority(triggerId);
 	}
 
 	private void addCondition(String id, String option, List<String> trueTrigger, List<String> falseTrigger, 
