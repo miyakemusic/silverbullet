@@ -22,7 +22,6 @@ class DependencySpecEditor {
 		var idSelector = div + '_idSelector';
 		var choiceSelector = div + '_choiceSelector';
 		
-		
 		$('#' + this.depDialog).append('<div id="newSpecDiv">' + 
 			'<textarea id="' + me.valueText + '" rows=5 cols=100></textarea>' +
 			'<br>' +
@@ -160,7 +159,22 @@ class DependencySpecEditor {
 			func = textFunction;
 		}
 		var divName = this.div + '_' + elementName;
-		$('#' + this.div).append('<div id="' + divName + '"><b>' + elementName + '</b></div>');
+		
+		var idCopyButton = this.div + '_copy_' + elementName;
+		var idCopySelect = this.div + '_copyselect_' + elementName;
+		$('#' + this.div).append('<div id="' + divName + '"><b>' + elementName + '</b><span>..........</span><button id="' + idCopyButton + '" name="' + elementName + '">Copy From</button><select id="' + idCopySelect + '" class="copySelect"></select></div>');
+		$('#' + idCopyButton).click(function() {
+			var to = $(this).prop('name');//.replace( me.div + '_copyselect_', ' ');
+			var from = $('#' + idCopySelect).val();
+	
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/dependencySpec2/copySpec?id=" + me.id + "&from=" + from + "&to=" + to,
+			   success: function(msg){
+			   	me.update(me.id);
+			   }
+			});			
+		});
 		
 		var table = new JsMyTable(divName, func);
 		
@@ -197,7 +211,11 @@ class DependencySpecEditor {
 		   		for (var i = 0; i < msg.list.length; i++) {
 		   			me.createTable(msg.list[i].element, msg.list[i].rows);
 		   		}
-				
+				for (var i = 0; i < msg.list.length; i++) {
+					var val = msg.list[i].element;
+					var option = $('<option>').val(val).text(val);
+					$('.copySelect').append(option);
+				}
 		   }
 		});	
 	}

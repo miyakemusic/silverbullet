@@ -1,6 +1,8 @@
 package jp.silverbullet.property;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -151,6 +153,14 @@ public class PropertyDef implements Cloneable {
 		for (ListDetailElement e: this.listDetail) {
 			s += e.getTitle() + ",";
 		}
+		
+		Collections.sort(this.listDetail, new Comparator<ListDetailElement>() {
+			@Override
+			public int compare(ListDetailElement arg0, ListDetailElement arg1) {
+				return arg0.getId().compareTo(arg1.getId());
+			};
+		});
+		
 		this.updateArgument(index, s);
 	}
 	protected int findArgumentIndex(String key) {

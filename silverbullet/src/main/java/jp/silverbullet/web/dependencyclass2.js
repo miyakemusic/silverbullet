@@ -49,6 +49,46 @@ class DependencyClass2 {
 			me.updateLink();
 		});
 		
+		var idRestriction = div + '_restriction';
+		$('#' + div).append('<button id="' + idRestriction + '">Restriction</button>');
+		$('#' + idRestriction).click(function() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/dependencySpec2/getRestrictions",
+			   success: function(msg) {
+			   }
+			});			
+		});
+		
+		var idPriorityList = div + '_priorityList';
+		var idPriorityListDialog = div + '_priorityListDialog';
+		$('#' + div).append('<button id="' + idPriorityList + '">Priority List</button>');
+		$('#' + div).append('<div id="' + idPriorityListDialog + '"></div>');
+		var priorityTable = new DependencyPriority(idPriorityListDialog);
+				
+		$('#' + idPriorityList).click(function() {
+			priorityTable.update();
+			$('#' + idPriorityListDialog).dialog('open');
+		});	
+				
+		$('#' + idPriorityListDialog).dialog({
+			  autoOpen: false,
+			  title: 'Dependency Priority',
+			  closeOnEscape: true,
+			  modal: true,
+			  buttons: {
+			    "OK": function(){
+			      $(this).dialog('close');
+			    }
+			    ,
+			    "Cancel": function(){
+			      $(this).dialog('close');
+			    }
+			  },
+			width: 800,
+//			height: 600
+		});	
+				
 		$.ajax({
 		   type: "GET", 
 		   url: "http://" + window.location.host + "/rest/dependencySpec2/getIds",
@@ -63,8 +103,6 @@ class DependencyClass2 {
 		   }
 		});	
 
-
-		
 		$('#' + div).append('<div id="' + me.rootId + '"></div>');
 		var editor = new DependencySpecEditor(me.rootId);
 		
@@ -150,7 +188,6 @@ class DependencyClass2 {
 
 					var path = {from: links[i].from, to: links[i].to, text: links[i].type};
 					link.push(path);
-					
 				}
 				
 				me.diagram.draw(link)

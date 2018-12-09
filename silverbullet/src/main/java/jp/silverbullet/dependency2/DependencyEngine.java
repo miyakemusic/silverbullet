@@ -2,8 +2,11 @@ package jp.silverbullet.dependency2;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import jp.silverbullet.SvProperty;
 import jp.silverbullet.dependency.CachedPropertyStore;
@@ -105,6 +108,7 @@ public class DependencyEngine {
 	
 	private void handle(String id, String value) throws RequestRejectedException {	
 		List<RuntimeDependencySpec> specs = this.getSpecHolder().getRuntimeSpecs(id);
+		specs = findSatisfiedSpecs(specs);
 		for (RuntimeDependencySpec spec : specs) {	
 			if (spec.getId().equals(this.userChangedId)) {
 				continue;
@@ -118,15 +122,16 @@ public class DependencyEngine {
 				}
 			}
 			else {
-				spec.setExecutionConditionSatistied(Boolean.valueOf(calculator.calculate("ret=" + spec.getExpression().getTrigger())));
+//				spec.setExecutionConditionSatistied(Boolean.valueOf(calculator.calculate("ret=" + spec.getExpression().getTrigger())));
 				if (spec.getExpression().isValueCalculationEnabled()) {
 					spec.getExpression().setValue(calculator.calculate("ret=" + spec.getExpression().getValue()));
 				}
 			}
 			
-			if (spec.getExpression().isConditionEnabled()) {
-				spec.setExecutionConditionSatistied(Boolean.valueOf(calculator.calculate("ret=" + spec.getExpression().getCondition())));
-			}
+//			if (spec.getExpression().isConditionEnabled()) {
+//				spec.setExecutionConditionSatistied(Boolean.valueOf(calculator.calculate("ret=" + spec.getExpression().getCondition())));
+//			}
+			
 			if (!spec.isExecutionConditionSatistied()) {
 				continue;
 			}
@@ -193,6 +198,75 @@ public class DependencyEngine {
 				}
 			}
 			spec.consumed();
+		}
+	}
+
+	private List<RuntimeDependencySpec> findSatisfiedSpecs(List<RuntimeDependencySpec> specs) {
+		List<RuntimeDependencySpec> ret = new ArrayList<RuntimeDependencySpec> ();
+		Map<String, Set<RuntimeDependencySpec>> values = new HashMap<String, Set<RuntimeDependencySpec>>();
+		for (RuntimeDependencySpec spec: specs) {			
+			if (spec.isElse()) {
+				spec.setExecutionConditionSatistied(true);
+			}
+			else {
+				boolean satisfied = true;
+				satisfied &= Boolean.valueOf(calculator.calculate("ret=" + spec.getExpression().getTrigger()));
+				if (spec.getExpression().isValueCalculationEnabled()) {
+				//	satisfied &= Boolean.valueOf(calculator.calculate("ret=" + spec.getExpression().getValue()));
+				}
+				if (spec.getExpression().isConditionEnabled()) {
+					satisfied &= Boolean.valueOf(calculator.calculate("ret=" + spec.getExpression().getCondition()));
+				}
+				
+				spec.setExecutionConditionSatistied(satisfied);
+				
+				if (spec.isExecutionConditionSatistied() && spec.getTarget().equals(DependencySpec.Value)) {
+					// remember id, value and spec
+					if (!values.keySet().contains(spec.getId())) {
+						values.put(spec.getId(), new HashSet<RuntimeDependencySpec>());
+					}
+					values.get(spec.getId()).add(spec);
+				}
+			}
+			
+			if (spec.isExecutionConditionSatistied()) {
+				ret.add(spec);
+			}
+		}
+		
+		/// selects only one spec.
+		selectOnlyOneSpec(values, ret);
+		return ret;
+	}
+
+	private void selectOnlyOneSpec(Map<String, Set<RuntimeDependencySpec>> values, List<RuntimeDependencySpec> ret) {
+		RuntimeDependencySpec targetSpec = null;
+		for (String id : values.keySet()) {
+			Set<RuntimeDependencySpec> satisfiedSpecs = values.get(id);
+			if (satisfiedSpecs.size() == 1) {
+				continue;
+			}
+			
+			SvProperty currentProperty = this.cachedPropertyStore.getProperty(id);
+			String currentValue = currentProperty.getCurrentValue();
+			List<String> list = currentProperty.getListIds();
+	
+			int min = list.size();
+			int indexCurrent = list.indexOf(currentValue);
+			
+			for (RuntimeDependencySpec spec : satisfiedSpecs) {
+				String option = spec.getExpression().getValue();
+				int index = list.indexOf(option);
+				int diff = Math.abs(indexCurrent - index);
+				if (diff < min) {
+					min = diff;
+					targetSpec = spec;
+				}
+			}
+		}
+
+		if (targetSpec != null) {
+			ret.add(targetSpec);
 		}
 	}
 

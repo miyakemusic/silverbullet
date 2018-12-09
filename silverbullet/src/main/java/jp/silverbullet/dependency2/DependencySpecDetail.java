@@ -58,6 +58,12 @@ public class DependencySpecDetail {
 	public void update(String element, Integer row, String field, String value) {
 		this.expressions.update(element, row, field, value);
 	}
+
+	public void copySpec(String fromTargetElement, String toTargetElement) {
+		for (Expression exp : this.expressions.getExpressions(fromTargetElement)) {
+			this.expressions.getExpressions(toTargetElement).add(exp.clone());
+		}
+	}
 	
 
 }

@@ -97,10 +97,15 @@ public class DependencySpec {
 	}
 
 	public List<Expression> getExpression(String targetElement) {
+		targetElement = convertTargetElement(targetElement);
+		return this.dependencySpecDetail.get(targetElement);
+	}
+
+	private String convertTargetElement(String targetElement) {
 		if (targetElement.startsWith(this.id)) {
 			targetElement = DependencySpec.OptionEnable + "#" + targetElement;
 		}
-		return this.dependencySpecDetail.get(targetElement);
+		return targetElement;
 	}
 
 	@JsonIgnore
@@ -130,6 +135,10 @@ public class DependencySpec {
 			element = DependencySpec.OptionEnable + "#" + element;
 		}
 		this.dependencySpecDetail.update(element, row, field, value);
+	}
+
+	public void copySpec(String fromTargetElement, String toTargetElement) {
+		this.dependencySpecDetail.copySpec(this.convertTargetElement(fromTargetElement), this.convertTargetElement(toTargetElement));
 	}
 
 }

@@ -15,10 +15,10 @@ public class AlternativeDependency {
 		for (String id : depHolder.getSpecs().keySet()) {
 			DependencySpec spec = depHolder.getSpecs().get(id);
 			Map<String, List<Expression>> expressionHolder = spec.getDependencySpecDetail().getExpressions().getExpressions();
-			for (String value : expressionHolder.keySet()) {
-				List<Expression> expressions = expressionHolder.get(value);
-				if (value.startsWith(DependencySpec.OptionEnable + "#")) {
-					String option = value.replace(DependencySpec.OptionEnable + "#", "");
+			for (String targetElement : expressionHolder.keySet()) {
+				List<Expression> expressions = expressionHolder.get(targetElement);
+				if (targetElement.startsWith(DependencySpec.OptionEnable + "#")) {
+					String option = targetElement.replace(DependencySpec.OptionEnable + "#", "");
 
 					List<String> trueCondition = new ArrayList<>();
 					List<String> falseCondition = new ArrayList<>();
@@ -34,6 +34,9 @@ public class AlternativeDependency {
 					
 					addCondition(id, option, trueCondition, falseCondition, store, depHolder);
 				}
+				else {
+					newHolder.getSpec(id).getExpression(targetElement).addAll(expressions);
+				}
 			}
 		}
 	}
@@ -44,11 +47,6 @@ public class AlternativeDependency {
 		if (isNotElse(trueTrigger)) {
 			for (String trigger : trueTrigger) {
 				ExpressionParser parser = new ExpressionParser(trigger);		
-				//for (Expression exp : depHolder.getSpec(parser.getId()).getExpression(DependencySpec.Value)) {
-				//	if (trigger.equals(exp.getTrigger())) {
-						
-				//	}
-				//}
 				this.newHolder.getSpec(parser.getId()).addValue(parser.getValue(), "$" + id + "==" + "%" + option, createCondition(trigger, trueTrigger));
 				this.newHolder.getSpec(id).addValue(option, trigger, createConditionEx(id, trigger, option, depHolder, store));
 			}

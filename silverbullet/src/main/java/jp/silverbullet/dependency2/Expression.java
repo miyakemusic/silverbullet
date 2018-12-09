@@ -2,7 +2,7 @@ package jp.silverbullet.dependency2;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class Expression {
+public class Expression implements Cloneable {
 
 	private String value = "";
 	private String trigger = "";
@@ -61,6 +61,17 @@ public class Expression {
 	@JsonIgnore
 	public boolean isConditionEnabled() {
 		return (this.condition != null) && !this.condition.isEmpty();
+	}
+
+	@Override
+	protected Expression clone() {
+		try {
+			return (Expression)super.clone();
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 }

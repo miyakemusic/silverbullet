@@ -1,5 +1,6 @@
 package jp.silverbullet.web;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.GET;
@@ -10,6 +11,7 @@ import javax.ws.rs.core.MediaType;
 
 import jp.silverbullet.StaticInstances;
 import jp.silverbullet.SvProperty;
+import jp.silverbullet.dependency2.DependencyRestriction;
 import jp.silverbullet.dependency2.DependencySpec;
 import jp.silverbullet.dependency2.DependencySpecAnalyzer;
 import jp.silverbullet.dependency2.DependencySpecHolder;
@@ -19,6 +21,8 @@ import jp.silverbullet.dependency2.LinkGenerator;
 import jp.silverbullet.dependency2.LinkGenerator.LinkLevel;
 import jp.silverbullet.dependency2.WebDataConverter;
 import jp.silverbullet.dependency2.WebDependencySpec;
+import jp.silverbullet.dependency2.WebPair;
+import jp.silverbullet.property.ListDetailElement;
 import jp.silverbullet.web.ui.PropertyGetter;
 
 @Path("/dependencySpec2")
@@ -47,30 +51,8 @@ public class DependencySpecResource2 {
 		DependencySpecHolder holder = StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder2();
 		DependencySpec spec = holder.getSpec(id);
 		
-//		List<Expression> expressions = spec.getExpression(element);
-		
 		spec.update(element, row, col, value);
-//		Expression exp = null;
-//		if (expressions.size() <= row) {
-//			
-//			exp = new Expression();
-//			expressions.add(exp);
-//		}
-//		else {
-//			exp = expressions.get(row);
-//		}
-//		if (col.equals(DependencySpec.Value)) {
-//			exp.setValue(value);
-//		}
-//		else if (col.equals(Expression.Trigger)) {
-//			exp.setTrigger(value);
-//		}
-//		else if (col.equals(Expression.Condition)) {
-//			exp.setCondition(value);
-//		}
-//		else {
-//			
-//		}
+
 		return "OK";
 	}
 	
@@ -100,6 +82,17 @@ public class DependencySpecResource2 {
 	public Integer getPriority(@QueryParam("id") final String id) {
 		return StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder2().getPriority(id);
 	}
+
+	@GET
+	@Path("/getPriorityList")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<WebPair> getPriorityList() {
+		List<WebPair> ret = new ArrayList<>();
+		for (String id : StaticInstances.getInstance().getBuilderModel().getPropertyStore().getAllIds()) {
+			ret.add(new WebPair(id, String.valueOf(this.getPriority(id))));
+		}
+		return ret;
+	}
 	
 	@GET
 	@Path("/setPriority")
@@ -123,5 +116,22 @@ public class DependencySpecResource2 {
 		}
 		StaticInstances.getInstance().getBuilderModel().switchDependency(type);
 		return "OK";
+	}
+	
+	@GET
+	@Path("/copySpec")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String copySpec(@QueryParam("id") final String id, @QueryParam("from") final String from, @QueryParam("to") final String to) {
+		DependencySpecHolder specHolder = StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder2();
+		specHolder.getSpec(id).copySpec(from, to);
+		return "OK";
+	}
+	
+	@GET
+	@Path("/getRestrictions")
+	@Produces(MediaType.APPLICATION_JSON)
+	public DependencyRestriction getRestrictions() {
+		DependencySpecHolder specHolder = StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder2();
+		return specHolder.getDependencyRestriction();
 	}
 }

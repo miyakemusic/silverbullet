@@ -11,6 +11,7 @@ public class RuntimeDependencySpec {
 	private boolean consumed = false;
 	private boolean executionConditionSatistied = true;
 	private boolean reject;
+	private RuntimeDependencySpec elseSpec;
 	
 	public RuntimeDependencySpec(String id, String target, Expression expression, boolean reject) {
 		this.id = id;
@@ -86,6 +87,27 @@ public class RuntimeDependencySpec {
 
 	public boolean isReject() {
 		return reject;
+	}
+
+	public List<RuntimeDependencySpec> getElseSources() {
+		return elseSources;
+	}
+
+
+	public RuntimeDependencySpec getElseSpec() {
+		return elseSpec;
+	}
+
+	public void setElseSpec(RuntimeDependencySpec elseSpec) {
+		this.elseSpec = elseSpec;
+	}
+
+	public boolean hasElse() {
+		return this.elseSpec != null;
+	}
+
+	public String getTarget() {
+		return target;
 	}
 	
 }

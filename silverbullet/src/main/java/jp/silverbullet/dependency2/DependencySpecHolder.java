@@ -9,6 +9,10 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jp.silverbullet.StaticInstances;
+import jp.silverbullet.SvProperty;
+import jp.silverbullet.property.ListDetailElement;
+
 public class DependencySpecHolder {
 	private Map<String, DependencySpec> specs = new HashMap<>();
 	private Map<String, Integer> priorityMap = new HashMap<>();
@@ -57,6 +61,7 @@ public class DependencySpecHolder {
 			tmp.remove(elseSpec);
 			for (RuntimeDependencySpec spec : tmp) {
 				elseSpec.addElseSource(spec);
+				spec.setElseSpec(elseSpec);
 			}
 			tmp.add(elseSpec);
 		}
@@ -118,6 +123,24 @@ public class DependencySpecHolder {
 	public void changeId(String prevId, String newId) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@JsonIgnore
+	public DependencyRestriction getDependencyRestriction() {
+		DependencyRestriction ret = new DependencyRestriction();
+		DependencySpecHolder specHolder = this;
+		for (String id : specHolder.getAllIds()) {
+			SvProperty property = StaticInstances.getInstance().getBuilderModel().getProperty(id);
+			ret.addColumn(property.getId(), "Enabled");
+			ret.addColumn(property.getId(), "Value");
+			if (property.isListProperty()) {
+				for (ListDetailElement e : property.getListDetail()) {
+					ret.addColumn(property.getId() + "." + e.getId(), "Enabled");
+				}
+			}
+		}
+		ret.build();
+		return ret;
 	}
 
 }
