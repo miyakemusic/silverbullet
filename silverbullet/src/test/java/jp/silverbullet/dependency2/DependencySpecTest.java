@@ -18,7 +18,6 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jp.silverbullet.SvProperty;
-import jp.silverbullet.dependency.CachedPropertyStore;
 import jp.silverbullet.dependency.DepPropertyStore;
 import jp.silverbullet.dependency.RequestRejectedException;
 import jp.silverbullet.dependency.speceditor3.SvPropertyFactory;

@@ -13,7 +13,7 @@ class WebDataConverterTest {
 
 	@Test
 	void testWebDataConverter() {
-		TestPropertyStore store = new TestPropertyStore();
+		PropertyStoreForTest store = new PropertyStoreForTest();
 		store.addListProperty("ID_MIDDLE", Arrays.asList("ID_MIDDLE_A1", "ID_MIDDLE_A2", "ID_MIDDLE_B1", "ID_MIDDLE_B2"), "ID_MIDDLE_A1");
 		store.addListProperty("ID_ROOT", Arrays.asList("ID_ROOTA", "ID_ROOTA2", "ID_ROOTB"), "ID_ROOTA");
 

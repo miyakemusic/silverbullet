@@ -8,7 +8,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class JsWidget {
+public class JsWidget implements Cloneable {
 
 	public static final String FLOWLAYOUT = "Flow Layout";
 	public static final String ABSOLUTELAYOUT = "Absolute Layout";
@@ -199,4 +199,15 @@ public class JsWidget {
 		this.editable = editable;
 	}
 	
+	public JsWidget clone() {
+		try {
+			JsWidget ret=  (JsWidget)super.clone();
+			ret.unique = ret.hashCode();
+			return ret;
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
 }

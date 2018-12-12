@@ -1,13 +1,16 @@
 package jp.silverbullet.dependency2;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class IdCollector {
 
-	public static final String ID_SPLIT_CHARS = "[\\<>\\[\\]+/\\-=\\s();\\|]";
+	public static final String ID_SPLIT_CHARS = "[\\<>\\[\\]+/\\-=\\s();\\|!]";
 
 	public static List<String> collectIds(String value) {
 		List<String> ret = new ArrayList<>();
@@ -37,5 +40,18 @@ public class IdCollector {
 		}
 
 		return new ArrayList<String>(ret);
+	}
+	
+	public static List<String> sortByLength(Collection<String> options) {
+		List<String> list = new ArrayList<>(options);
+		Collections.sort(list, new Comparator<String>() {
+
+			@Override
+			public int compare(String arg0, String arg1) {
+				return arg1.length() - arg0.length() ;
+			}
+			
+		});
+		return list;
 	}
 }

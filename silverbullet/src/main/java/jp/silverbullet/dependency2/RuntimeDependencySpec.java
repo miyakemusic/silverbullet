@@ -16,7 +16,7 @@ public class RuntimeDependencySpec {
 	public RuntimeDependencySpec(String id, String target, Expression expression, boolean reject) {
 		this.id = id;
 		this.target = target;
-		this.expression = expression;
+		this.expression = expression.clone();
 		this.reject = reject;
 	}
 

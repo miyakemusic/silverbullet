@@ -405,7 +405,7 @@ class JsChartCanvasJs extends JsSubWidget {
 		if (property.currentValue == 'REQUEST_AGAIN') {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/design/getProperty?id=" + me.info.id + '&ext=1001',
+			   url: "http://" + window.location.host + "/rest/design/getProperty?id=" + me.info.id + '&index=' + me.info.index + '&ext=1001',
 			   success: function(property){
 			   		if (property == null) {
 			   			return;
@@ -458,7 +458,7 @@ class JsChart extends JsSubWidget {
 		if (property.currentValue == 'REQUEST_AGAIN') {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/design/getProperty?id=" + me.info.id + '&ext=501',
+			   url: "http://" + window.location.host + "/rest/design/getProperty?id=" + me.info.id + '&index=' + me.info.id + + '&ext=501',
 			   success: function(property){
 			   		if (property.currentValue != null) {
 						me.updateChart(property);

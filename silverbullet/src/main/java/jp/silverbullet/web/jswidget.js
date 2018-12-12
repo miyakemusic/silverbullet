@@ -81,61 +81,42 @@ class JsWidget {
 		
 	createBase() {			
 		var me = this;
+		var widgetListener = function(id) {
+			me.requestChange(me.info.id, me.info.index, id);
+		}
 		
 		if (this.info.widgetType == 'COMBOBOX') {
-			this.subWidget = new JsComboBox(this.baseId, function(id) {
-				me.requestChange(me.info.id, id);
-			});
+			this.subWidget = new JsComboBox(this.baseId, widgetListener);
 		}
 		else if (this.info.widgetType == 'RADIOBUTTON') {
-			this.subWidget = new JsRadio(this.baseId, function(id) {
-				me.requestChange(me.info.id, id);
-			});
+			this.subWidget = new JsRadio(this.baseId, widgetListener);
 		}
 		else if (this.info.widgetType == 'TEXTFIELD') {
-			this.subWidget = new JsTextInput(this.baseId, function(id) {
-				me.requestChange(me.info.id, id);
-			});
+			this.subWidget = new JsTextInput(this.baseId, widgetListener);
 		}
 		else if (this.info.widgetType == 'CHECKBOX') {
-			this.subWidget = new JsCheckBox(this.baseId, function(id) {
-				me.requestChange(me.info.id, id);
-			});
+			this.subWidget = new JsCheckBox(this.baseId, widgetListener);
 		}
 		else if (this.info.widgetType == 'TOGGLEBUTTON') {
-			this.subWidget = new JsToggleButton(this.baseId, this.info, function(id) {
-				me.requestChange(me.info.id, id);
-			});
+			this.subWidget = new JsToggleButton(this.baseId, this.info, widgetListener);
 		}
 		else if (this.info.widgetType == 'CSSBUTTON') {
-			this.subWidget = new JsCssButton(this.baseId, this.info, function(id) {
-				me.requestChange(me.info.id, id);
-			});
+			this.subWidget = new JsCssButton(this.baseId, this.info, widgetListener);
 		}
 		else if (this.info.widgetType == 'ACTIONBUTTON') {
-			this.subWidget = new JsActionButton(this.baseId, function(id) {
-				me.requestChange(me.info.id, id);
-			});
+			this.subWidget = new JsActionButton(this.baseId, widgetListener);
 		}
 		else if (this.info.widgetType == 'CHART') {
-			this.subWidget = new JsChart(this.baseId, this.info, function(id) {
-				me.requestChange(me.info.id, id);
-			});
+			this.subWidget = new JsChart(this.baseId, this.info, widgetListener);
 		}
 		else if (this.info.widgetType == 'CHART_CANVASJS') {
-			this.subWidget = new JsChartCanvasJs(this.baseId, this.info, function(id) {
-				me.requestChange(me.info.id, id);
-			});
+			this.subWidget = new JsChartCanvasJs(this.baseId, this.info, widgetListener);
 		}
 		else if (this.info.widgetType == 'TABLE') {
-			this.subWidget = new JsTable(this.baseId, function(id) {
-				me.requestChange(me.info.id, id);
-			});
+			this.subWidget = new JsTable(this.baseId, widgetListener);
 		}
 		else if (this.info.widgetType == 'DATATABLE') {
-			this.subWidget = new JsDataTable(this.baseId, this.info, function(id) {
-				me.requestChange(me.info.id, id);
-			});
+			this.subWidget = new JsDataTable(this.baseId, this.info, widgetListener);
 		}
 		else if ((this.info.widgetType == 'PANEL') || (this.info.widgetType == 'ROOT')) {
 			$('#' + this.baseId).addClass('panel');
@@ -163,29 +144,19 @@ class JsWidget {
 			$('#' + this.baseId).addClass('Root');	
 		}
 		else if (this.info.widgetType == 'TAB') {
-			this.subWidget = new JsTabPanel(this.baseId, this.info, function(id) {
-				me.requestChange(me.info.id, id);
-			});
+			this.subWidget = new JsTabPanel(this.baseId, this.info, widgetListener);
 		}
 		else if (this.info.widgetType == 'GUI_DIALOG') {
-			this.subWidget = new JsDialogButton(this.baseId, this.info, function(id) {
-				me.requestChange(me.info.id, id);
-			});
+			this.subWidget = new JsDialogButton(this.baseId, this.info, widgetListener);
 		}	
 		else if (this.info.widgetType == 'LABEL') {
-			this.subWidget = new JsLabel(this.baseId, this.info, function(id) {
-				me.requestChange(me.info.id, id);
-			});
+			this.subWidget = new JsLabel(this.baseId, this.info, widgetListener);
 		}	
 		else if (this.info.widgetType == 'MESSAGEBOX') {
-			this.subWidget = new JsMessageBox(this.baseId, this.info, function(id) {
-				me.requestChange(me.info.id, id);
-			});
+			this.subWidget = new JsMessageBox(this.baseId, this.info, widgetListener);
 		}	
 		else if (this.info.widgetType == 'REGISTERSHORTCUT') {
-			this.subWidget = new JsRegisterShortcut(this.baseId, this.info, function(id) {
-				me.requestChange(me.info.id, id);
-			});
+			this.subWidget = new JsRegisterShortcut(this.baseId, this.info, widgetListener);
 		}				
 		$('#' + this.baseId).addClass('base');
 		if ((this.info.styleClass != null) && (this.info.styleClass != '')) {
@@ -241,6 +212,7 @@ class JsWidget {
 	
 	updateValue() {
 		var id = this.info.id;
+		var index = this.info.index;
 		var me = this;
 		
 		if (id == '') {
@@ -249,7 +221,7 @@ class JsWidget {
 		else {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/design/getProperty?id=" + id,
+			   url: "http://" + window.location.host + "/rest/design/getProperty?id=" + id + "&index=" + index,
 			   success: function(property){
 			   		if (me.subWidget != null) {
 			   			me.subWidget.updateValue(property);
@@ -278,7 +250,7 @@ class JsWidget {
 		else {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/design/getProperty?id=" + id,
+			   url: "http://" + window.location.host + "/rest/design/getProperty?id=" + id + '&index=' + me.info.index,
 			   success: function(property){
 			   		if (me.subWidget != null) {
 			   			me.subWidget.updateLayout(property);

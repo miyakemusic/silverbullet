@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import jp.silverbullet.SvProperty;
+import jp.silverbullet.dependency2.CachedPropertyStore;
+import jp.silverbullet.dependency2.ExpressionCalculator;
 import jp.silverbullet.property.ListDetailElement;
 
 
@@ -24,7 +26,7 @@ public abstract class DependencyEngine {
 	
 	public void requestChange(String id, String value) throws RequestRejectedException {
 		for (DependencyListener listener : this.listeners) {
-			listener.onStart(id, value);
+	//		listener.onStart(id, value);
 		}
 		this.cachedPropertyStore = new CachedPropertyStore(getPropertiesStore());
 		

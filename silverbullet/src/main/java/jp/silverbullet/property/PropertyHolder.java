@@ -176,4 +176,11 @@ public class PropertyHolder {
 			}
 		}
 	}
+	public List<String> getAllIds() {
+		List<String> ret = new ArrayList<>();
+		for (PropertyDef prop : this.properties) {
+			ret.add(prop.getId());
+		}
+		return ret;
+	}
 }

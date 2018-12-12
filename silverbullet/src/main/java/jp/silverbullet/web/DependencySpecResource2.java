@@ -60,7 +60,7 @@ public class DependencySpecResource2 {
 	@Path("/getIds")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<String> getIds() {
-		return StaticInstances.getInstance().getBuilderModel().getPropertyStore().getAllIds();
+		return StaticInstances.getInstance().getBuilderModel().getPropertyHolder().getAllIds();
 	}
 	
 	@GET

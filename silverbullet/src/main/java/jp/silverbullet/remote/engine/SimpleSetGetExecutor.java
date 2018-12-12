@@ -215,7 +215,7 @@ private String value;
 	}
 
 	@Override
-	public void onValueChanged(String id, String value) {
+	public void onValueChanged(String id, int index, String value) {
 		if (getModel().getSyncController().isWaitingAsyncCompletion()) {
 			if (getModel().getSyncController().matchesSyncCompletion(id, value)) {
 				getModel().getSyncController().notifyComplete();
@@ -225,31 +225,31 @@ private String value;
 	}
 
 	@Override
-	public void onEnableChanged(String id, boolean b) {
+	public void onEnableChanged(String id, int index, boolean b) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onFlagChanged(String id, Flag flag) {
+	public void onFlagChanged(String id, int index, Flag flag) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onVisibleChanged(String id, Boolean b) {
+	public void onVisibleChanged(String id, int index, Boolean b) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onListMaskChanged(String id, String string) {
+	public void onListMaskChanged(String id, int index, String string) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onTitleChanged(String id, String title) {
+	public void onTitleChanged(String id, int index, String title) {
 		// TODO Auto-generated method stub
 		
 	}

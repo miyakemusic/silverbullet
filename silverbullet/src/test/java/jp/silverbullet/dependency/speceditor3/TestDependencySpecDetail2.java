@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 
 import jp.silverbullet.SvProperty;
 import jp.silverbullet.XmlPersistent;
-import jp.silverbullet.dependency.CachedPropertyStore;
 import jp.silverbullet.dependency.ChangedItemValue;
 import jp.silverbullet.dependency.DepPropertyStore;
 import jp.silverbullet.dependency.DependencyBuilder;
@@ -28,9 +27,10 @@ import jp.silverbullet.dependency.DependencyTargetElement;
 import jp.silverbullet.dependency.RequestRejectedException;
 import jp.silverbullet.dependency.DependencyExpressionHolder.SettingDisabledBehavior;
 import jp.silverbullet.dependency.alternative.AlternativeDependencyGenerator;
+import jp.silverbullet.dependency2.CachedPropertyStore;
 import jp.silverbullet.web.ui.PropertyGetter;
 
-class DependencySpecDetail2Test {
+class TestDependencySpecDetail2 {
 
 	@Test
 	void testEnable() {

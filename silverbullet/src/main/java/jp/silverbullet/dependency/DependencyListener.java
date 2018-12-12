@@ -3,6 +3,8 @@ package jp.silverbullet.dependency;
 import java.util.List;
 import java.util.Map;
 
+import jp.silverbullet.dependency2.Id;
+
 public interface DependencyListener {
 
 	boolean confirm(String history);
@@ -11,6 +13,6 @@ public interface DependencyListener {
 
 	void onCompleted(String message);
 
-	void onStart(String id, String value);
+	void onStart(Id id, String value);
 
 }

@@ -291,7 +291,39 @@ public class UiLayout {
 		this.fireEvent();
 	}
 
+	public void addArray(String div) {
+		JsWidget panel = getWidget(div);
+		String id = panel.getId();
+		JsWidget parent = new UiParent(panel).getParent();
+		for (int i = 1; i < this.propertyGetter.getProperty(id).getProperty().getSize(); i++) {
+			JsWidget widget = panel.clone();
+//			widget.setId(id);
+			widget.setIndex(i);
+			parent.addChild(widget);
+		}
+
+	}
+	class UiParent {
+		private JsWidget parent = null;
+		public UiParent(JsWidget child) {
+			
+			new WalkThrough(getRoot()) {
+				@Override
+				protected void handle(JsWidget jsWidget) {
+					if (jsWidget.getChildren().contains(child)) {
+						parent = jsWidget;
+						return;
+					}
+				}
+			};	
+		}
+		public JsWidget getParent() {
+			return parent;
+		}
+		
+	}
 }
+
 
 abstract class WalkThrough {
 	public WalkThrough(JsWidget parent) {

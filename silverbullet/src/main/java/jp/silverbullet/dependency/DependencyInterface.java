@@ -8,6 +8,9 @@ public interface DependencyInterface {
 
 	void addDependencyListener(DependencyListener dependencyListener);
 
-	void requestChange(String id, String value, CommitListener commitListener) throws RequestRejectedException;
+	void requestChange(String id, Integer index, String value, CommitListener commitListener) throws RequestRejectedException;
+
+	void requestChange(String id, Integer index, String value) throws RequestRejectedException;
+
 	
 }

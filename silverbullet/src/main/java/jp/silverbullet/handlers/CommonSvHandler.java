@@ -8,6 +8,7 @@ import java.util.Map;
 
 import jp.silverbullet.dependency.ChangedItemValue;
 import jp.silverbullet.dependency.DependencyTargetElement;
+import jp.silverbullet.dependency2.Id;
 
 public class CommonSvHandler extends AbstractSvHandler {
 
@@ -27,10 +28,16 @@ public class CommonSvHandler extends AbstractSvHandler {
 		boolean run = false;
 		
 		for (String id : this.handlerProperty.getIds()) {
-			for (ChangedItemValue v : changed.get(id)) {
-				if (v.getElement().equals(DependencyTargetElement.Value)) {
-					run = true;
-					break;
+			for (String key : changed.keySet()) {
+				if (!new Id(key).getId().equals(id)) {
+					continue;
+				}
+				
+				for (ChangedItemValue v : changed.get(key)) {
+					if (v.getElement().equals(DependencyTargetElement.Value)) {
+						run = true;
+						break;
+					}
 				}
 			}
 		}

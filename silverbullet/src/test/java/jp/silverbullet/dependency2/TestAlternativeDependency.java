@@ -1,21 +1,18 @@
 package jp.silverbullet.dependency2;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import jp.silverbullet.dependency.CachedPropertyStore;
 import jp.silverbullet.dependency.RequestRejectedException;
 
-class AlternativeDependencyTest {
+class TestAlternativeDependency {
 
 	@Test
 	void test() {
-		TestPropertyStore store = new TestPropertyStore();
+		PropertyStoreForTest store = new PropertyStoreForTest();
 		store.addListProperty("ID_ROOT", Arrays.asList("ID_ROOT_A", "ID_ROOT_B", "ID_ROOT_C"), "ID_ROOT_A");
 		store.addListProperty("ID_MIDDLE", Arrays.asList("ID_MIDDLE_A", "ID_MIDDLE_B", "ID_MIDDLE_C"), "ID_MIDDLE_A");
 		store.addListProperty("ID_LEAF", Arrays.asList("ID_LEAF_A", "ID_LEAF_B", "ID_LEAF_C"), "ID_LEAF_A");
@@ -105,7 +102,7 @@ class AlternativeDependencyTest {
 
 	@Test
 	void test2() {
-		TestPropertyStore store = new TestPropertyStore();
+		PropertyStoreForTest store = new PropertyStoreForTest();
 		store.addListProperty("ID_ROOT", Arrays.asList("ID_ROOT_A", "ID_ROOT_B", "ID_ROOT_C", "ID_ROOT_C2"), "ID_ROOT_A");
 		store.addListProperty("ID_MIDDLE", Arrays.asList("ID_MIDDLE_A", "ID_MIDDLE_B", "ID_MIDDLE_C", "ID_MIDDLE_C2"), "ID_MIDDLE_A");
 		store.addListProperty("ID_LEAF", Arrays.asList("ID_LEAF_A", "ID_LEAF_B", "ID_LEAF_C"), "ID_LEAF_A");

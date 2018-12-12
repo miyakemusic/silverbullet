@@ -1,18 +1,14 @@
-package jp.silverbullet.dependency;
+package jp.silverbullet.dependency2;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import jp.silverbullet.SvProperty;
+import jp.silverbullet.dependency2.IdCollector;
 
 public abstract class ExpressionCalculator {
 	abstract protected SvProperty getProperty(String id);
@@ -35,7 +31,7 @@ public abstract class ExpressionCalculator {
 		 Map<String, String> mapTmpValue = new HashMap<>();
 		String ret = expression.replace("\n", "");
 		
-		List<String> options = sortByLength(idCollector.collectSelectionIds(expression));
+		List<String> options = idCollector.sortByLength(idCollector.collectSelectionIds(expression));
 		for (int i = 0; i < options.size(); i++) {
 			String option = options.get(i);
 			String val = getTmpOptionValue(option, mapTmpValue);
@@ -67,19 +63,6 @@ public abstract class ExpressionCalculator {
 			mapTmpValue.put(option, "V" + mapTmpValue.keySet().size());
 		}
 		return "\"" + mapTmpValue.get(option) + "\"";
-	}
-
-	private List<String> sortByLength(Set<String> options) {
-		List<String> list = new ArrayList<>(options);
-		Collections.sort(list, new Comparator<String>() {
-
-			@Override
-			public int compare(String arg0, String arg1) {
-				return arg1.length() - arg0.length() ;
-			}
-			
-		});
-		return list;
 	}
 
 	public String calculate(String expression) {

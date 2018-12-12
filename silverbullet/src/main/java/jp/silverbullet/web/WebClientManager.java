@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.silverbullet.StaticInstances;
 import jp.silverbullet.dependency.ChangedItemValue;
 import jp.silverbullet.dependency.DependencyListener;
+import jp.silverbullet.dependency2.Id;
 import jp.silverbullet.register.RegisterMapListener;
 import jp.silverbullet.register.RegisterUpdates;
 import jp.silverbullet.test.TestRecorderListener;
@@ -46,7 +47,7 @@ public class WebClientManager {
 			}
 
 			@Override
-			public void onStart(String id, String value) {
+			public void onStart(Id id, String value) {
 				// TODO Auto-generated method stub
 				
 			}

@@ -36,8 +36,8 @@ public class DesignResource {
 	@GET
 	@Path("/getProperty")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public JsProperty getProperty(@QueryParam("id") String id, @QueryParam("ext") String ext) {
-		SvProperty property = StaticInstances.getInstance().getBuilderModel().getProperty(id);
+	public JsProperty getProperty(@QueryParam("id") String id, @QueryParam("index") Integer index, @QueryParam("ext") String ext) {
+		SvProperty property = StaticInstances.getInstance().getBuilderModel().getProperty(id + "@" + index);
 		JsProperty ret = convertProperty(property, ext);
 		return ret;
 	}
@@ -99,13 +99,13 @@ public class DesignResource {
 	@GET
 	@Path("/setValue")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public ValueSetResult setCurrentValue(@QueryParam("id") String id, @QueryParam("value") String value) {
+	public ValueSetResult setCurrentValue(@QueryParam("id") String id, @QueryParam("index") Integer index, @QueryParam("value") String value) {
 		ValueSetResult ret = new ValueSetResult();
 		Sequencer sequencer = null;
 		
 		try {
 			sequencer = StaticInstances.getInstance().getBuilderModel().getSequencer();
-			sequencer.requestChange(id, value, new CommitListener() {
+			sequencer.requestChange(id, index, value, new CommitListener() {
 				@Override
 				public Reply confirm(String message) {
 					return Reply.Accept;
@@ -327,4 +327,13 @@ public class DesignResource {
 	public UiLayout switchFile(@QueryParam("filename") String filename) {
 		return StaticInstances.getInstance().getBuilderModel().switchUiFile(filename);
 	}
+	
+	@GET
+	@Path("addArray")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String addArray(@QueryParam("div") String div) {
+		StaticInstances.getInstance().getBuilderModel().getUiLayout().addArray(div);
+		return "OK";
+	}
+	
 }

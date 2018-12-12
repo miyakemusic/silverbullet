@@ -55,6 +55,8 @@ class DesignerClass {
 		var idFile = prefix + '_file';
 		var idAddNewFile = prefix + '_addNewFile';
 		var idRemoveFile = prefix + '_removeFile';
+		var idArrayButton = prefix + '_arrayButton';
+		
 		$('#' + idBase).append('<div><select id="' + idFile + '"></select><button id="' + idAddNewFile + '">Add File</button><button id="' + idRemoveFile + '">Remove</button></div>');
 		
 		$('#' + idBase).append('<div id="' + idNorth + '" class="panel"></div>');
@@ -80,6 +82,7 @@ class DesignerClass {
 		$('#' + idToolbar2).append('<button id="' + idPaste + '">Paste</button>');
 		$('#' + idToolbar2).append('<button id="' + idRemove + '" class="layoutAction">Remove</button>');
 		$('#' + idToolbar2).append('<input type="checkbox" id="' + idEdit + '">Edit');
+		$('#' + idToolbar2).append('<button id="' + idArrayButton + '">Array</button>');
 
 		new UiTree(idNorth, function(baseId) {
 			layout.selectedDiv = baseId;
@@ -110,7 +113,7 @@ class DesignerClass {
 		$('#' + idPropPane).append('<div>Font Size<input type="text" id="' + idFontSize + '" class="widgetField"></div>');
 		$('#' + idPropPane).append('<div>Editable<input type="checkbox" id="' + idEditable + '"></div>');
 		
-		var idAddClassDiv= prefix+'addClassDiv';
+		var idAddClassDiv = prefix + '_idAddClassDiv';
 		$('#' + idPropPane).append('<div id="' + idAddClassDiv + '" class="panel"></div>');
 		$('#' + idAddClassDiv).append('Class<select id="' + idStyleClasses + '"></select>');
 		$('#' + idAddClassDiv).append('<button id="' + idAddStyleClass + '">Add</button>');
@@ -312,6 +315,10 @@ class DesignerClass {
 		$('#' + idDependencyLog).click(function(e) {
 			$('#' + idDependencyDialog).dialog("open");
 		});
+		$('#' + idArrayButton).click(function(e) {
+			addArray();
+		});
+
 
 		// Register shortcut
 		var idRegisterShortcutDiv = div + 'registerShortcutDiv';
@@ -519,6 +526,16 @@ class DesignerClass {
 			   url: "http://" + window.location.host + "/rest/design/removeFile?filename=" + filename,
 			   success: function(msg){
 					getFiles();
+			   }
+			});	
+		}
+		
+		function addArray() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/design/addArray?div=" + layout.getSelectedDiv(),
+			   success: function(msg){
+					layout.updateUI();
 			   }
 			});	
 		}

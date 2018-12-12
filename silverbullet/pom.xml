@@ -9,15 +9,16 @@
       <maven.compiler.source>${java.version}</maven.compiler.source>
   </properties>
   <build>
-    <resources>
+ <!--  
+ 	 <resources>
 	    <resource>
-	      <!-- This include everything else under src/main/java directory -->
 	      <directory>src/main/java</directory>
 	      <excludes>
 	        <exclude>**/*.java</exclude>
 	      </excludes>
 	    </resource>
     </resources>
+ -->
     <plugins>
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
@@ -28,6 +29,11 @@
                 <target>${java.version}</target>
             </configuration>
         </plugin>
+        <plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>2.7</version>
+		</plugin>
         <plugin>
 			<groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-resources-plugin</artifactId>

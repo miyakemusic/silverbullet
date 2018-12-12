@@ -221,6 +221,12 @@ public class IdResource {
 		else if (paramName.equals(PropertyListModel.COMMENT)) {
 			prop.setComment(value);
 		}
+		else if (paramName.equals(PropertyListModel.SIZE)) {
+			prop.setSize(Integer.valueOf(value));
+		}
+		else if (paramName.equals(PropertyListModel.GROUP)) {
+			prop.setGroup(value);
+		}
 		else {
 			prop.updateArgument(paramName, value);
 		}

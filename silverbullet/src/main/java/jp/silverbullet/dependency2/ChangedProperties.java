@@ -7,26 +7,25 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import jp.silverbullet.dependency.CachedPropertyStoreListener;
 import jp.silverbullet.dependency.ChangedItemValue;
 
 public class ChangedProperties implements CachedPropertyStoreListener {
-	private Set<String> ids = new HashSet<>();
-	private List<String> startIds;
+	private Set<Id> ids = new HashSet<>();
+	private List<Id> startIds;
 	
-	public ChangedProperties(List<String> startIds) {
+	public ChangedProperties(List<Id> startIds) {
 		this.startIds = startIds;
 	}
 
 	@Override
-	public void onChanged(String id, ChangedItemValue changedItemValue2) {
+	public void onChanged(Id id, ChangedItemValue changedItemValue2) {
 		if (!startIds.contains(id)) {
 			ids.add(id);
 		}
 	}
 
-	public List<String> getIds() {
-		return new ArrayList<String>(ids);
+	public List<Id> getIds() {
+		return new ArrayList<Id>(ids);
 	}
 
 	public void clear() {

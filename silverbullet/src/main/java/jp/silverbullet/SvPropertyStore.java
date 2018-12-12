@@ -6,7 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +16,7 @@ import jp.silverbullet.property.PropertyHolder;
 import jp.silverbullet.property.PropertyHolderListener;
 
 public class SvPropertyStore {
-	private Map<String, SvProperty> map = new HashMap<String, SvProperty>();
+	private Map<String, SvProperty> map = new LinkedHashMap<String, SvProperty>();
 	private List<String> types = new ArrayList<String>();
 	public SvPropertyStore(PropertyHolder propertiesHolder) {		
 		registerProperties(propertiesHolder);
@@ -82,7 +82,10 @@ public class SvPropertyStore {
 		}
 	}
 	public SvProperty getProperty(String id) {
-		SvProperty ret = this.map.get(id + "@" + "0");
+		if (!id.contains("@")) {
+			id = id + "@" + "0";
+		}
+		SvProperty ret = this.map.get(id);
 		if (ret == null) {
 			System.out.println("Cannot find " + id);
 //			addProperty(this.propertiesHolder.getProperty(id));

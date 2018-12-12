@@ -8,7 +8,7 @@ import jp.silverbullet.SvProperty;
 import jp.silverbullet.dependency.DepPropertyStore;
 import jp.silverbullet.dependency.speceditor3.SvPropertyFactory;
 
-public class TestPropertyStore implements DepPropertyStore {
+public class PropertyStoreForTest implements DepPropertyStore {
 	private SvPropertyFactory factory = new SvPropertyFactory();
 	private Map<String, SvProperty> props = new HashMap<>();
 

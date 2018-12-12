@@ -150,10 +150,10 @@ class LayoutBuilder {
 			function(div, info) {
 				me.selectedDiv = div;
 			},
-			function(id, value) {
+			function(id, index, value) {
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/design/setValue?id="+id + "&value=" + value,
+				   url: "http://" + window.location.host + "/rest/design/setValue?id="+id + "&index=" + index + "&value=" + value,
 				   success: function(msg){
 						me.debugCallback(msg.debugLog);
 						if (msg.result == 'Rejected') {
@@ -176,10 +176,14 @@ class LayoutBuilder {
 	}
 	
 	pushWidget(pane, widget) {
-		if (this.map.get(pane.id) == null) {
-			this.map.set(pane.id, []);
+		var id = pane.id;
+		//if (pane.index > 0) {
+			id += '@' + pane.index;
+		//}
+		if (this.map.get(id) == null) {
+			this.map.set(id, []);
 		}
-		this.map.get(pane.id).push(widget);
+		this.map.get(id).push(widget);
 		this.widgetMap.set(this.getRealId(widget.baseId), pane);
 	}	
 	

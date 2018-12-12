@@ -13,6 +13,7 @@ import jp.silverbullet.dependency.DependencyListener;
 import jp.silverbullet.dependency.RequestRejectedException;
 import jp.silverbullet.dependency2.CommitListener;
 import jp.silverbullet.dependency2.DependencyEngine;
+import jp.silverbullet.dependency2.Id;
 import jp.silverbullet.handlers.AbstractSvHandler;
 import jp.silverbullet.handlers.CommonSvHandler;
 import jp.silverbullet.handlers.EasyAccessModel;
@@ -41,7 +42,12 @@ public abstract class Sequencer implements DependencyInterface {
 	
 	@Override
 	public void requestChange(String id, String value) throws RequestRejectedException {
-		requestChange(id, value, new CommitListener() {
+		requestChange(id, 0, value);
+	}
+	
+	@Override
+	public void requestChange(String id, Integer index, String value) throws RequestRejectedException {
+		requestChange(id, index, value, new CommitListener() {
 			@Override
 			public Reply confirm(String message) {
 				return Reply.Accept;
@@ -50,7 +56,7 @@ public abstract class Sequencer implements DependencyInterface {
 	}
 	
 	@Override
-	public void requestChange(String id, String value, CommitListener commitListener)
+	public void requestChange(String id, Integer index, String value, CommitListener commitListener)
 			throws RequestRejectedException {
 		fireRequestChangeByUser(id, value);
 		
@@ -58,7 +64,7 @@ public abstract class Sequencer implements DependencyInterface {
 		
 		DependencyEngine engine = getDependency();
 		engine.setCommitListener(commitListener);
-		engine.requestChange(id, value);
+		engine.requestChange(new Id(id, index), value);
 		debugDepLog = engine.getDebugLog();
 		
 		List<String> changedIds = engine.getChangedIds();
@@ -66,6 +72,9 @@ public abstract class Sequencer implements DependencyInterface {
 		Set<HandlerProperty> toRunHandlers = new LinkedHashSet<>();
 		for (HandlerProperty handler : getHandlerPropertyHolder().getHandlers()) {
 			for (String changed : changedIds) {
+				if (changed.contains("@")) {
+					changed = changed.split("@")[0];
+				}
 				if (handler.getIds().contains(changed)) {
 					toRunHandlers.add(handler);
 					break;
@@ -104,8 +113,7 @@ public abstract class Sequencer implements DependencyInterface {
 		};
 		
 		for (HandlerProperty handler : toRunHandlers) {
-			new CommonSvHandler(model, handler).execute(
-					getDependency().getChagedItems());
+			new CommonSvHandler(model, handler).execute(getDependency().getChagedItems());
 		}
 		
 	}

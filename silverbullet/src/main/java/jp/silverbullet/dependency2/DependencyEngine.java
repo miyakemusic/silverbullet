@@ -9,11 +9,9 @@ import java.util.Map;
 import java.util.Set;
 
 import jp.silverbullet.SvProperty;
-import jp.silverbullet.dependency.CachedPropertyStore;
 import jp.silverbullet.dependency.ChangedItemValue;
 import jp.silverbullet.dependency.DepPropertyStore;
 import jp.silverbullet.dependency.DependencyListener;
-import jp.silverbullet.dependency.ExpressionCalculator;
 import jp.silverbullet.dependency.RequestRejectedException;
 import jp.silverbullet.property.ListDetailElement;
 
@@ -23,7 +21,7 @@ public class DependencyEngine {
 	private DependencySpecHolder specHolder;
 	private CachedPropertyStore cachedPropertyStore;
 	private ExpressionCalculator calculator;
-	private String userChangedId;
+	private Id userChangedId;
 	private List<DependencyListener> listeners = new ArrayList<>();
 	private CommitListener commitListener;
 	
@@ -48,7 +46,7 @@ public class DependencyEngine {
 		fireCompleteEvent();
 	}
 	
-	public void requestChange(String id, String value) throws RequestRejectedException {
+	public void requestChange(Id id, String value) throws RequestRejectedException {
 		for (DependencyListener listener : this.listeners) {
 			listener.onStart(id, value);
 		}
@@ -83,11 +81,11 @@ public class DependencyEngine {
 		}
 	}
 
-	private void changeValue(String id, String value) throws RequestRejectedException {
+	private void changeValue(Id id, String value) throws RequestRejectedException {
 		this.userChangedId = id;
-		ChangedProperties prevChangedProperties = new ChangedProperties(new ArrayList<String>(Arrays.asList(id)));
+		ChangedProperties prevChangedProperties = new ChangedProperties(new ArrayList<Id>(Arrays.asList(id)));
 		this.cachedPropertyStore.addCachedPropertyStoreListener(prevChangedProperties);
-		setCurrentValue(cachedPropertyStore.getProperty(id), value);
+		setCurrentValue(cachedPropertyStore.getProperty(id.toString()), value);
 		handle(id, value);
 		this.cachedPropertyStore.removeCachedPropertyStoreListener(prevChangedProperties);
 		
@@ -99,18 +97,18 @@ public class DependencyEngine {
 	private ChangedProperties handleNext(ChangedProperties prevChangedProperties) throws RequestRejectedException {
 		ChangedProperties changedProperties2 = new ChangedProperties(prevChangedProperties.getIds());
 		this.cachedPropertyStore.addCachedPropertyStoreListener(changedProperties2);
-		for (String nextId :  prevChangedProperties.getIds()) {
-			handle(nextId, this.cachedPropertyStore.getProperty(nextId).getCurrentValue());
+		for (Id nextId :  prevChangedProperties.getIds()) {
+			handle(nextId, this.cachedPropertyStore.getProperty(nextId.toString()).getCurrentValue());
 		}
 		this.cachedPropertyStore.removeCachedPropertyStoreListener(changedProperties2);
 		return changedProperties2;
 	}
 	
-	private void handle(String id, String value) throws RequestRejectedException {	
-		List<RuntimeDependencySpec> specs = this.getSpecHolder().getRuntimeSpecs(id);
-		specs = findSatisfiedSpecs(specs);
+	private void handle(Id id, String value) throws RequestRejectedException {	
+		List<RuntimeDependencySpec> specs = this.getSpecHolder().getRuntimeSpecs(id.getId());
+		specs = findSatisfiedSpecs(specs, id.getIndex());
 		for (RuntimeDependencySpec spec : specs) {	
-			if (spec.getId().equals(this.userChangedId)) {
+			if (spec.getId().equals(this.userChangedId.getId())) {
 				continue;
 			}
 			if (spec.isElse()) {
@@ -135,7 +133,7 @@ public class DependencyEngine {
 			if (!spec.isExecutionConditionSatistied()) {
 				continue;
 			}
-			SvProperty property = this.cachedPropertyStore.getProperty(spec.getId());
+			SvProperty property = this.cachedPropertyStore.getProperty(spec.getId() + "@" + id.getIndex());
 			
 			if (spec.isOptionEnabled()) {
 				for (ListDetailElement e: property.getListDetail()) {
@@ -201,10 +199,14 @@ public class DependencyEngine {
 		}
 	}
 
-	private List<RuntimeDependencySpec> findSatisfiedSpecs(List<RuntimeDependencySpec> specs) {
+	private List<RuntimeDependencySpec> findSatisfiedSpecs(List<RuntimeDependencySpec> specs, int index) {
 		List<RuntimeDependencySpec> ret = new ArrayList<RuntimeDependencySpec> ();
 		Map<String, Set<RuntimeDependencySpec>> values = new HashMap<String, Set<RuntimeDependencySpec>>();
-		for (RuntimeDependencySpec spec: specs) {			
+		for (RuntimeDependencySpec spec: specs) {	
+			spec.getExpression().setValue(applyIndex(spec.getExpression().getValue(), index));
+			spec.getExpression().setTrigger(applyIndex(spec.getExpression().getTrigger(), index));
+			spec.getExpression().setCondition(applyIndex(spec.getExpression().getCondition(), index));
+			
 			if (spec.isElse()) {
 				spec.setExecutionConditionSatistied(true);
 			}
@@ -237,6 +239,13 @@ public class DependencyEngine {
 		/// selects only one spec.
 		selectOnlyOneSpec(values, ret);
 		return ret;
+	}
+
+	private String applyIndex(String string, int index) {
+		for (String id : IdCollector.sortByLength(IdCollector.collectIds(string))) {
+			string = string.replace("$" + id, "$" + id + "@" + index);
+		}
+		return string;
 	}
 
 	private void selectOnlyOneSpec(Map<String, Set<RuntimeDependencySpec>> values, List<RuntimeDependencySpec> ret) {
@@ -352,6 +361,10 @@ public class DependencyEngine {
 
 	public void setCommitListener(CommitListener commitListener) {
 		this.commitListener = commitListener;
+	}
+
+	public void requestChange(String id, String value) throws RequestRejectedException {
+		this.requestChange(new Id(id, 0), value);
 	}
 
 }

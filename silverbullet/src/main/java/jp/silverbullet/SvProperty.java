@@ -119,7 +119,7 @@ public class SvProperty implements Cloneable {
 	private void fireTitleChanged() {
 		listenerTouching = true;
 		for (SvPropertyListener listener : listeners) {
-			listener.onTitleChanged(property.getId(), this.property.getTitle());
+			listener.onTitleChanged(property.getId(), this.getIndex(), this.property.getTitle());
 		}
 		listenerTouching = false;
 	}
@@ -148,7 +148,7 @@ public class SvProperty implements Cloneable {
 			
 			listenerTouching = true;
 			for (SvPropertyListener listener : listeners) {
-				listener.onValueChanged(property.getId(), value);
+				listener.onValueChanged(property.getId(), this.getIndex(), value);
 			}
 			listenerTouching = false;
 		}
@@ -177,7 +177,7 @@ public class SvProperty implements Cloneable {
 	public void setEnabled(boolean b) {
 		this.enabled = b;
 		for (SvPropertyListener listener : listeners) {
-			listener.onEnableChanged(property.getId(), b);
+			listener.onEnableChanged(property.getId(), this.getIndex(), b);
 		}
 	}
 
@@ -239,7 +239,7 @@ public class SvProperty implements Cloneable {
 
 	private void fireListMaskChanged(String id, String detail) {
 		for (SvPropertyListener listener : listeners) {
-			listener.onListMaskChanged(property.getId(), detail);
+			listener.onListMaskChanged(property.getId(), this.getIndex(), detail);
 		}
 	}
 
@@ -282,7 +282,7 @@ public class SvProperty implements Cloneable {
 	public void setVisible(Boolean b) {
 		this.visible = b;
 		for (SvPropertyListener listener : listeners) {
-			listener.onVisibleChanged(property.getId(), b);
+			listener.onVisibleChanged(property.getId(), this.getIndex(), b);
 		}
 	}
 
@@ -319,7 +319,7 @@ public class SvProperty implements Cloneable {
 
 	public void fireFlagChanged(Flag flag) {
 		for (SvPropertyListener listener : this.listeners) {
-			listener.onFlagChanged(this.getId(), flag);
+			listener.onFlagChanged(this.getId(), this.getIndex(), flag);
 		}
 	}
 
