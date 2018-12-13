@@ -90,14 +90,7 @@ public abstract class Sequencer implements DependencyInterface {
 
 			@Override
 			public void requestChange(final String id, final String value) throws RequestRejectedException {
-				try {
-					fireChangeFromSystem(id, value);
-					getDependency().requestChange(id, value);
-					debugDepLog.addAll(getDependency().getDebugLog());
-					
-				} catch (RequestRejectedException e) {
-					e.printStackTrace();
-				}					
+				requestChange(id, 0, value);
 			}
 
 			@Override
@@ -108,6 +101,18 @@ public abstract class Sequencer implements DependencyInterface {
 			@Override
 			public RegisterAccess getRegisterAccess() {
 				return Sequencer.this.getRegisterAccess();
+			}
+
+			@Override
+			public void requestChange(String id, int index, String value) throws RequestRejectedException {
+				try {
+					fireChangeFromSystem(id, value);
+					getDependency().requestChange(id, index, value);
+					debugDepLog.addAll(getDependency().getDebugLog());
+					
+				} catch (RequestRejectedException e) {
+					e.printStackTrace();
+				}			
 			}
 
 		};

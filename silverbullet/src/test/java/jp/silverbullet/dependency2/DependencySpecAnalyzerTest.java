@@ -3,25 +3,19 @@ package jp.silverbullet.dependency2;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import org.junit.jupiter.api.Test;
 
-import jp.silverbullet.SvProperty;
-import jp.silverbullet.dependency.DepPropertyStore;
-import jp.silverbullet.dependency.speceditor3.SvPropertyFactory;
 import jp.silverbullet.dependency2.LinkGenerator.LinkLevel;
 
 class DependencySpecAnalyzerTest {
 
 	@Test
-	void test() {
-		DepPropertyStore store = createPropertyStore();
-		store.add(createListProperty("ID_ROOT", Arrays.asList("ID_ROOT_A", "ID_ROOT_B", "ID_ROOT_C"), "ID_ROOT_A"));
-		store.add(createListProperty("ID_MIDDLE", Arrays.asList("ID_MIDDLE_A", "ID_MIDDLE_B", "ID_MIDDLE_C"), "ID_MIDDLE_A"));
-		store.add(createListProperty("ID_LEAF", Arrays.asList("ID_LEAF_A", "ID_LEAF_B", "ID_LEAF_C"), "ID_LEAF_A"));
+	public void test() {
+		PropertyStoreForTest store = new PropertyStoreForTest();
+		store.addListProperty("ID_ROOT", Arrays.asList("ID_ROOT_A", "ID_ROOT_B", "ID_ROOT_C"), "ID_ROOT_A");
+		store.addListProperty("ID_MIDDLE", Arrays.asList("ID_MIDDLE_A", "ID_MIDDLE_B", "ID_MIDDLE_C"), "ID_MIDDLE_A");
+		store.addListProperty("ID_LEAF", Arrays.asList("ID_LEAF_A", "ID_LEAF_B", "ID_LEAF_C"), "ID_LEAF_A");
 		
 		DependencySpec specMiddle = new DependencySpec("ID_MIDDLE");
 		specMiddle.addOptionSelect("ID_MIDDLE_A", "$ID_ROOT==%ID_ROOT_A");
@@ -95,27 +89,4 @@ class DependencySpecAnalyzerTest {
 	}
 
 	
-	private DepPropertyStore createPropertyStore() {
-		DepPropertyStore store = new DepPropertyStore() {
-			private Map<String, SvProperty> props = new HashMap<>();
-			@Override
-			public SvProperty getProperty(String id) {
-				return props.get(id);
-			}
-			@Override
-			public void add(SvProperty property) {
-				props.put(property.getId(), property);
-			}			
-		};
-		return store;
-	}
-	
-	private SvProperty createDoubleProperty(String id, double defaultValue, String unit, double min, double max, int decimal) {
-		return new SvPropertyFactory().getDoubleProperty(id, defaultValue, unit, min, max, decimal);
-
-	}
-
-	private SvProperty createListProperty(String id, List<String> asList, String defaultId) {
-		return new SvPropertyFactory().getListProperty(id, asList, defaultId);
-	}
 }

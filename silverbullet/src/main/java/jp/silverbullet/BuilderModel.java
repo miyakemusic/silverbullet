@@ -15,6 +15,7 @@ import jp.silverbullet.test.TestRecorder;
 import jp.silverbullet.web.ui.UiLayout;
 import jp.silverbullet.dependency.DependencyInterface;
 import jp.silverbullet.dependency.DependencySpecHolder;
+import jp.silverbullet.handlers.EasyAccessInterface;
 import jp.silverbullet.handlers.EasyAccessModel;
 import jp.silverbullet.handlers.HandlerPropertyHolder;
 import jp.silverbullet.handlers.RegisterAccess;
@@ -96,4 +97,6 @@ public interface BuilderModel {
 	void switchDependency(String type);
 
 	jp.silverbullet.dependency2.DependencySpecHolder getDependencySpecHolder2();
+
+	EasyAccessInterface getEasyAccessInterface();
 }

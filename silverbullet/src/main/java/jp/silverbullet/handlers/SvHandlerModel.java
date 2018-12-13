@@ -13,7 +13,5 @@ public interface SvHandlerModel extends EasyAccessInterface {
 
 	String getUserApplicationPath();
 
-//	EasyAccessModel getEasyAccessModel();
-
 	RegisterAccess getRegisterAccess();
 }

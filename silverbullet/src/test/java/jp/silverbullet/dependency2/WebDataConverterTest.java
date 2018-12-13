@@ -1,7 +1,5 @@
 package jp.silverbullet.dependency2;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
@@ -9,10 +7,10 @@ import org.junit.jupiter.api.Test;
 import jp.silverbullet.SvProperty;
 import jp.silverbullet.web.ui.PropertyGetter;
 
-class WebDataConverterTest {
+public class WebDataConverterTest {
 
 	@Test
-	void testWebDataConverter() {
+	public void testWebDataConverter() {
 		PropertyStoreForTest store = new PropertyStoreForTest();
 		store.addListProperty("ID_MIDDLE", Arrays.asList("ID_MIDDLE_A1", "ID_MIDDLE_A2", "ID_MIDDLE_B1", "ID_MIDDLE_B2"), "ID_MIDDLE_A1");
 		store.addListProperty("ID_ROOT", Arrays.asList("ID_ROOTA", "ID_ROOTA2", "ID_ROOTB"), "ID_ROOTA");

@@ -14,16 +14,23 @@ public class PropertyStoreForTest implements DepPropertyStore {
 
 	@Override
 	public SvProperty getProperty(String id) {
+		if (!id.contains("@")) {
+			id += "@0";
+		}
 		return props.get(id);
 	}
 
 	@Override
 	public void add(SvProperty property) {
-		props.put(property.getId(), property);
+		props.put(property.getId() + "@" + property.getIndex(), property);
 	}
 
 	public void addListProperty(String id, List<String> asList, String defaultId) {
 		add(this.factory.getListProperty(id, asList, defaultId));
+	}
+
+	public void addDoubleProperty(String id, double defaultValue, String unit, double min, double max, int decimal) {
+		add(this.factory.getDoubleProperty(id, defaultValue, unit, min, max, decimal));
 	}
 
 }

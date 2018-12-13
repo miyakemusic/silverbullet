@@ -13,9 +13,9 @@ public class IdCollector {
 	public static final String ID_SPLIT_CHARS = "[\\<>\\[\\]+/\\-=\\s();\\|!]";
 
 	public static List<String> collectIds(String value) {
-		List<String> ret = new ArrayList<>();
+		Set<String> ret = new HashSet<>();
 		if (!value.contains("$")) {
-			return ret;
+			return new ArrayList<String>(ret);
 		}
 		String[] tmp = value.split(ID_SPLIT_CHARS);
 		for (String t : tmp) {
@@ -24,7 +24,7 @@ public class IdCollector {
 			}
 		}
 
-		return ret;
+		return new ArrayList<String>(ret);
 	}
 
 	public static List<String> collectSelectionIds(String value) {

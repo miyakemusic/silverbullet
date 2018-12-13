@@ -14,6 +14,7 @@ import jp.silverbullet.dependency.RequestRejectedException;
 import jp.silverbullet.dependency.alternative.AlternativeDependencyGenerator;
 import jp.silverbullet.dependency2.DependencySpecRebuilder;
 import jp.silverbullet.dependency2.DependencyEngine;
+import jp.silverbullet.handlers.EasyAccessInterface;
 import jp.silverbullet.handlers.EasyAccessModel;
 import jp.silverbullet.handlers.HandlerPropertyHolder;
 import jp.silverbullet.handlers.RegisterAccess;
@@ -63,6 +64,25 @@ public class BuilderModelImpl implements BuilderModel {
 		}
 	});
 
+	private EasyAccessInterface easyAccessInterface = new EasyAccessInterface() {
+
+		@Override
+		public SvProperty getProperty(String id) {
+			return store.getProperty(id);
+		}
+
+		@Override
+		public void requestChange(String id, String value) throws RequestRejectedException {
+			getSequencer().requestChange(id, value);
+		}
+
+		@Override
+		public void requestChange(String id, int index, String value) throws RequestRejectedException {
+			getSequencer().requestChange(id, index, value);
+		}
+	
+	};
+	
 	private RegisterMapModel registerMapModel = new RegisterMapModel(new RegisterMapModelInterface() {
 		@Override
 		public RegisterProperty getRegisterProperty() {
@@ -539,5 +559,10 @@ public class BuilderModelImpl implements BuilderModel {
 			};
 			this.dependencySpecHolder2 = new DependencySpecRebuilder(this.dependencySpecHolder2, getter).getNewHolder();
 		}
+	}
+
+	@Override
+	public EasyAccessInterface getEasyAccessInterface() {
+		return easyAccessInterface;
 	}
 }

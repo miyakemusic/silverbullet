@@ -363,8 +363,12 @@ public class DependencyEngine {
 		this.commitListener = commitListener;
 	}
 
+	public void requestChange(String id, int index, String value) throws RequestRejectedException {
+		this.requestChange(new Id(id, index), value);
+	}
+
 	public void requestChange(String id, String value) throws RequestRejectedException {
-		this.requestChange(new Id(id, 0), value);
+		requestChange(id, 0, value);
 	}
 
 }

@@ -11,8 +11,6 @@ import java.util.Set;
 
 import jp.silverbullet.dependency.RequestRejectedException;
 import jp.silverbullet.handlers.EasyAccessInterface;
-import jp.silverbullet.handlers.EasyAccessModel;
-import jp.silverbullet.handlers.SvHandlerModel;
 import jp.silverbullet.property.ListDetailElement;
 
 public class JavaFileGenerator {
@@ -68,21 +66,34 @@ public class JavaFileGenerator {
 			if (prop.getIndex() > 0) { // This is tentative code
 				continue;
 			}
+			boolean array = prop.getProperty().getSize() > 1;
 			if (prop.getType().equals("DoubleProperty")) {
-				source.add("    public void set" + getMethodName(prop.getId()) + "(double value" + ") throws RequestRejectedException {");
+				source.add("    public void set" + getMethodName(prop.getId()) + "(double value) throws RequestRejectedException {");
 				source.add("        model.requestChange(ID." + prop.getId() + ", String.valueOf(value));");
 				source.add("    }");
 				source.add("    public double get" + getMethodName(prop.getId()) + "() {");
 				source.add("        return Double.valueOf(model.getProperty(ID." + prop.getId() + ").getCurrentValue());");
 				source.add("    }");
+				if (array) {
+					source.add("    public void set" + getMethodName(prop.getId()) + "(double value, int index) throws RequestRejectedException {");
+					source.add("        model.requestChange(ID." + prop.getId() + ", index, String.valueOf(value));");
+					source.add("    }");
+	
+				}
 			}
 			else if (prop.getType().equals("LongProperty")) {
-				source.add("    public void set" + getMethodName(prop.getId()) + "(long value" + ") throws RequestRejectedException {");
+				source.add("    public void set" + getMethodName(prop.getId()) + "(long value) throws RequestRejectedException {");
 				source.add("        model.requestChange(ID." + prop.getId() + ", String.valueOf(value));");
 				source.add("    }");
 				source.add("    public long get" + getMethodName(prop.getId()) + "() {");
 				source.add("        return Long.valueOf(model.getProperty(ID." + prop.getId() + ").getCurrentValue());");
-				source.add("    }");	
+				source.add("    }");
+				if (array) {
+					source.add("    public void set" + getMethodName(prop.getId()) + "(long value, int index) throws RequestRejectedException {");
+					source.add("        model.requestChange(ID." + prop.getId() + ", index, String.valueOf(value));");
+					source.add("    }");
+
+				}
 			}
 			else if (prop.getType().equals("IntProperty")) {
 				source.add("    public void set" + getMethodName(prop.getId()) + "(int value" + ") throws RequestRejectedException {");
@@ -108,12 +119,22 @@ public class JavaFileGenerator {
 					source.add("        " + e.getId() + ",");
 				}
 				source.add("    };");	
-				source.add("    public void set" + getMethodName(prop.getId()) + "(Enum" + methodName + " value" + ") throws RequestRejectedException {");
+				source.add("    public void set" + getMethodName(prop.getId()) + "(Enum" + methodName + " value) throws RequestRejectedException {");
 				source.add("        model.requestChange(ID." + prop.getId() + ", value.toString());");
 				source.add("    }");
 				source.add("    public Enum" + methodName + " get" + getMethodName(prop.getId()) + "() {");
 				source.add("        return Enum" + methodName + ".valueOf(model.getProperty(ID." + prop.getId() + ").getCurrentValue());");
 				source.add("    }");
+
+				
+				if (array) {
+					source.add("    public void set" + getMethodName(prop.getId()) + "(Enum" + methodName + " value, int index) throws RequestRejectedException {");
+					source.add("        model.requestChange(ID." + prop.getId() + ", index, value.toString());");
+					source.add("    }");
+					source.add("    public Enum" + methodName + " get" + getMethodName(prop.getId()) + "(int index) {");
+					source.add("        return Enum" + methodName + ".valueOf(model.getProperty(ID." + prop.getId() + " + \"@\" + index).getCurrentValue());");
+					source.add("    }");
+				}
 			}
 		}
 		source.add("}");

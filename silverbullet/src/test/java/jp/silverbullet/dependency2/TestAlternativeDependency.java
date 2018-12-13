@@ -1,6 +1,7 @@
 package jp.silverbullet.dependency2;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -8,10 +9,10 @@ import org.junit.jupiter.api.Test;
 
 import jp.silverbullet.dependency.RequestRejectedException;
 
-class TestAlternativeDependency {
+public class TestAlternativeDependency {
 
 	@Test
-	void test() {
+	public void test() {
 		PropertyStoreForTest store = new PropertyStoreForTest();
 		store.addListProperty("ID_ROOT", Arrays.asList("ID_ROOT_A", "ID_ROOT_B", "ID_ROOT_C"), "ID_ROOT_A");
 		store.addListProperty("ID_MIDDLE", Arrays.asList("ID_MIDDLE_A", "ID_MIDDLE_B", "ID_MIDDLE_C"), "ID_MIDDLE_A");
@@ -101,7 +102,7 @@ class TestAlternativeDependency {
 	}
 
 	@Test
-	void test2() {
+	public void test2() {
 		PropertyStoreForTest store = new PropertyStoreForTest();
 		store.addListProperty("ID_ROOT", Arrays.asList("ID_ROOT_A", "ID_ROOT_B", "ID_ROOT_C", "ID_ROOT_C2"), "ID_ROOT_A");
 		store.addListProperty("ID_MIDDLE", Arrays.asList("ID_MIDDLE_A", "ID_MIDDLE_B", "ID_MIDDLE_C", "ID_MIDDLE_C2"), "ID_MIDDLE_A");
