@@ -16,12 +16,12 @@ public class WebDataConverter {
 		WebDependencySpec ret = new WebDependencySpec();
 		DependencySpec spec = this.holder.getSpec(id);
 		
-		createList("Enable", ret, spec.getExpression(DependencySpec.Enable));
-		createList("Value", ret, spec.getExpression(DependencySpec.Value));
+		createList(DependencySpec.Enable, ret, spec.getExpression(DependencySpec.Enable));
+		createList(DependencySpec.Value, ret, spec.getExpression(DependencySpec.Value));
 		
 		if (isNumeric(id)) {
-			createList("Min", ret, spec.getExpression(DependencySpec.Min));
-			createList("Max", ret, spec.getExpression(DependencySpec.Max));
+			createList(DependencySpec.Min, ret, spec.getExpression(DependencySpec.Min));
+			createList(DependencySpec.Max, ret, spec.getExpression(DependencySpec.Max));
 		}
 		
 		if (isList(id)) {
@@ -29,6 +29,8 @@ public class WebDataConverter {
 				createList(optionId, ret, spec.getExpression(DependencySpec.OptionEnable + "#" + optionId));
 			}
 		}
+		
+		createList(DependencySpec.ArraySize, ret, spec.getExpression(DependencySpec.ArraySize));
 		return ret;
 	}
 	private boolean isList(String id) {

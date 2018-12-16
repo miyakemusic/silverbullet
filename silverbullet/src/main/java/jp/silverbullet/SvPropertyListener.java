@@ -9,7 +9,8 @@ public interface SvPropertyListener {
 	enum Flag {
 		MAX,
 		MIN,
-		LIST_ELEMENT_PRESENTATION
+		LIST_ELEMENT_PRESENTATION, 
+		SIZE
 	}
 	void onFlagChanged(String id, int index, Flag flag);
 

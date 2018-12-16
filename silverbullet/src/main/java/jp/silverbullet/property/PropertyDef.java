@@ -195,18 +195,6 @@ public class PropertyDef implements Cloneable {
 	}
 	
 	public String getArgumentValue(String key) {
-//		if (key.equals("id")) {
-//			return this.id;
-//		}
-//		else if (key.equals("title")) {
-//			return this.title;
-//		}
-//		else if (key.equals("type")) {
-//			return this.type;
-//		}
-//		else if (key.equals("comment")) {
-//			return this.comment;
-//		}
 		int index = this.findArgumentIndex(key);
 		if (index >= 0) {
 			return this.others.get(index);

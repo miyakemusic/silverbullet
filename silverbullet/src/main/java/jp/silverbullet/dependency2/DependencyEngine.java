@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import jp.silverbullet.SvProperty;
-import jp.silverbullet.dependency.ChangedItemValue;
+import jp.silverbullet.dependency2.ChangedItemValue;
 import jp.silverbullet.dependency.DepPropertyStore;
 import jp.silverbullet.dependency.DependencyListener;
 import jp.silverbullet.dependency.RequestRejectedException;
@@ -120,15 +120,10 @@ public class DependencyEngine {
 				}
 			}
 			else {
-//				spec.setExecutionConditionSatistied(Boolean.valueOf(calculator.calculate("ret=" + spec.getExpression().getTrigger())));
 				if (spec.getExpression().isValueCalculationEnabled()) {
 					spec.getExpression().setValue(calculator.calculate("ret=" + spec.getExpression().getValue()));
 				}
 			}
-			
-//			if (spec.getExpression().isConditionEnabled()) {
-//				spec.setExecutionConditionSatistied(Boolean.valueOf(calculator.calculate("ret=" + spec.getExpression().getCondition())));
-//			}
 			
 			if (!spec.isExecutionConditionSatistied()) {
 				continue;
@@ -194,6 +189,10 @@ public class DependencyEngine {
 				else {
 					property.setMax(max);
 				}
+			}
+			else if (spec.isArraySize()) {
+				String size = spec.getExpression().getValue();
+				property.setSize(Integer.valueOf(size));
 			}
 			spec.consumed();
 		}

@@ -19,8 +19,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.silverbullet.Sequencer;
 import jp.silverbullet.StaticInstances;
 import jp.silverbullet.SvProperty;
-import jp.silverbullet.dependency.ChangedItemValue;
-import jp.silverbullet.dependency.DependencyListener;
 import jp.silverbullet.dependency.RequestRejectedException;
 import jp.silverbullet.dependency2.CommitListener;
 import jp.silverbullet.property.ChartContent;
@@ -136,6 +134,13 @@ public class DesignResource {
 		}
 
 		return ret;
+	}
+	
+	@GET
+	@Path("/getSubDesign")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public JsWidget getSubDesign(@QueryParam("div") String div) {
+		return StaticInstances.getInstance().getBuilderModel().getUiLayout().getWidget(div);
 	}
 	
 	@GET
@@ -270,6 +275,14 @@ public class DesignResource {
 	}
 	
 	@GET
+	@Path("copyPaste")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String copyPaste(@QueryParam("newBaseDiv") String newBaseDiv, @QueryParam("itemDiv") String itemDiv) {
+		StaticInstances.getInstance().getBuilderModel().getUiLayout().copyPaste(newBaseDiv, itemDiv);
+		return "OK";
+	}
+	
+	@GET
 	@Path("getStyleClasses")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<String> getStyleClasses(@QueryParam("type") String type) {
@@ -336,4 +349,10 @@ public class DesignResource {
 		return "OK";
 	}
 	
+	@GET
+	@Path("buildUi")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public List<Integer> buildUi() {
+		return StaticInstances.getInstance().getBuilderModel().getUiLayout().buildDynamicArray();
+	}
 }

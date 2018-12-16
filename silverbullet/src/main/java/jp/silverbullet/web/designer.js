@@ -30,8 +30,9 @@ class DesignerClass {
 		var idPresentation = prefix + '_presentation';
 		var idUpdate = prefix + '_update';
 		var idClear = prefix + '_clearLayout';
-		var idCut = prefix + 'cut';
-		var idPaste = prefix + 'paste';
+		var idCut = prefix + '_cut';
+		var idCopy = prefix + '_copy';
+		var idPaste = prefix + '_paste';
 		var idUid = prefix + 'udi';
 		var idInfo = prefix + 'info';
 		var idRoot = prefix + 'root';
@@ -56,6 +57,7 @@ class DesignerClass {
 		var idAddNewFile = prefix + '_addNewFile';
 		var idRemoveFile = prefix + '_removeFile';
 		var idArrayButton = prefix + '_arrayButton';
+		var idBuild = prefix + '_build';
 		
 		$('#' + idBase).append('<div><select id="' + idFile + '"></select><button id="' + idAddNewFile + '">Add File</button><button id="' + idRemoveFile + '">Remove</button></div>');
 		
@@ -79,10 +81,12 @@ class DesignerClass {
 		$('#' + idToolbar2).append('<button id="' + idUpdate + '">Update</button>');
 		$('#' + idToolbar2).append('<button id="' + idClear + '" class="layoutAction">Clear</button>');
 		$('#' + idToolbar2).append('<button id="' + idCut + '">Cut</button>');
+		$('#' + idToolbar2).append('<button id="' + idCopy + '">Copy</button>');
 		$('#' + idToolbar2).append('<button id="' + idPaste + '">Paste</button>');
 		$('#' + idToolbar2).append('<button id="' + idRemove + '" class="layoutAction">Remove</button>');
 		$('#' + idToolbar2).append('<input type="checkbox" id="' + idEdit + '">Edit');
 		$('#' + idToolbar2).append('<button id="' + idArrayButton + '">Array</button>');
+		$('#' + idToolbar2).append('<button id="' + idBuild + '">Build</button>');
 
 		new UiTree(idNorth, function(baseId) {
 			layout.selectedDiv = baseId;
@@ -306,6 +310,9 @@ class DesignerClass {
 		$('#' + idCut).click(function(e) {
 			cut();
 		});
+		$('#' + idCopy).click(function(e) {
+			copy();
+		});
 		$('#' + idPaste).click(function(e) {
 			paste();
 		});
@@ -317,6 +324,9 @@ class DesignerClass {
 		});
 		$('#' + idArrayButton).click(function(e) {
 			addArray();
+		});
+		$('#' + idBuild).click(function(e) {
+			buildUi();
 		});
 
 
@@ -420,13 +430,20 @@ class DesignerClass {
 		}	
 			
 		function cut() {
+			me.copyFlag = "cut";
 			copiedDiv = layout.getSelectedDiv();
 		}
 	
+		function copy() {
+			me.copyFlag = "copy";
+			copiedDiv = layout.getSelectedDiv();
+		}
+		
 		function paste() {
+			var subUrl = me.copyFlag + "Paste";
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/design/cutPaste?newBaseDiv=" + layout.getSelectedDiv() + '&itemDiv=' + copiedDiv,
+			   url: "http://" + window.location.host + "/rest/design/" + subUrl + "?newBaseDiv=" + layout.getSelectedDiv() + '&itemDiv=' + copiedDiv,
 			   success: function(msg){
 					layout.updateUI();
 			   }
@@ -443,16 +460,27 @@ class DesignerClass {
 			for (var i in list) {
 				var pair = list[i];
 				var idCustomElement = 'customElement_' + pair.key;
-				$('#' + idCustom).append('<div>' + pair.key + '<input type="text" id="' + idCustomElement + '"></div>');
-				$('#' + idCustomElement).val(custom[pair.key]);
-				$('#' + idCustomElement).prop('name', pair.key);
-				
-				$('#' + idCustomElement).keydown(function(e) {
-				    if (e.keyCode == 13) {
-				        setCustomElement($(this).prop('name'), $(this).val());
-				    }
-				});
-		
+				if (pair.value == 'string') {
+					$('#' + idCustom).append('<div>' + pair.key + '<input type="text" id="' + idCustomElement + '"></div>');
+					$('#' + idCustomElement).val(custom[pair.key]);
+					$('#' + idCustomElement).prop('name', pair.key);
+					
+					$('#' + idCustomElement).keydown(function(e) {
+					    if (e.keyCode == 13) {
+					        setCustomElement($(this).prop('name'), $(this).val());
+					    }
+					});
+				}
+				else if (pair.value == 'boolean') {
+					$('#' + idCustom).append('<div>' + pair.key + '<input type="checkbox" id="' + idCustomElement + '"></div>');
+					$('#' + idCustomElement).prop('checked', custom[pair.key] == 'true');
+					$('#' + idCustomElement).prop('name', pair.key);
+					
+					$('#' + idCustomElement).change(function() {
+						setCustomElement($(this).prop('name'), $(this).prop('checked'));
+					});				
+				}
+
 				$('#' + idCustomPropTable).append('<tr><td>' + pair.key + '</td><td>' + pair.value + '</td></tr>');
 			}			
 		}
@@ -540,6 +568,16 @@ class DesignerClass {
 			});	
 		}
 		
+		function buildUi() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/design/buildUi",
+			   success: function(msg){
+					layout.updatePartUI(msg);
+			   }
+			});	
+		}
+			
 		$('#' + idEdit).trigger('click');
 
 	}

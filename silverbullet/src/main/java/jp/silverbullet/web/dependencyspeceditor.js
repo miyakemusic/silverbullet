@@ -153,7 +153,7 @@ class DependencySpecEditor {
 			return '';
 		}
 		
-		var textDef = ['Value', 'Condition', 'Min', 'Max'];
+		var textDef = ['Value', 'Condition', 'Min', 'Max', 'ArraySize'];
 		var func = boleanFunction;
 		if (textDef.includes(elementName)) {
 			func = textFunction;

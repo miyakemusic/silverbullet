@@ -369,7 +369,9 @@ class JsCheckBox extends JsSubWidget {
 	
 	updateValue(property) {
 		$('#' + this.titleId).text(property.title);
-		$('#' + this.checkId).prop('checked',property.currentValue == 'true').button('refresh')
+//		$('#' + this.checkId).prop('checked',property.currentValue == 'true').button('refresh');
+		$('#' + this.checkId).prop('checked',property.currentValue == 'true');
+
 	}
 	
 	updateLayout(property) {
@@ -379,7 +381,7 @@ class JsCheckBox extends JsSubWidget {
 		
 		var html = '<input type="checkbox" id="' + this.checkId + '"' + ' name="' + this.checkId + '"><label for="' + this.checkId + '" id=' + this.titleId + '></label>';
 		$('#' + this.baseId).append(html);
-		$('#' + this.checkId).button();//.checkboxradio();
+//		$('#' + this.checkId).button();
 		
 		var me = this;
 		$('#' + this.checkId).change(function() {
@@ -391,6 +393,7 @@ class JsCheckBox extends JsSubWidget {
 	
 	setDisabled(disabled) {
 		$('#' + this.baseId + ' > ').prop('disabled', disabled);
+	//	$('#' + this.checkId + ' > ').prop('disabled', disabled);
 	}
 }
 

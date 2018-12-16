@@ -3,7 +3,7 @@ package jp.silverbullet.handlers;
 import java.util.List;
 import java.util.Map;
 
-import jp.silverbullet.dependency.ChangedItemValue;
+import jp.silverbullet.dependency2.ChangedItemValue;
 
 public abstract class AbstractSvHandler {
 	abstract protected void onExecute(SvHandlerModel model2, Map<String, List<ChangedItemValue>> changed);

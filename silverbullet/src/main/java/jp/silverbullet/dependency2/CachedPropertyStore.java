@@ -10,9 +10,8 @@ import java.util.Set;
 
 import jp.silverbullet.SvProperty;
 import jp.silverbullet.SvPropertyListener;
-import jp.silverbullet.dependency.ChangedItemValue;
+import jp.silverbullet.dependency2.ChangedItemValue;
 import jp.silverbullet.dependency.DepPropertyStore;
-import jp.silverbullet.dependency.DependencyTargetElement;
 
 public class CachedPropertyStore implements DepPropertyStore {
 	private Map<String, SvProperty> cached = new HashMap<>();
@@ -23,32 +22,35 @@ public class CachedPropertyStore implements DepPropertyStore {
 	private SvPropertyListener listener = new SvPropertyListener() {
 		@Override
 		public void onValueChanged(String id, int index, String value) {
-			appendChange(new Id(id, index), new ChangedItemValue(DependencyTargetElement.Value, value));
+			appendChange(new Id(id, index), new ChangedItemValue(DependencySpec.Value, value));
 		}
 
 		@Override
 		public void onEnableChanged(String id, int index, boolean b) {
-			appendChange(new Id(id, index), new ChangedItemValue(DependencyTargetElement.Enabled, String.valueOf(b)));
+			appendChange(new Id(id, index), new ChangedItemValue(DependencySpec.Enable, String.valueOf(b)));
 		}
 
 		@Override
 		public void onFlagChanged(String id, int index, Flag flag) {
 			if (flag.equals(Flag.MAX)) {
-				appendChange(new Id(id, index), new ChangedItemValue(DependencyTargetElement.Max, flag.toString()));
+				appendChange(new Id(id, index), new ChangedItemValue(DependencySpec.Max, flag.toString()));
 			}
 			else if (flag.equals(Flag.MIN)) {
-				appendChange(new Id(id, index), new ChangedItemValue(DependencyTargetElement.Min, flag.toString()));
+				appendChange(new Id(id, index), new ChangedItemValue(DependencySpec.Min, flag.toString()));
+			}
+			else if (flag.equals(Flag.SIZE)) {
+				appendChange(new Id(id, index), new ChangedItemValue(DependencySpec.ArraySize, flag.toString()));
 			}
 		}
 
 		@Override
 		public void onVisibleChanged(String id, int index, Boolean b) {
-			appendChange(new Id(id, index), new ChangedItemValue(DependencyTargetElement.Visible, String.valueOf(b)));
+		//	appendChange(new Id(id, index), new ChangedItemValue(DependencyTargetElement.Visible, String.valueOf(b)));
 		}
 
 		@Override
 		public void onListMaskChanged(String id, int index, String value) {
-			appendChange(new Id(id, index), new ChangedItemValue(DependencyTargetElement.ListItemEnabled, value));
+			appendChange(new Id(id, index), new ChangedItemValue(DependencySpec.OptionEnable, value));
 		}
 
 		@Override
@@ -107,23 +109,24 @@ public class CachedPropertyStore implements DepPropertyStore {
 			for (ChangedItemValue item : this.getHistory(id)) {
 				SvProperty propertyOriginal = this.original.getProperty(id);
 				SvProperty tmpChangedProperty = this.cached.get(id);
-				if (item.getElement().equals(DependencyTargetElement.Max)) {
+				if (item.getElement().equals(DependencySpec.Max)) {
 					propertyOriginal.setMax(tmpChangedProperty.getMax());
 				}
-				else if (item.getElement().equals(DependencyTargetElement.Min)) {
+				else if (item.getElement().equals(DependencySpec.Min)) {
 					propertyOriginal.setMin(tmpChangedProperty.getMin());
 				}
-				else if (item.getElement().equals(DependencyTargetElement.Value)) {
+				else if (item.getElement().equals(DependencySpec.Value)) {
 					propertyOriginal.setCurrentValue(tmpChangedProperty.getCurrentValue());
 				}
-				else if (item.getElement().equals(DependencyTargetElement.Enabled)) {
+				else if (item.getElement().equals(DependencySpec.Enable)) {
 					propertyOriginal.setEnabled(tmpChangedProperty.isEnabled());
 				}
-				else if (item.getElement().equals(DependencyTargetElement.Visible)) {
-					propertyOriginal.setVisible(tmpChangedProperty.isVisible());
-				}
-				else if (item.getElement().equals(DependencyTargetElement.ListItemEnabled)) {
+
+				else if (item.getElement().equals(DependencySpec.OptionEnable)) {
 					propertyOriginal.setListMask(tmpChangedProperty.getListMask());
+				}
+				else if (item.getElement().equals(DependencySpec.ArraySize)) {
+					propertyOriginal.setSize(tmpChangedProperty.getProperty().getSize());
 				}
 			}
 		}
@@ -157,17 +160,6 @@ public class CachedPropertyStore implements DepPropertyStore {
 
 	public void clearHistory() {
 		this.changedHistory.clear();
-	}
-
-	private void addValue(String id, String value) {
-		List<ChangedItemValue> remove = new ArrayList<>();
-		for (ChangedItemValue v : getHistory(id)) {
-			if (v.getElement().equals(DependencyTargetElement.Value)) {
-				remove.add(v);
-			}
-		}
-		getHistory(id).removeAll(remove);
-		getHistory(id).add(new ChangedItemValue(DependencyTargetElement.Value, value));
 	}
 
 	public void addCachedPropertyStoreListener(CachedPropertyStoreListener cachedPropertyStoreListener) {

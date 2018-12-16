@@ -1,5 +1,7 @@
 package jp.silverbullet.web.ui;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -236,18 +238,6 @@ public class UiLayout {
 		this.root = createRoot();
 	}
 
-//	public void setPresentation(String div, String presentation) {
-//		JsWidget panel = getWidget(div);
-//		panel.setPresentation(presentation);
-//		this.fireEvent();
-//	}
-
-//	public void setFontSize(String div, String fontSize) {
-//		JsWidget panel = getWidget(div);
-//		panel.setFontsize(fontSize);
-//		this.fireEvent();
-//	}
-	
 	public void setCustom(String div, Map<String, String> custom) {
 		JsWidget panel = getWidget(div);
 		panel.setCustom(custom);
@@ -261,12 +251,17 @@ public class UiLayout {
 		this.fireEvent();
 	}
 
+	public void copyPaste(String newBaseDiv, String itemDiv) {
+		JsWidget item = this.getWidget(itemDiv);
+		this.getWidget(newBaseDiv).addChild(item.clone());
+		this.fireEvent();	
+	}
+	
 	public void setCustomElement(String div, String customId, String customValue) {
 		JsWidget panel = getWidget(div);
 		panel.getCustom().put(customId, customValue);
 		this.fireEvent();
 	}
-
 
 	public void changeId(String prevId, String newId) {
 		new WalkThrough(this.getRoot())	{
@@ -292,17 +287,70 @@ public class UiLayout {
 	}
 
 	public void addArray(String div) {
-		JsWidget panel = getWidget(div);
-		String id = panel.getId();
-		JsWidget parent = new UiParent(panel).getParent();
-		for (int i = 1; i < this.propertyGetter.getProperty(id).getProperty().getSize(); i++) {
-			JsWidget widget = panel.clone();
-//			widget.setId(id);
-			widget.setIndex(i);
-			parent.addChild(widget);
-		}
+		JsWidget widget = getWidget(div);
+		if (widget.getWidgetType().equals(JsWidget.PANEL)) {
+			String id = widget.getChildren().get(0).getId();
+			int size = this.propertyGetter.getProperty(id).getProperty().getSize();
+			JsWidget parent = new UiParent(widget).getParent();
+			
 
+			for (int i = 1; i < size; i++) {
+				JsWidget clonePanel = widget.clone();
+				clonePanel.setCustomElemnt(CustomProperties.COPIED, "true");
+				for (JsWidget child : clonePanel.getChildren()) {
+					child.setIndex(i);
+				}
+				parent.addChild(clonePanel);
+			}
+		}
+		else {
+			String id = widget.getId();
+			JsWidget parent = new UiParent(widget).getParent();
+			for (int i = 1; i < this.propertyGetter.getProperty(id).getProperty().getSize(); i++) {
+				JsWidget clone = widget.clone();
+				clone.setIndex(i);
+				parent.addChild(clone);
+			}
+		}
 	}
+	
+	public List<Integer> buildDynamicArray() {
+		List<Integer> changed = new ArrayList<>();
+		new WalkThrough(this.getRoot()) {
+			@Override
+			protected void handle(JsWidget jsWidget) {
+				if (!jsWidget.getWidgetType().equals(JsWidget.PANEL)) {
+					return;
+				}
+
+				if (jsWidget.getCustomElement(CustomProperties.ARRAY).equals("true")) {
+					// clear copied widgets
+					Iterator<JsWidget> it = jsWidget.getChildren().iterator();
+					while(it.hasNext()) {
+						JsWidget child = it.next();
+						if (child.getCustomElement(CustomProperties.COPIED).equals("true")) {
+							it.remove();
+						}
+					}
+					
+					// copy widgets
+					JsWidget masterPanel = jsWidget.getChildren().get(0).clone();
+					SvProperty property = propertyGetter.getProperty(masterPanel.getChildren().get(0).getId());
+					int size = property.getProperty().getSize();
+					for (int i = 1; i < size; i++) {
+						JsWidget child = masterPanel.clone();
+						child.setIndex(i);
+						child.setCustomElemnt(CustomProperties.COPIED, "true");
+						jsWidget.addChild(child);
+					}
+					
+					changed.add(jsWidget.getUnique());
+				}
+			}
+		};
+		return changed;
+	}
+	
 	class UiParent {
 		private JsWidget parent = null;
 		public UiParent(JsWidget child) {
@@ -322,6 +370,7 @@ public class UiLayout {
 		}
 		
 	}
+
 }
 
 

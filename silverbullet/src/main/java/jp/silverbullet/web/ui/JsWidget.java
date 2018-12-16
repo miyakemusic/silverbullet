@@ -154,6 +154,12 @@ public class JsWidget implements Cloneable {
 
 	public void setIndex(Integer index) {
 		this.index = index;
+		
+		if (this.getWidgetType().equals(JsWidget.PANEL)) {
+			for (JsWidget child : this.getChildren()) {
+				child.setIndex(index);
+			}
+		}
 	}
 
 	public String getFontsize() {
@@ -202,12 +208,21 @@ public class JsWidget implements Cloneable {
 	public JsWidget clone() {
 		try {
 			JsWidget ret=  (JsWidget)super.clone();
+			ret.children = new ArrayList<>();
+			for (JsWidget child : this.getChildren()) {
+				ret.children.add(child.clone());
+			}
+			ret.custom = new HashMap<>(this.custom);
+			
 			ret.unique = ret.hashCode();
 			return ret;
 		} catch (CloneNotSupportedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public void setCustomElemnt(String key, String value) {
+		this.custom.put(key, value);
 	}
 }

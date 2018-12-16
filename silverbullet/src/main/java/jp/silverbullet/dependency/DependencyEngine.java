@@ -230,7 +230,7 @@ public abstract class DependencyEngine {
 	}
 	
 	public Map<String, List<ChangedItemValue>> getChagedItems() {
-		return this.cachedPropertyStore.getChangedHistory();
+		return null;//this.cachedPropertyStore.getChangedHistory();
 	}
 	
 	public CachedPropertyStore getCachedPropertyStore() {

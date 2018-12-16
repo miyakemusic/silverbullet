@@ -1,6 +1,6 @@
 package jp.silverbullet.dependency2;
 
-import jp.silverbullet.dependency.ChangedItemValue;
+import jp.silverbullet.dependency2.ChangedItemValue;
 
 public interface CachedPropertyStoreListener {
 

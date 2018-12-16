@@ -81,181 +81,178 @@ class TestDependencySpecDetail2 {
 		}
 	}
 	
-	@Test
-	void test() {	
-		String idBand = "ID_OSA_BAND";
-		String idBandC = "ID_OSA_BAND_C";
-		String idBandManual = "ID_OSA_BAND_MANUAL";
-		
-		String idStartWavelength = "ID_OSA_START_WAVELENGTH";
-		String idStopWavelength = "ID_OSA_STOP_WAVELENGTH";
-		String idCenterWavelength = "ID_OSA_CENTER_WAVELENGTH";
-		String idTestMode = "ID_OSA_TESTMODE";
-		String idTestModeAuto = "ID_OSA_TESTMODE_AUTO";
-		String idTestModeManual = "ID_OSA_TESTMODE_MANUAL";
-		
-		String idModel = "ID_OSA_MODEL";
-		String idModel20A = "ID_OSA_MODEL_20A";
-		String idModel21A = "ID_OSA_MODEL_21A";
-		String idApplication = "ID_OSA_APPLICATION";
-		String idApplicationWdm = "ID_OSA_APPLICATION_WDM";
-		String idApplicationDrift = "ID_OSA_APPLICATION_DRIFT";
-		String idApplicationInBand = "ID_OSA_APPLICATION_INBAND";
-		
-		DependencySpecHolder holder = new DependencySpecHolder();
-		
-		//////////BAND///////////
-		DependencySpec specBand = new DependencySpec(idBand);
-		holder.add(specBand);
-		//// Enabled ///
-		{
-			DependencyExpressionHolder specDetail = new DependencyExpressionHolder(DependencyTargetElement.Enabled);
-			specDetail.addExpression().resultExpression(DependencyExpression.True).conditionIdValue(idTestMode).equals().conditionSelectionId(idTestModeManual);		
-			specBand.add(specDetail);
-		}
-	    //// Value ///
-		{
-			DependencyExpressionHolder specDetailBand = new DependencyExpressionHolder(DependencyTargetElement.Value);
-			specDetailBand.addExpression().resultExpression("%" + idBandManual).conditionIdValue(idStartWavelength).equals().anyValue().or().conditionIdValue(idStopWavelength).equals().anyValue();
-//			specDetailBand.addExpression().resultExpression("%" + idBandManual).conditionIdValue(idStopWavelength).equals().anyValue();
-			specBand.add(specDetailBand);
-		}
-		
-		////////// Start Wavelength///////////
-		//// Value ////
-		{
-			DependencySpec spec = new DependencySpec(idStartWavelength);
-			holder.add(spec);
-			DependencyExpressionHolder specDetailStartW = new DependencyExpressionHolder(DependencyTargetElement.Value);
-			specDetailStartW.addExpression().resultExpression("1530").conditionIdValue(idBand).equals().conditionSelectionId(idBandC);	
-			specDetailStartW.addExpression().resultExpression("$" + idStopWavelength + ".Value").conditionExpression("$" + idStartWavelength + ".Value > " + "$" + idStopWavelength + ".Value");
-			spec.add(specDetailStartW);
-			
-		}
-		////////// Stop Wavelength///////////
-		//// Value ////
-		{
-			DependencySpec spec = new DependencySpec(idStopWavelength);
-			holder.add(spec);
-			DependencyExpressionHolder specDetailStopW = new DependencyExpressionHolder(DependencyTargetElement.Value);
-			specDetailStopW.addExpression().resultExpression("1565").conditionIdValue(idBand).equals().conditionSelectionId(idBandC);
-			specDetailStopW.addExpression().resultExpression("$" + idStartWavelength + ".Value").conditionExpression("$" + idStopWavelength + ".Value < " + "$" + idStartWavelength + ".Value");
-			spec.add(specDetailStopW);
-		}
-		
-		{
-
-			
-		}
-		
-		//// ListItemVisibel ////
-		{
-			DependencySpec spec = new DependencySpec(idApplicationInBand);
-			holder.add(spec);
-			DependencyExpressionHolder specDetail = new DependencyExpressionHolder(DependencyTargetElement.ListItemVisible);
-			specDetail.addExpression().resultExpression(DependencyExpression.True).conditionIdValue(idModel).equals().conditionSelectionId(idModel21A);
-//			specDetail.addExpression().resultValue(DependencyExpression.False).conditionOther();
-			spec.add(idApplicationInBand, specDetail);
-			
-		}
-
-		DepPropertyStore store = createPropertyStore();
-		
-		store.add(createListProperty(idBand, Arrays.asList(idBandC, idBandManual), idBandC));
-		store.add(createDoubleProperty(idStartWavelength, 1250, "nm", 0, 9999, 3));
-		store.add(createDoubleProperty(idStopWavelength, 1650, "nm", 0, 9999, 3));
-		store.add(createListProperty(idTestMode, Arrays.asList(idTestModeAuto, idTestModeManual), idTestModeAuto));
-		store.add(createListProperty(idModel, Arrays.asList(idModel20A, idModel21A), idModel20A));
-		store.add(createListProperty(idModel, Arrays.asList(idApplication, idApplicationWdm, idApplicationDrift, idApplicationInBand), idApplicationWdm));
-		
-		DependencyEngine engine = createEngine(holder, store);
-		DependencyBuilder builder2 = new DependencyBuilder(idStartWavelength, holder);
-		List<DependencyProperty> spec2 = builder2.getSpecs(0);
-		assertTrue(builder2.getLayerCount() == 3);
-		
-		assertTrue(spec2.get(0).getId().equals(idBand));
-		assertTrue(spec2.get(0).getElement().equals(DependencyTargetElement.Value));
-		assertTrue(spec2.get(0).getCondition().equals("$ID_OSA_START_WAVELENGTH.Value==*any || $ID_OSA_STOP_WAVELENGTH.Value==*any"));
-//		assertTrue(spec2.get(0).getValue().equals(idBandManual));
-	
-		assertTrue(spec2.get(1).getId().equals(idStopWavelength));
-		assertTrue(spec2.get(1).getElement().equals(DependencyTargetElement.Value));
-		assertTrue(spec2.get(1).getCondition().equals("$ID_OSA_STOP_WAVELENGTH.Value < $ID_OSA_START_WAVELENGTH.Value"));
-		assertTrue(spec2.get(1).getValue().equals("$ID_OSA_START_WAVELENGTH.Value"));
-				
-		List<DependencyProperty> spec3 = builder2.getSpecs(1);
-		
-		assertTrue(spec3.get(0).getId().equals(idStopWavelength));
-		assertTrue(spec3.get(0).getElement().equals(DependencyTargetElement.Value));
-		assertTrue(spec3.get(0).getCondition().equals("$ID_OSA_BAND.Value==%ID_OSA_BAND_C"));
-//		assertTrue(spec3.get(0).getValue().equals("1565"));
-	
-		assertTrue(spec3.get(1).getId().equals(idBand));
-		assertTrue(spec3.get(1).getElement().equals(DependencyTargetElement.Value));
-		assertTrue(spec3.get(1).getCondition().equals("$ID_OSA_START_WAVELENGTH.Value==*any || $ID_OSA_STOP_WAVELENGTH.Value==*any"));
-//		assertTrue(spec3.get(1).getValue().equals("ID_OSA_BAND_MANUAL"));	
-		
-		assertTrue(store.getProperty(idBand).getCurrentValue().equals(idBandC));
-		try {
-			engine.requestChange(idStartWavelength, "1400");
-			CachedPropertyStore cached = engine.getCachedPropertyStore();
-			assertTrue(cached.getProperty(idBand).getCurrentValue().equals(idBandManual));
-			assertTrue(cached.getProperty(idStartWavelength).getCurrentValue().equals("1400.000"));
-			
-			{
-				List<ChangedItemValue> changed = cached.getChanged(idStartWavelength);
-				assertEquals(DependencyTargetElement.Value, changed.get(0).getElement());
-				assertEquals("1400.000", changed.get(0).getValue());
-			}
-			{
-				List<ChangedItemValue> changed = cached.getChanged(idBand);
-				assertEquals(DependencyTargetElement.Value, changed.get(0).getElement());
-				assertEquals(idBandManual, changed.get(0).getValue());
-			}	
-			
-		} catch (RequestRejectedException e) {
-			e.printStackTrace();
-		}
-
-		try {
-			//store.clearHistory();
-			store.getProperty(idBand).setCurrentValue(idBandManual);
-			engine.requestChange(idBand, idBandC);
-			CachedPropertyStore cached = engine.getCachedPropertyStore();
-			assertEquals("1530.000", cached.getProperty(idStartWavelength).getCurrentValue());
-			assertEquals("1565.000", cached.getProperty(idStopWavelength).getCurrentValue());
-			assertEquals(idBandC, cached.getProperty(idBand).getCurrentValue());
-		
-			{
-				List<ChangedItemValue> changed = cached.getChanged(idBand);
-				assertEquals(DependencyTargetElement.Value, changed.get(0).getElement());
-				assertEquals(idBandC, changed.get(0).getValue());
-			}
-			{
-				List<ChangedItemValue> changed = cached.getChanged(idStartWavelength);
-				assertEquals(DependencyTargetElement.Value, changed.get(0).getElement());
-				assertEquals("1530.000", changed.get(0).getValue());
-			}
-			{
-				List<ChangedItemValue> changed = cached.getChanged(idStopWavelength);
-				assertEquals(DependencyTargetElement.Value, changed.get(0).getElement());
-				assertEquals("1565.000", changed.get(0).getValue());
-			}
-
-		} catch (RequestRejectedException e) {
-			e.printStackTrace();
-		}
-		
-//		DependencyBuilder3 builder = new DependencyBuilder3(idBand, holder);
-//		assertTrue(builder.getTree().getDependencyProperty().getId().equals(idBand));
-		
-		XmlPersistent<DependencySpecHolder> propertyPersister = new XmlPersistent<>();
-		try {
-			propertyPersister.save(holder, "C:\\Projects\\dep.xml", DependencySpecHolder.class);
-		} catch (JAXBException e) {
-			e.printStackTrace();
-		}
-	}
+//	@Test
+//	void test() {	
+//		String idBand = "ID_OSA_BAND";
+//		String idBandC = "ID_OSA_BAND_C";
+//		String idBandManual = "ID_OSA_BAND_MANUAL";
+//		
+//		String idStartWavelength = "ID_OSA_START_WAVELENGTH";
+//		String idStopWavelength = "ID_OSA_STOP_WAVELENGTH";
+//		String idCenterWavelength = "ID_OSA_CENTER_WAVELENGTH";
+//		String idTestMode = "ID_OSA_TESTMODE";
+//		String idTestModeAuto = "ID_OSA_TESTMODE_AUTO";
+//		String idTestModeManual = "ID_OSA_TESTMODE_MANUAL";
+//		
+//		String idModel = "ID_OSA_MODEL";
+//		String idModel20A = "ID_OSA_MODEL_20A";
+//		String idModel21A = "ID_OSA_MODEL_21A";
+//		String idApplication = "ID_OSA_APPLICATION";
+//		String idApplicationWdm = "ID_OSA_APPLICATION_WDM";
+//		String idApplicationDrift = "ID_OSA_APPLICATION_DRIFT";
+//		String idApplicationInBand = "ID_OSA_APPLICATION_INBAND";
+//		
+//		DependencySpecHolder holder = new DependencySpecHolder();
+//		
+//		//////////BAND///////////
+//		DependencySpec specBand = new DependencySpec(idBand);
+//		holder.add(specBand);
+//		//// Enabled ///
+//		{
+//			DependencyExpressionHolder specDetail = new DependencyExpressionHolder(DependencyTargetElement.Enabled);
+//			specDetail.addExpression().resultExpression(DependencyExpression.True).conditionIdValue(idTestMode).equals().conditionSelectionId(idTestModeManual);		
+//			specBand.add(specDetail);
+//		}
+//	    //// Value ///
+//		{
+//			DependencyExpressionHolder specDetailBand = new DependencyExpressionHolder(DependencyTargetElement.Value);
+//			specDetailBand.addExpression().resultExpression("%" + idBandManual).conditionIdValue(idStartWavelength).equals().anyValue().or().conditionIdValue(idStopWavelength).equals().anyValue();
+////			specDetailBand.addExpression().resultExpression("%" + idBandManual).conditionIdValue(idStopWavelength).equals().anyValue();
+//			specBand.add(specDetailBand);
+//		}
+//		
+//		////////// Start Wavelength///////////
+//		//// Value ////
+//		{
+//			DependencySpec spec = new DependencySpec(idStartWavelength);
+//			holder.add(spec);
+//			DependencyExpressionHolder specDetailStartW = new DependencyExpressionHolder(DependencyTargetElement.Value);
+//			specDetailStartW.addExpression().resultExpression("1530").conditionIdValue(idBand).equals().conditionSelectionId(idBandC);	
+//			specDetailStartW.addExpression().resultExpression("$" + idStopWavelength + ".Value").conditionExpression("$" + idStartWavelength + ".Value > " + "$" + idStopWavelength + ".Value");
+//			spec.add(specDetailStartW);
+//			
+//		}
+//		////////// Stop Wavelength///////////
+//		//// Value ////
+//		{
+//			DependencySpec spec = new DependencySpec(idStopWavelength);
+//			holder.add(spec);
+//			DependencyExpressionHolder specDetailStopW = new DependencyExpressionHolder(DependencyTargetElement.Value);
+//			specDetailStopW.addExpression().resultExpression("1565").conditionIdValue(idBand).equals().conditionSelectionId(idBandC);
+//			specDetailStopW.addExpression().resultExpression("$" + idStartWavelength + ".Value").conditionExpression("$" + idStopWavelength + ".Value < " + "$" + idStartWavelength + ".Value");
+//			spec.add(specDetailStopW);
+//		}
+//		
+//		{
+//
+//			
+//		}
+//		
+//		//// ListItemVisibel ////
+//		{
+//			DependencySpec spec = new DependencySpec(idApplicationInBand);
+//			holder.add(spec);
+//			DependencyExpressionHolder specDetail = new DependencyExpressionHolder(DependencyTargetElement.ListItemVisible);
+//			specDetail.addExpression().resultExpression(DependencyExpression.True).conditionIdValue(idModel).equals().conditionSelectionId(idModel21A);
+////			specDetail.addExpression().resultValue(DependencyExpression.False).conditionOther();
+//			spec.add(idApplicationInBand, specDetail);
+//			
+//		}
+//
+//		DepPropertyStore store = createPropertyStore();
+//		
+//		store.add(createListProperty(idBand, Arrays.asList(idBandC, idBandManual), idBandC));
+//		store.add(createDoubleProperty(idStartWavelength, 1250, "nm", 0, 9999, 3));
+//		store.add(createDoubleProperty(idStopWavelength, 1650, "nm", 0, 9999, 3));
+//		store.add(createListProperty(idTestMode, Arrays.asList(idTestModeAuto, idTestModeManual), idTestModeAuto));
+//		store.add(createListProperty(idModel, Arrays.asList(idModel20A, idModel21A), idModel20A));
+//		store.add(createListProperty(idModel, Arrays.asList(idApplication, idApplicationWdm, idApplicationDrift, idApplicationInBand), idApplicationWdm));
+//		
+//		DependencyEngine engine = createEngine(holder, store);
+//		DependencyBuilder builder2 = new DependencyBuilder(idStartWavelength, holder);
+//		List<DependencyProperty> spec2 = builder2.getSpecs(0);
+//		assertTrue(builder2.getLayerCount() == 3);
+//		
+//		assertTrue(spec2.get(0).getId().equals(idBand));
+//		assertTrue(spec2.get(0).getElement().equals(DependencyTargetElement.Value));
+//		assertTrue(spec2.get(0).getCondition().equals("$ID_OSA_START_WAVELENGTH.Value==*any || $ID_OSA_STOP_WAVELENGTH.Value==*any"));
+////		assertTrue(spec2.get(0).getValue().equals(idBandManual));
+//	
+//		assertTrue(spec2.get(1).getId().equals(idStopWavelength));
+//		assertTrue(spec2.get(1).getElement().equals(DependencyTargetElement.Value));
+//		assertTrue(spec2.get(1).getCondition().equals("$ID_OSA_STOP_WAVELENGTH.Value < $ID_OSA_START_WAVELENGTH.Value"));
+//		assertTrue(spec2.get(1).getValue().equals("$ID_OSA_START_WAVELENGTH.Value"));
+//				
+//		List<DependencyProperty> spec3 = builder2.getSpecs(1);
+//		
+//		assertTrue(spec3.get(0).getId().equals(idStopWavelength));
+//		assertTrue(spec3.get(0).getElement().equals(DependencyTargetElement.Value));
+//		assertTrue(spec3.get(0).getCondition().equals("$ID_OSA_BAND.Value==%ID_OSA_BAND_C"));
+////		assertTrue(spec3.get(0).getValue().equals("1565"));
+//	
+//		assertTrue(spec3.get(1).getId().equals(idBand));
+//		assertTrue(spec3.get(1).getElement().equals(DependencyTargetElement.Value));
+//		assertTrue(spec3.get(1).getCondition().equals("$ID_OSA_START_WAVELENGTH.Value==*any || $ID_OSA_STOP_WAVELENGTH.Value==*any"));
+////		assertTrue(spec3.get(1).getValue().equals("ID_OSA_BAND_MANUAL"));	
+//		
+//		assertTrue(store.getProperty(idBand).getCurrentValue().equals(idBandC));
+//		try {
+//			engine.requestChange(idStartWavelength, "1400");
+//			CachedPropertyStore cached = engine.getCachedPropertyStore();
+//			assertTrue(cached.getProperty(idBand).getCurrentValue().equals(idBandManual));
+//			assertTrue(cached.getProperty(idStartWavelength).getCurrentValue().equals("1400.000"));
+//			
+//			{
+//				List<ChangedItemValue> changed = cached.getChanged(idStartWavelength);
+//				assertEquals(DependencyTargetElement.Value, changed.get(0).getElement());
+//				assertEquals("1400.000", changed.get(0).getValue());
+//			}
+//			{
+//				List<ChangedItemValue> changed = cached.getChanged(idBand);
+//				assertEquals(DependencyTargetElement.Value, changed.get(0).getElement());
+//				assertEquals(idBandManual, changed.get(0).getValue());
+//			}	
+//			
+//		} catch (RequestRejectedException e) {
+//			e.printStackTrace();
+//		}
+//
+//		try {
+//			//store.clearHistory();
+//			store.getProperty(idBand).setCurrentValue(idBandManual);
+//			engine.requestChange(idBand, idBandC);
+//			CachedPropertyStore cached = engine.getCachedPropertyStore();
+//			assertEquals("1530.000", cached.getProperty(idStartWavelength).getCurrentValue());
+//			assertEquals("1565.000", cached.getProperty(idStopWavelength).getCurrentValue());
+//			assertEquals(idBandC, cached.getProperty(idBand).getCurrentValue());
+//		
+//			{
+//				List<ChangedItemValue> changed = cached.getChanged(idBand);
+//				assertEquals(DependencyTargetElement.Value, changed.get(0).getElement());
+//				assertEquals(idBandC, changed.get(0).getValue());
+//			}
+//			{
+//				List<ChangedItemValue> changed = cached.getChanged(idStartWavelength);
+//				assertEquals(DependencyTargetElement.Value, changed.get(0).getElement());
+//				assertEquals("1530.000", changed.get(0).getValue());
+//			}
+//			{
+//				List<ChangedItemValue> changed = cached.getChanged(idStopWavelength);
+//				assertEquals(DependencyTargetElement.Value, changed.get(0).getElement());
+//				assertEquals("1565.000", changed.get(0).getValue());
+//			}
+//
+//		} catch (RequestRejectedException e) {
+//			e.printStackTrace();
+//		}
+//	
+//		XmlPersistent<DependencySpecHolder> propertyPersister = new XmlPersistent<>();
+//		try {
+//			propertyPersister.save(holder, "C:\\Projects\\dep.xml", DependencySpecHolder.class);
+//		} catch (JAXBException e) {
+//			e.printStackTrace();
+//		}
+//	}
 
 	@Test
 	void testResultEquation() {
@@ -362,133 +359,133 @@ class TestDependencySpecDetail2 {
 			e.printStackTrace();
 		}
 	}
-	@Test
-	void testListMask() {
-		String idModel = "ID_OSA_MODEL";
-		String idModel20A = "ID_OSA_MODEL_20A";
-		String idModel21A = "ID_OSA_MODEL_21A";
-		
-		String idApplication = "ID_OSA_APPLICATION";
-		String idApplicationWdm = "ID_OSA_APPLICATION_WDM";
-		String idApplicationDrift = "ID_OSA_APPLICATION_DRIFT";
-		String idApplicationInBand = "ID_OSA_APPLICATION_INBAND";
-		
-		DependencySpecHolder holder = new DependencySpecHolder();
-		
-		CachedPropertyStore store = new CachedPropertyStore(createPropertyStore());
-		store.add(createListProperty(idModel, Arrays.asList(idModel20A, idModel21A), idModel20A));
-		store.add(createListProperty(idApplication, Arrays.asList(idApplicationWdm, idApplicationDrift, idApplicationInBand), idApplicationInBand));
-
-		{
-			DependencySpec spec = new DependencySpec(idApplication);
-			holder.add(spec);
-			DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.ListItemVisible);
-			detail.addExpression().resultExpression(DependencyExpression.True).conditionIdValue(idModel).equals().conditionSelectionId(idModel21A);
-			detail.addExpression().resultExpression(DependencyExpression.False).conditionIdValue(idModel).equals().conditionSelectionId(idModel20A);
-			spec.add(idApplicationInBand, detail);
-		}
-		
-		DependencyEngine engine = createEngine(holder, store);
-		try {
-			engine.requestChange(idModel, idModel20A);
-			CachedPropertyStore cached = engine.getCachedPropertyStore();
-			
-			assertTrue(cached.getProperty(idApplication).getAvailableListDetail().size() == 2);
-			assertTrue(cached.getProperty(idApplication).getAvailableListDetail().get(0).getId().equals(idApplicationWdm));
-			assertTrue(cached.getProperty(idApplication).getAvailableListDetail().get(1).getId().equals(idApplicationDrift));
-			assertTrue(cached.getProperty(idApplication).getCurrentValue().equals(idApplicationWdm));
-			
-			{
-				List<ChangedItemValue> changed = cached.getChanged(idApplication);
-				assertEquals(DependencyTargetElement.ListItemEnabled, changed.get(0).getElement());
-				assertEquals(idApplicationInBand + ",true", changed.get(0).getValue());
-
-				assertEquals(DependencyTargetElement.Value, changed.get(1).getElement());
-				assertEquals(idApplicationWdm, changed.get(1).getValue());
-			}
-			
-		} catch (RequestRejectedException e) {
-			e.printStackTrace();
-		}
-	}
+//	@Test
+//	void testListMask() {
+//		String idModel = "ID_OSA_MODEL";
+//		String idModel20A = "ID_OSA_MODEL_20A";
+//		String idModel21A = "ID_OSA_MODEL_21A";
+//		
+//		String idApplication = "ID_OSA_APPLICATION";
+//		String idApplicationWdm = "ID_OSA_APPLICATION_WDM";
+//		String idApplicationDrift = "ID_OSA_APPLICATION_DRIFT";
+//		String idApplicationInBand = "ID_OSA_APPLICATION_INBAND";
+//		
+//		DependencySpecHolder holder = new DependencySpecHolder();
+//		
+//		CachedPropertyStore store = new CachedPropertyStore(createPropertyStore());
+//		store.add(createListProperty(idModel, Arrays.asList(idModel20A, idModel21A), idModel20A));
+//		store.add(createListProperty(idApplication, Arrays.asList(idApplicationWdm, idApplicationDrift, idApplicationInBand), idApplicationInBand));
+//
+//		{
+//			DependencySpec spec = new DependencySpec(idApplication);
+//			holder.add(spec);
+//			DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.ListItemVisible);
+//			detail.addExpression().resultExpression(DependencyExpression.True).conditionIdValue(idModel).equals().conditionSelectionId(idModel21A);
+//			detail.addExpression().resultExpression(DependencyExpression.False).conditionIdValue(idModel).equals().conditionSelectionId(idModel20A);
+//			spec.add(idApplicationInBand, detail);
+//		}
+//		
+//		DependencyEngine engine = createEngine(holder, store);
+//		try {
+//			engine.requestChange(idModel, idModel20A);
+//			CachedPropertyStore cached = engine.getCachedPropertyStore();
+//			
+//			assertTrue(cached.getProperty(idApplication).getAvailableListDetail().size() == 2);
+//			assertTrue(cached.getProperty(idApplication).getAvailableListDetail().get(0).getId().equals(idApplicationWdm));
+//			assertTrue(cached.getProperty(idApplication).getAvailableListDetail().get(1).getId().equals(idApplicationDrift));
+//			assertTrue(cached.getProperty(idApplication).getCurrentValue().equals(idApplicationWdm));
+//			
+//			{
+//				List<ChangedItemValue> changed = cached.getChanged(idApplication);
+//				assertEquals(DependencyTargetElement.ListItemEnabled, changed.get(0).getElement());
+//				assertEquals(idApplicationInBand + ",true", changed.get(0).getValue());
+//
+//				assertEquals(DependencyTargetElement.Value, changed.get(1).getElement());
+//				assertEquals(idApplicationWdm, changed.get(1).getValue());
+//			}
+//			
+//		} catch (RequestRejectedException e) {
+//			e.printStackTrace();
+//		}
+//	}
 	
-	@Test
-	void testElse() {
-		String idModel = "ID_OSA_MODEL";
-		String idModel20A = "ID_OSA_MODEL_20A";
-		String idModel21A = "ID_OSA_MODEL_21A";
-		String idModel22A = "ID_OSA_MODEL_22A";
-		String idModel23A = "ID_OSA_MODEL_23A";
-		
-		String idApplication = "ID_OSA_APPLICATION";
-		String idApplicationWdm = "ID_OSA_APPLICATION_WDM";
-		String idApplicationDrift = "ID_OSA_APPLICATION_DRIFT";
-		String idApplicationInBand = "ID_OSA_APPLICATION_INBAND";
-		
-		DependencySpecHolder holder = new DependencySpecHolder();
-		
-		DepPropertyStore store = createPropertyStore();
-		store.add(createListProperty(idModel, Arrays.asList(idModel20A, idModel21A, idModel22A, idModel23A), idModel20A));
-		store.add(createListProperty(idApplication, Arrays.asList(idApplicationWdm, idApplicationDrift, idApplicationInBand), idApplicationInBand));
-
-		{
-			DependencySpec spec = new DependencySpec(idApplication);
-			holder.add(spec);
-			DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.ListItemVisible);
-			detail.addExpression().resultExpression(DependencyExpression.True).conditionIdValue(idModel).equals().conditionSelectionId(idModel21A).or().conditionIdValue(idModel).equals().conditionSelectionId(idModel23A);
-//			detail.addExpression().resultExpression(DependencyExpression.True).conditionIdValue(idModel).equals().conditionSelectionId(idModel23A);
-			detail.addExpression().resultExpression(DependencyExpression.False).conditionElse();
-			spec.add(idApplicationInBand, detail);
-		}
-		DependencyEngine engine = createEngine(holder, store);
-		try {
-			// 20A
-			engine.requestChange(idModel, idModel20A);
-			CachedPropertyStore cached = engine.getCachedPropertyStore();
-			
-			assertEquals(2, cached.getProperty(idApplication).getAvailableListDetail().size());
-			assertTrue(cached.getProperty(idApplication).getAvailableListDetail().get(0).getId().equals(idApplicationWdm));
-			assertTrue(cached.getProperty(idApplication).getAvailableListDetail().get(1).getId().equals(idApplicationDrift));
-			assertTrue(cached.getProperty(idApplication).getCurrentValue().equals(idApplicationWdm));
-			
-			{
-				List<ChangedItemValue> changed = cached.getChanged(idApplication);
-				assertEquals(DependencyTargetElement.ListItemEnabled, changed.get(0).getElement());
-				assertEquals(idApplicationInBand + ",true", changed.get(0).getValue());
-			}
-			{
-				List<ChangedItemValue> changed = cached.getChanged(idApplication);
-				assertEquals(DependencyTargetElement.Value, changed.get(1).getElement());
-				assertEquals(idApplicationWdm, changed.get(1).getValue());
-			}
-
-			// 22A
-			engine.requestChange(idModel, idModel22A);
-			cached = engine.getCachedPropertyStore();
-			assertTrue(cached.getProperty(idApplication).getAvailableListDetail().size() == 2);
-			assertTrue(cached.getProperty(idApplication).getAvailableListDetail().get(0).getId().equals(idApplicationWdm));
-			assertTrue(cached.getProperty(idApplication).getAvailableListDetail().get(1).getId().equals(idApplicationDrift));
-			assertTrue(cached.getProperty(idApplication).getCurrentValue().equals(idApplicationWdm));
-			
-			// 21A
-			engine.requestChange(idModel, idModel21A);
-			cached = engine.getCachedPropertyStore();
-			assertTrue(cached.getProperty(idApplication).getAvailableListDetail().size() ==3);
-			assertTrue(cached.getProperty(idApplication).getAvailableListDetail().get(0).getId().equals(idApplicationWdm));
-			assertTrue(cached.getProperty(idApplication).getAvailableListDetail().get(1).getId().equals(idApplicationDrift));
-			assertTrue(cached.getProperty(idApplication).getAvailableListDetail().get(2).getId().equals(idApplicationInBand));
-			
-			// 23A
-			engine.requestChange(idModel, idModel23A);
-			cached = engine.getCachedPropertyStore();
-			assertTrue(cached.getProperty(idApplication).getAvailableListDetail().size() ==3);
-			assertTrue(cached.getProperty(idApplication).getAvailableListDetail().get(0).getId().equals(idApplicationWdm));
-			assertTrue(cached.getProperty(idApplication).getAvailableListDetail().get(1).getId().equals(idApplicationDrift));
-			assertTrue(cached.getProperty(idApplication).getAvailableListDetail().get(2).getId().equals(idApplicationInBand));
-		} catch (RequestRejectedException e) {
-			e.printStackTrace();
-		}
-	}
+//	@Test
+//	void testElse() {
+//		String idModel = "ID_OSA_MODEL";
+//		String idModel20A = "ID_OSA_MODEL_20A";
+//		String idModel21A = "ID_OSA_MODEL_21A";
+//		String idModel22A = "ID_OSA_MODEL_22A";
+//		String idModel23A = "ID_OSA_MODEL_23A";
+//		
+//		String idApplication = "ID_OSA_APPLICATION";
+//		String idApplicationWdm = "ID_OSA_APPLICATION_WDM";
+//		String idApplicationDrift = "ID_OSA_APPLICATION_DRIFT";
+//		String idApplicationInBand = "ID_OSA_APPLICATION_INBAND";
+//		
+//		DependencySpecHolder holder = new DependencySpecHolder();
+//		
+//		DepPropertyStore store = createPropertyStore();
+//		store.add(createListProperty(idModel, Arrays.asList(idModel20A, idModel21A, idModel22A, idModel23A), idModel20A));
+//		store.add(createListProperty(idApplication, Arrays.asList(idApplicationWdm, idApplicationDrift, idApplicationInBand), idApplicationInBand));
+//
+//		{
+//			DependencySpec spec = new DependencySpec(idApplication);
+//			holder.add(spec);
+//			DependencyExpressionHolder detail = new DependencyExpressionHolder(DependencyTargetElement.ListItemVisible);
+//			detail.addExpression().resultExpression(DependencyExpression.True).conditionIdValue(idModel).equals().conditionSelectionId(idModel21A).or().conditionIdValue(idModel).equals().conditionSelectionId(idModel23A);
+////			detail.addExpression().resultExpression(DependencyExpression.True).conditionIdValue(idModel).equals().conditionSelectionId(idModel23A);
+//			detail.addExpression().resultExpression(DependencyExpression.False).conditionElse();
+//			spec.add(idApplicationInBand, detail);
+//		}
+//		DependencyEngine engine = createEngine(holder, store);
+//		try {
+//			// 20A
+//			engine.requestChange(idModel, idModel20A);
+//			CachedPropertyStore cached = engine.getCachedPropertyStore();
+//			
+//			assertEquals(2, cached.getProperty(idApplication).getAvailableListDetail().size());
+//			assertTrue(cached.getProperty(idApplication).getAvailableListDetail().get(0).getId().equals(idApplicationWdm));
+//			assertTrue(cached.getProperty(idApplication).getAvailableListDetail().get(1).getId().equals(idApplicationDrift));
+//			assertTrue(cached.getProperty(idApplication).getCurrentValue().equals(idApplicationWdm));
+//			
+//			{
+//				List<ChangedItemValue> changed = cached.getChanged(idApplication);
+//				assertEquals(DependencyTargetElement.ListItemEnabled, changed.get(0).getElement());
+//				assertEquals(idApplicationInBand + ",true", changed.get(0).getValue());
+//			}
+//			{
+//				List<ChangedItemValue> changed = cached.getChanged(idApplication);
+//				assertEquals(DependencyTargetElement.Value, changed.get(1).getElement());
+//				assertEquals(idApplicationWdm, changed.get(1).getValue());
+//			}
+//
+//			// 22A
+//			engine.requestChange(idModel, idModel22A);
+//			cached = engine.getCachedPropertyStore();
+//			assertTrue(cached.getProperty(idApplication).getAvailableListDetail().size() == 2);
+//			assertTrue(cached.getProperty(idApplication).getAvailableListDetail().get(0).getId().equals(idApplicationWdm));
+//			assertTrue(cached.getProperty(idApplication).getAvailableListDetail().get(1).getId().equals(idApplicationDrift));
+//			assertTrue(cached.getProperty(idApplication).getCurrentValue().equals(idApplicationWdm));
+//			
+//			// 21A
+//			engine.requestChange(idModel, idModel21A);
+//			cached = engine.getCachedPropertyStore();
+//			assertTrue(cached.getProperty(idApplication).getAvailableListDetail().size() ==3);
+//			assertTrue(cached.getProperty(idApplication).getAvailableListDetail().get(0).getId().equals(idApplicationWdm));
+//			assertTrue(cached.getProperty(idApplication).getAvailableListDetail().get(1).getId().equals(idApplicationDrift));
+//			assertTrue(cached.getProperty(idApplication).getAvailableListDetail().get(2).getId().equals(idApplicationInBand));
+//			
+//			// 23A
+//			engine.requestChange(idModel, idModel23A);
+//			cached = engine.getCachedPropertyStore();
+//			assertTrue(cached.getProperty(idApplication).getAvailableListDetail().size() ==3);
+//			assertTrue(cached.getProperty(idApplication).getAvailableListDetail().get(0).getId().equals(idApplicationWdm));
+//			assertTrue(cached.getProperty(idApplication).getAvailableListDetail().get(1).getId().equals(idApplicationDrift));
+//			assertTrue(cached.getProperty(idApplication).getAvailableListDetail().get(2).getId().equals(idApplicationInBand));
+//		} catch (RequestRejectedException e) {
+//			e.printStackTrace();
+//		}
+//	}
 	
 	@Test
 	void testScript() {

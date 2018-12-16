@@ -36,6 +36,10 @@ public class RuntimeDependencySpec {
 		return this.target.startsWith(DependencySpec.OptionEnable);
 	}
 
+	public boolean isArraySize() {
+		return this.target.equals(DependencySpec.ArraySize);
+	}
+	
 	public Expression getExpression() {
 		return expression;
 	}
@@ -109,5 +113,5 @@ public class RuntimeDependencySpec {
 	public String getTarget() {
 		return target;
 	}
-	
+
 }

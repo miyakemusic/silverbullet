@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jp.silverbullet.dependency.ChangedItemValue;
+import jp.silverbullet.dependency2.ChangedItemValue;
 import jp.silverbullet.dependency.DependencyTargetElement;
 import jp.silverbullet.dependency2.Id;
 

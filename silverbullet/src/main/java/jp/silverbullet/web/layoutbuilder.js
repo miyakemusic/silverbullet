@@ -100,7 +100,6 @@ class LayoutBuilder {
 		this.allWidgets = [];
 		this.map.clear();
 		this.widgetMap.clear();
-		
 		var me = this;
 		
 		$.ajax({
@@ -116,7 +115,25 @@ class LayoutBuilder {
 		   		me.setContextmenu();
 		   }
 		});	
+	}
+	
+	removeWidgets(divs) {
+		for (var div of divs) {
 		
+		}
+	}
+	
+	updatePartUI(divs) {
+		this.removeWidgets(divs);
+		for (var div of divs) {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/design/getSubDesign?div=" + div,
+			   success: function(widget){
+
+			   }
+			});	
+		}
 	}
 	
 	updateAllWidgetsValue() {
@@ -176,10 +193,8 @@ class LayoutBuilder {
 	}
 	
 	pushWidget(pane, widget) {
-		var id = pane.id;
-		//if (pane.index > 0) {
-			id += '@' + pane.index;
-		//}
+		var id = pane.id + '@' + pane.index;
+
 		if (this.map.get(id) == null) {
 			this.map.set(id, []);
 		}

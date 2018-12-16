@@ -66,6 +66,7 @@ public class SvProperty implements Cloneable {
 	private boolean enabled = true;
 	private Boolean visible = true;
 	private int index = 0;
+	private String privateTitle = null;
 	
 	@XmlTransient
 	private boolean listenerTouching = false;
@@ -95,6 +96,10 @@ public class SvProperty implements Cloneable {
 	}
 
 	
+	public void setPrivateTitle(String privateTitle) {
+		this.privateTitle = privateTitle;
+	}
+
 	public String getCurrentValue() {
 		return currentValue;
 	}
@@ -108,6 +113,9 @@ public class SvProperty implements Cloneable {
 	}
 
 	public String getTitle() {
+		if (this.privateTitle != null) {
+			return privateTitle;
+		}
 		return this.property.getTitle();
 	}
 	
@@ -194,27 +202,9 @@ public class SvProperty implements Cloneable {
 
 	public void addListMask(String id, boolean b) {
 		listMask.put(id, b);
-		
-//		if (currentValue.isEmpty()) {
-//			findAvailableSelection();
-//		}		
-//		else if (id.equals(currentValue) && b) {
-//			this.currentValue = "";
-//			findAvailableSelection();
-//		}
 
 		this.fireListMaskChanged(id, id + "," + String.valueOf(b));
 	}
-
-	private void findAvailableSelection() {
-		for (ListDetailElement e: this.getListDetail()) {
-			if (!listMask.keySet().contains(e.getId()) || !listMask.get(e.getId())) {
-				this.setCurrentValue(e.getId());
-				break;
-			}
-		}
-	}
-	
 	
 	public Map<String, Boolean> getListMask() {
 		return listMask;
@@ -402,5 +392,10 @@ public class SvProperty implements Cloneable {
 
 	public void resetMask() {
 		this.listMask.clear();
+	}
+
+	public void setSize(Integer size) {
+		this.property.setSize(size);
+		this.fireFlagChanged(Flag.SIZE);
 	}
 }

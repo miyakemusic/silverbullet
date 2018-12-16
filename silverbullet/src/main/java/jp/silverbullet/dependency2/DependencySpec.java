@@ -16,6 +16,7 @@ public class DependencySpec {
 	public static final String OptionEnable = "OptionEnable";
 	public static final String Min = "Min";
 	public static final String Max = "Max";
+	public static final String ArraySize = "ArraySize";
 	public static final String Null = "---";
 		
 	public static final String Trigger = "Trigger";
@@ -96,6 +97,10 @@ public class DependencySpec {
 		addMax(max, trigger, "");
 	}
 
+	public void addArraySize(int size, String trigger, String condition) {
+		this.dependencySpecDetail.add(DependencySpec.ArraySize, String.valueOf(size), trigger, condition);
+	}
+	
 	public List<Expression> getExpression(String targetElement) {
 		targetElement = convertTargetElement(targetElement);
 		return this.dependencySpecDetail.get(targetElement);
