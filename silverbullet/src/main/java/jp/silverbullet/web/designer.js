@@ -574,6 +574,8 @@ class DesignerClass {
 			   url: "http://" + window.location.host + "/rest/design/buildUi",
 			   success: function(msg){
 					layout.updatePartUI(msg);
+			   },
+			   error: function(msg) {
 			   }
 			});	
 		}

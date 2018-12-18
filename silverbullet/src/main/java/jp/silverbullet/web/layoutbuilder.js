@@ -20,11 +20,25 @@ class LayoutBuilder {
 			}
 			, 'VALUES');
 			new MyWebSocket(function(msg) {
-				if (msg == 'layoutChanged') {
-	      			me.updateUI();
+				var div = msg.split(':')[1];
+				var cmd = msg.split(':')[0];
+				if (cmd == 'layoutChanged') {
+					var arr = [ me.widgetMap.get(div) ];
+					me.removeWidgets(arr);
+					getSubDesign(div);
 	      		}
 			}
 			, 'DESIGN');
+		}
+		
+		function getSubDesign(div) {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/design/getSubDesign?div=" + div,
+			   success: function(msg){
+			   		me.createWidget(msg.parent, msg);
+			   }
+			});	
 		}
 		
 		this.messageBaseId = this.base + "_messageBase";
@@ -105,7 +119,7 @@ class LayoutBuilder {
 		$.ajax({
 		   type: "GET", 
 		   url: "http://" + window.location.host + "/rest/design/getDesign?root=" + me.root,
-		   success: function(msg){
+		   success: function(msg) {
 		   		$('#' + me.base).empty();
 		   		if (msg != null) {
 		   			me.createWidget(me.base, msg);
@@ -117,22 +131,32 @@ class LayoutBuilder {
 		});	
 	}
 	
-	removeWidgets(divs) {
-		for (var div of divs) {
+	removeWidgets(jswidgets) {
 		
-		}
+		for (var widget of jswidgets) {
+			$('#' + widget.unique).empty();
+			
+			if (widget.id != '') {
+				var id = widget.id + '@' + widget.index;
+				var list = this.map.get(id);
+				if (list != null) {
+					for (var w of list) {
+						if (w.baseId == widget.unique) {
+							list.splice(list.indexOf(w), 1);
+						}
+					}
+				}
+			}
+			this.widgetMap.delete(String(widget.unique));
+		
+			this.removeWidgets(widget.children);
+		}	
 	}
 	
-	updatePartUI(divs) {
-		this.removeWidgets(divs);
-		for (var div of divs) {
-			$.ajax({
-			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/design/getSubDesign?div=" + div,
-			   success: function(widget){
-
-			   }
-			});	
+	updatePartUI(jswidgets) {
+		this.removeWidgets(jswidgets);
+		for (var widget of jswidgets) {
+			this.createWidget(widget.parentDiv, widget);
 		}
 	}
 	
@@ -199,7 +223,7 @@ class LayoutBuilder {
 			this.map.set(id, []);
 		}
 		this.map.get(id).push(widget);
-		this.widgetMap.set(this.getRealId(widget.baseId), pane);
+		this.widgetMap.set(String(this.getRealId(widget.baseId)), pane);
 	}	
 	
 	set enableEdit(enableEdit) {
@@ -218,9 +242,12 @@ class LayoutBuilder {
 	}
 	
 	getRealId(div) {
-		var tmp = div.split('-');
-		var ret = tmp[tmp.length-1];
-		return ret;
+		if (String(div).includes('-')) {
+			var tmp = div.split('-');
+			var ret = tmp[tmp.length-1];
+			return ret;
+		}
+		return div;
 	}
 	
 	getSelectedDiv() {
@@ -238,7 +265,7 @@ class LayoutBuilder {
 	set selectedDiv(div) {
 		this._selectedDiv = this.getRealId(div);
 
-		var obj = this.widgetMap.get(this.selectedDiv);
+		var obj = this.widgetMap.get(String(this.selectedDiv));
 		var widgetType = "";
 		if (obj != null) {
 			widgetType = obj.widgetType;

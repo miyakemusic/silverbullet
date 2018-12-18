@@ -16,6 +16,9 @@ public class ChangedProperties implements CachedPropertyStoreListener {
 
 	@Override
 	public void onChanged(Id id, ChangedItemValue changedItemValue2) {
+		if (!changedItemValue2.getElement().equals(DependencySpec.Value)) {
+			return;
+		}
 		if (!startIds.contains(id)) {
 			ids.add(id);
 		}

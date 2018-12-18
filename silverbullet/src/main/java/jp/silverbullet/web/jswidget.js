@@ -3,7 +3,8 @@ class JsWidget {
 		this.info = info;
 		
 		this.requestChange = requestChange;
-		this.baseId = parent + "-" + info.unique;
+//		this.baseId = parent + "-" + info.unique;
+		this.baseId = info.unique;
 		this.selected = selected;
 		this.parent = parent;
 		
@@ -40,9 +41,12 @@ class JsWidget {
 	}
 	
 	getRealBaseId() {
-		var tmp = this.baseId.split('-');
-		var ret = tmp[tmp.length-1];
-		return ret;
+		if (String(this.baseId).includes('-')) {
+			var tmp = this.baseId.split('-');
+			var ret = tmp[tmp.length-1];
+			return ret;
+		}
+		return this.baseId;
 	}
 	
 	setPosition(event) {

@@ -68,13 +68,10 @@ public class DesignResource {
 					chartContent.setY(y);
 					ret.setCurrentValue(new ObjectMapper().writeValueAsString(chartContent));
 				} catch (JsonParseException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (JsonMappingException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -110,6 +107,10 @@ public class DesignResource {
 				}
 			});
 			
+			for (JsWidget w : StaticInstances.getInstance().getBuilderModel().getUiLayout().collectDynamicChangedPanel()) {
+				StaticInstances.getInstance().getBuilderModel().getUiLayout().fireLayoutChange(String.valueOf(w.getUnique()));				
+			}
+
 			ret.result = "Accepted";
 		} catch (RequestRejectedException e) {
 			ret.message = e.getMessage();
@@ -352,7 +353,8 @@ public class DesignResource {
 	@GET
 	@Path("buildUi")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public List<Integer> buildUi() {
-		return StaticInstances.getInstance().getBuilderModel().getUiLayout().buildDynamicArray();
+	public List<JsWidget> buildUi() {
+		List<JsWidget> ret =  StaticInstances.getInstance().getBuilderModel().getUiLayout().collectDynamicChangedPanel();
+		return ret;
 	}
 }

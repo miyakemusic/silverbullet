@@ -49,7 +49,8 @@ public class JsWidget implements Cloneable {
 	private Integer index = 0;
 	private Boolean editable = true;
 	private Map<String, String> custom = new HashMap<>();
-
+	private int parentDiv;
+	
 	public JsWidget() {
 		this.unique = this.hashCode();
 	}
@@ -106,6 +107,7 @@ public class JsWidget implements Cloneable {
 
 	public void addChild(JsWidget child) {
 		this.children.add(child);
+		child.setParentDiv(this.unique);
 	}
 	
 	public String getLayout() {
@@ -225,4 +227,13 @@ public class JsWidget implements Cloneable {
 	public void setCustomElemnt(String key, String value) {
 		this.custom.put(key, value);
 	}
+
+	public int getParentDiv() {
+		return parentDiv;
+	}
+
+	public void setParentDiv(int parantDiv) {
+		this.parentDiv = parantDiv;
+	}
+	
 }
