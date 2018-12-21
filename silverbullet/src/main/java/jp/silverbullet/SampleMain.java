@@ -1,5 +1,7 @@
 package jp.silverbullet;
 
+import obsolute.BuilderModel;
+
 public class SampleMain extends SilverBulletServer {
 
 	@Override
@@ -20,7 +22,7 @@ public class SampleMain extends SilverBulletServer {
 	}
 
 	@Override
-	protected void onStart(BuilderModel model) {
+	protected void onStart(BuilderModelImpl model) {
 		// TODO Auto-generated method stub
 		
 	}

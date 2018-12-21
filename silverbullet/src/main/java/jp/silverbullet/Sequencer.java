@@ -7,13 +7,14 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import jp.silverbullet.dependency.ChangedItemValue;
-import jp.silverbullet.dependency.DependencyInterface;
-import jp.silverbullet.dependency.DependencyListener;
-import jp.silverbullet.dependency.RequestRejectedException;
+import jp.silverbullet.dependency2.ChangedItemValue;
+//import jp.silverbullet.dependency.ChangedItemValue;
+//import jp.silverbullet.dependency.DependencyInterface;
 import jp.silverbullet.dependency2.CommitListener;
 import jp.silverbullet.dependency2.DependencyEngine;
+import jp.silverbullet.dependency2.DependencyListener;
 import jp.silverbullet.dependency2.Id;
+import jp.silverbullet.dependency2.RequestRejectedException;
 import jp.silverbullet.handlers.AbstractSvHandler;
 import jp.silverbullet.handlers.CommonSvHandler;
 import jp.silverbullet.handlers.EasyAccessModel;
@@ -21,8 +22,10 @@ import jp.silverbullet.handlers.HandlerProperty;
 import jp.silverbullet.handlers.HandlerPropertyHolder;
 import jp.silverbullet.handlers.RegisterAccess;
 import jp.silverbullet.handlers.SvHandlerModel;
+import jp.silverbullet.property.SvProperty;
+import jp.silverbullet.property.SvPropertyStore;
 
-public abstract class Sequencer implements DependencyInterface {
+public abstract class Sequencer {
 	abstract protected SvPropertyStore getPropertiesStore();
 	abstract protected HandlerPropertyHolder getHandlerPropertyHolder();
 	abstract protected DependencyEngine getDependency();
@@ -40,12 +43,10 @@ public abstract class Sequencer implements DependencyInterface {
 		Thread.currentThread().getId();
 	}
 	
-	@Override
 	public void requestChange(String id, String value) throws RequestRejectedException {
 		requestChange(id, 0, value);
 	}
 	
-	@Override
 	public void requestChange(String id, Integer index, String value) throws RequestRejectedException {
 		requestChange(id, index, value, new CommitListener() {
 			@Override
@@ -55,7 +56,6 @@ public abstract class Sequencer implements DependencyInterface {
 		});
 	}
 	
-	@Override
 	public void requestChange(String id, Integer index, String value, CommitListener commitListener)
 			throws RequestRejectedException {
 		fireRequestChangeByUser(id, value);
@@ -137,7 +137,6 @@ public abstract class Sequencer implements DependencyInterface {
 		}
 	}
 
-	@Override
 	public void addDependencyListener(DependencyListener dependencyListener) {
 		getDependency().addDependencyListener(dependencyListener);
 	}

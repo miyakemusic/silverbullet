@@ -4,6 +4,9 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import jp.silverbullet.property2.PropertyType2;
+import jp.silverbullet.property2.TableColumn;
+
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ListDetailElement implements Cloneable {
@@ -36,13 +39,19 @@ public class ListDetailElement implements Cloneable {
 //		this.value = value;
 	}
 	
-	public ListDetailElement(String id, String key, String value) {
+	public ListDetailElement(String id, String title, String comment) {
 		this.id = id;
-//		this.key = key;
-//		this.value = value;
+		this.title = title;
+		this.comment = comment;
 	}
+	
+	@TableColumn(targetType={PropertyType2.List}, Presentation="ID")
 	private String id = "ID_";
+	
+	@TableColumn(targetType={PropertyType2.List}, Presentation="Comment")
 	private String comment = "";
+	
+	@TableColumn(targetType={PropertyType2.List}, Presentation="Title")
 	private String title = "";
 	
 	public String getTitle() {
@@ -59,5 +68,9 @@ public class ListDetailElement implements Cloneable {
 
 	public void setComment(String comment) {
 		this.comment = comment;
+	}
+
+	public void setFieldValue(String paramName, String value) {
+
 	}
 };

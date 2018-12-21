@@ -4,9 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jp.silverbullet.SvProperty;
-import jp.silverbullet.dependency.DepPropertyStore;
 import jp.silverbullet.dependency.speceditor3.SvPropertyFactory;
+import jp.silverbullet.property.SvProperty;
 
 public class PropertyStoreForTest implements DepPropertyStore {
 	private SvPropertyFactory factory = new SvPropertyFactory();

@@ -10,7 +10,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import jp.silverbullet.StaticInstances;
-import jp.silverbullet.SvProperty;
 import jp.silverbullet.dependency2.DependencyRestriction;
 import jp.silverbullet.dependency2.DependencySpec;
 import jp.silverbullet.dependency2.DependencySpecAnalyzer;
@@ -23,6 +22,7 @@ import jp.silverbullet.dependency2.WebDataConverter;
 import jp.silverbullet.dependency2.WebDependencySpec;
 import jp.silverbullet.dependency2.WebPair;
 import jp.silverbullet.property.ListDetailElement;
+import jp.silverbullet.property.SvProperty;
 import jp.silverbullet.web.ui.PropertyGetter;
 
 @Path("/dependencySpec2")

@@ -7,12 +7,9 @@ import java.util.BitSet;
 import java.util.List;
 import javax.xml.bind.JAXBException;
 
-import jp.silverbullet.dependency.DepPropertyStore;
-import jp.silverbullet.dependency.DependencyInterface;
-import jp.silverbullet.dependency.DependencySpecHolder;
-import jp.silverbullet.dependency.RequestRejectedException;
-import jp.silverbullet.dependency.alternative.AlternativeDependencyGenerator;
 import jp.silverbullet.dependency2.DependencySpecRebuilder;
+import jp.silverbullet.dependency2.RequestRejectedException;
+import jp.silverbullet.dependency2.DepPropertyStore;
 import jp.silverbullet.dependency2.DependencyEngine;
 import jp.silverbullet.handlers.EasyAccessInterface;
 import jp.silverbullet.handlers.EasyAccessModel;
@@ -20,6 +17,9 @@ import jp.silverbullet.handlers.HandlerPropertyHolder;
 import jp.silverbullet.handlers.RegisterAccess;
 import jp.silverbullet.handlers.SvDevice;
 import jp.silverbullet.property.PropertyHolder;
+import jp.silverbullet.property.SvProperty;
+import jp.silverbullet.property.SvPropertyStore;
+import jp.silverbullet.property2.PropertyHolder2;
 import jp.silverbullet.register.RegisterMapModel;
 import jp.silverbullet.register.RegisterMapModelInterface;
 import jp.silverbullet.register.RegisterProperty;
@@ -31,10 +31,12 @@ import jp.silverbullet.test.TestRecorder;
 import jp.silverbullet.test.TestRecorderInterface;
 import jp.silverbullet.web.ui.PropertyGetter;
 import jp.silverbullet.web.ui.UiLayout;
+import obsolute.BuilderModel;
 
 public class BuilderModelImpl implements BuilderModel {
 
 	private static final String ID_DEF_XML = "id_def.xml";
+	private static final String ID_DEF_JSON = "id_def.json";
 	private static final String HANDLER_XML = "handlers.xml";
 	private static final String REMOTE_XML = "remote.xml";
 	private static final String REGISTER_XML = "register.xml";
@@ -50,6 +52,7 @@ public class BuilderModelImpl implements BuilderModel {
 	private String userApplicationPath = "";
 	private Sequencer sequencer;
 	private PropertyHolder propertiesHolder = new PropertyHolder();
+	private PropertyHolder2 propertiesHolder2 = new PropertyHolder2();
 	private HandlerPropertyHolder handlerPropertyHolder = new HandlerPropertyHolder();
 	private SvTexHolder texHolder = new SvTexHolder();
 	private RegisterProperty registerProperty = new RegisterProperty();
@@ -134,6 +137,10 @@ public class BuilderModelImpl implements BuilderModel {
 			return store.getProperty(id);
 		}
 	};
+
+	public PropertyHolder2 getPropertiesHolder2() {
+		return propertiesHolder2;
+	}
 
 	private RegisterAccess regiseterAccess;
 
@@ -264,16 +271,13 @@ public class BuilderModelImpl implements BuilderModel {
 	}
 
 	@Override
-	public DependencyInterface getDependency() {
-		return this.sequencer;
-	}
-
-	@Override
 	public void load(String folder) {
 
 		propertiesHolder = load(PropertyHolder.class, folder + "/" + ID_DEF_XML);
 		propertiesHolder.initialize();
 
+		propertiesHolder2.load(folder + "/" + ID_DEF_JSON);
+		
 		this.store = new SvPropertyStore(propertiesHolder);
 		this.registerProperty = load(RegisterProperty.class, folder + "/" + REGISTER_XML);
 		this.handlerPropertyHolder = load(HandlerPropertyHolder.class, folder + "/" + HANDLER_XML);
@@ -330,6 +334,7 @@ public class BuilderModelImpl implements BuilderModel {
 
 		}
 		save(this.propertiesHolder, PropertyHolder.class, folder + "/" + ID_DEF_XML);
+		this.propertiesHolder2.save(folder + "/" + ID_DEF_JSON);
 		save(this.handlerPropertyHolder, HandlerPropertyHolder.class, folder + "/" + HANDLER_XML);
 		save(this.texHolder, SvTexHolder.class, folder + "/" + REMOTE_XML);
 		save(this.registerProperty, RegisterProperty.class, folder + "/" + REGISTER_XML);

@@ -39,7 +39,7 @@ public class UiLayoutHolder {
 				}
 				UiLayout tmpLayout = loadJson(UiLayout.class, filename);
 				tmpLayout.setPropertyGetter(this.propertyGetter);
-				
+				tmpLayout.collectDynamicChangedPanel2();
 				layouts.put(p.getFileName().toFile().getName(), tmpLayout);
 			});
 			

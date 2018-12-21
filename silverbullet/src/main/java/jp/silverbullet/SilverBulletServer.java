@@ -6,11 +6,12 @@ import jp.silverbullet.register.RegisterMapModel;
 import jp.silverbullet.web.BuilderServer;
 import jp.silverbullet.web.BuilderServerListener;
 import jp.silverbullet.web.WebClientManager;
+import obsolute.BuilderModel;
 
 public abstract class SilverBulletServer {
 
 	static private BuilderServer webServer;
-	static private BuilderModel builderModel;
+	static private BuilderModelImpl builderModel;
 	static private RegisterMapModel registerMapModel;
 
 	public void start(String port) {
@@ -26,7 +27,7 @@ public abstract class SilverBulletServer {
 
 	protected abstract String getDefaultFilename();
 	protected abstract String getUserPath();
-	protected abstract void onStart(BuilderModel model);
+	protected abstract void onStart(BuilderModelImpl model);
 	
 	protected void startWebServer(Integer port) {
 		new WebClientManager();

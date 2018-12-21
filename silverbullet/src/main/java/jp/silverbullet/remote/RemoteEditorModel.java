@@ -2,8 +2,8 @@ package jp.silverbullet.remote;
 
 import java.util.List;
 
-import jp.silverbullet.SvProperty;
 import jp.silverbullet.property.PropertyHolder;
+import jp.silverbullet.property.SvProperty;
 import jp.silverbullet.handlers.HandlerProperty;
 
 public interface RemoteEditorModel {

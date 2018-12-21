@@ -8,11 +8,11 @@ import java.util.regex.Pattern;
 
 import javax.swing.table.AbstractTableModel;
 
-import jp.silverbullet.SvProperty;
 import jp.silverbullet.property.ListDetailElement;
 import jp.silverbullet.property.PropertyDef;
 import jp.silverbullet.property.PropertyHolder;
 import jp.silverbullet.property.PropertyHolderListener;
+import jp.silverbullet.property.SvProperty;
 
 public class PropertyListModel extends AbstractTableModel {
 

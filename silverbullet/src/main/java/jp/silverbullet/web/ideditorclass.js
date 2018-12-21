@@ -28,7 +28,7 @@ class IdEditorClass {
 		$("#" + idAdd).on('click', function() {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/id/addNew?type=" + $("#" + me.idPropType).val(),
+			   url: "http://" + window.location.host + "/rest/id2/addNew?type=" + $("#" + me.idPropType).val(),
 			   success: function(msg){
 					me.updateMainTable();
 			   }
@@ -37,7 +37,7 @@ class IdEditorClass {
 		$("#" + idRemove).on('click', function() {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/id/remove?id=" + me.currentId,
+			   url: "http://" + window.location.host + "/rest/id2/remove?id=" + me.currentId,
 			   success: function(msg){
 					me.updateMainTable();
 			   }
@@ -47,7 +47,7 @@ class IdEditorClass {
 		$("#" + this.idAddChoice).on('click', function() {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/id/addChoice?id=" + me.currentId,
+			   url: "http://" + window.location.host + "/rest/id2/addChoice?id=" + me.currentId,
 			   success: function(msg){
 					me.updateSelectionTable(me.currentId);
 			   },
@@ -59,7 +59,7 @@ class IdEditorClass {
 		
 		$.ajax({
 		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/id/typeNames",
+		   url: "http://" + window.location.host + "/rest/id2/typeNames",
 		   success: function(msg){		
 				var v = "";
 				
@@ -104,7 +104,7 @@ class IdEditorClass {
 		var me = this;
 		$.ajax({
 		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/id/properties?type=" + propType,
+		   url: "http://" + window.location.host + "/rest/id2/properties?type=" + propType,
 		   success: function(msg){
 		   		me.headers = msg.header;	
 		   		
@@ -160,7 +160,7 @@ class IdEditorClass {
 	updateSelectionTable(id) {
 		var me = this;
 		
-		if (me.currentType != 'ListProperty') {
+		if (me.currentType != 'List') {
 			$("#" + this.idAddChoice).hide();
 			$("#" + this.idSubTable).hide();
 			return;
@@ -169,7 +169,7 @@ class IdEditorClass {
 		$("#" + this.idSubTable).show();
 		$.ajax({
 		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/id/selection?id=" + id,
+		   url: "http://" + window.location.host + "/rest/id2/selection?id=" + id,
 		   success: function(msg){
 				$("#" + me.idSubTable).handsontable({
 				  height: 400,
@@ -214,7 +214,7 @@ class IdEditorClass {
 	updateValue(id, paramName, value) {
 		$.ajax({
 		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/id/update?id=" + id + "&paramName=" + paramName + "&value=" + value,
+		   url: "http://" + window.location.host + "/rest/id2/update?id=" + id + "&paramName=" + paramName + "&value=" + value,
 		   success: function(msg){
 		   }
 		});			
@@ -224,7 +224,7 @@ class IdEditorClass {
 		var me = this;
 		$.ajax({
 		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/id/updateChoice?id=" + id + "&selectionId=" + selectionId + "&paramName=" + paramName + "&value=" + value,
+		   url: "http://" + window.location.host + "/rest/id2/updateChoice?id=" + id + "&selectionId=" + selectionId + "&paramName=" + paramName + "&value=" + value,
 		   success: function(msg){
 		   		me.updateSelectionTable(me.currentId);
 		   		me.updateSelectionTable(me.currentId);

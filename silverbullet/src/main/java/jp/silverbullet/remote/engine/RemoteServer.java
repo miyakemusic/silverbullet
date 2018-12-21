@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import jp.silverbullet.SvProperty;
-import jp.silverbullet.dependency.RequestRejectedException;
+import jp.silverbullet.dependency2.RequestRejectedException;
+import jp.silverbullet.property.SvProperty;
 import jp.silverbullet.remote.SvTexHolder;
 import jp.silverbullet.remote.commands.ClearCommandExecutor;
 import jp.silverbullet.remote.commands.CommandCompleteCommandExecutor;
@@ -56,7 +56,7 @@ public class RemoteServer {
 
 		@Override
 		public void requestChange(String id, String value) throws RequestRejectedException {
-			model.getDependency().requestChange(id, value);
+//			model.getDependency().requestChange(id, value);
 		}
 
 		@Override
@@ -91,16 +91,16 @@ public class RemoteServer {
 
 		@Override
 		public void run() {
-			try {
-				model.getDependency().requestChange(vlist, value);
-			} 
-			catch (RequestRejectedException e) {
-				e.printStackTrace();
-				errors.offer(new RemoteError(0, e.getMessage()));
-			}
-			finally {
-				onCompleted();
-			}
+//			try {
+//				model.getDependency().requestChange(vlist, value);
+//			} 
+//			catch (RequestRejectedException e) {
+//				e.printStackTrace();
+//				errors.offer(new RemoteError(0, e.getMessage()));
+//			}
+//			finally {
+//				onCompleted();
+//			}
 		}
 	}
 

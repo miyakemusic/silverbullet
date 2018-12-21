@@ -1,7 +1,6 @@
 package jp.silverbullet;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Set;
 
 import javax.xml.bind.annotation.XmlRootElement;

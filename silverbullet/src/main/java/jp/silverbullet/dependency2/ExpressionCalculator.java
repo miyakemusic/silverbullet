@@ -7,8 +7,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-import jp.silverbullet.SvProperty;
-import jp.silverbullet.dependency2.IdCollector;
+import jp.silverbullet.property.SvProperty;
 
 public abstract class ExpressionCalculator {
 	abstract protected SvProperty getProperty(String id);

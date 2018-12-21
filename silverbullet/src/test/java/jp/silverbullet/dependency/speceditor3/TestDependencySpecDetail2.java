@@ -12,23 +12,23 @@ import javax.xml.bind.JAXBException;
 
 import org.junit.jupiter.api.Test;
 
-import jp.silverbullet.SvProperty;
 import jp.silverbullet.XmlPersistent;
-import jp.silverbullet.dependency.ChangedItemValue;
-import jp.silverbullet.dependency.DepPropertyStore;
-import jp.silverbullet.dependency.DependencyBuilder;
-import jp.silverbullet.dependency.DependencyEngine;
-import jp.silverbullet.dependency.DependencyExpression;
-import jp.silverbullet.dependency.DependencyExpressionHolder;
-import jp.silverbullet.dependency.DependencyProperty;
-import jp.silverbullet.dependency.DependencySpec;
-import jp.silverbullet.dependency.DependencySpecHolder;
-import jp.silverbullet.dependency.DependencyTargetElement;
-import jp.silverbullet.dependency.RequestRejectedException;
-import jp.silverbullet.dependency.DependencyExpressionHolder.SettingDisabledBehavior;
-import jp.silverbullet.dependency.alternative.AlternativeDependencyGenerator;
 import jp.silverbullet.dependency2.CachedPropertyStore;
+import jp.silverbullet.dependency2.DepPropertyStore;
+import jp.silverbullet.dependency2.RequestRejectedException;
+import jp.silverbullet.property.SvProperty;
 import jp.silverbullet.web.ui.PropertyGetter;
+import obsolute.ChangedItemValue;
+import obsolute.DependencyBuilder;
+import obsolute.DependencyEngine;
+import obsolute.DependencyExpression;
+import obsolute.DependencyExpressionHolder;
+import obsolute.DependencyProperty;
+import obsolute.DependencySpec;
+import obsolute.DependencySpecHolder;
+import obsolute.DependencyTargetElement;
+import obsolute.DependencyExpressionHolder.SettingDisabledBehavior;
+import obsolute.alternative.AlternativeDependencyGenerator;
 
 class TestDependencySpecDetail2 {
 

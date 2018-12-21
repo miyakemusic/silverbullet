@@ -14,7 +14,6 @@ import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import jp.silverbullet.dependency.RequestRejectedException;
 import jp.silverbullet.dependency2.LinkGenerator.LinkLevel;
 
 public class DependencySpecTest {

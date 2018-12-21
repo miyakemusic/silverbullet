@@ -9,9 +9,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import jp.silverbullet.dependency.RequestRejectedException;
+import jp.silverbullet.dependency2.RequestRejectedException;
 import jp.silverbullet.handlers.EasyAccessInterface;
 import jp.silverbullet.property.ListDetailElement;
+import jp.silverbullet.property.SvProperty;
 
 public class JavaFileGenerator {
 

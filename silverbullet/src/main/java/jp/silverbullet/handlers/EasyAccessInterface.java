@@ -1,7 +1,7 @@
 package jp.silverbullet.handlers;
 
-import jp.silverbullet.SvProperty;
-import jp.silverbullet.dependency.RequestRejectedException;
+import jp.silverbullet.dependency2.RequestRejectedException;
+import jp.silverbullet.property.SvProperty;
 
 public interface EasyAccessInterface {
 

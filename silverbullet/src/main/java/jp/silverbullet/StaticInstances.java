@@ -5,7 +5,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.BitSet;
 
-import jp.silverbullet.dependency.alternative.AlternativeDependencyGenerator;
 import jp.silverbullet.property.editor.PropertyListModel;
 import jp.silverbullet.register.SvSimulator;
 
@@ -15,7 +14,7 @@ public class StaticInstances {
 	private static StaticInstances instance;
 	private PropertyListModel propertyListModel = null;
 	
-	private BuilderModel builderModel;
+	private BuilderModelImpl builderModel;
 	private String currentFilename = "";
 
 	public static StaticInstances getInstance() {
@@ -31,7 +30,7 @@ public class StaticInstances {
 
 	private SvSimulator simulator;
 	
-	public BuilderModel getBuilderModel() {
+	public BuilderModelImpl getBuilderModel() {
 		return builderModel;
 	}
 

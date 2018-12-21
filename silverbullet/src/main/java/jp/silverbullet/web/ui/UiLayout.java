@@ -1,20 +1,24 @@
 package jp.silverbullet.web.ui;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import jp.silverbullet.SvProperty;
+import jp.silverbullet.property.SvProperty;
 import jp.silverbullet.web.WebSocketBroadcaster;
 import jp.silverbullet.web.WebSocketMessage;
 
 public class UiLayout {
 
 	public JsWidget root;
+	private Set<JsWidget> dynamicWidgets = new HashSet<>();
+	
 	private PropertyGetter propertyGetter;
 	public UiLayout() {
 		root = createRoot();
@@ -25,15 +29,13 @@ public class UiLayout {
 		this.propertyGetter = propertyGetter2;
 	}
 
-	public void fireLayoutChange(String div) {
+	public void fireLayoutChange(String div) {		
 		try {
 			String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("DESIGN", "layoutChanged:" + div));
 			WebSocketBroadcaster.getInstance().sendMessage(str);
 		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 	}
 
 	public void setPropertyGetter(PropertyGetter propertyGetter) {
@@ -262,6 +264,15 @@ public class UiLayout {
 	public void setCustomElement(String div, String customId, String customValue) {
 		JsWidget panel = getWidget(div);
 		panel.getCustom().put(customId, customValue);
+		
+		if (customId.equals(CustomProperties.ARRAY)) {
+			if (customValue.equals(CustomProperties.True)) {
+				this.dynamicWidgets.add(panel);
+			}
+			else {
+				this.dynamicWidgets.remove(panel);
+			}
+		}
 		this.fireLayoutChange(div);
 	}
 
@@ -316,7 +327,21 @@ public class UiLayout {
 		}
 	}
 	
-	public List<JsWidget> collectDynamicChangedPanel() {
+	public void collectDynamicChangedPanel2() {
+		new WalkThrough(this.getRoot()) {
+			@Override
+			protected void handle(JsWidget jsWidget) {
+				if (!jsWidget.getWidgetType().equals(JsWidget.PANEL)) {
+					return;
+				}
+
+				if (jsWidget.getCustomElement(CustomProperties.ARRAY).equals("true")) {
+					dynamicWidgets.add(jsWidget);
+				}
+			}
+		};
+	}
+	public List<JsWidget> collectDynamicChangedPanel_() {
 		List<JsWidget> changed = new ArrayList<>();
 		new WalkThrough(this.getRoot()) {
 			@Override
@@ -356,6 +381,36 @@ public class UiLayout {
 			}
 		};
 		return changed;
+	}
+	
+	public void doDynamicPanel() {
+		for (JsWidget jsWidget : this.dynamicWidgets) {
+			// count current widgets
+			JsWidget masterPanel = jsWidget.getChildren().get(0);
+			SvProperty property = propertyGetter.getProperty(masterPanel.getChildren().get(0).getId());
+			int size = property.getProperty().getSize();
+			
+			if (jsWidget.getChildren().size() == size) {
+				return;
+			}
+			// clear copied widgets
+			Iterator<JsWidget> it = jsWidget.getChildren().iterator();
+			while(it.hasNext()) {
+				JsWidget child = it.next();
+				if (child.getCustomElement(CustomProperties.COPIED).equals("true")) {
+					it.remove();
+				}
+			}
+			
+			// copy widgets
+			for (int i = 1; i < size; i++) {
+				JsWidget child = masterPanel.clone();
+				child.setIndex(i);
+				child.setCustomElemnt(CustomProperties.COPIED, "true");
+				jsWidget.addChild(child);
+			}
+			this.fireLayoutChange(String.valueOf(jsWidget.getUnique()));
+		}
 	}
 	
 	class UiParent {

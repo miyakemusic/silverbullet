@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import jp.silverbullet.dependency.DepPropertyStore;
-
 public class DependencySpecRebuilder {
 
 	private DependencySpecHolder newHolder = new DependencySpecHolder();

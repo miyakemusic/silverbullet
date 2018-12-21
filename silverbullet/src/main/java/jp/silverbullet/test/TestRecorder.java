@@ -24,9 +24,9 @@ import com.sun.jersey.core.util.Base64;
 
 import jp.silverbullet.SequencerListener;
 import jp.silverbullet.StaticInstances;
-import jp.silverbullet.SvProperty;
 import jp.silverbullet.Zip;
-import jp.silverbullet.dependency.RequestRejectedException;
+import jp.silverbullet.dependency2.RequestRejectedException;
+import jp.silverbullet.property.SvProperty;
 import jp.silverbullet.register.BitUpdates;
 import jp.silverbullet.register.RegisterInfo;
 import jp.silverbullet.register.RegisterMapListener;

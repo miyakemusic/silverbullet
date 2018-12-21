@@ -17,17 +17,17 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import jp.silverbullet.StaticInstances;
-import jp.silverbullet.SvProperty;
-import jp.silverbullet.SvPropertyStore;
-import jp.silverbullet.dependency.DepChainPair;
-import jp.silverbullet.dependency.DependencyEditorModel;
-import jp.silverbullet.dependency.DependencySpec;
-import jp.silverbullet.dependency.DependencySpecTableGenerator;
-import jp.silverbullet.dependency.DependencyTableRowData;
-import jp.silverbullet.dependency.DependencyTargetConverter;
-import jp.silverbullet.dependency.LinkGenerator;
 import jp.silverbullet.dependency2.DependencySpecHolder;
 import jp.silverbullet.property.PropertyHolder;
+import jp.silverbullet.property.SvProperty;
+import jp.silverbullet.property.SvPropertyStore;
+import obsolute.DepChainPair;
+import obsolute.DependencyEditorModel;
+import obsolute.DependencySpec;
+import obsolute.DependencySpecTableGenerator;
+import obsolute.DependencyTableRowData;
+import obsolute.DependencyTargetConverter;
+import obsolute.LinkGenerator;
 
 
 @Path("/dependencySpec")

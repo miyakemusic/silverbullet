@@ -18,11 +18,10 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.silverbullet.Sequencer;
 import jp.silverbullet.StaticInstances;
-import jp.silverbullet.SvProperty;
-import jp.silverbullet.dependency.RequestRejectedException;
 import jp.silverbullet.dependency2.CommitListener;
+import jp.silverbullet.dependency2.RequestRejectedException;
 import jp.silverbullet.property.ChartContent;
-
+import jp.silverbullet.property.SvProperty;
 import jp.silverbullet.web.ui.CustomProperties;
 import jp.silverbullet.web.ui.JsProperty;
 import jp.silverbullet.web.ui.JsWidget;
@@ -88,9 +87,6 @@ public class DesignResource {
 		return ret;
 	}
 	
-//	private List<String> debugDepLog;
-	
-	private String confirm;
 	@GET
 	@Path("/setValue")
 	@Produces(MediaType.APPLICATION_JSON) 
@@ -106,10 +102,10 @@ public class DesignResource {
 					return Reply.Accept;
 				}
 			});
-			
-			for (JsWidget w : StaticInstances.getInstance().getBuilderModel().getUiLayout().collectDynamicChangedPanel()) {
-				StaticInstances.getInstance().getBuilderModel().getUiLayout().fireLayoutChange(String.valueOf(w.getUnique()));				
-			}
+			StaticInstances.getInstance().getBuilderModel().getUiLayout().doDynamicPanel();
+//			for (JsWidget w : StaticInstances.getInstance().getBuilderModel().getUiLayout().collectDynamicChangedPanel()) {
+//				StaticInstances.getInstance().getBuilderModel().getUiLayout().fireLayoutChange(String.valueOf(w.getUnique()));				
+//			}
 
 			ret.result = "Accepted";
 		} catch (RequestRejectedException e) {
@@ -321,7 +317,7 @@ public class DesignResource {
 		}
 		else if (!filename.toUpperCase().endsWith(".UI")){
 			Pattern illegalFileNamePattern = Pattern.compile("[(\\|/|:|\\*|?|\"|<|>|\\\\|)]");
-			String fileName = illegalFileNamePattern.matcher(filename).replaceAll("-");
+			illegalFileNamePattern.matcher(filename).replaceAll("-");
 			filename = filename + ".ui";
 		}
 		return StaticInstances.getInstance().getBuilderModel().createUiFile(filename);
@@ -354,7 +350,7 @@ public class DesignResource {
 	@Path("buildUi")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<JsWidget> buildUi() {
-		List<JsWidget> ret =  StaticInstances.getInstance().getBuilderModel().getUiLayout().collectDynamicChangedPanel();
-		return ret;
+		StaticInstances.getInstance().getBuilderModel().getUiLayout().collectDynamicChangedPanel2();
+		return null;
 	}
 }

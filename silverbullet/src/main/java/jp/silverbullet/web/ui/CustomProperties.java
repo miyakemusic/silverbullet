@@ -16,6 +16,7 @@ public class CustomProperties {
 	public static final String REGISTER_SHORTCUT = "register_shortcut";
 	public static final String ARRAY = "array";
 	public static final String COPIED = "copied";
+	public static final String True = "true";
 	
 	private static CustomProperties instance = null;
 	private Map<String, List<Pair>> map = new HashMap<>();

@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
-import jp.silverbullet.SvProperty;
+import jp.silverbullet.property.SvProperty;
 import jp.silverbullet.web.ui.PropertyGetter;
 
 public class WebDataConverterTest {

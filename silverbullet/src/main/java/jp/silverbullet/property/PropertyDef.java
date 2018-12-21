@@ -219,4 +219,11 @@ public class PropertyDef implements Cloneable {
 		int index = this.argumetnDefInterface.get(type).indexOf(key);
 		this.updateArgument(index, value);
 	}
+	public PropertyDef addList(String id, String title, String comment) {
+		this.addListItem(new ListDetailElement(id, title, comment));
+		return this;
+	}
+	public PropertyDef defaultItem(String id) {
+		return this;
+	}
 }

@@ -2,8 +2,8 @@ package jp.silverbullet.remote.engine;
 
 import java.util.LinkedList;
 
-import jp.silverbullet.SvProperty;
-import jp.silverbullet.dependency.RequestRejectedException;
+import jp.silverbullet.dependency2.RequestRejectedException;
+import jp.silverbullet.property.SvProperty;
 import jp.silverbullet.remote.SvTexHolder;
 
 public interface RemoteCommandDi {

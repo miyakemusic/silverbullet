@@ -1,6 +1,6 @@
 package jp.silverbullet.handlers;
 
-import jp.silverbullet.SvProperty;
+import jp.silverbullet.property.SvProperty;
 
 public interface EasyAccessModel {
 

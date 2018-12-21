@@ -1,14 +1,14 @@
 package jp.silverbullet.remote.engine;
 
-import jp.silverbullet.SvProperty;
-import jp.silverbullet.dependency.DependencyInterface;
+import jp.silverbullet.property.SvProperty;
 import jp.silverbullet.remote.SvTexHolder;
+import obsolute.DependencyInterface;
 
 public interface RemoteServerModel {
 
 	SvTexHolder getTexHolder();
 
-	DependencyInterface getDependency();
+//	DependencyInterface getDependency();
 
 	SvProperty getProperty(String id);
 

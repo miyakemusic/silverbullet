@@ -8,12 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import jp.silverbullet.SvProperty;
-import jp.silverbullet.dependency2.ChangedItemValue;
-import jp.silverbullet.dependency.DepPropertyStore;
-import jp.silverbullet.dependency.DependencyListener;
-import jp.silverbullet.dependency.RequestRejectedException;
 import jp.silverbullet.property.ListDetailElement;
+import jp.silverbullet.property.SvProperty;
 
 public class DependencyEngine {
 

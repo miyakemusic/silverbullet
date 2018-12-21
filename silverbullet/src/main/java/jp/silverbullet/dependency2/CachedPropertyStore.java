@@ -8,10 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import jp.silverbullet.SvProperty;
 import jp.silverbullet.SvPropertyListener;
 import jp.silverbullet.dependency2.ChangedItemValue;
-import jp.silverbullet.dependency.DepPropertyStore;
+import jp.silverbullet.property.SvProperty;
 
 public class CachedPropertyStore implements DepPropertyStore {
 	private Map<String, SvProperty> cached = new HashMap<>();

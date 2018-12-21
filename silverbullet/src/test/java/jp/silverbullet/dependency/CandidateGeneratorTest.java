@@ -9,11 +9,14 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import jp.silverbullet.SvProperty;
-import jp.silverbullet.dependency.alternative.AlternativeDependencyGenerator;
-import jp.silverbullet.dependency.alternative.TrueConditionGenerator;
 import jp.silverbullet.dependency.speceditor3.SvPropertyFactory;
+import jp.silverbullet.property.SvProperty;
 import jp.silverbullet.web.ui.PropertyGetter;
+import obsolute.DependencyExpression;
+import obsolute.DependencySpecHolder;
+import obsolute.DependencyTargetElement;
+import obsolute.alternative.AlternativeDependencyGenerator;
+import obsolute.alternative.TrueConditionGenerator;
 
 class CandidateGeneratorTest {
 
