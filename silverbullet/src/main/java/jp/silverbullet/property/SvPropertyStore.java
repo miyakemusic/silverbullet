@@ -10,6 +10,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import jp.silverbullet.property2.ListDetailElement;
+
 public class SvPropertyStore {
 	private Map<String, SvProperty> map = new LinkedHashMap<String, SvProperty>();
 	private List<String> types = new ArrayList<String>();

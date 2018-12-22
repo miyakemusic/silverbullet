@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import jp.silverbullet.web.JsonTable;
 
-class WebTableConverterTest {
+public class WebTableConverterTest {
 
 	@Test
 	public void test() {
@@ -48,7 +48,34 @@ class WebTableConverterTest {
 		JsonTable table = converter.createOptionTable("ID_LIST");
 		assertEquals("No.", table.header[0]);
 		assertEquals("ID", table.header[1]);
-		assertEquals("Comment", table.header[2]);
-		assertEquals("Title", table.header[3]);
+		assertEquals("Title", table.header[2]);
+		assertEquals("Comment", table.header[3]);
+	}
+	
+	@Test
+	public void testUpateValue() {
+		PropertyHolder2 holder = new PropertyHolder2();
+		WebTableConverter converter = new WebTableConverter(holder);
+		PropertyFactory factory = new PropertyFactory();
+		try {
+			holder.addProperty(factory.createNumeric("ID_NUMERIC").title("Numeric").unit("Hz").min(-100).max(100).decimals(3));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}			
+		converter.updateMainField("ID_NUMERIC", "Presentation", "New Title");
+		assertEquals("New Title", holder.get("ID_NUMERIC").getTitle());
+
+		converter.updateMainField("ID_NUMERIC", "Unit", "GHz");
+		assertEquals("GHz", holder.get("ID_NUMERIC").getUnit());
+		
+		converter.updateMainField("ID_NUMERIC", "Min", "-100");
+		assertTrue(-100.0 == holder.get("ID_NUMERIC").getMin());
+		
+		converter.updateMainField("ID_NUMERIC", "Decimals", "-3");
+		assertTrue(-3 == holder.get("ID_NUMERIC").getDecimals());
+	
+		converter.updateMainField("ID_NUMERIC", "ID", "ID_NEW_NUMERIC");
+		assertTrue(-3 == holder.get("ID_NEW_NUMERIC").getDecimals());
 	}
 }

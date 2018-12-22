@@ -21,8 +21,8 @@ import jp.silverbullet.dependency2.LinkGenerator.LinkLevel;
 import jp.silverbullet.dependency2.WebDataConverter;
 import jp.silverbullet.dependency2.WebDependencySpec;
 import jp.silverbullet.dependency2.WebPair;
-import jp.silverbullet.property.ListDetailElement;
 import jp.silverbullet.property.SvProperty;
+import jp.silverbullet.property2.ListDetailElement;
 import jp.silverbullet.web.ui.PropertyGetter;
 
 @Path("/dependencySpec2")

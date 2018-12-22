@@ -12,4 +12,6 @@ public @interface TableColumn {
 	PropertyType2[] targetType();
 
 	String Presentation();
+
+	int Width();
 }

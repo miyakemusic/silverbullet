@@ -12,10 +12,10 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import jp.silverbullet.StaticInstances;
-import jp.silverbullet.property.ListDetailElement;
 import jp.silverbullet.property.PropertyDef;
 import jp.silverbullet.property.PropertyType;
 import jp.silverbullet.property.editor.PropertyListModel;
+import jp.silverbullet.property2.ListDetailElement;
 
 @Path("/id")
 public class IdResource {

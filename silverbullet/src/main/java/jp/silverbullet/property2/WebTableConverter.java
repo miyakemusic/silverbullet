@@ -2,12 +2,15 @@ package jp.silverbullet.property2;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import jp.silverbullet.property.ListDetailElement;
+import org.apache.commons.lang3.StringUtils;
+
 import jp.silverbullet.web.JsonTable;
 
 public class WebTableConverter {
@@ -21,7 +24,7 @@ public class WebTableConverter {
 	public JsonTable createIdTable(PropertyType2 type) {		
         Class<PropertyDef2> clazz = PropertyDef2.class;
         Iterator<PropertyDef2> iterator = holder.getProperties().iterator();
-        return new Converter<PropertyDef2>() {
+        JsonTable ret = new Converter<PropertyDef2>() {
 			@Override
 			protected boolean skipRow(String fieldName, String val) {
 				if (fieldName.equals("type")) {
@@ -38,6 +41,24 @@ public class WebTableConverter {
 				return false;
 			}
         }.create(iterator, type, clazz.getDeclaredFields());
+        ret.addOption("Type", getTypeList());
+        ret.addOption("Persistent", getBooleanList());
+        return ret;
+	}
+
+	private List<String> getBooleanList() {
+		return Arrays.asList("true", "false");
+	}
+
+	private List<String> getTypeList() {
+		List<String> ret = new ArrayList<>();
+		for (PropertyType2 type : PropertyType2.values()) {
+			if (type.equals(PropertyType2.NotSpecified)) {
+				continue;
+			}
+			ret.add(type.toString());
+		}
+		return ret;
 	}
 
 	class Converter<T> {
@@ -45,9 +66,12 @@ public class WebTableConverter {
 			
 			JsonTable table = new JsonTable();
 	        List<String> header = new ArrayList<>();
+	        List<Integer> widths = new ArrayList<>();
 	        List<Field> targetFields = new ArrayList<>();
 	        
 	        header.add("No.");
+	        widths.add(50);
+	        
 	        for (Field field : fields) {
 	            try {
 	                Annotation[] annotations = field.getDeclaredAnnotations();
@@ -65,6 +89,7 @@ public class WebTableConverter {
 	                    	}
 	                    	if (enabled) {
 	                    		header.add(col.Presentation());
+	                    		widths.add(col.Width());
 	                    		targetFields.add(field);
 	                    	}
 	                    }
@@ -75,6 +100,8 @@ public class WebTableConverter {
 	            }
 	        }
 	        table.setHeader(header);
+	        table.setWidths(widths.toArray(new Integer[0]));
+	        
 	        int index = 1;
 			while(iterator.hasNext()) {
 				Object object = iterator.next();
@@ -117,7 +144,7 @@ public class WebTableConverter {
 		
 		return new Converter<ListDetailElement>() {
 			
-		}.create(holder.get(id).getOptions().iterator(), PropertyType2.List, cls.getDeclaredFields());
+		}.create(holder.get(id).getOptionValues().iterator(), PropertyType2.List, cls.getDeclaredFields());
 	}
 
 	public void updateOptionField(String id, String selectionId, String paramName, String value) {
@@ -140,15 +167,47 @@ public class WebTableConverter {
             for (Annotation annotation : annotations) {
                 if (annotation.annotationType().equals(TableColumn.class)) {
                 	TableColumn col = (TableColumn)annotation;
-                	if (col.Presentation().equals(paramName)) {
-	        			field.setAccessible(true);
-	        			try {
-	        				field.set(object, value);
-	        			} catch (IllegalArgumentException e) {
-	        				e.printStackTrace();
-	        			} catch (IllegalAccessException e) {
-	        				e.printStackTrace();
-	        			}          	
+                	if (col.Presentation().equals(paramName)) {;
+	        			String methodName = "set" + StringUtils.capitalize(field.getName());
+	        			for (Method method : clazz.getDeclaredMethods()) {
+	        				if (method.getName().equals(methodName)) {
+	        					Class<?> paramType = method.getParameterTypes()[0];
+	        					try {
+	        						if (paramType.equals(double.class) || paramType.equals(Double.class)) {
+	        							method.invoke(object, Double.valueOf(value));
+	        						}
+	        						else if (paramType.equals(int.class) || paramType.equals(Integer.class)) {
+	        							method.invoke(object, Integer.valueOf(value));
+	        						}
+	        						else if (paramType.equals(boolean.class) || paramType.equals(Boolean.class)) {
+	        							method.invoke(object, Boolean.valueOf(value));
+	        						}
+	        						else {
+	        							method.invoke(object, value);
+	        						}
+								} catch (IllegalAccessException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								} catch (IllegalArgumentException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								} catch (InvocationTargetException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+	        				}
+	        			}
+//	        			try {
+//	        				field.setAccessible(true);
+//	        				field.set(object, value);
+//	        			} catch (IllegalArgumentException e) {
+//	        				e.printStackTrace();
+//	        			} catch (IllegalAccessException e) {
+//	        				e.printStackTrace();
+//						} catch (SecurityException e) {
+//							// TODO Auto-generated catch block
+//							e.printStackTrace();
+//						}     	
                 	}
                 }
             }

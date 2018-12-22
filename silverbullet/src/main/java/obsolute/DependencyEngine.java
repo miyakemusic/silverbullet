@@ -9,8 +9,8 @@ import jp.silverbullet.dependency2.DepPropertyStore;
 import jp.silverbullet.dependency2.DependencyListener;
 import jp.silverbullet.dependency2.ExpressionCalculator;
 import jp.silverbullet.dependency2.RequestRejectedException;
-import jp.silverbullet.property.ListDetailElement;
 import jp.silverbullet.property.SvProperty;
+import jp.silverbullet.property2.ListDetailElement;
 
 
 public abstract class DependencyEngine {

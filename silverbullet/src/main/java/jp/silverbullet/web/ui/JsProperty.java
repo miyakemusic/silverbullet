@@ -3,7 +3,7 @@ package jp.silverbullet.web.ui;
 import java.util.ArrayList;
 import java.util.List;
 
-import jp.silverbullet.property.ListDetailElement;
+import jp.silverbullet.property2.ListDetailElement;
 
 public class JsProperty {
 	private String id;

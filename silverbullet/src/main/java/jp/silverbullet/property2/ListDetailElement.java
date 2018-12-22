@@ -1,11 +1,8 @@
-package jp.silverbullet.property;
+package jp.silverbullet.property2;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import jp.silverbullet.property2.PropertyType2;
-import jp.silverbullet.property2.TableColumn;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -45,14 +42,14 @@ public class ListDetailElement implements Cloneable {
 		this.comment = comment;
 	}
 	
-	@TableColumn(targetType={PropertyType2.List}, Presentation="ID")
+	@TableColumn(targetType={PropertyType2.List}, Presentation="ID", Width=200)
 	private String id = "ID_";
 	
-	@TableColumn(targetType={PropertyType2.List}, Presentation="Comment")
-	private String comment = "";
-	
-	@TableColumn(targetType={PropertyType2.List}, Presentation="Title")
+	@TableColumn(targetType={PropertyType2.List}, Presentation="Title", Width=200)
 	private String title = "";
+	
+	@TableColumn(targetType={PropertyType2.List}, Presentation="Comment", Width=200)
+	private String comment = "";
 	
 	public String getTitle() {
 		return title;

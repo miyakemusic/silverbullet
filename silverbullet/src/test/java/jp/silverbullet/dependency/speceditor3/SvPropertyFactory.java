@@ -5,9 +5,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import jp.silverbullet.property.ArgumentDefInterface;
-import jp.silverbullet.property.ListDetailElement;
 import jp.silverbullet.property.PropertyDef;
 import jp.silverbullet.property.SvProperty;
+import jp.silverbullet.property2.ListDetailElement;
 
 public class SvPropertyFactory  {
 	private ArgumentDefInterface argumentDef = new ArgumentDefInterface() {

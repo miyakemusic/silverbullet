@@ -11,6 +11,7 @@ import jp.silverbullet.dependency2.DependencySpecRebuilder;
 import jp.silverbullet.dependency2.RequestRejectedException;
 import jp.silverbullet.dependency2.DepPropertyStore;
 import jp.silverbullet.dependency2.DependencyEngine;
+import jp.silverbullet.dependency2.DependencySpecHolder;
 import jp.silverbullet.handlers.EasyAccessInterface;
 import jp.silverbullet.handlers.EasyAccessModel;
 import jp.silverbullet.handlers.HandlerPropertyHolder;
@@ -31,6 +32,7 @@ import jp.silverbullet.test.TestRecorder;
 import jp.silverbullet.test.TestRecorderInterface;
 import jp.silverbullet.web.ui.PropertyGetter;
 import jp.silverbullet.web.ui.UiLayout;
+import jp.silverbullet.web.ui.UiLayoutHolder;
 import obsolute.BuilderModel;
 
 public class BuilderModelImpl implements BuilderModel {
@@ -66,6 +68,10 @@ public class BuilderModelImpl implements BuilderModel {
 			return store.getProperty(id);
 		}
 	});
+
+	public UiLayoutHolder getUiLayoutHolder() {
+		return uiLayoutHolder;
+	}
 
 	private EasyAccessInterface easyAccessInterface = new EasyAccessInterface() {
 
@@ -186,7 +192,7 @@ public class BuilderModelImpl implements BuilderModel {
 		}
 
 	});
-	private jp.silverbullet.dependency2.DependencySpecHolder defaultDependency;
+	private DependencySpecHolder defaultDependency;
 
 	public BuilderModelImpl() {
 		store = new SvPropertyStore(propertiesHolder);

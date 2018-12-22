@@ -2,9 +2,8 @@ package jp.silverbullet.property2;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import jp.silverbullet.JsonPersistent;
@@ -21,30 +20,65 @@ public class PropertyHolder2 {
 			properties.remove(oldId);
 			addProperty(prop);
 		}
+
+		@Override
+		public void onOptionAdded(String id, String optionId, String title2, String comment2) {
+			fireOptionChange(id);
+		}
+
+		@Override
+		public void onParamChange(String id, Object value, String fieldName) {
+			fireParameterChange(id, fieldName, value);
+		}
+
+		@Override
+		public void onTypeChange(String id, PropertyType2 value) {
+			fireParameterChange(id, "Type", value);
+		}
+
+		@Override
+		public void onOptionRemove(String id, String optionId) {
+			fireOptionChange(id);
+		}
 	};
+
+	private Set<PropertDefHolderListener> listeners = new HashSet<>();
 	
 	public void addProperty(PropertyDef2 propertyDef) {
 		propertyDef.addListener(listener);
 		this.properties.put(propertyDef.getId(), propertyDef);
+		firePropertyAdd(propertyDef.getId());
+	}
+
+	private void firePropertyAdd(String id) {
+		this.listeners.forEach(listener -> listener.onAdd(id));
+	}
+
+	protected void fireOptionChange(String id) {
+		this.listeners.forEach(listener -> listener.onChange(id));
+	}
+
+	protected void fireParameterChange(String id, String fieldName, Object value) {
+		this.listeners.forEach(listener -> listener.onChange(id));
 	}
 
 	public Collection<PropertyDef2> getProperties() {
 		return this.properties.values();
-//		List<PropertyDef2> ret = new ArrayList<>();
-//		for (PropertyDef2 prop :  this.properties.values()) {
-//			ret.add(prop);
-//		}
-//		return ret;
 	}
 
 	public PropertyDef2 get(String id) {
 		return this.properties.get(id);
 	}
 
-	public void delete(String id) {
-		PropertyDef2 prop = this.properties.get(id);
-		prop.removeListener(listener);
+	public void remove(String id) {
+//		PropertyDef2 prop = this.properties.get(id);
+//		prop.removeListener(listener);
 		this.properties.remove(id);
+		fireOnRemove(id);
+	}
+
+	private void fireOnRemove(String id) {
+		this.listeners.forEach(listener -> listener.onRemove(id));
 	}
 
 	public void createClone(String id, String newId) {
@@ -67,9 +101,18 @@ public class PropertyHolder2 {
 
 	public void load(String filename) {
 		this.properties = new JsonPersistent().loadJson(Properties.class, filename);
+		this.properties.getProperties().forEach((key, value) -> value.addListener(listener));
 	}
 	
 	public void save(String filename) {
 		new JsonPersistent().saveJson(this.properties, filename);
+	}
+
+	public void addListener(PropertDefHolderListener propertDefHolderListener) {
+		this.listeners .add(propertDefHolderListener);
+	}
+	
+	public void removeListener(PropertDefHolderListener propertDefHolderListener) {
+		this.listeners .remove(propertDefHolderListener);
 	}
 }

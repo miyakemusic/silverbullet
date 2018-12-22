@@ -1,15 +1,17 @@
-package jp.silverbullet.property;
+package jp.silverbullet.property2;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import jp.silverbullet.JsonPersistent;
 import jp.silverbullet.XmlPersistent;
+import jp.silverbullet.property.ArgumentDefInterface;
+import jp.silverbullet.property.PropertyDef;
+import jp.silverbullet.property.PropertyHolder;
+import jp.silverbullet.property.PropertyType;
 import jp.silverbullet.property2.PropertyDef2;
 import jp.silverbullet.property2.PropertyFactory;
 import jp.silverbullet.property2.PropertyHolder2;
@@ -17,7 +19,7 @@ import jp.silverbullet.property2.PropertyType2;
 import jp.silverbullet.property2.WebTableConverter;
 import jp.silverbullet.web.JsonTable;
 
-class PropertyHolderTest {
+public class PropertyHolderTest {
 	private PropertyType types = new PropertyType();
 	private ArgumentDefInterface argDef = new ArgumentDefInterface() {
 
@@ -58,16 +60,19 @@ class PropertyHolderTest {
 			def2.setId(original.getId());
 			def2.setType(getType(original.getType()));
 			def2.setArraySize(original.getSize());
-			
+			def2.setComment(original.getComment());
+			def2.setTitle(original.getTitle());
+			def2.setGroup(original.getGroup());
 			if (def2.getType().equals(PropertyType2.Numeric)) {
 				def2.setUnit(original.getOthers().get(0));
 				def2.setDecimals(Integer.valueOf(getInt(original.getOthers().get(1))));
 				def2.setMin(Double.valueOf(original.getOthers().get(2)));
 				def2.setMax(Double.valueOf(original.getOthers().get(3)));
+//				def2.setDefaultValue(original.getOthers().get(4));
 			}
 			else if (def2.getType().equals(PropertyType2.List)) {
-				def2.setOptions(original.getListDetail());
-				def2.setDefaultValue(original.getOthers().get(2));
+				def2.setAllOptions(original.getListDetail());
+				def2.setDefaultId(original.getOthers().get(2));
 			}
 			holder.addProperty(def2);
 			//def2.setDefaultValue(original.getArgumentValue("defaultValue"));
@@ -75,6 +80,9 @@ class PropertyHolderTest {
 		
 		holder.save("C:\\Users\\a1199022\\git3\\openti\\openti\\newid2.json");
 		holder.load("C:\\Users\\a1199022\\git3\\openti\\openti\\newid2.json");
+		
+		WebTableConverter converter = new WebTableConverter(holder);
+		JsonTable table = converter.createIdTable(PropertyType2.NotSpecified);
 		
 //		new JsonPersistent().saveJson(holder, "C:\\Users\\a1199022\\git3\\openti\\openti\\newid.json");
 	}
@@ -103,7 +111,7 @@ class PropertyHolderTest {
 		PropertyFactory factory = new PropertyFactory();
 		
 		try {
-			holder.addProperty(factory.createList("ID_LIST").option("ID_LIST_A", "A", "").option("ID_LIST_D", "D", "").defaultValue("ID_LIST_A"));
+			holder.addProperty(factory.createList("ID_LIST").option("ID_LIST_A", "A", "").option("ID_LIST_D", "D", "").defaultId("ID_LIST_A"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -116,10 +124,10 @@ class PropertyHolderTest {
 		{
 			PropertyDef2 def = holder.get("ID_LIST");
 			assertEquals("ID_LIST", def.getId());
-			assertEquals(2, def.getOptions().size());
+			assertEquals(2, def.getOptionValues().size());
 			assertEquals("ID_LIST_A", def.getOption(0).getId());
 			assertEquals("ID_LIST_D", def.getOption(1).getId());
-			assertEquals("ID_LIST_A", def.getDefaultValue());
+			assertEquals("ID_LIST_A", def.getDefaultId());
 			
 			// Items should be sorted when added
 			try {
@@ -127,25 +135,25 @@ class PropertyHolderTest {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			assertEquals(3, def.getOptions().size());
+			assertEquals(3, def.getOptionValues().size());
 			assertEquals("ID_LIST_A", def.getOption(0).getId());
 			assertEquals("ID_LIST_B", def.getOption(1).getId());
 			assertEquals("ID_LIST_D", def.getOption(2).getId());	
 			
 			def.deleteOption("ID_LIST_B");
-			assertEquals(2, def.getOptions().size());
+			assertEquals(2, def.getOptionValues().size());
 			assertEquals("ID_LIST_A", def.getOption(0).getId());
 			assertEquals("ID_LIST_D", def.getOption(1).getId());	
 			
 			// option ID is changed
 			def.changeOptionId("ID_LIST_A", "ID_LIST_Z");
-			assertEquals(2, def.getOptions().size());
+			assertEquals(2, def.getOptionValues().size());
 			assertEquals("ID_LIST_D", def.getOption(0).getId());
 			assertEquals("ID_LIST_Z", def.getOption(1).getId());	
 			
 			// When main ID is changed, option ID's should be changed 
 			def.setId("ID_NEWLIST");
-			assertEquals(2, def.getOptions().size());
+			assertEquals(2, def.getOptionValues().size());
 			assertEquals("ID_NEWLIST_D", def.getOption(0).getId());
 			assertEquals("ID_NEWLIST_Z", def.getOption(1).getId());	
 			
@@ -157,15 +165,15 @@ class PropertyHolderTest {
 			assertEquals("ID_NUMERIC", def.getId());
 			assertEquals("Hz", def.getUnit());
 			assertEquals(2, def.getDecimals());
-			assertEquals(-10.0, def.getMin());
-			assertEquals(10.0, def.getMax());
+			assertTrue(-10.0 == def.getMin());
+			assertTrue(10.0 == def.getMax());
 			assertTrue(0.0 == Double.valueOf(def.getDefaultValue()));
 		}
 		
 		{
 			// delete
 			assertEquals(6, holder.getProperties().size());
-			holder.delete("ID_NEWLIST");
+			holder.remove("ID_NEWLIST");
 			assertEquals(5, holder.getProperties().size());
 
 		}
@@ -173,7 +181,7 @@ class PropertyHolderTest {
 		{
 			// copy
 			try {
-				holder.addProperty(factory.createList("ID_LIST").option("ID_LIST_A", "A", "").option("ID_LIST_D", "D", "").defaultValue("ID_LIST_A"));
+				holder.addProperty(factory.createList("ID_LIST").option("ID_LIST_A", "A", "").option("ID_LIST_D", "D", "").defaultId("ID_LIST_A"));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -182,17 +190,17 @@ class PropertyHolderTest {
 			assertEquals(7, holder.getProperties().size());
 			PropertyDef2 def = holder.get("ID_NEWLIST2");
 			assertEquals("ID_NEWLIST2", def.getId());
-			assertEquals(2, def.getOptions().size());
+			assertEquals(2, def.getOptionValues().size());
 			assertEquals("ID_NEWLIST2_A", def.getOption(0).getId());
 			assertEquals("ID_NEWLIST2_D", def.getOption(1).getId());
-			assertEquals("ID_NEWLIST2_A", def.getDefaultValue());
+			assertEquals("ID_NEWLIST2_A", def.getDefaultId());
 			
 			def = holder.get("ID_LIST");
 			assertEquals("ID_LIST", def.getId());
-			assertEquals(2, def.getOptions().size());
+			assertEquals(2, def.getOptionValues().size());
 			assertEquals("ID_LIST_A", def.getOption(0).getId());
 			assertEquals("ID_LIST_D", def.getOption(1).getId());
-			assertEquals("ID_LIST_A", def.getDefaultValue());
+			assertEquals("ID_LIST_A", def.getDefaultId());
 		}
 		
 //		System.out.println(holder.getTypes().toString());

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jp.silverbullet.StaticInstances;
+import jp.silverbullet.property2.PropertDefHolderListener;
 import jp.silverbullet.register.RegisterMapListener;
 import jp.silverbullet.register.RegisterUpdates;
 import jp.silverbullet.test.TestRecorderListener;
@@ -47,6 +48,50 @@ public class WebClientManager {
 //			}
 //		});
 		
+		StaticInstances.getInstance().getBuilderModel().getPropertiesHolder2().addListener(new PropertDefHolderListener() {
+			@Override
+			public void onChange(String id) {
+				try {
+					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("ID", "Change:" + id));
+					WebSocketBroadcaster.getInstance().sendMessage(str);
+				} catch (JsonProcessingException e) {
+					e.printStackTrace();
+				}
+			}
+
+			@Override
+			public void onAdd(String id) {
+				try {
+					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("ID", "Add:" + id));
+					WebSocketBroadcaster.getInstance().sendMessage(str);
+				} catch (JsonProcessingException e) {
+					e.printStackTrace();
+				}
+			}
+
+			@Override
+			public void onRemove(String id) {
+				try {
+					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("ID", "Remove:" + id));
+					WebSocketBroadcaster.getInstance().sendMessage(str);
+				} catch (JsonProcessingException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		
+		StaticInstances.getInstance().getBuilderModel().getUiLayoutHolder().addListener(new UiLayoutListener() {
+			@Override
+			public void onLayoutChange(String div, String currentFilename) {
+				try {
+					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("DESIGN", "layoutChanged:" + div));
+					WebSocketBroadcaster.getInstance().sendMessage(str);
+				} catch (JsonProcessingException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+			
 		StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().addListener(new RegisterMapListener() {
 			@Override
 			public void onInterrupt() {

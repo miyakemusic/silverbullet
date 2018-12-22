@@ -10,8 +10,8 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jp.silverbullet.StaticInstances;
-import jp.silverbullet.property.ListDetailElement;
 import jp.silverbullet.property.SvProperty;
+import jp.silverbullet.property2.ListDetailElement;
 
 public class DependencySpecHolder {
 	private Map<String, DependencySpec> specs = new HashMap<>();

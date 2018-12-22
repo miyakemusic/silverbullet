@@ -4,6 +4,7 @@ class IdEditorClass {
         	
     	var idAdd = prefix + "add";
     	var idRemove = prefix + "remove";
+    	var idUpdate = prefix + "_update";
     	this.idPropType = prefix + "propType";
     	this.idCurrentId = prefix + "currentid";
     	this.idTable = prefix + "table";
@@ -12,6 +13,7 @@ class IdEditorClass {
     	
     	$('#' + div).append('<Button id="' + idAdd + '">Add</Button>');
     	$('#' + div).append('<Button id="' + idRemove + '">Remove</Button>');
+    	$('#' + div).append('<Button id="' + idUpdate + '">Update</Button>');
     	
 		$('#' + div).append('<select id="' + this.idPropType + '"></select>');
 		$('#' + div).append('<div id="' + this.idCurrentId + '"></div>');
@@ -23,14 +25,33 @@ class IdEditorClass {
 		$('#' + div).append('<Button id="' + this.idAddChoice + '">Add</Button>');
 		$('#' + div).append('<div id="' + this.idSubTable + '"></div>');
 
+		this.selectionMap = new Map();
+		
 		var me = this;
 
+		new MyWebSocket(function(msg) {
+			var command = msg.split(':')[0];
+			var id = msg.split(':')[1];
+			
+			if (command == 'Change' || command == 'Add' || command == 'Remove') {
+				me.updateMainTable();
+				me.collectSelections(id, function(message) {
+					me.updateSelectionTable(me.currentId);
+				});
+			}
+		}
+		, 'ID');
+			
+		$("#" + idUpdate).on('click', function() {
+			me.updateMainTable();
+		});
+		
 		$("#" + idAdd).on('click', function() {
 			$.ajax({
 			   type: "GET", 
 			   url: "http://" + window.location.host + "/rest/id2/addNew?type=" + $("#" + me.idPropType).val(),
 			   success: function(msg){
-					me.updateMainTable();
+//					me.updateMainTable();
 			   }
 			});		
 		});
@@ -39,7 +60,7 @@ class IdEditorClass {
 			   type: "GET", 
 			   url: "http://" + window.location.host + "/rest/id2/remove?id=" + me.currentId,
 			   success: function(msg){
-					me.updateMainTable();
+//					me.updateMainTable();
 			   }
 			});		
 		});
@@ -49,7 +70,7 @@ class IdEditorClass {
 			   type: "GET", 
 			   url: "http://" + window.location.host + "/rest/id2/addChoice?id=" + me.currentId,
 			   success: function(msg){
-					me.updateSelectionTable(me.currentId);
+
 			   },
 			   error: function() {
 			   
@@ -99,6 +120,20 @@ class IdEditorClass {
 		this.updateMainTable();
 	}
 	
+	collectSelections(id, callback) {
+		var me = this;
+		$.ajax({
+			type: "GET", 
+			url: "http://" + window.location.host + "/rest/id2/selection?id=" + id,
+			success: function(msg) {
+				me.selectionMap[id] = msg;
+				if (callback != null) {
+					callback('success');
+				}
+			}
+		});
+	}
+	
 	updateMainTable() {
 		var propType = $("#" + this.idPropType).val();
 		var me = this;
@@ -117,7 +152,7 @@ class IdEditorClass {
 				  currentRowClassName: 'currentRow',
 				  contextMenu: true,
 				  colWidths: function(index) {
-				        return [40, 200, 100, 200, 200, 100, 200, 200, 200, 200][index];
+				        return msg.widths[index];
 				  },
 				  afterSelection: function(r, c, r2, c2, preventScrolling, selectionLayerLevel){
 				  	me.currentId = me.getId(r);
@@ -141,11 +176,15 @@ class IdEditorClass {
       		      cells: function (row, col, prop) { 	
 			        var cellProperties = {};
 			
-			        if (me.headers[col] === 'type') {
-			            cellProperties.type = 'dropdown';
-			            cellProperties.source = me.types;
-			        }
-					else if (me.headers[col] == 'defaultKey') {
+					for (var key in msg.options) {
+						if (me.headers[col] == key) {
+							var list = msg.options[key];
+							cellProperties.type = 'dropdown';
+			            	cellProperties.source = list;
+						}
+					}
+
+					if (me.headers[col] == 'DefaultID') {
 						cellProperties.type = 'dropdown';
 						cellProperties.source = me.getSelections(row);
 					}
@@ -153,64 +192,57 @@ class IdEditorClass {
 			      }
 				});
 				$("#" + me.idTable).handsontable("loadData", msg.table);
+				
+				for (var row of msg.table) {
+					var id = row[1];
+					me.collectSelections(id);
+				}
 		   }
 		});	
 	}
 
 	updateSelectionTable(id) {
 		var me = this;
+		var msg = me.selectionMap[id];
+		if (msg == null)return;
 		
-		if (me.currentType != 'List') {
-			$("#" + this.idAddChoice).hide();
-			$("#" + this.idSubTable).hide();
-			return;
-		}
-		$("#" + this.idAddChoice).show();
-		$("#" + this.idSubTable).show();
-		$.ajax({
-		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/id2/selection?id=" + id,
-		   success: function(msg){
-				$("#" + me.idSubTable).handsontable({
-				  height: 400,
-				  manualColumnResize: true,
-				  startRows: 10,
-				  startCols: 10,
-				  colHeaders: msg.header, //['ID', 'Comment', 'Caption'],
-				  rowHeaders: true,
-///				  minSpareRows: 1,
-				  colWidths: function(index) {
-				        return [200, 100, 200, 200, 100, 200, 200, 200, 200][index];
-				  },
-				  afterSelection: function(r, c, r2, c2, preventScrolling, selectionLayerLevel){
-					me.selectionId = $("#" + me.idSubTable).handsontable('getInstance').getDataAtCell(r, 0)
-      		      },
-      		      afterChange: function(change, source) {
-            	     if (source === 'loadData') {
-                         return;
-                     }
-                     var rowNumber = change[0][0];
-            		 var colNumber = change[0][1];
-            		 var newValue = change[0][3];
-            		 var paramName;
-            		 if (colNumber == 0) {
-            		 	paramName = "id";
-            		 }
-            		 else if (colNumber == 1) {
-            		    paramName = "comment";
-            		 }
-            		 else if (colNumber == 2) {
-            		 	paramName = "title";
-            		 }
-            		 me.changeSelection(me.currentId, me.selectionId, paramName, newValue);
-            	  }
-				});
-				me.currentSelections = msg;
-				$("#" + me.idSubTable).handsontable("loadData", msg.table);
-		   }
-		});	
+		$("#" + me.idSubTable).handsontable({
+		  height: 400,
+		  manualColumnResize: true,
+		  startRows: 10,
+		  startCols: 10,
+		  colHeaders: msg.header, 
+		  colWidths: function(index) {
+		        return msg.widths[index];
+		  },
+		  afterSelection: function(r, c, r2, c2, preventScrolling, selectionLayerLevel){
+			me.selectionId = $("#" + me.idSubTable).handsontable('getInstance').getDataAtCell(r, 1)
+	      },
+	      afterChange: function(change, source) {
+    	     if (source === 'loadData') {
+                 return;
+             }
+             var rowNumber = change[0][0];
+    		 var colNumber = change[0][1];
+    		 var newValue = change[0][3];
+    		 var paramName;
+    		 if (colNumber == 0) {
+    		 	paramName = "id";
+    		 }
+    		 else if (colNumber == 1) {
+    		    paramName = "comment";
+    		 }
+    		 else if (colNumber == 2) {
+    		 	paramName = "title";
+    		 }
+    		 paramName = msg.header[colNumber];
+    		 me.changeSelection(me.currentId, me.selectionId, paramName, newValue);
+    	  }
+		});
+		me.currentSelections = msg;
+		$("#" + me.idSubTable).handsontable("loadData", msg.table);
 	}
-	
+		
 	updateValue(id, paramName, value) {
 		$.ajax({
 		   type: "GET", 
@@ -243,14 +275,15 @@ class IdEditorClass {
 	}
 				
 	getSelections(row) {
-		if (this.currentSelections == null) {
-			return;
+		var id = this.getId(row);
+		if (id == null)return;
+		var options = this.selectionMap[id];
+		if (options == null)return;
+		var ret = [];
+		for (var r of options.table) {
+			ret.push(r[1]);
 		}
-		var arr = [];
-		for (var i = 0; i < this.currentSelections.table.length; i++) {
-			arr.push(this.currentSelections.table[i][0]);
-		}
-		return arr;
+		return ret;
 	}
 	
 	getParamName(col) {

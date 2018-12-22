@@ -7,8 +7,8 @@ import java.util.Set;
 
 import com.sun.xml.bind.v2.model.core.ID;
 
-import jp.silverbullet.property.ListDetailElement;
 import jp.silverbullet.property.SvProperty;
+import jp.silverbullet.property2.ListDetailElement;
 import jp.silverbullet.web.ui.PropertyGetter;
 import obsolute.DependencyExpression;
 import obsolute.DependencySpec;

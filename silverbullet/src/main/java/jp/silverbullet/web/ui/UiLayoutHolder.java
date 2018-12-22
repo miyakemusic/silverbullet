@@ -1,22 +1,17 @@
-package jp.silverbullet;
+package jp.silverbullet.web.ui;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import jp.silverbullet.web.ui.PropertyGetter;
-import jp.silverbullet.web.ui.UiLayout;
+import jp.silverbullet.JsonPersistent;
+import jp.silverbullet.web.UiLayoutListener;
 
 public class UiLayoutHolder {
 
@@ -24,6 +19,15 @@ public class UiLayoutHolder {
 	private Map<String, UiLayout> layouts = new HashMap<>();
 	private UiLayout currentUi;// = new UiLayout();
 	private String currentFilename;
+	private Set<UiLayoutListener> listeners = new HashSet<>();
+	private UiLayoutListener listener = new UiLayoutListener() {
+		@Override
+		public void onLayoutChange(String div, String filename) {
+			for (UiLayoutListener listener : listeners) {
+				listener.onLayoutChange(div, currentFilename);
+			}
+		}
+	};
 	
 	public UiLayoutHolder(PropertyGetter propertyGetter) {
 		this.propertyGetter = propertyGetter;
@@ -40,6 +44,7 @@ public class UiLayoutHolder {
 				UiLayout tmpLayout = loadJson(UiLayout.class, filename);
 				tmpLayout.setPropertyGetter(this.propertyGetter);
 				tmpLayout.collectDynamicChangedPanel2();
+				tmpLayout.setListener(listener);
 				layouts.put(p.getFileName().toFile().getName(), tmpLayout);
 			});
 			
@@ -99,5 +104,13 @@ public class UiLayoutHolder {
 	public void createDefault() {
 		createNewFile("default.ui");
 		this.switchFile("default.ui");
+	}
+
+	public void addListener(UiLayoutListener uiLayoutListener) {
+		this.listeners.add(uiLayoutListener);
+	}
+	
+	public void removeListener(UiLayoutListener uiLayoutListener) {
+		this.listeners.remove(uiLayoutListener);
 	}
 }

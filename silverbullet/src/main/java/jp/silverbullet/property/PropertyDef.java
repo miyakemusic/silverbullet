@@ -10,6 +10,8 @@ import java.util.Set;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import jp.silverbullet.property2.ListDetailElement;
+
 @XmlRootElement
 public class PropertyDef implements Cloneable {
 	

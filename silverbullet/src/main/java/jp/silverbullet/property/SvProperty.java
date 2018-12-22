@@ -9,6 +9,7 @@ import java.util.Set;
 
 import jp.silverbullet.SvPropertyListener;
 import jp.silverbullet.SvPropertyListener.Flag;
+import jp.silverbullet.property2.ListDetailElement;
 
 import javax.swing.SwingUtilities;
 import javax.xml.bind.annotation.XmlRootElement;

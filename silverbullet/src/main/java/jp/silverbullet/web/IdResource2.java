@@ -21,7 +21,8 @@ public class IdResource2 {
 	@Path("/selection")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public JsonTable getSelections(@QueryParam("id") final String id) {
-		return new WebTableConverter(StaticInstances.getInstance().getBuilderModel().getPropertiesHolder2()).createOptionTable(id);
+		JsonTable ret = new WebTableConverter(StaticInstances.getInstance().getBuilderModel().getPropertiesHolder2()).createOptionTable(id);
+		return ret;
 	}
 	
 	@GET
@@ -37,7 +38,7 @@ public class IdResource2 {
 	@Path("/remove")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String remove(@QueryParam("id") final String id) {
-		StaticInstances.getInstance().getBuilderModel().getPropertiesHolder2().delete(id);
+		StaticInstances.getInstance().getBuilderModel().getPropertiesHolder2().remove(id);
 		return "OK";
 	}
 	

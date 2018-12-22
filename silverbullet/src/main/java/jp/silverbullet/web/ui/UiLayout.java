@@ -7,12 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import jp.silverbullet.property.SvProperty;
-import jp.silverbullet.web.WebSocketBroadcaster;
-import jp.silverbullet.web.WebSocketMessage;
+import jp.silverbullet.web.UiLayoutListener;
 
 public class UiLayout {
 
@@ -20,6 +16,7 @@ public class UiLayout {
 	private Set<JsWidget> dynamicWidgets = new HashSet<>();
 	
 	private PropertyGetter propertyGetter;
+	private UiLayoutListener listener;
 	public UiLayout() {
 		root = createRoot();
 	}
@@ -29,13 +26,8 @@ public class UiLayout {
 		this.propertyGetter = propertyGetter2;
 	}
 
-	public void fireLayoutChange(String div) {		
-		try {
-			String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("DESIGN", "layoutChanged:" + div));
-			WebSocketBroadcaster.getInstance().sendMessage(str);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
+	public void fireLayoutChange(String div) {	
+		this.listener.onLayoutChange(div, "");
 	}
 
 	public void setPropertyGetter(PropertyGetter propertyGetter) {
@@ -431,6 +423,10 @@ public class UiLayout {
 			return parent;
 		}
 		
+	}
+
+	public void setListener(UiLayoutListener listener) {
+		this.listener = listener;
 	}
 
 }
