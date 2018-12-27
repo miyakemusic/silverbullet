@@ -26,7 +26,7 @@ import jp.silverbullet.SequencerListener;
 import jp.silverbullet.StaticInstances;
 import jp.silverbullet.Zip;
 import jp.silverbullet.dependency2.RequestRejectedException;
-import jp.silverbullet.property.SvProperty;
+import jp.silverbullet.property2.RuntimeProperty;
 import jp.silverbullet.register.BitUpdates;
 import jp.silverbullet.register.RegisterInfo;
 import jp.silverbullet.register.RegisterMapListener;
@@ -148,7 +148,7 @@ public class TestRecorder implements SequencerListener, RegisterMapListener {
 		this.result = new TestResult(this.script);
 	}
 
-	private void addQueryTest(SvProperty prop) {
+	private void addQueryTest(RuntimeProperty prop) {
 		TestItem test = new TestItem(TestItem.TYPE_PROPERTY_TEST, prop.getId() + "?", "", prop.getCurrentValue()); 
 		this.script.add(test, this.currentRowSerial);
 	}
@@ -221,7 +221,7 @@ public class TestRecorder implements SequencerListener, RegisterMapListener {
 				requestChange(item);
 			}
 			else if (item.getType().equals(TestItem.TYPE_PROPERTY_TEST)) {
-				SvProperty prop = this.testRecorderInterface.getProperty(item.getTarget().replace("?", ""));
+				RuntimeProperty prop = this.testRecorderInterface.getProperty(item.getTarget().replace("?", ""));
 				this.result.addResult(item.getSerial(), prop.getCurrentValue(), item.getExpected().equals(prop.getCurrentValue()));
 			}
 			else if (item.getType().equals(TestItem.TYPE_REGISTER)) {

@@ -24,9 +24,11 @@ import jp.silverbullet.handlers.RegisterAccess;
 import jp.silverbullet.handlers.SvHandlerModel;
 import jp.silverbullet.property.SvProperty;
 import jp.silverbullet.property.SvPropertyStore;
+import jp.silverbullet.property2.RuntimeProperty;
+import jp.silverbullet.property2.RuntimePropertyStore;
 
 public abstract class Sequencer {
-	abstract protected SvPropertyStore getPropertiesStore();
+	abstract protected RuntimePropertyStore getPropertiesStore();
 	abstract protected HandlerPropertyHolder getHandlerPropertyHolder();
 	abstract protected DependencyEngine getDependency();
 	abstract protected String getUserApplicationPath();
@@ -84,8 +86,8 @@ public abstract class Sequencer {
 		
 		SvHandlerModel model = new SvHandlerModel() {
 			@Override
-			public SvProperty getProperty(String id) {
-				return getPropertiesStore().getProperty(id);
+			public RuntimeProperty getProperty(String id) {
+				return getPropertiesStore().get(id);
 			}
 
 			@Override

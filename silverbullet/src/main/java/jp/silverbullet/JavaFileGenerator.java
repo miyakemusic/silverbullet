@@ -13,12 +13,13 @@ import jp.silverbullet.dependency2.RequestRejectedException;
 import jp.silverbullet.handlers.EasyAccessInterface;
 import jp.silverbullet.property.SvProperty;
 import jp.silverbullet.property2.ListDetailElement;
+import jp.silverbullet.property2.RuntimeProperty;
 
 public class JavaFileGenerator {
 
-	private List<SvProperty> properties;
+	private List<RuntimeProperty> properties;
 	private Set<String> exists = new HashSet<String>();
-	public JavaFileGenerator(List<SvProperty> properties) {
+	public JavaFileGenerator(List<RuntimeProperty> properties) {
 		this.properties = properties;
 	}
 
@@ -26,15 +27,16 @@ public class JavaFileGenerator {
 		List<String> lines = new ArrayList<String>();
 		lines.add("package " + path + ";");
 		lines.add("public class ID {");
-		for (SvProperty prop : properties) {
+		for (RuntimeProperty prop : properties) {
 			if (prop.getIndex() > 0) { // This is tentative code
 				continue;
 			}
 			lines.add(createLine(prop.getId()));
 			if (prop.isListProperty()) {
-				for (ListDetailElement e : prop.getListDetail()) {
-					lines.add(createLine(e.getId()));
-				}
+				prop.getListIds().forEach(optionId -> lines.add(createLine(optionId)));
+//				for (ListDetailElement e : prop.getListDetail()) {
+//					lines.add(createLine(e.getId()));
+//				}
 			}
 		}
 		lines.add("}");
@@ -63,11 +65,11 @@ public class JavaFileGenerator {
 		source.add("    public UserEasyAccess(EasyAccessInterface model2) {");
 		source.add("        this.model = model2;");
 		source.add("    }");
-		for (SvProperty prop : properties) {
+		for (RuntimeProperty prop : properties) {
 			if (prop.getIndex() > 0) { // This is tentative code
 				continue;
 			}
-			boolean array = prop.getProperty().getSize() > 1;
+			boolean array = prop.getSize() > 1;
 			if (prop.getType().equals("DoubleProperty")) {
 				source.add("    public void set" + getMethodName(prop.getId()) + "(double value) throws RequestRejectedException {");
 				source.add("        model.requestChange(ID." + prop.getId() + ", String.valueOf(value));");

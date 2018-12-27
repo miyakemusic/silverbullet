@@ -23,6 +23,8 @@ import jp.silverbullet.dependency2.WebDependencySpec;
 import jp.silverbullet.dependency2.WebPair;
 import jp.silverbullet.property.SvProperty;
 import jp.silverbullet.property2.ListDetailElement;
+import jp.silverbullet.property2.PropertyType2;
+import jp.silverbullet.property2.RuntimeProperty;
 import jp.silverbullet.web.ui.PropertyGetter;
 
 @Path("/dependencySpec2")
@@ -35,7 +37,7 @@ public class DependencySpecResource2 {
 		DependencySpecHolder holder = StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder2();
 		WebDataConverter converter = new WebDataConverter(holder, new PropertyGetter() {
 			@Override
-			public SvProperty getProperty(String id) {
+			public RuntimeProperty getProperty(String id) {
 				return StaticInstances.getInstance().getBuilderModel().getProperty(id);
 			}			
 		});
@@ -88,7 +90,7 @@ public class DependencySpecResource2 {
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<WebPair> getPriorityList() {
 		List<WebPair> ret = new ArrayList<>();
-		for (String id : StaticInstances.getInstance().getBuilderModel().getPropertyStore().getAllIds()) {
+		for (String id : StaticInstances.getInstance().getBuilderModel().getPropertiesHolder2().getAllIds(PropertyType2.NotSpecified)) {
 			ret.add(new WebPair(id, String.valueOf(this.getPriority(id))));
 		}
 		return ret;

@@ -1,12 +1,12 @@
 package jp.silverbullet.handlers;
 
 import jp.silverbullet.dependency2.RequestRejectedException;
-import jp.silverbullet.property.SvProperty;
+import jp.silverbullet.property2.RuntimeProperty;
 
 public interface SvHandlerModel extends EasyAccessInterface {
 
 	@Override
-	SvProperty getProperty(String id);
+	RuntimeProperty getProperty(String id);
 
 	@Override
 	void requestChange(String id, String value) throws RequestRejectedException;

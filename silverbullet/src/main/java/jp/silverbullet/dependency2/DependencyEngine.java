@@ -8,12 +8,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import jp.silverbullet.property.SvProperty;
 import jp.silverbullet.property2.ListDetailElement;
+import jp.silverbullet.property2.RuntimeProperty;
+import jp.silverbullet.web.ui.PropertyGetter;
 
 public class DependencyEngine {
 
-	private DepPropertyStore store;
+	private DepPropertyStore  store;
 	private DependencySpecHolder specHolder;
 	private CachedPropertyStore cachedPropertyStore;
 	private ExpressionCalculator calculator;
@@ -21,12 +22,12 @@ public class DependencyEngine {
 	private List<DependencyListener> listeners = new ArrayList<>();
 	private CommitListener commitListener;
 	
-	public DependencyEngine(DependencySpecHolder specHolder, DepPropertyStore store) {
+	public DependencyEngine(DependencySpecHolder specHolder, DepPropertyStore  store) {
 		this.store = store;
 		this.specHolder = specHolder;
 		calculator = new ExpressionCalculator() {
 			@Override
-			protected SvProperty getProperty(String id) {
+			protected RuntimeProperty getProperty(String id) {
 				return cachedPropertyStore.getProperty(id);
 			}
 		};
@@ -124,18 +125,21 @@ public class DependencyEngine {
 			if (!spec.isExecutionConditionSatistied()) {
 				continue;
 			}
-			SvProperty property = this.cachedPropertyStore.getProperty(spec.getId() + "@" + id.getIndex());
+			RuntimeProperty property = this.cachedPropertyStore.getProperty(spec.getId() + "@" + id.getIndex());
 			
 			if (spec.isOptionEnabled()) {
-				for (ListDetailElement e: property.getListDetail()) {
-					if (e.getId().equals(spec.getTargetOption())) {
-						property.addListMask(e.getId(), !spec.getExpression().getValue().equalsIgnoreCase(DependencySpec.True));
-						break;
-					}
-				}
+				property.disableOption(spec.getTargetOption(), !spec.getExpression().getValue().equalsIgnoreCase(DependencySpec.True));
+
+				// previous code
+//				for (ListDetailElement e: property.getListDetail()) {
+//					if (e.getId().equals(spec.getTargetOption())) {
+//						property.disableOption(e.getId(), !spec.getExpression().getValue().equalsIgnoreCase(DependencySpec.True));
+//						break;
+//					}
+//				}
 				
 				// selects other one if current is masked
-				if (property.isListElementMasked(property.getCurrentValue())) {
+				if (property.isOptionDisabled(property.getCurrentValue())) {
 					if (spec.isReject()) {
 						throw new RequestRejectedException(property.getId() + "Selection is valid");
 					}
@@ -251,7 +255,7 @@ public class DependencyEngine {
 				continue;
 			}
 			
-			SvProperty currentProperty = this.cachedPropertyStore.getProperty(id);
+			RuntimeProperty currentProperty = this.cachedPropertyStore.getProperty(id);
 			String currentValue = currentProperty.getCurrentValue();
 			List<String> list = currentProperty.getListIds();
 	
@@ -281,7 +285,7 @@ public class DependencyEngine {
 		return this.specHolder;
 	}
 
-	private void setCurrentValue(SvProperty property, String val) throws RequestRejectedException {
+	private void setCurrentValue(RuntimeProperty property, String val) throws RequestRejectedException {
 		if (property.isNumericProperty()) {
 			if (isLeftLarger(property.getMin(), val)) {
 				throw new RequestRejectedException(property.getId() + " Under Min. " + property.getMin());
@@ -302,18 +306,20 @@ public class DependencyEngine {
 		return Double.valueOf(val1) > Double.valueOf(val2);
 	}
 
-	private void reselectNearestValue(SvProperty property) {
+	private void reselectNearestValue(RuntimeProperty property) {
 		List<String> listIds = property.getListIds();
 		int currentIndex = listIds.indexOf(property.getCurrentValue());
 		int limit = Math.max(listIds.size() - currentIndex, currentIndex);
 		for (int width = 1; width < limit; width++) {
 			int index = currentIndex + width;
-			if (canSelect(index, listIds, property.getListMask())) {
+			//if (canSelect(index, listIds, property.getListMask())) {
+			if (property.isOptionEnabled(index)) {
 				property.setCurrentValue(listIds.get(index));
 				return;
 			}
 			index = currentIndex - width;
-			if (canSelect(index, listIds, property.getListMask())) {
+			//if (canSelect(index, listIds, property.getListMask())) {
+			if (property.isOptionEnabled(index)) {
 				property.setCurrentValue(listIds.get(index));
 				return;
 			}

@@ -1,11 +1,11 @@
 package jp.silverbullet.dependency2;
 
-import jp.silverbullet.property.SvProperty;
+import jp.silverbullet.property2.RuntimeProperty;
 
 public interface DepPropertyStore {
 
-	SvProperty getProperty(String id);
+	RuntimeProperty getProperty(String id);
 
-	void add(SvProperty createListProperty);
+	void add(RuntimeProperty property);
 
 }

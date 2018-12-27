@@ -71,8 +71,6 @@ public class PropertyHolder2 {
 	}
 
 	public void remove(String id) {
-//		PropertyDef2 prop = this.properties.get(id);
-//		prop.removeListener(listener);
 		this.properties.remove(id);
 		fireOnRemove(id);
 	}

@@ -88,10 +88,10 @@ public class DependencySpecTest {
 			engine.requestChange("ID_ROOT", "ID_ROOTA");
 			CachedPropertyStore cached = engine.getCachedPropertyStore();
 			
-			assertEquals(false, cached.getProperty("ID_MIDDLE").isListElementMasked("ID_MIDDLE_A1"));	
-			assertEquals(false, cached.getProperty("ID_MIDDLE").isListElementMasked("ID_MIDDLE_A2"));	
-			assertEquals(true, cached.getProperty("ID_MIDDLE").isListElementMasked("ID_MIDDLE_B1"));	
-			assertEquals(true, cached.getProperty("ID_MIDDLE").isListElementMasked("ID_MIDDLE_B2"));		
+			assertEquals(false, cached.getProperty("ID_MIDDLE").isOptionDisabled("ID_MIDDLE_A1"));	
+			assertEquals(false, cached.getProperty("ID_MIDDLE").isOptionDisabled("ID_MIDDLE_A2"));	
+			assertEquals(true, cached.getProperty("ID_MIDDLE").isOptionDisabled("ID_MIDDLE_B1"));	
+			assertEquals(true, cached.getProperty("ID_MIDDLE").isOptionDisabled("ID_MIDDLE_B2"));		
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
 		}
@@ -99,10 +99,10 @@ public class DependencySpecTest {
 			engine.requestChange("ID_ROOT", "ID_ROOTB");
 			CachedPropertyStore cached = engine.getCachedPropertyStore();
 
-			assertEquals(true, cached.getProperty("ID_MIDDLE").isListElementMasked("ID_MIDDLE_A1"));	
-			assertEquals(true, cached.getProperty("ID_MIDDLE").isListElementMasked("ID_MIDDLE_A2"));	
-			assertEquals(false, cached.getProperty("ID_MIDDLE").isListElementMasked("ID_MIDDLE_B1"));	
-			assertEquals(false, cached.getProperty("ID_MIDDLE").isListElementMasked("ID_MIDDLE_B2"));	
+			assertEquals(true, cached.getProperty("ID_MIDDLE").isOptionDisabled("ID_MIDDLE_A1"));	
+			assertEquals(true, cached.getProperty("ID_MIDDLE").isOptionDisabled("ID_MIDDLE_A2"));	
+			assertEquals(false, cached.getProperty("ID_MIDDLE").isOptionDisabled("ID_MIDDLE_B1"));	
+			assertEquals(false, cached.getProperty("ID_MIDDLE").isOptionDisabled("ID_MIDDLE_B2"));	
 			
 			// ID_MIDDLE_A1 can no more be selected
 			assertEquals("ID_MIDDLE_B1", cached.getProperty("ID_MIDDLE").getCurrentValue());
@@ -113,10 +113,10 @@ public class DependencySpecTest {
 			engine.requestChange("ID_ROOT", "ID_ROOTA2");
 			CachedPropertyStore cached = engine.getCachedPropertyStore();
 
-			assertEquals(false, cached.getProperty("ID_MIDDLE").isListElementMasked("ID_MIDDLE_A1"));	
-			assertEquals(true, cached.getProperty("ID_MIDDLE").isListElementMasked("ID_MIDDLE_A2"));	
-			assertEquals(true, cached.getProperty("ID_MIDDLE").isListElementMasked("ID_MIDDLE_B1"));	
-			assertEquals(true, cached.getProperty("ID_MIDDLE").isListElementMasked("ID_MIDDLE_B2"));			
+			assertEquals(false, cached.getProperty("ID_MIDDLE").isOptionDisabled("ID_MIDDLE_A1"));	
+			assertEquals(true, cached.getProperty("ID_MIDDLE").isOptionDisabled("ID_MIDDLE_A2"));	
+			assertEquals(true, cached.getProperty("ID_MIDDLE").isOptionDisabled("ID_MIDDLE_B1"));	
+			assertEquals(true, cached.getProperty("ID_MIDDLE").isOptionDisabled("ID_MIDDLE_B2"));			
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
 		}		

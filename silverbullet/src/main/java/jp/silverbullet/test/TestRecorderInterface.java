@@ -3,7 +3,7 @@ package jp.silverbullet.test;
 import java.util.List;
 
 import jp.silverbullet.dependency2.RequestRejectedException;
-import jp.silverbullet.property.SvProperty;
+import jp.silverbullet.property2.RuntimeProperty;
 import jp.silverbullet.register.SvSimulator;
 
 public interface TestRecorderInterface {
@@ -16,9 +16,9 @@ public interface TestRecorderInterface {
 
 	long getAddress(String id);
 
-	List<SvProperty> getProperties();
+	List<RuntimeProperty> getProperties();
 
-	SvProperty getProperty(String target);
+	RuntimeProperty getProperty(String target);
 
 
 }

@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import jp.silverbullet.property.SvProperty;
+import jp.silverbullet.property2.RuntimeProperty;
 import jp.silverbullet.web.UiLayoutListener;
 
 public class UiLayout {
@@ -59,7 +60,7 @@ public class UiLayout {
 		panel = getDiv(unique);
 		
 		for (String id : ids) {
-			SvProperty property = propertyGetter.getProperty(id);
+			RuntimeProperty property = propertyGetter.getProperty(id);
 			String type = property.getType();
 			JsWidget widget = new JsWidget();
 			widget.setId(id);

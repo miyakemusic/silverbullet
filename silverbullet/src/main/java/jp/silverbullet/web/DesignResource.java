@@ -22,6 +22,7 @@ import jp.silverbullet.dependency2.CommitListener;
 import jp.silverbullet.dependency2.RequestRejectedException;
 import jp.silverbullet.property.ChartContent;
 import jp.silverbullet.property.SvProperty;
+import jp.silverbullet.property2.RuntimeProperty;
 import jp.silverbullet.web.ui.CustomProperties;
 import jp.silverbullet.web.ui.JsProperty;
 import jp.silverbullet.web.ui.JsWidget;
@@ -34,12 +35,12 @@ public class DesignResource {
 	@Path("/getProperty")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public JsProperty getProperty(@QueryParam("id") String id, @QueryParam("index") Integer index, @QueryParam("ext") String ext) {
-		SvProperty property = StaticInstances.getInstance().getBuilderModel().getProperty(id + "@" + index);
+		RuntimeProperty property = StaticInstances.getInstance().getBuilderModel().getProperty(id + "@" + index);
 		JsProperty ret = convertProperty(property, ext);
 		return ret;
 	}
 	
-	private JsProperty convertProperty(SvProperty property, String ext) {
+	private JsProperty convertProperty(RuntimeProperty property, String ext) {
 		JsProperty ret = new JsProperty();
 		ret.setId(property.getId());
 		ret.setTitle(property.getTitle());

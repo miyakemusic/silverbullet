@@ -10,11 +10,12 @@ import java.util.Set;
 
 import jp.silverbullet.SvPropertyListener;
 import jp.silverbullet.dependency2.ChangedItemValue;
-import jp.silverbullet.property.SvProperty;
+import jp.silverbullet.property2.RuntimeProperty;
+import jp.silverbullet.web.ui.PropertyGetter;
 
 public class CachedPropertyStore implements DepPropertyStore {
-	private Map<String, SvProperty> cached = new HashMap<>();
-	private DepPropertyStore original;
+	private Map<String, RuntimeProperty> cached = new HashMap<>();
+	private DepPropertyStore  original;
 	private List<String> debugLog = new ArrayList<>();
 	private Map<String, List<ChangedItemValue>> changedHistory = new LinkedHashMap<>();
 	
@@ -61,7 +62,7 @@ public class CachedPropertyStore implements DepPropertyStore {
 	};
 	private Set<CachedPropertyStoreListener> cachedPropertyStoreListeners = new HashSet<>();
 	
-	public CachedPropertyStore(DepPropertyStore originalStore) {
+	public CachedPropertyStore(DepPropertyStore  originalStore) {
 		original = originalStore;
 	}
 	
@@ -86,9 +87,9 @@ public class CachedPropertyStore implements DepPropertyStore {
 	}
 	
 	@Override
-	public SvProperty getProperty(String id) {
+	public RuntimeProperty getProperty(String id) {
 		if (!cached.containsKey(id)) {
-			SvProperty property = original.getProperty(id).clone();
+			RuntimeProperty property = original.getProperty(id).clone();
 			cached.put(id, property);
 			property.addListener(listener);
 		}
@@ -96,7 +97,7 @@ public class CachedPropertyStore implements DepPropertyStore {
 	}
 
 	@Override
-	public void add(SvProperty property) {
+	public void add(RuntimeProperty property) {
 		this.original.add(property);
 	}
 	
@@ -106,8 +107,8 @@ public class CachedPropertyStore implements DepPropertyStore {
 				continue;
 			}
 			for (ChangedItemValue item : this.getHistory(id)) {
-				SvProperty propertyOriginal = this.original.getProperty(id);
-				SvProperty tmpChangedProperty = this.cached.get(id);
+				RuntimeProperty propertyOriginal = this.original.getProperty(id);
+				RuntimeProperty tmpChangedProperty = this.cached.get(id);
 				if (item.getElement().equals(DependencySpec.Max)) {
 					propertyOriginal.setMax(tmpChangedProperty.getMax());
 				}
@@ -125,7 +126,7 @@ public class CachedPropertyStore implements DepPropertyStore {
 					propertyOriginal.setListMask(tmpChangedProperty.getListMask());
 				}
 				else if (item.getElement().equals(DependencySpec.ArraySize)) {
-					propertyOriginal.setSize(tmpChangedProperty.getProperty().getSize());
+					propertyOriginal.setSize(tmpChangedProperty.getSize());
 				}
 			}
 		}

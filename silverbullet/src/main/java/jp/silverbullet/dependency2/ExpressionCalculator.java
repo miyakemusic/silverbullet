@@ -8,9 +8,10 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import jp.silverbullet.property.SvProperty;
+import jp.silverbullet.property2.RuntimeProperty;
 
 public abstract class ExpressionCalculator {
-	abstract protected SvProperty getProperty(String id);
+	abstract protected RuntimeProperty getProperty(String id);
 	
 	private ScriptEngine scriptEngine = new ScriptEngineManager().getEngineByName("JavaScript");
 	private IdCollector idCollector = new IdCollector();
@@ -26,7 +27,7 @@ public abstract class ExpressionCalculator {
 		}
 	}
 
-	String replaceWithRealValue(String expression) {
+	private String replaceWithRealValue(String expression) {
 		 Map<String, String> mapTmpValue = new HashMap<>();
 		String ret = expression.replace("\n", "");
 		
@@ -44,7 +45,7 @@ public abstract class ExpressionCalculator {
 				id = id.split("\\.")[0];
 			}
 			String value = "";
-			SvProperty prop = getProperty(id);
+			RuntimeProperty prop = getProperty(id);
 			if (prop.isListProperty()) {
 				value = getTmpOptionValue(prop.getCurrentValue(), mapTmpValue);//"\"%" + prop.getCurrentValue() + "\"";
 			}

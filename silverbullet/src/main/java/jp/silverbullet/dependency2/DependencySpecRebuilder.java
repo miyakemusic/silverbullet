@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import jp.silverbullet.web.ui.PropertyGetter;
+
 public class DependencySpecRebuilder {
 
 	private DependencySpecHolder newHolder = new DependencySpecHolder();
 	
-	public DependencySpecRebuilder(DependencySpecHolder depHolder, DepPropertyStore store) {
+	public DependencySpecRebuilder(DependencySpecHolder depHolder, PropertyGetter store) {
 
 		for (String id : depHolder.getSpecs().keySet()) {
 			DependencySpec spec = depHolder.getSpecs().get(id);
@@ -50,7 +52,7 @@ public class DependencySpecRebuilder {
 	}
 
 	private void addCondition(String id, String option, List<String> trueTrigger, List<String> falseTrigger, 
-			DepPropertyStore store, DependencySpecHolder depHolder) {
+			PropertyGetter store, DependencySpecHolder depHolder) {
 		
 		if (isNotElse(trueTrigger)) {
 			for (String trigger : trueTrigger) {
@@ -68,7 +70,7 @@ public class DependencySpecRebuilder {
 		}
 	}
 
-	private String createConditionEx(String id, String trigger, String option2, DependencySpecHolder depHolder, DepPropertyStore store) {
+	private String createConditionEx(String id, String trigger, String option2, DependencySpecHolder depHolder, PropertyGetter store) {
 		ExpressionParser parser = new ExpressionParser(trigger);
 		String triggerId = parser.getId();
 		String triggerValue = parser.getValue();
@@ -115,7 +117,7 @@ public class DependencySpecRebuilder {
 		return ret;
 	}
 
-	private List<String> invert(List<String> trigger, DepPropertyStore store) {
+	private List<String> invert(List<String> trigger, PropertyGetter store) {
 		String id = new ExpressionParser(trigger.get(0)).getId();
 		List<String> ids = store.getProperty(id).getListIds();
 		for (String exp : trigger) {

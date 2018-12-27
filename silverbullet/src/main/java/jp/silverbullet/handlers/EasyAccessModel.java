@@ -1,11 +1,11 @@
 package jp.silverbullet.handlers;
 
-import jp.silverbullet.property.SvProperty;
+import jp.silverbullet.property2.RuntimeProperty;
 
 public interface EasyAccessModel {
 
 	void requestChange(String id, String value);
 
-	SvProperty getProperty(String id);
+	RuntimeProperty getProperty(String id);
 
 }

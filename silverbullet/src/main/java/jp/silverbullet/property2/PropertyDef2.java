@@ -64,6 +64,7 @@ public class PropertyDef2 implements Cloneable {
 	private String comment = "";
 	
 	private Set<PropertyDefListener2> listeners = new HashSet<>();
+	private int index;
 
 	public PropertyDef2() {}
 	
@@ -278,7 +279,7 @@ public class PropertyDef2 implements Cloneable {
 		this.arraySize(arraySize);
 	}
 
-	private PropertyDef2 arraySize(int arraySize2) {
+	public PropertyDef2 arraySize(int arraySize2) {
 		this.arraySize = arraySize2;
 		this.fireChanged(arraySize2, "ArraySize");
 		return this;
@@ -374,7 +375,6 @@ public class PropertyDef2 implements Cloneable {
 
 	public PropertyDef2 defaultId(String id) {
 		this.defaultId = id;
-		this.fireChanged(id, "defaultId");
 		return this;
 	}
 
@@ -390,6 +390,22 @@ public class PropertyDef2 implements Cloneable {
 
 	public void clearListeners() {
 		this.listeners.clear();
+	}
+
+	public boolean isList() {
+		return this.getType().equals(PropertyType2.List);
+	}
+
+	public boolean isNumeric() {
+		return this.getType().equals(PropertyType2.Numeric);
+	}
+
+	public int getIndex() {
+		return this.index;
+	}
+
+	public List<String> getListIds() {
+		return new ArrayList<String>(this.options.keySet());
 	}
 
 	

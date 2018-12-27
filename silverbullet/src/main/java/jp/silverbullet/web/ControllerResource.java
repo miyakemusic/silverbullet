@@ -11,6 +11,7 @@ import javax.ws.rs.core.MediaType;
 
 import jp.silverbullet.StaticInstances;
 import jp.silverbullet.handlers.HandlerProperty;
+import jp.silverbullet.property2.PropertyType2;
 
 @Path("/controller")
 public class ControllerResource {
@@ -59,7 +60,7 @@ public class ControllerResource {
 	@Path("/addNew")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<HandlerProperty> updateValue() {
-		String id = StaticInstances.getInstance().getBuilderModel().getPropertyStore().getAllIds().get(0);
+		String id = StaticInstances.getInstance().getBuilderModel().getPropertiesHolder2().getAllIds(PropertyType2.NotSpecified).iterator().next();
 		StaticInstances.getInstance().getBuilderModel().getHandlerPropertyHolder().addHandler("New", "---", true, id);
 		return getSpecs();
 	}

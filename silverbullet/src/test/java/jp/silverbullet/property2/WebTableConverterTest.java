@@ -59,6 +59,8 @@ public class WebTableConverterTest {
 		PropertyFactory factory = new PropertyFactory();
 		try {
 			holder.addProperty(factory.createNumeric("ID_NUMERIC").title("Numeric").unit("Hz").min(-100).max(100).decimals(3));
+			holder.addProperty(factory.createNumeric("ID_LIST").title("List").option("ID_LIST_A", "A", "").option("ID_LIST_B", "B", "").defaultId("ID_LIST_A"));
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -77,5 +79,8 @@ public class WebTableConverterTest {
 	
 		converter.updateMainField("ID_NUMERIC", "ID", "ID_NEW_NUMERIC");
 		assertTrue(-3 == holder.get("ID_NEW_NUMERIC").getDecimals());
+		
+		converter.updateMainField("ID_LIST", "Type", "Text");
+		assertEquals("Text", holder.get("ID_LIST").getType().toString());
 	}
 }

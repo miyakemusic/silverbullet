@@ -21,6 +21,8 @@ import jp.silverbullet.property.PropertyHolder;
 import jp.silverbullet.property.SvProperty;
 import jp.silverbullet.property.SvPropertyStore;
 import jp.silverbullet.property2.PropertyHolder2;
+import jp.silverbullet.property2.RuntimeProperty;
+import jp.silverbullet.property2.RuntimePropertyStore;
 import jp.silverbullet.register.RegisterMapModel;
 import jp.silverbullet.register.RegisterMapModelInterface;
 import jp.silverbullet.register.RegisterProperty;
@@ -49,7 +51,7 @@ public class BuilderModelImpl implements BuilderModel {
 	private static final String DEPENDENCYSPEC3_XML = "dependencyspec3.xml";
 
 	private List<String> selectedId;
-	private SvPropertyStore store;
+	private RuntimePropertyStore store;
 	private SpecElement hardSpec = new SpecElement();
 	private String userApplicationPath = "";
 	private Sequencer sequencer;
@@ -64,8 +66,8 @@ public class BuilderModelImpl implements BuilderModel {
 	private RegisterShortCutHolder registerShortCuts = new RegisterShortCutHolder();
 	private UiLayoutHolder uiLayoutHolder = new UiLayoutHolder(new PropertyGetter() {
 		@Override
-		public SvProperty getProperty(String id) {
-			return store.getProperty(id);
+		public RuntimeProperty getProperty(String id) {
+			return store.get(id);
 		}
 	});
 
@@ -76,8 +78,8 @@ public class BuilderModelImpl implements BuilderModel {
 	private EasyAccessInterface easyAccessInterface = new EasyAccessInterface() {
 
 		@Override
-		public SvProperty getProperty(String id) {
-			return store.getProperty(id);
+		public RuntimeProperty getProperty(String id) {
+			return store.get(id);
 		}
 
 		@Override
@@ -139,8 +141,8 @@ public class BuilderModelImpl implements BuilderModel {
 		}
 
 		@Override
-		public SvProperty getProperty(String id) {
-			return store.getProperty(id);
+		public RuntimeProperty getProperty(String id) {
+			return store.get(id);
 		}
 	};
 
@@ -182,27 +184,27 @@ public class BuilderModelImpl implements BuilderModel {
 		}
 
 		@Override
-		public List<SvProperty> getProperties() {
+		public List<RuntimeProperty> getProperties() {
 			return store.getAllProperties();
 		}
 
 		@Override
-		public SvProperty getProperty(String id) {
-			return store.getProperty(id);
+		public RuntimeProperty getProperty(String id) {
+			return store.get(id);
 		}
 
 	});
 	private DependencySpecHolder defaultDependency;
 
 	public BuilderModelImpl() {
-		store = new SvPropertyStore(propertiesHolder);
+		store = new RuntimePropertyStore(propertiesHolder2);
 
 		this.setDeviceDriver(registerMapModel);
 		registerMapModel.addListener(this.testRecorder);
 
 		this.sequencer = new Sequencer() {
 			@Override
-			protected SvPropertyStore getPropertiesStore() {
+			protected RuntimePropertyStore getPropertiesStore() {
 				return store;
 			}
 
@@ -237,17 +239,17 @@ public class BuilderModelImpl implements BuilderModel {
 	}
 
 	@Override
-	public SvProperty getProperty(String id) {
-		return store.getProperty(id);
+	public RuntimeProperty getProperty(String id) {
+		return store.get(id);
 	}
 
 	@Override
 	public List<String> getAllTypes() {
-		return store.getAllTypes();
+		return propertiesHolder2.getTypes();
 	}
 
 	@Override
-	public List<SvProperty> getAllProperties() {
+	public List<RuntimeProperty> getAllProperties() {
 		return store.getAllProperties();
 	}
 
@@ -257,12 +259,12 @@ public class BuilderModelImpl implements BuilderModel {
 	}
 
 	@Override
-	public SvPropertyStore getPropertyStore() {
+	public RuntimePropertyStore getPropertyStore() {
 		return store;
 	}
 
 	@Override
-	public List<SvProperty> getAllProperties(String type) {
+	public List<RuntimeProperty> getAllProperties(String type) {
 		return store.getAllProperties(type);
 	}
 
@@ -284,7 +286,7 @@ public class BuilderModelImpl implements BuilderModel {
 
 		propertiesHolder2.load(folder + "/" + ID_DEF_JSON);
 		
-		this.store = new SvPropertyStore(propertiesHolder);
+		this.store = new RuntimePropertyStore(propertiesHolder2);
 		this.registerProperty = load(RegisterProperty.class, folder + "/" + REGISTER_XML);
 		this.handlerPropertyHolder = load(HandlerPropertyHolder.class, folder + "/" + HANDLER_XML);
 		this.texHolder = load(SvTexHolder.class, folder + "/" + REMOTE_XML);
@@ -300,15 +302,15 @@ public class BuilderModelImpl implements BuilderModel {
 
 		// UiLayout.getInstance().initialize();
 		
-		dependency = new DependencyEngine(dependencySpecHolder2, new DepPropertyStore() {
+		dependency = new DependencyEngine(dependencySpecHolder2, new DepPropertyStore () {
 			@Override
-			public SvProperty getProperty(String id) {
-				return store.getProperty(id);
+			public RuntimeProperty getProperty(String id) {
+				return store.get(id);
 			}
 
 			@Override
-			public void add(SvProperty createListProperty) {
-
+			public void add(RuntimeProperty property) {
+				
 			}
 		}) {
 
@@ -363,7 +365,7 @@ public class BuilderModelImpl implements BuilderModel {
 		PropertyHolder tmpProps = loadTestProp(folder + "/" + ID_DEF_XML);
 		tmpProps.initialize();
 		this.propertiesHolder.addAll(tmpProps);
-		this.store.importProperties(tmpProps);
+//		this.store.importProperties(tmpProps);
 		RegisterProperty tmpRegister = load(RegisterProperty.class, folder + "/" + REGISTER_XML);
 		this.registerProperty.addAll(tmpRegister.getRegisters());
 
@@ -558,14 +560,10 @@ public class BuilderModelImpl implements BuilderModel {
 			this.dependencySpecHolder2 = this.defaultDependency;
 		}
 		else if (type.equals("Alternative")) {
-			DepPropertyStore getter = new DepPropertyStore() {
+			PropertyGetter getter = new PropertyGetter() {
 				@Override
-				public SvProperty getProperty(String id) {
-					return store.getProperty(id);
-				}
-
-				@Override
-				public void add(SvProperty createListProperty) {
+				public RuntimeProperty getProperty(String id) {
+					return store.get(id);
 				}
 			};
 			this.dependencySpecHolder2 = new DependencySpecRebuilder(this.dependencySpecHolder2, getter).getNewHolder();

@@ -78,8 +78,8 @@ public class PropertyHolderTest {
 			//def2.setDefaultValue(original.getArgumentValue("defaultValue"));
 		}
 		
-		holder.save("C:\\Users\\a1199022\\git3\\openti\\openti\\newid2.json");
-		holder.load("C:\\Users\\a1199022\\git3\\openti\\openti\\newid2.json");
+//		holder.save("C:\\Users\\a1199022\\git3\\openti\\openti\\newid2.json");
+//		holder.load("C:\\Users\\a1199022\\git3\\openti\\openti\\newid2.json");
 		
 		WebTableConverter converter = new WebTableConverter(holder);
 		JsonTable table = converter.createIdTable(PropertyType2.NotSpecified);
@@ -109,25 +109,33 @@ public class PropertyHolderTest {
 	public void test() {
 		PropertyHolder2 holder = new PropertyHolder2();
 		PropertyFactory factory = new PropertyFactory();
+		RuntimePropertyStore store = new RuntimePropertyStore(holder);
 		
 		try {
 			holder.addProperty(factory.createList("ID_LIST").option("ID_LIST_A", "A", "").option("ID_LIST_D", "D", "").defaultId("ID_LIST_A"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		holder.addProperty(factory.createNumeric("ID_NUMERIC").min(-10).max(10).unit("Hz").decimals(2).defaultValue(0.0));
+		holder.addProperty(factory.createNumeric("ID_NUMERIC").min(-10).max(10).unit("Hz").decimals(2).defaultValue(10.0));
 		holder.addProperty(factory.createBoolean("ID_BOOL").defaultValue(PropertyDef2.True));
 		holder.addProperty(factory.createText("ID_TEXT").defaultValue("Default Text").maxLength(100));
 		holder.addProperty(factory.createChart("ID_CHART"));
 		holder.addProperty(factory.createTable("ID_TABLE"));
 		
 		{
+			// test options
 			PropertyDef2 def = holder.get("ID_LIST");
 			assertEquals("ID_LIST", def.getId());
 			assertEquals(2, def.getOptionValues().size());
 			assertEquals("ID_LIST_A", def.getOption(0).getId());
 			assertEquals("ID_LIST_D", def.getOption(1).getId());
 			assertEquals("ID_LIST_A", def.getDefaultId());
+			
+			// test default value of runtime property
+			assertEquals("ID_LIST_A", store.get("ID_LIST").getCurrentValue());
+			assertEquals("ID_LIST_A", store.get("ID_LIST#0").getCurrentValue());		
+			assertEquals("10.00", store.get("ID_NUMERIC").getCurrentValue());
+			assertEquals("Default Text", store.get("ID_TEXT").getCurrentValue());
 			
 			// Items should be sorted when added
 			try {
@@ -150,6 +158,7 @@ public class PropertyHolderTest {
 			assertEquals(2, def.getOptionValues().size());
 			assertEquals("ID_LIST_D", def.getOption(0).getId());
 			assertEquals("ID_LIST_Z", def.getOption(1).getId());	
+			//assertEquals("ID_LIST_Z", store.get("ID_LIST").getCurrentValue()); don't need 
 			
 			// When main ID is changed, option ID's should be changed 
 			def.setId("ID_NEWLIST");
@@ -167,15 +176,28 @@ public class PropertyHolderTest {
 			assertEquals(2, def.getDecimals());
 			assertTrue(-10.0 == def.getMin());
 			assertTrue(10.0 == def.getMax());
-			assertTrue(0.0 == Double.valueOf(def.getDefaultValue()));
+			assertTrue(10.0 == Double.valueOf(def.getDefaultValue()));
 		}
 		
 		{
-			// delete
+			//// delete
 			assertEquals(6, holder.getProperties().size());
 			holder.remove("ID_NEWLIST");
 			assertEquals(5, holder.getProperties().size());
 
+			assertEquals(null, store.get("ID_NEWLIST"));
+			
+			// runtime properties should be removed if def property is removed
+			holder.addProperty(factory.createNumeric("ID_SIZE_5").arraySize(5));
+			assertEquals("ID_SIZE_5", store.get("ID_SIZE_5#0").getId());
+			assertEquals("ID_SIZE_5", store.get("ID_SIZE_5#1").getId());
+			assertEquals("ID_SIZE_5", store.get("ID_SIZE_5#2").getId());
+			assertEquals("ID_SIZE_5", store.get("ID_SIZE_5#4").getId());
+			holder.remove("ID_SIZE_5"); // Now removes!!
+			assertEquals(null, store.get("ID_SIZE_5#0"));
+			assertEquals(null, store.get("ID_SIZE_5#1"));
+			assertEquals(null, store.get("ID_SIZE_5#2"));
+			assertEquals(null, store.get("ID_SIZE_5#4"));
 		}
 		
 		{
@@ -201,6 +223,10 @@ public class PropertyHolderTest {
 			assertEquals("ID_LIST_A", def.getOption(0).getId());
 			assertEquals("ID_LIST_D", def.getOption(1).getId());
 			assertEquals("ID_LIST_A", def.getDefaultId());
+			
+			RuntimeProperty runtime = store.get("ID_NEWLIST2");
+			assertEquals("ID_NEWLIST2", runtime.getId());
+			assertEquals("ID_NEWLIST2_A", runtime.getCurrentValue());
 		}
 		
 //		System.out.println(holder.getTypes().toString());

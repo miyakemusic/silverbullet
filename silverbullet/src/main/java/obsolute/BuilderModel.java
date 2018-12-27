@@ -3,8 +3,8 @@ package obsolute;
 import java.util.List;
 
 import jp.silverbullet.property.PropertyHolder;
-import jp.silverbullet.property.SvProperty;
-import jp.silverbullet.property.SvPropertyStore;
+import jp.silverbullet.property2.RuntimeProperty;
+import jp.silverbullet.property2.RuntimePropertyStore;
 import jp.silverbullet.register.RegisterMapModel;
 import jp.silverbullet.register.RegisterProperty;
 import jp.silverbullet.register.RegisterShortCutHolder;
@@ -22,17 +22,17 @@ import jp.silverbullet.handlers.SvDevice;
 
 public interface BuilderModel {
 
-	SvProperty getProperty(String id);
+	RuntimeProperty getProperty(String id);
 
 	List<String> getAllTypes();
 
-	List<SvProperty> getAllProperties();
+	List<RuntimeProperty> getAllProperties();
 
 	PropertyHolder getPropertyHolder();
 
-	SvPropertyStore getPropertyStore();
+	RuntimePropertyStore getPropertyStore();
 
-	List<SvProperty> getAllProperties(String type);
+	List<RuntimeProperty> getAllProperties(String type);
 
 	List<String> getSelectedIds();
 

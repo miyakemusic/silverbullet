@@ -182,6 +182,9 @@ public class WebTableConverter {
 	        						else if (paramType.equals(boolean.class) || paramType.equals(Boolean.class)) {
 	        							method.invoke(object, Boolean.valueOf(value));
 	        						}
+	        						else if (paramType.equals(PropertyType2.class)) {
+	        							method.invoke(object, PropertyType2.valueOf(value));
+	        						}
 	        						else {
 	        							method.invoke(object, value);
 	        						}
@@ -195,6 +198,7 @@ public class WebTableConverter {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
+	        					return;
 	        				}
 	        			}
 //	        			try {
