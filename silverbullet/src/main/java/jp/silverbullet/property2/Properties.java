@@ -16,6 +16,7 @@ public class Properties {
 	public void remove(String id) {
 		this.properties.get(id).clearListeners();
 		this.properties.remove(id);
+		
 	}
 
 	public void put(String id, PropertyDef2 value) {

@@ -15,52 +15,67 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class PropertyDef2 implements Cloneable {
 
+	public static final String TITLE = "Title";
+	public static final String PERSISTENT = "Persistent";
+	public static final String ARRAY_SIZE = "ArraySize";
+	public static final String MAX_LENGTH = "MaxLength";
+	public static final String DECIMALS = "Decimals";
+	public static final String UNIT = "Unit";
+	public static final String MAX = "Max";
+	public static final String MIN = "Min";
+	public static final String DEFAULT_VALUE = "DefaultValue";
+	public static final String DEFAULT_ID = "DefaultID";
 	public static final String True = "true";
 	public static final String False = "false";
 	
-	@TableColumn(targetType={PropertyType2.NotSpecified}, Presentation="ID", Width=200)
+	public static final String ID = "ID";
+	public static final String TYPE = "Type";
+	public static final String PRESENTATION = "Presentation";
+	public static final String GROUP = "Group";
+	public static final String COMMENT = "Comment";
+	
+	@TableColumn(targetType={PropertyType2.NotSpecified}, Presentation=ID, Width=200)
 	private String id = "";
 	
-	@TableColumn(targetType={PropertyType2.NotSpecified}, Presentation="Type", Width=70)
+	@TableColumn(targetType={PropertyType2.NotSpecified}, Presentation=TYPE, Width=70)
 	private PropertyType2 type = PropertyType2.NotSpecified;
 	
-	@TableColumn(targetType={PropertyType2.NotSpecified}, Presentation="Presentation", Width=200)
+	@TableColumn(targetType={PropertyType2.NotSpecified}, Presentation=PRESENTATION, Width=200)
 	private String title = "";
 	
-	@TableColumn(targetType={PropertyType2.Boolean, PropertyType2.Numeric, PropertyType2.Text}, Presentation="DefaultValue", Width=200)
+	@TableColumn(targetType={PropertyType2.Boolean, PropertyType2.Numeric, PropertyType2.Text}, Presentation=DEFAULT_VALUE, Width=200)
 	private String defaultValue = "";
 	
-	@TableColumn(targetType={PropertyType2.List}, Presentation="DefaultID", Width=200)
+	@TableColumn(targetType={PropertyType2.List}, Presentation=DEFAULT_ID, Width=200)
 	private String defaultId = "";
 	
-	@TableColumn(targetType={PropertyType2.NotSpecified}, Presentation="Group", Width=100)
+	@TableColumn(targetType={PropertyType2.NotSpecified}, Presentation=GROUP, Width=100)
 	private String group = "";
 	
-	@TableColumn(targetType={PropertyType2.NotSpecified}, Presentation="Size", Width=30)
+	@TableColumn(targetType={PropertyType2.NotSpecified}, Presentation=ARRAY_SIZE, Width=30)
 	private int arraySize = 1;
 	
-//	@TableColumn(targetType={PropertyType2.List}, Presentation="Options")
 	private Map<String, ListDetailElement> options = new LinkedHashMap<>();
 	
-	@TableColumn(targetType={PropertyType2.Numeric}, Presentation="Min", Width=50)
+	@TableColumn(targetType={PropertyType2.Numeric}, Presentation=MIN, Width=50)
 	private double min = 0.0;
 	
-	@TableColumn(targetType={PropertyType2.Numeric}, Presentation="Max", Width=50)
+	@TableColumn(targetType={PropertyType2.Numeric}, Presentation=MAX, Width=50)
 	private double max = 0.0;
 	
-	@TableColumn(targetType={PropertyType2.Numeric}, Presentation="Decimals", Width=50)
+	@TableColumn(targetType={PropertyType2.Numeric}, Presentation=DECIMALS, Width=50)
 	private int decimals = 0;
 	
-	@TableColumn(targetType={PropertyType2.Text}, Presentation="MaxLength", Width=50)
+	@TableColumn(targetType={PropertyType2.Text}, Presentation=MAX_LENGTH, Width=50)
 	private int maxLength = 9999;
 	
-	@TableColumn(targetType={PropertyType2.NotSpecified}, Presentation="Unit", Width=80)
+	@TableColumn(targetType={PropertyType2.NotSpecified}, Presentation=UNIT, Width=80)
 	private String unit = "";
 	
-	@TableColumn(targetType={PropertyType2.NotSpecified}, Presentation="Persistent", Width=50)
+	@TableColumn(targetType={PropertyType2.NotSpecified}, Presentation=PERSISTENT, Width=50)
 	private Boolean persistent = true;
 	
-	@TableColumn(targetType={PropertyType2.NotSpecified}, Presentation="Comment", Width=200)
+	@TableColumn(targetType={PropertyType2.NotSpecified}, Presentation=COMMENT, Width=200)
 	private String comment = "";
 	
 	private Set<PropertyDefListener2> listeners = new HashSet<>();
@@ -105,7 +120,7 @@ public class PropertyDef2 implements Cloneable {
 
 	public PropertyDef2 option(String optionId, String title, String comment) throws Exception {
 		if (!optionId.startsWith(this.id)) {
-			throw new Exception("Invalid Option ID name");
+			throw new Exception("Invalid Option ID name " + optionId);
 		}
 		options.put(optionId, new ListDetailElement(optionId, title, comment));
 		
@@ -132,13 +147,14 @@ public class PropertyDef2 implements Cloneable {
 	}
 
 	public PropertyDef2 defaultValue(String value) {
+		String prev = this.defaultValue;
 		this.defaultValue = value;
-		fireChanged(this.defaultValue, "DefaultValue");
+		fireChanged(this.defaultValue, prev, DEFAULT_VALUE);
 		return this;
 	}
 
-	private void fireChanged(String value, String fieldName) {
-		this.listeners.forEach(listener -> listener.onParamChange(id, value, fieldName));
+	private void fireChanged(String value, String prevValue, String fieldName) {
+		this.listeners.forEach(listener -> listener.onParamChange(id, value, prevValue, fieldName));
 	}
 
 	public PropertyDef2 setType(PropertyType2 type) {
@@ -161,38 +177,36 @@ public class PropertyDef2 implements Cloneable {
 	}
 
 	public PropertyDef2 min(double min) {
+		double prev = this.max;
 		this.min = min;
-		fireChanged(this.min, "Min");
+		fireChanged(this.min, prev, MIN);
 		return this;
 	}
 
-	private void fireChanged(double value, String name) {
+	private void fireChanged(double value, double prev, String name) {
 		for (PropertyDefListener2 listener : this.listeners) {
-			listener.onParamChange(id, value, name);
+			listener.onParamChange(id, value, prev, name);
 		}
 	}
 
 	public PropertyDef2 max(double max) {
+		double prev = this.max;
 		this.max = max;
-		fireChanged(this.max, "Max");
+		fireChanged(this.max, prev, MAX);
 		return this;
 	}
 
 	public PropertyDef2 unit(String unit) {
+		String prev = this.unit;
 		this.unit = unit;
-		fireChanged(this.unit, "Unit");
+		fireChanged(this.unit, prev, UNIT);
 		return this;
 	}
 
 	public PropertyDef2 decimals(int i) {
+		int prev = this.decimals;
 		this.decimals= i;
-		fireChanged(this.decimals, "Decimals");
-		return this;
-	}
-
-	public PropertyDef2 defaultValue(double d) {
-		this.defaultValue = String.valueOf(d);
-		fireChanged(this.defaultValue, "DefaultValue");
+		fireChanged(this.decimals, prev, DECIMALS);
 		return this;
 	}
 
@@ -224,9 +238,15 @@ public class PropertyDef2 implements Cloneable {
 		return type;
 	}
 
+	public PropertyDef2 defaultValue(double d) {
+		String prev = this.defaultValue;
+		this.defaultValue = String.valueOf(d);
+		fireChanged(this.defaultValue, prev, DEFAULT_VALUE);
+		return this;
+	}
+	
 	public void setDefaultValue(String defaultValue) {
-		this.defaultValue = defaultValue;
-		fireChanged(this.defaultValue, "DefaultValue");
+		this.defaultValue(defaultValue);
 	}
 
 	public void setMin(double min) {
@@ -246,8 +266,9 @@ public class PropertyDef2 implements Cloneable {
 	}
 
 	public PropertyDef2 maxLength(int length) {
+		int prev = this.maxLength;
 		this.maxLength = length;
-		fireChanged(this.maxLength, "MaxLength");
+		fireChanged(this.maxLength, prev, MAX_LENGTH);
 		return this;
 	}
 
@@ -258,7 +279,7 @@ public class PropertyDef2 implements Cloneable {
 		}
 	}
 
-	public void deleteOption(String optionId) {
+	public void removeOption(String optionId) {
 		this.options.remove(optionId);
 		fireOptionRemoved(optionId);
 	}
@@ -280,14 +301,15 @@ public class PropertyDef2 implements Cloneable {
 	}
 
 	public PropertyDef2 arraySize(int arraySize2) {
+		int prev = this.arraySize;
 		this.arraySize = arraySize2;
-		this.fireChanged(arraySize2, "ArraySize");
+		this.fireChanged(arraySize2, prev, ARRAY_SIZE);
 		return this;
 	}
 
 	public void changeOptionId(String oldId, String newId) {
 		ListDetailElement e = this.options.get(oldId);
-		this.deleteOption(oldId);
+		this.removeOption(oldId);
 		e.setId(newId);
 		this.options.put(newId, e);
 	}
@@ -340,8 +362,9 @@ public class PropertyDef2 implements Cloneable {
 	}
 
 	public PropertyDef2 persistent(Boolean persistent) {
+		Boolean prev = this.persistent;
 		this.persistent = persistent;
-		this.fireChanged(persistent.toString(), "Persistent");
+		this.fireChanged(persistent.toString(), prev.toString(), PERSISTENT);
 		return this;
 	}
 	
@@ -383,8 +406,9 @@ public class PropertyDef2 implements Cloneable {
 	}
 
 	public PropertyDef2 title(String string) {
+		String prev = this.title;
 		this.title = string;
-		this.listeners.forEach(listener -> listener.onParamChange(id, string, "Title"));
+		this.listeners.forEach(listener -> listener.onParamChange(id, string, prev, TITLE));
 		return this;
 	}
 
@@ -392,10 +416,12 @@ public class PropertyDef2 implements Cloneable {
 		this.listeners.clear();
 	}
 
+	@JsonIgnore
 	public boolean isList() {
 		return this.getType().equals(PropertyType2.List);
 	}
 
+	@JsonIgnore
 	public boolean isNumeric() {
 		return this.getType().equals(PropertyType2.Numeric);
 	}
@@ -404,8 +430,25 @@ public class PropertyDef2 implements Cloneable {
 		return this.index;
 	}
 
-	public List<String> getListIds() {
+	@JsonIgnore
+	public List<String> getOptionIds() {
 		return new ArrayList<String>(this.options.keySet());
+	}
+
+	public boolean isPersistent() {
+		return this.persistent;
+	}
+
+	public void updateOptionId(String currentId, String newId) {
+		ListDetailElement e = this.getOption(currentId);
+		this.removeOption(currentId);
+		try {
+			this.option(newId, e.getTitle(), e.getComment());
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 	}
 
 	

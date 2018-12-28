@@ -88,15 +88,15 @@ public class TrueConditionGenerator {
 		}
 		else if (value.equals(DependencyExpression.False)) {
 			IdValue idValue = new IdValue(expression);
-			SvProperty property = getter.getProperty(idValue.getId());
+//			SvProperty property = getter.getProperty(idValue.getId());
 			
 			if (idValue.getEvaluation().equals(DependencyExpression.Equals) ) {
-				for (ListDetailElement e : property.getListDetail()) {
-					if (idValue.getValue().equals(e.getId())) {
-						continue;
-					}
-					cand.add("$" + idValue.getId() + "." + DependencyTargetElement.Value.toString() + DependencyExpression.Equals + "%" + e.getId());
-				}		
+//				for (ListDetailElement e : property.getListDetail()) {
+//					if (idValue.getValue().equals(e.getId())) {
+//						continue;
+//					}
+//					cand.add("$" + idValue.getId() + "." + DependencyTargetElement.Value.toString() + DependencyExpression.Equals + "%" + e.getId());
+//				}		
 			}
 			else if (idValue.getEvaluation().equals(DependencyExpression.NotEquals)){
 				cand.add(expression.replace(DependencyExpression.NotEquals, DependencyExpression.Equals));
@@ -129,9 +129,9 @@ public class TrueConditionGenerator {
 
 	private List<String> getSelections(String id, PropertyGetter getter) {
 		List<String> ret = new ArrayList<>();
-		for (ListDetailElement e : getter.getProperty(id).getListDetail()) {
-			ret.add(e.getId());
-		}
+//		for (ListDetailElement e : getter.getProperty(id).getListDetail()) {
+//			ret.add(e.getId());
+//		}
 		return ret;
 	}
 
@@ -158,13 +158,13 @@ public class TrueConditionGenerator {
 		IdValue idValue = new IdValue(condition);
 		
 		if (idValue.getEvaluation().equals(DependencyExpression.Equals)) {
-			SvProperty prop = getter.getProperty(idValue.getId());
-			for (ListDetailElement e : prop.getListDetail()) {
-				if (!e.getId().equals(idValue.getValue())) {
-					ret.add("$" + idValue.getId() + ".Value" + DependencyExpression.Equals + "%" + e.getId());
-				}
+//			SvProperty prop = getter.getProperty(idValue.getId());
+//			for (ListDetailElement e : prop.getListDetail()) {
+//				if (!e.getId().equals(idValue.getValue())) {
+//					ret.add("$" + idValue.getId() + ".Value" + DependencyExpression.Equals + "%" + e.getId());
+//				}
 				
-			}
+//			}
 		}
 		else if (idValue.getEvaluation().equals(DependencyExpression.NotEquals)) {
 			ret.add(condition.replace(DependencyExpression.NotEquals, DependencyExpression.Equals));

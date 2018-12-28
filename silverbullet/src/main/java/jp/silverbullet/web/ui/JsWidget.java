@@ -105,6 +105,10 @@ public class JsWidget implements Cloneable {
 		return unique;
 	}
 
+	public String getUniqueText() {
+		return String.valueOf(this.unique);
+	}
+	
 	public void addChild(JsWidget child) {
 		this.children.add(child);
 		child.setParentDiv(this.unique);

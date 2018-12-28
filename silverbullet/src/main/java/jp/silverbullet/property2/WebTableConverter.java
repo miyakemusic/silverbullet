@@ -148,10 +148,14 @@ public class WebTableConverter {
 	}
 
 	public void updateOptionField(String id, String selectionId, String paramName, String value) {
-		ListDetailElement element = this.holder.get(id).getOption(selectionId);
-		Class<ListDetailElement> clazz = ListDetailElement.class;
-		
-		updateFields(paramName, value, element, clazz);
+		if (paramName.equals(PropertyDef2.ID)) {
+			holder.get(id).updateOptionId(selectionId, value);
+		}
+		else {
+			ListDetailElement element = this.holder.get(id).getOption(selectionId);
+			Class<ListDetailElement> clazz = ListDetailElement.class;
+			updateFields(paramName, value, element, clazz);
+		}
 	}
 
 	public void updateMainField(String id, String paramName, String value) {
@@ -201,17 +205,6 @@ public class WebTableConverter {
 	        					return;
 	        				}
 	        			}
-//	        			try {
-//	        				field.setAccessible(true);
-//	        				field.set(object, value);
-//	        			} catch (IllegalArgumentException e) {
-//	        				e.printStackTrace();
-//	        			} catch (IllegalAccessException e) {
-//	        				e.printStackTrace();
-//						} catch (SecurityException e) {
-//							// TODO Auto-generated catch block
-//							e.printStackTrace();
-//						}     	
                 	}
                 }
             }

@@ -1,21 +1,33 @@
 package jp.silverbullet.property2;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jp.silverbullet.SvPropertyListener;
+import jp.silverbullet.SvPropertyListener.Flag;
 
 public class RuntimeProperty implements Cloneable {
-	private PropertyDef2 property;
 	private String currentValue = "";
+	
+	private String customTitle = null;
+	
+	public static final String INDEXSIGN = "#";
+	
+	private PropertyDef2 property;
 	private String prevValue = "";
 	private Set<SvPropertyListener> listeners = new HashSet<SvPropertyListener>();
 	private Map<String, Boolean> listMask = new HashMap<String, Boolean>();
-	
 	private boolean enabled = true;
+
+	private int index;
+	
+	public RuntimeProperty() {}
 	
 	public RuntimeProperty(PropertyDef2 property2) {
 		this.property = property2;
@@ -43,15 +55,18 @@ public class RuntimeProperty implements Cloneable {
 	public String getCurrentValue() {
 		return this.currentValue;
 	}
-
+	
+	@JsonIgnore
 	public String getId() {
 		return this.property.getId();
 	}
 
-	public boolean isListProperty() {
+	@JsonIgnore
+	public boolean isList() {
 		return this.property.isList();
 	}
 
+	@JsonIgnore
 	public boolean isNumericProperty() {
 		return this.property.isNumeric();
 	}
@@ -73,14 +88,16 @@ public class RuntimeProperty implements Cloneable {
 		return null;
 	}
 
+	@JsonIgnore
 	public String getMin() {
 		return formatNumeric(this.property.getMin());
 	}
 
+	@JsonIgnore
 	public String getMax() {
 		return formatNumeric(this.property.getMax());
 	}
-
+	
 	public void setCurrentValue(String val) {
 		if (this.currentValue.equals(val)) {
 			return;
@@ -95,7 +112,7 @@ public class RuntimeProperty implements Cloneable {
 			this.currentValue = val;
 		}
 
-		this.listeners.forEach(listener -> listener.onValueChanged(property.getId(), property.getIndex(), this.currentValue));
+		this.listeners.forEach(listener -> listener.onValueChange(property.getId(), property.getIndex(), this.currentValue));
 	}
 	
 	public void addListener(SvPropertyListener SvPropertyListener) {
@@ -105,93 +122,185 @@ public class RuntimeProperty implements Cloneable {
 	public void removeListener(SvPropertyListener SvPropertyListener) {
 		this.listeners.remove(SvPropertyListener);
 	}
-
+	
+	@JsonIgnore
 	public List<String> getListIds() {
-		return this.property.getListIds();
+		return this.property.getOptionIds();
 	}
 
-	public void disableOption(String id, boolean b) {
-		// TODO Auto-generated method stub
-		
+	public void enableOption(String id, boolean b) {
+		this.listMask.put(id, !b);
+		this.listeners.forEach(listener -> listener.onListMaskChange(getId(), getIndex(), id, !b));
 	}
 
-	public boolean isOptionDisabled(String currentValue2) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean isOptionDisabled(String optionId) {
+		if (!this.listMask.containsKey(optionId)) {
+			return false;
+		}
+		return this.listMask.get(optionId);
 	}
 
-	public void setEnabled(boolean equalsIgnoreCase) {
-		// TODO Auto-generated method stub
-		
+	public boolean isOptionDisabled(int index2) {
+		String optionId = this.property.getOptionIds().get(index2);
+		return this.isOptionDisabled(optionId);
+	}
+	
+	public void setEnabled(boolean enabled2) {
+		if (this.enabled != enabled2) {
+			this.enabled = enabled2;
+		}
+		this.listeners.forEach(listener -> listener.onEnableChange(getId(), getIndex(), this.enabled));
 	}
 
 	public void setMin(String min) {
-		// TODO Auto-generated method stub
+		double minv = Double.valueOf(min);
+		if (this.property.getMin() == minv) {
+			return;
+		}
 		
+		this.property.setMin(minv);
+		this.listeners.forEach(listener -> listener.onFlagChange(getId(), getIndex(), Flag.MIN));
 	}
 
 	public void setMax(String max) {
-		// TODO Auto-generated method stub
+		double maxv = Double.valueOf(max);
+		if (this.property.getMax() == maxv) {
+			return;
+		}
 		
+		this.property.setMax(maxv);
+		this.listeners.forEach(listener -> listener.onFlagChange(getId(), getIndex(), Flag.MAX));
 	}
 
-	public void setSize(Integer valueOf) {
-		// TODO Auto-generated method stub
-		
+	public void setSize(Integer size) {
+		if (this.property.getArraySize() == size) {
+			return;
+		}
+		property.setArraySize(size);
+		this.listeners.forEach(listener -> listener.onFlagChange(getId(), getIndex(), Flag.SIZE));
 	}
 
-	public boolean isOptionEnabled(int index) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
+	@JsonIgnore
 	public boolean isEnabled() {
-		// TODO Auto-generated method stub
-		return false;
+		return this.enabled;
 	}
 
+	@JsonIgnore
 	public Integer getSize() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.property.getArraySize();
 	}
 
-	public Object getListMask() {
-		// TODO Auto-generated method stub
-		return null;
+	@JsonIgnore
+	public Map<String, Boolean> getListMask() {
+		return this.listMask;
 	}
 
-	public void setListMask(Object listMask2) {
-		// TODO Auto-generated method stub
-		
+	public void setListMask(Map<String, Boolean> listMask2) {
+		this.listMask = listMask2;
 	}
 
+	@JsonIgnore
 	public String getTitle() {
-		// TODO Auto-generated method stub
-		return null;
+		if (this.customTitle != null) {
+			return this.customTitle;
+		}
+		return this.property.getTitle();
 	}
 
 	public int getIndex() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.index;
 	}
 
+	@JsonIgnore
 	public String getUnit() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.property.getUnit();
 	}
-
+	
+	@JsonIgnore
 	public List<ListDetailElement> getAvailableListDetail() {
-		// TODO Auto-generated method stub
-		return null;
+		List<ListDetailElement> ret = new ArrayList<ListDetailElement>();
+		this.property.getOptions().forEach((optionId, value) -> {
+			if (!this.isOptionDisabled(optionId)) {
+				ret.add(value);
+			}
+		});
+		return ret;
 	}
 
+	@JsonIgnore
 	public boolean isChartProperty() {
-		// TODO Auto-generated method stub
-		return false;
+		return this.property.getType().equals(PropertyType2.Chart);
 	}
 
+	@JsonIgnore
 	public String getSelectedListTitle() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.property.getOption(this.currentValue).getTitle();
 	}
+
+	@JsonIgnore
+	public List<String> getOptionIds() {
+		return this.property.getOptionIds();
+	}
+	
+	@JsonIgnore
+	public PropertyType2 getType() {
+		return this.property.getType();
+	}
+
+	@JsonIgnore
+	public boolean isText() {
+		return this.getType().equals(PropertyType2.Text);
+	}
+
+	@JsonIgnore
+	public boolean isBoolean() {
+		return this.getType().equals(PropertyType2.Boolean);
+	}
+
+	@JsonIgnore
+	public boolean isAction() {
+		return this.getType().equals(PropertyType2.Action);	}
+
+	@JsonIgnore
+	public boolean isTable() {
+		return this.getType().equals(PropertyType2.Table);
+	}
+
+	@JsonIgnore
+	public int getDecimals() {
+		return this.property.getDecimals();
+	}
+
+	@JsonIgnore
+	public boolean isPersistent() {
+		return this.property.isPersistent();
+	}
+
+	public static String createIdText(String id, int index2) {
+		return id + INDEXSIGN + String.valueOf(index2);
+	}
+
+	@JsonIgnore
+	public void setTitle(String string) {
+		if (string.equals(this.customTitle)) {
+			return;
+		}
+		this.customTitle = string;
+		this.listeners.forEach(listener -> listener.onTitleChange(getId(), getIndex(), this.currentValue));
+	}
+
+	@JsonIgnore
+	public void setUnit(String string) {
+		if (string.equals(this.property.getUnit())) {
+			return;
+		}
+		this.property.setUnit(string);
+		this.listeners.forEach(listener -> listener.onFlagChange(getId(), getIndex(), SvPropertyListener.Flag.UNIT));
+	}
+
+	public void clearOptionMask() {
+		this.listMask.clear();
+	}
+
+
 }

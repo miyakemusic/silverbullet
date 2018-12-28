@@ -1,4 +1,4 @@
-package jp.silverbullet.web;
+package obsolute;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -21,13 +21,7 @@ import jp.silverbullet.dependency2.DependencySpecHolder;
 import jp.silverbullet.property.PropertyHolder;
 import jp.silverbullet.property.SvProperty;
 import jp.silverbullet.property.SvPropertyStore;
-import obsolute.DepChainPair;
-import obsolute.DependencyEditorModel;
-import obsolute.DependencySpec;
-import obsolute.DependencySpecTableGenerator;
-import obsolute.DependencyTableRowData;
-import obsolute.DependencyTargetConverter;
-import obsolute.LinkGenerator;
+import jp.silverbullet.web.JsonTable;
 
 
 @Path("/dependencySpec")
@@ -37,11 +31,11 @@ public class DependencySpecResource {
 	@Path("/elements")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public JsonTable getElements(@QueryParam("id") final String id) {
-		SvProperty prop = StaticInstances.getInstance().getInstance().getBuilderModel().getProperty(id);
-		DependencySpecHolder specHolder = StaticInstances.getInstance().getInstance().getBuilderModel().getDependencySpecHolder2();
-		PropertyHolder porpHolder = StaticInstances.getInstance().getInstance().getBuilderModel().getPropertyHolder();
-		SvPropertyStore propHolder = StaticInstances.getInstance().getInstance().getBuilderModel().getPropertyStore();
-//		DependencyEditorModel model = new DependencyEditorModel(prop, specHolder, porpHolder, propHolder);
+//		SvProperty prop = StaticInstances.getInstance().getInstance().getBuilderModel().getProperty(id);
+//		DependencySpecHolder specHolder = StaticInstances.getInstance().getInstance().getBuilderModel().getDependencySpecHolder2();
+//		PropertyHolder porpHolder = StaticInstances.getInstance().getInstance().getBuilderModel().getPropertyHolder();
+//		SvPropertyStore propHolder = StaticInstances.getInstance().getInstance().getBuilderModel().getPropertyStore();
+////		DependencyEditorModel model = new DependencyEditorModel(prop, specHolder, porpHolder, propHolder);
 		
 		JsonTable ret = new JsonTable();
 //		ret.setHeader(Arrays.asList("Element", "Value", "Condition"));
@@ -61,7 +55,7 @@ public class DependencySpecResource {
 	}
 
 	private DependencyTableRowData[] createSpecTable(final String id) {
-		SvProperty property = StaticInstances.getInstance().getBuilderModel().getProperty(id);
+//		SvProperty property = StaticInstances.getInstance().getBuilderModel().getProperty(id);
 		DependencySpec spec = null;//StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder().get(id);
 		
 		DependencyEditorModel dependencyEditorModel = null;//new DependencyEditorModel(property, StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder(),
@@ -200,8 +194,8 @@ public class DependencySpecResource {
 		}
 		
 		for (String id2 : tmps) {
-			SvProperty prop = StaticInstances.getInstance().getBuilderModel().getProperty(id2);
-			ret.addRow(Arrays.asList(prop.getTitle(), prop.getId(), prop.getType(), prop.getComment()));
+//			SvProperty prop = StaticInstances.getInstance().getBuilderModel().getProperty(id2);
+//			ret.addRow(Arrays.asList(prop.getTitle(), prop.getId(), prop.getType(), prop.getComment()));
 		}
 		
 		return ret;

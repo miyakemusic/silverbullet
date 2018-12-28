@@ -8,6 +8,9 @@ import jp.silverbullet.property.ArgumentDefInterface;
 import jp.silverbullet.property.PropertyDef;
 import jp.silverbullet.property.SvProperty;
 import jp.silverbullet.property2.ListDetailElement;
+import jp.silverbullet.property2.PropertyDef2;
+import jp.silverbullet.property2.PropertyType2;
+import jp.silverbullet.property2.RuntimeProperty;
 
 public class SvPropertyFactory  {
 	private ArgumentDefInterface argumentDef = new ArgumentDefInterface() {
@@ -24,28 +27,35 @@ public class SvPropertyFactory  {
 		
 	};
 
-	public SvProperty getListProperty(String id, List<String> asList, String defaultId) {
-		PropertyDef def = new PropertyDef();
-		def.setType("ListProperty");
-		def.setOthers(Arrays.asList(defaultId));
-		def.setArgumentDef(argumentDef);
+	public RuntimeProperty getListProperty(String id, List<String> asList, String defaultId) {
+		PropertyDef2 def = new PropertyDef2();
+		def.setType(PropertyType2.List);
 		def.setId(id);
-		SvProperty ret = new SvProperty(def);
+		def.setDefaultId(defaultId);
+		
+		RuntimeProperty ret = new RuntimeProperty(def);
 		
 		for (String e : asList) {
-			def.getListDetail().add(new ListDetailElement(e));
+			try {
+				def.option(e, e, e);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
 		return ret;
 	}
 
-	public SvProperty getDoubleProperty(String id, double defaultValue, String unit, double min, double max,
+	public RuntimeProperty getDoubleProperty(String id, double defaultValue, String unit, double min, double max,
 			int decimal) {
-		PropertyDef def = new PropertyDef();
-		def.setType("DoubleProperty");
-		def.setOthers(new ArrayList<String>(Arrays.asList("", String.valueOf(defaultValue), String.valueOf(min), String.valueOf(max), String.valueOf(decimal))));
-		def.setArgumentDef(argumentDef);
+		PropertyDef2 def = new PropertyDef2();
+		def.setType(PropertyType2.Numeric);
+		def.setDefaultValue(String.valueOf(defaultValue));
+		def.setMin(min);
+		def.setMax(max);
+		def.setDecimals(decimal);
 		def.setId(id);
-		SvProperty ret = new SvProperty(def);	
+		RuntimeProperty ret = new RuntimeProperty(def);	
 		return ret;
 	}
 }

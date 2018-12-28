@@ -8,13 +8,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import jp.silverbullet.property2.ListDetailElement;
 import jp.silverbullet.property2.RuntimeProperty;
 import jp.silverbullet.web.ui.PropertyGetter;
 
 public class DependencyEngine {
 
-	private DepPropertyStore  store;
+	private PropertyGetter  store;
 	private DependencySpecHolder specHolder;
 	private CachedPropertyStore cachedPropertyStore;
 	private ExpressionCalculator calculator;
@@ -22,7 +21,7 @@ public class DependencyEngine {
 	private List<DependencyListener> listeners = new ArrayList<>();
 	private CommitListener commitListener;
 	
-	public DependencyEngine(DependencySpecHolder specHolder, DepPropertyStore  store) {
+	public DependencyEngine(DependencySpecHolder specHolder, PropertyGetter  store) {
 		this.store = store;
 		this.specHolder = specHolder;
 		calculator = new ExpressionCalculator() {
@@ -125,18 +124,10 @@ public class DependencyEngine {
 			if (!spec.isExecutionConditionSatistied()) {
 				continue;
 			}
-			RuntimeProperty property = this.cachedPropertyStore.getProperty(spec.getId() + "@" + id.getIndex());
+			RuntimeProperty property = this.cachedPropertyStore.getProperty(RuntimeProperty.createIdText(spec.getId(), id.getIndex()));
 			
 			if (spec.isOptionEnabled()) {
-				property.disableOption(spec.getTargetOption(), !spec.getExpression().getValue().equalsIgnoreCase(DependencySpec.True));
-
-				// previous code
-//				for (ListDetailElement e: property.getListDetail()) {
-//					if (e.getId().equals(spec.getTargetOption())) {
-//						property.disableOption(e.getId(), !spec.getExpression().getValue().equalsIgnoreCase(DependencySpec.True));
-//						break;
-//					}
-//				}
+				property.enableOption(spec.getTargetOption(), spec.getExpression().getValue().equalsIgnoreCase(DependencySpec.True));
 				
 				// selects other one if current is masked
 				if (property.isOptionDisabled(property.getCurrentValue())) {
@@ -153,7 +144,7 @@ public class DependencyEngine {
 			}
 			else if (spec.isValue()) {
 				String val = spec.getExpression().getValue();
-				if (property.isListProperty()) {
+				if (property.isList()) {
 					val = val.replace("%", "");
 				}
 				setCurrentValue(property, val);
@@ -242,7 +233,7 @@ public class DependencyEngine {
 
 	private String applyIndex(String string, int index) {
 		for (String id : IdCollector.sortByLength(IdCollector.collectIds(string))) {
-			string = string.replace("$" + id, "$" + id + "@" + index);
+			string = string.replace("$" + id, "$" + RuntimeProperty.createIdText(id, index));
 		}
 		return string;
 	}
@@ -313,13 +304,13 @@ public class DependencyEngine {
 		for (int width = 1; width < limit; width++) {
 			int index = currentIndex + width;
 			//if (canSelect(index, listIds, property.getListMask())) {
-			if (property.isOptionEnabled(index)) {
+			if (!property.isOptionDisabled(index)) {
 				property.setCurrentValue(listIds.get(index));
 				return;
 			}
 			index = currentIndex - width;
 			//if (canSelect(index, listIds, property.getListMask())) {
-			if (property.isOptionEnabled(index)) {
+			if (!property.isOptionDisabled(index)) {
 				property.setCurrentValue(listIds.get(index));
 				return;
 			}

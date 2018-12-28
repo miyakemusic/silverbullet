@@ -3,6 +3,7 @@ package obsolute;
 import java.util.List;
 
 import jp.silverbullet.property.PropertyHolder;
+import jp.silverbullet.property2.PropertyType2;
 import jp.silverbullet.property2.RuntimeProperty;
 import jp.silverbullet.property2.RuntimePropertyStore;
 import jp.silverbullet.register.RegisterMapModel;
@@ -32,11 +33,11 @@ public interface BuilderModel {
 
 	RuntimePropertyStore getPropertyStore();
 
-	List<RuntimeProperty> getAllProperties(String type);
+	List<RuntimeProperty> getAllProperties(PropertyType2 type);
 
 	List<String> getSelectedIds();
 
-	List<String> getIds(String type);
+	List<String> getIds(PropertyType2 type);
 
 	void save(String folder);
 

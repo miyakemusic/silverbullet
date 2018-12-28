@@ -17,10 +17,14 @@ public class DependencySpec {
 	public static final String Min = "Min";
 	public static final String Max = "Max";
 	public static final String ArraySize = "ArraySize";
+	public static final String Title = "Title";
+	public static final String Unit = "Unit";
 	public static final String Null = "---";
 		
 	public static final String Trigger = "Trigger";
 	public static final String Condition = "Condition";
+	
+
 	
 	private String id;
 	private DependencySpecDetail dependencySpecDetail = new DependencySpecDetail();

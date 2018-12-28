@@ -74,8 +74,8 @@ public abstract class Sequencer {
 		Set<HandlerProperty> toRunHandlers = new LinkedHashSet<>();
 		for (HandlerProperty handler : getHandlerPropertyHolder().getHandlers()) {
 			for (String changed : changedIds) {
-				if (changed.contains("@")) {
-					changed = changed.split("@")[0];
+				if (changed.contains(RuntimeProperty.INDEXSIGN)) {
+					changed = changed.split(RuntimeProperty.INDEXSIGN)[0];
 				}
 				if (handler.getIds().contains(changed)) {
 					toRunHandlers.add(handler);

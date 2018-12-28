@@ -11,6 +11,7 @@ import jp.silverbullet.dependency2.ExpressionCalculator;
 import jp.silverbullet.dependency2.RequestRejectedException;
 import jp.silverbullet.property.SvProperty;
 import jp.silverbullet.property2.ListDetailElement;
+import jp.silverbullet.property2.RuntimeProperty;
 
 
 public abstract class DependencyEngine {
@@ -20,8 +21,9 @@ public abstract class DependencyEngine {
 	
 	private ExpressionCalculator calculator = new ExpressionCalculator() {
 		@Override
-		protected SvProperty getProperty(String id) {
-			return DependencyEngine.this.getProperty(id);
+		protected RuntimeProperty getProperty(String id) {
+			//return DependencyEngine.this.getProperty(id);
+			return null;
 		}
 	};
 
@@ -31,7 +33,7 @@ public abstract class DependencyEngine {
 		for (DependencyListener listener : this.listeners) {
 	//		listener.onStart(id, value);
 		}
-		this.cachedPropertyStore = new CachedPropertyStore(getPropertiesStore());
+		this.cachedPropertyStore =null;// new CachedPropertyStore(getPropertiesStore());
 		
 		this.cachedPropertyStore.getProperty(id).setCurrentValue(value);
 		
@@ -205,7 +207,7 @@ public abstract class DependencyEngine {
 		return "";
 	}
 	private SvProperty getProperty(String id) {
-		return cachedPropertyStore.getProperty(id);
+		return null;//cachedPropertyStore.getProperty(id);
 	}
 	private boolean satisfies(DependencyProperty spec) {
 		

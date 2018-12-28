@@ -137,7 +137,7 @@ class LayoutBuilder {
 			$('#' + widget.unique).empty();
 			
 			if (widget.id != '') {
-				var id = widget.id + '@' + widget.index;
+				var id = widget.id + '#' + widget.index;
 				var list = this.map.get(id);
 				if (list != null) {
 					for (var w of list) {
@@ -217,7 +217,7 @@ class LayoutBuilder {
 	}
 	
 	pushWidget(pane, widget) {
-		var id = pane.id + '@' + pane.index;
+		var id = pane.id + '#' + pane.index;
 
 		if (this.map.get(id) == null) {
 			this.map.set(id, []);

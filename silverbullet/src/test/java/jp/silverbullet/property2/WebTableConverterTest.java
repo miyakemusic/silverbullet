@@ -30,7 +30,7 @@ public class WebTableConverterTest {
 			assertEquals(1, table.table.size());
 		}
 		
-		converter.updateMainField("ID_NUMERIC", "Unit", "Hz");
+		converter.updateMainField("ID_NUMERIC", PropertyDef2.UNIT, "Hz");
 		assertEquals("Hz", holder.get("ID_NUMERIC").getUnit());
 	}
 
@@ -65,22 +65,29 @@ public class WebTableConverterTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}			
-		converter.updateMainField("ID_NUMERIC", "Presentation", "New Title");
+		converter.updateMainField("ID_NUMERIC", PropertyDef2.PRESENTATION, "New Title");
 		assertEquals("New Title", holder.get("ID_NUMERIC").getTitle());
 
-		converter.updateMainField("ID_NUMERIC", "Unit", "GHz");
+		converter.updateMainField("ID_NUMERIC", PropertyDef2.UNIT, "GHz");
 		assertEquals("GHz", holder.get("ID_NUMERIC").getUnit());
 		
-		converter.updateMainField("ID_NUMERIC", "Min", "-100");
+		converter.updateMainField("ID_NUMERIC", PropertyDef2.MIN, "-100");
 		assertTrue(-100.0 == holder.get("ID_NUMERIC").getMin());
 		
-		converter.updateMainField("ID_NUMERIC", "Decimals", "-3");
+		converter.updateMainField("ID_NUMERIC", PropertyDef2.DECIMALS, "-3");
 		assertTrue(-3 == holder.get("ID_NUMERIC").getDecimals());
 	
-		converter.updateMainField("ID_NUMERIC", "ID", "ID_NEW_NUMERIC");
+		converter.updateMainField("ID_NUMERIC", PropertyDef2.ID, "ID_NEW_NUMERIC");
 		assertTrue(-3 == holder.get("ID_NEW_NUMERIC").getDecimals());
+		assertEquals(null, holder.get("ID_NUMERIC"));
 		
-		converter.updateMainField("ID_LIST", "Type", "Text");
+		converter.updateMainField("ID_LIST", PropertyDef2.TYPE, "Text");
 		assertEquals("Text", holder.get("ID_LIST").getType().toString());
+		
+		converter.updateOptionField("ID_LIST", "ID_LIST_A", PropertyDef2.ID, "ID_LIST_ABCD");
+		assertEquals("ID_LIST_ABCD", holder.get("ID_LIST").getOption("ID_LIST_ABCD").getId());
+		
+		converter.updateOptionField("ID_LIST", "ID_LIST_ABCD", PropertyDef2.TITLE, "abcd");
+		assertEquals("abcd", holder.get("ID_LIST").getOption("ID_LIST_ABCD").getTitle());
 	}
 }

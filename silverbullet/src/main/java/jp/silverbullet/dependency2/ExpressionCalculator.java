@@ -46,7 +46,7 @@ public abstract class ExpressionCalculator {
 			}
 			String value = "";
 			RuntimeProperty prop = getProperty(id);
-			if (prop.isListProperty()) {
+			if (prop.isList()) {
 				value = getTmpOptionValue(prop.getCurrentValue(), mapTmpValue);//"\"%" + prop.getCurrentValue() + "\"";
 			}
 			else /*if (prop.isNumericProperty())*/ {

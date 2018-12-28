@@ -3,11 +3,15 @@ package jp.silverbullet;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
+import java.util.Set;
+
 import javax.xml.bind.JAXBException;
 
 import jp.silverbullet.dependency2.DependencySpecRebuilder;
+import jp.silverbullet.dependency2.IdValue;
 import jp.silverbullet.dependency2.RequestRejectedException;
 import jp.silverbullet.dependency2.DepPropertyStore;
 import jp.silverbullet.dependency2.DependencyEngine;
@@ -21,6 +25,7 @@ import jp.silverbullet.property.PropertyHolder;
 import jp.silverbullet.property.SvProperty;
 import jp.silverbullet.property.SvPropertyStore;
 import jp.silverbullet.property2.PropertyHolder2;
+import jp.silverbullet.property2.PropertyType2;
 import jp.silverbullet.property2.RuntimeProperty;
 import jp.silverbullet.property2.RuntimePropertyStore;
 import jp.silverbullet.register.RegisterMapModel;
@@ -68,6 +73,11 @@ public class BuilderModelImpl implements BuilderModel {
 		@Override
 		public RuntimeProperty getProperty(String id) {
 			return store.get(id);
+		}
+
+		@Override
+		public RuntimeProperty getProperty(String id, int index) {
+			return store.get(id, index);
 		}
 	});
 
@@ -264,7 +274,7 @@ public class BuilderModelImpl implements BuilderModel {
 	}
 
 	@Override
-	public List<RuntimeProperty> getAllProperties(String type) {
+	public List<RuntimeProperty> getAllProperties(PropertyType2 type) {
 		return store.getAllProperties(type);
 	}
 
@@ -274,7 +284,7 @@ public class BuilderModelImpl implements BuilderModel {
 	}
 
 	@Override
-	public List<String> getIds(String type) {
+	public List<String> getIds(PropertyType2 type) {
 		return store.getIds(type);
 	}
 
@@ -302,15 +312,15 @@ public class BuilderModelImpl implements BuilderModel {
 
 		// UiLayout.getInstance().initialize();
 		
-		dependency = new DependencyEngine(dependencySpecHolder2, new DepPropertyStore () {
+		dependency = new DependencyEngine(dependencySpecHolder2, new PropertyGetter () {
 			@Override
 			public RuntimeProperty getProperty(String id) {
 				return store.get(id);
 			}
 
 			@Override
-			public void add(RuntimeProperty property) {
-				
+			public RuntimeProperty getProperty(String id, int index) {
+				return store.get(id, index);
 			}
 		}) {
 
@@ -504,20 +514,11 @@ public class BuilderModelImpl implements BuilderModel {
 
 	@Override
 	public void loadParameters(String filename) {
-		try {
-			List<String> lines = Files.readAllLines(Paths.get(filename));
+		List<IdValue> changedIds = this.getPropertyStore().load(filename).idValue;
 
-			for (String line : lines) {
-				String[] tmp = line.split("[<>]");
-				String id = tmp[1].split("@")[0];
-				String value = tmp[2];
-				try {
-					this.dependency.requestChange(id, value);
-				} catch (RequestRejectedException e) {
-					e.printStackTrace();
-				}
-			}
-		} catch (IOException e) {
+		try {
+			this.dependency.requestChanges(changedIds);
+		} catch (RequestRejectedException e) {
 			e.printStackTrace();
 		}
 	}
@@ -565,6 +566,11 @@ public class BuilderModelImpl implements BuilderModel {
 				public RuntimeProperty getProperty(String id) {
 					return store.get(id);
 				}
+
+				@Override
+				public RuntimeProperty getProperty(String id, int index) {
+					return store.get(id, index);
+				}
 			};
 			this.dependencySpecHolder2 = new DependencySpecRebuilder(this.dependencySpecHolder2, getter).getNewHolder();
 		}
@@ -573,5 +579,9 @@ public class BuilderModelImpl implements BuilderModel {
 	@Override
 	public EasyAccessInterface getEasyAccessInterface() {
 		return easyAccessInterface;
+	}
+
+	public DependencyEngine getDependency() {
+		return this.dependency;
 	}
 }

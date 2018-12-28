@@ -21,7 +21,6 @@ import jp.silverbullet.StaticInstances;
 import jp.silverbullet.dependency2.CommitListener;
 import jp.silverbullet.dependency2.RequestRejectedException;
 import jp.silverbullet.property.ChartContent;
-import jp.silverbullet.property.SvProperty;
 import jp.silverbullet.property2.RuntimeProperty;
 import jp.silverbullet.web.ui.CustomProperties;
 import jp.silverbullet.web.ui.JsProperty;
@@ -35,7 +34,7 @@ public class DesignResource {
 	@Path("/getProperty")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public JsProperty getProperty(@QueryParam("id") String id, @QueryParam("index") Integer index, @QueryParam("ext") String ext) {
-		RuntimeProperty property = StaticInstances.getInstance().getBuilderModel().getProperty(id + "@" + index);
+		RuntimeProperty property = StaticInstances.getInstance().getBuilderModel().getProperty(RuntimeProperty.createIdText(id,index));
 		JsProperty ret = convertProperty(property, ext);
 		return ret;
 	}
@@ -76,7 +75,7 @@ public class DesignResource {
 				}
 			}
 		}
-		else if (property.isListProperty()) {
+		else if (property.isList()) {
 			ret.setCurrentValue(property.getSelectedListTitle());
 			ret.setCurrentSelectionId(property.getCurrentValue());
 		}

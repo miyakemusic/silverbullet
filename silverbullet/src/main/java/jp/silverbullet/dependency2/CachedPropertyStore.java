@@ -11,27 +11,28 @@ import java.util.Set;
 import jp.silverbullet.SvPropertyListener;
 import jp.silverbullet.dependency2.ChangedItemValue;
 import jp.silverbullet.property2.RuntimeProperty;
+import jp.silverbullet.property2.RuntimePropertyStore;
 import jp.silverbullet.web.ui.PropertyGetter;
 
-public class CachedPropertyStore implements DepPropertyStore {
+public class CachedPropertyStore implements PropertyGetter {
 	private Map<String, RuntimeProperty> cached = new HashMap<>();
-	private DepPropertyStore  original;
+	private PropertyGetter  original;
 	private List<String> debugLog = new ArrayList<>();
 	private Map<String, List<ChangedItemValue>> changedHistory = new LinkedHashMap<>();
 	
 	private SvPropertyListener listener = new SvPropertyListener() {
 		@Override
-		public void onValueChanged(String id, int index, String value) {
+		public void onValueChange(String id, int index, String value) {
 			appendChange(new Id(id, index), new ChangedItemValue(DependencySpec.Value, value));
 		}
 
 		@Override
-		public void onEnableChanged(String id, int index, boolean b) {
+		public void onEnableChange(String id, int index, boolean b) {
 			appendChange(new Id(id, index), new ChangedItemValue(DependencySpec.Enable, String.valueOf(b)));
 		}
 
 		@Override
-		public void onFlagChanged(String id, int index, Flag flag) {
+		public void onFlagChange(String id, int index, Flag flag) {
 			if (flag.equals(Flag.MAX)) {
 				appendChange(new Id(id, index), new ChangedItemValue(DependencySpec.Max, flag.toString()));
 			}
@@ -41,28 +42,26 @@ public class CachedPropertyStore implements DepPropertyStore {
 			else if (flag.equals(Flag.SIZE)) {
 				appendChange(new Id(id, index), new ChangedItemValue(DependencySpec.ArraySize, flag.toString()));
 			}
+			else if (flag.equals(Flag.UNIT)) {
+				appendChange(new Id(id, index), new ChangedItemValue(DependencySpec.Unit, flag.toString()));
+			}
 		}
 
 		@Override
-		public void onVisibleChanged(String id, int index, Boolean b) {
-		//	appendChange(new Id(id, index), new ChangedItemValue(DependencyTargetElement.Visible, String.valueOf(b)));
+		public void onListMaskChange(String id, int index, String optionId, boolean mask) {
+			appendChange(new Id(id, index), new ChangedItemValue(DependencySpec.OptionEnable, optionId + "," + String.valueOf(mask)));
 		}
 
 		@Override
-		public void onListMaskChanged(String id, int index, String value) {
-			appendChange(new Id(id, index), new ChangedItemValue(DependencySpec.OptionEnable, value));
-		}
+		public void onTitleChange(String id, int index, String title) {
+			appendChange(new Id(id, index), new ChangedItemValue(DependencySpec.Title, title));
 
-		@Override
-		public void onTitleChanged(String id, int index, String title) {
-			// TODO Auto-generated method stub
-			
 		}
 		
 	};
 	private Set<CachedPropertyStoreListener> cachedPropertyStoreListeners = new HashSet<>();
 	
-	public CachedPropertyStore(DepPropertyStore  originalStore) {
+	public CachedPropertyStore(PropertyGetter  originalStore) {
 		original = originalStore;
 	}
 	
@@ -88,6 +87,9 @@ public class CachedPropertyStore implements DepPropertyStore {
 	
 	@Override
 	public RuntimeProperty getProperty(String id) {
+		if (!id.contains(RuntimeProperty.INDEXSIGN)) {
+			id = RuntimeProperty.createIdText(id, 0);
+		}
 		if (!cached.containsKey(id)) {
 			RuntimeProperty property = original.getProperty(id).clone();
 			cached.put(id, property);
@@ -97,9 +99,19 @@ public class CachedPropertyStore implements DepPropertyStore {
 	}
 
 	@Override
-	public void add(RuntimeProperty property) {
-		this.original.add(property);
+	public RuntimeProperty getProperty(String id, int index) {
+		id = RuntimeProperty.createIdText(id, index);
+		if (!cached.containsKey(id)) {
+			RuntimeProperty property = original.getProperty(id).clone();
+			cached.put(id, property);
+			property.addListener(listener);
+		}
+		return cached.get(id);
 	}
+//	@Override
+//	public void add(RuntimeProperty property) {
+	//	this.original.add(property);
+//	}
 	
 	public void commit() {		
 		for (String id : this.cached.keySet()) {
@@ -118,6 +130,9 @@ public class CachedPropertyStore implements DepPropertyStore {
 				else if (item.getElement().equals(DependencySpec.Value)) {
 					propertyOriginal.setCurrentValue(tmpChangedProperty.getCurrentValue());
 				}
+				else if (item.getElement().equals(DependencySpec.Title)) {
+					propertyOriginal.setTitle(tmpChangedProperty.getTitle());
+				}
 				else if (item.getElement().equals(DependencySpec.Enable)) {
 					propertyOriginal.setEnabled(tmpChangedProperty.isEnabled());
 				}
@@ -127,6 +142,9 @@ public class CachedPropertyStore implements DepPropertyStore {
 				}
 				else if (item.getElement().equals(DependencySpec.ArraySize)) {
 					propertyOriginal.setSize(tmpChangedProperty.getSize());
+				}
+				else if (item.getElement().equals(DependencySpec.Unit)) {
+					propertyOriginal.setUnit(tmpChangedProperty.getUnit());
 				}
 			}
 		}

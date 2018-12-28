@@ -39,6 +39,11 @@ public class DependencySpecResource2 {
 			@Override
 			public RuntimeProperty getProperty(String id) {
 				return StaticInstances.getInstance().getBuilderModel().getProperty(id);
+			}
+
+			@Override
+			public RuntimeProperty getProperty(String id, int index) {
+				return StaticInstances.getInstance().getBuilderModel().getProperty(RuntimeProperty.createIdText(id, index));
 			}			
 		});
 		return converter.getSpec(id);

@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jp.silverbullet.StaticInstances;
 import jp.silverbullet.property.SvProperty;
 import jp.silverbullet.property2.ListDetailElement;
+import jp.silverbullet.property2.RuntimeProperty;
 
 public class DependencySpecHolder {
 	private Map<String, DependencySpec> specs = new HashMap<>();
@@ -130,13 +131,11 @@ public class DependencySpecHolder {
 		DependencyRestriction ret = new DependencyRestriction();
 		DependencySpecHolder specHolder = this;
 		for (String id : specHolder.getAllIds()) {
-			SvProperty property = StaticInstances.getInstance().getBuilderModel().getProperty(id);
-			ret.addColumn(property.getId(), "Enabled");
-			ret.addColumn(property.getId(), "Value");
-			if (property.isListProperty()) {
-				for (ListDetailElement e : property.getListDetail()) {
-					ret.addColumn(property.getId() + "." + e.getId(), "Enabled");
-				}
+			RuntimeProperty property = StaticInstances.getInstance().getBuilderModel().getProperty(id);
+			ret.addColumn(property.getId(), DependencySpec.Enable);
+			ret.addColumn(property.getId(), DependencySpec.Value);
+			if (property.isList()) {
+				property.getOptionIds().forEach(s -> ret.addColumn(property.getId() + "." + s , DependencySpec.Enable));
 			}
 		}
 		ret.build();

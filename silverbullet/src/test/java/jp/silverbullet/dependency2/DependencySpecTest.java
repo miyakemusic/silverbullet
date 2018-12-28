@@ -319,9 +319,9 @@ public class DependencySpecTest {
 	@Test
 	public void testMinMax() {
 		PropertyStoreForTest store = new PropertyStoreForTest();
-		store.addDoubleProperty("ID_LEFT", 0, "unit", -1000, 1000, 0);
-		store.addDoubleProperty("ID_RIGHT", 0, "unit", -1000, 1000, 0);
-		store.addDoubleProperty("ID_TOTAL", 0, "unit", -1000, 1000, 0);
+		store.addDoubleProperty("ID_LEFT", 0, "unit", -1000, 1000, 1);
+		store.addDoubleProperty("ID_RIGHT", 0, "unit", -1000, 1000, 1);
+		store.addDoubleProperty("ID_TOTAL", 0, "unit", -1000, 1000, 1);
 		store.addListProperty("ID_MODE", Arrays.asList("ID_MODE_WIDE", "ID_MODE_NARROW"), "ID_MODE_WIDE");
 	
 		DependencySpec spec = new DependencySpec("ID_LEFT");		
@@ -364,7 +364,7 @@ public class DependencySpecTest {
 				rejected = true;
 			}
 			CachedPropertyStore cached = engine.getCachedPropertyStore();
-			assertEquals("10", cached.getProperty("ID_LEFT").getCurrentValue());	
+			assertEquals("10.0", cached.getProperty("ID_LEFT").getCurrentValue());	
 			assertEquals(true, rejected);
 		}
 		
@@ -379,7 +379,7 @@ public class DependencySpecTest {
 				rejected = true;
 			}
 			CachedPropertyStore cached = engine.getCachedPropertyStore();
-			assertEquals("10", cached.getProperty("ID_LEFT").getCurrentValue());	
+			assertEquals("10.0", cached.getProperty("ID_LEFT").getCurrentValue());	
 			assertEquals(true, rejected);
 		}
 		
@@ -387,7 +387,7 @@ public class DependencySpecTest {
 		try {
 			engine.requestChanges(Arrays.asList(new IdValue("ID_MODE", "ID_MODE_WIDE"), new IdValue("ID_LEFT", "70"), new IdValue("ID_MODE", "ID_MODE_NARROW")));
 			CachedPropertyStore cached = engine.getCachedPropertyStore();
-			assertEquals("50", cached.getProperty("ID_LEFT").getCurrentValue());	
+			assertEquals("50.0", cached.getProperty("ID_LEFT").getCurrentValue());	
 		} catch (RequestRejectedException e) {
 		//	e.printStackTrace();
 		}
@@ -423,9 +423,9 @@ public class DependencySpecTest {
 		try {
 			engine.requestChange("ID_ROOT", "ID_ROOT_B");
 			CachedPropertyStore cached = engine.getCachedPropertyStore();
-			assertEquals(true, cached.getProperty("ID_LEAF").getListMask().get("ID_LEAF_A"));	
-			assertEquals(false, cached.getProperty("ID_LEAF").getListMask().get("ID_LEAF_B"));	
-			assertEquals(true, cached.getProperty("ID_LEAF").getListMask().get("ID_LEAF_C"));	
+			assertEquals(true, cached.getProperty("ID_LEAF").isOptionDisabled("ID_LEAF_A"));	
+			assertEquals(false, cached.getProperty("ID_LEAF").isOptionDisabled("ID_LEAF_B"));	
+			assertEquals(true, cached.getProperty("ID_LEAF").isOptionDisabled("ID_LEAF_C"));	
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
 		}
@@ -498,17 +498,17 @@ public class DependencySpecTest {
 	public void testOptionSelectWithCondition() {
 		PropertyStoreForTest store = new PropertyStoreForTest();
 		store.addListProperty("ID_MODE", Arrays.asList("ID_MODE_A", "ID_MODE_B"), "ID_MODE_A");
-		store.addListProperty("ID_LEAF", Arrays.asList("LEAF_A1_1", "LEAF_A1_2", "LEAF_A2"), "LEAF_A1_1");
+		store.addListProperty("ID_LEAF", Arrays.asList("ID_LEAF_A1_1", "ID_LEAF_A1_2", "ID_LEAF_A2"), "ID_LEAF_A1_1");
 		store.addListProperty("ID_MIDDLE", Arrays.asList("ID_MIDDLE_A1", "ID_MIDDLE_A2", "ID_MIDDLE_B1", "ID_MIDDLE_B2"), "ID_MIDDLE_A1");
 		store.addListProperty("ID_ROOT", Arrays.asList("ID_ROOTA", "ID_ROOTA2", "ID_ROOTB"), "ID_ROOTA");
 
 		DependencySpec spec = new DependencySpec("ID_MIDDLE");
 		spec.addOptionSelect("ID_MIDDLE_A1", "$ID_ROOT==%ID_ROOTA", "$ID_MODE==%ID_MODE_A");
-		spec.addOptionSelect("ID_MIDDLE_A1", "$ID_LEAF==%LEAF_A1_1");
-		spec.addOptionSelect("ID_MIDDLE_A1", "$ID_LEAF==%LEAF_A1_2");
+		spec.addOptionSelect("ID_MIDDLE_A1", "$ID_LEAF==%ID_LEAF_A1_1");
+		spec.addOptionSelect("ID_MIDDLE_A1", "$ID_LEAF==%ID_LEAF_A1_2");
 		
 		spec.addOptionSelect("ID_MIDDLE_A2", "$ID_ROOT==%ID_ROOTA", "$ID_MODE==%ID_MODE_B");
-		spec.addOptionSelect("ID_MIDDLE_A2", "$ID_LEAF==%LEAF_A2");
+		spec.addOptionSelect("ID_MIDDLE_A2", "$ID_LEAF==%ID_LEAF_A2");
 		DependencySpecHolder specHolder = new DependencySpecHolder();
 		specHolder.addSpec(spec);
 		

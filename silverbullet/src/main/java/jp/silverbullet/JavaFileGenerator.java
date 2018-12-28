@@ -32,7 +32,7 @@ public class JavaFileGenerator {
 				continue;
 			}
 			lines.add(createLine(prop.getId()));
-			if (prop.isListProperty()) {
+			if (prop.isList()) {
 				prop.getListIds().forEach(optionId -> lines.add(createLine(optionId)));
 //				for (ListDetailElement e : prop.getListDetail()) {
 //					lines.add(createLine(e.getId()));
@@ -70,7 +70,7 @@ public class JavaFileGenerator {
 				continue;
 			}
 			boolean array = prop.getSize() > 1;
-			if (prop.getType().equals("DoubleProperty")) {
+			if (prop.isNumericProperty() && prop.getDecimals() > 0) {
 				source.add("    public void set" + getMethodName(prop.getId()) + "(double value) throws RequestRejectedException {");
 				source.add("        model.requestChange(ID." + prop.getId() + ", String.valueOf(value));");
 				source.add("    }");
@@ -84,7 +84,7 @@ public class JavaFileGenerator {
 	
 				}
 			}
-			else if (prop.getType().equals("LongProperty")) {
+			else if (prop.isNumericProperty() && prop.getDecimals() == 0) {
 				source.add("    public void set" + getMethodName(prop.getId()) + "(long value) throws RequestRejectedException {");
 				source.add("        model.requestChange(ID." + prop.getId() + ", String.valueOf(value));");
 				source.add("    }");
@@ -98,15 +98,15 @@ public class JavaFileGenerator {
 
 				}
 			}
-			else if (prop.getType().equals("IntProperty")) {
-				source.add("    public void set" + getMethodName(prop.getId()) + "(int value" + ") throws RequestRejectedException {");
-				source.add("        model.requestChange(ID." + prop.getId() + ", String.valueOf(value));");
-				source.add("    }");
-				source.add("    public int get" + getMethodName(prop.getId()) + "() {");
-				source.add("        return Integer.valueOf(model.getProperty(ID." + prop.getId() + ").getCurrentValue());");
-				source.add("    }");	
-			}
-			else if (prop.isTextProperty() || prop.isTableProperty()) {
+//			else if (prop.getType().equals("IntProperty")) {
+//				source.add("    public void set" + getMethodName(prop.getId()) + "(int value" + ") throws RequestRejectedException {");
+//				source.add("        model.requestChange(ID." + prop.getId() + ", String.valueOf(value));");
+//				source.add("    }");
+//				source.add("    public int get" + getMethodName(prop.getId()) + "() {");
+//				source.add("        return Integer.valueOf(model.getProperty(ID." + prop.getId() + ").getCurrentValue());");
+//				source.add("    }");	
+//			}
+			else if (prop.isText() || prop.isTable()) {
 				source.add("    public void set" + getMethodName(prop.getId()) + "(String value" + ") throws RequestRejectedException {");
 				source.add("        model.requestChange(ID." + prop.getId() + ", value);");
 				source.add("    }");
@@ -114,13 +114,13 @@ public class JavaFileGenerator {
 				source.add("        return model.getProperty(ID." + prop.getId() + ").getCurrentValue();");
 				source.add("    }");	
 			}
-			else if (prop.getType().equals("ListProperty") || prop.getType().equals("ServerStateProperty") || 
-					prop.getType().equals("MessageProperty")) {
+			else if (prop.isList()) {
 				String methodName = this.getMethodName(prop.getId());
 				source.add("    public enum Enum" + methodName + "{");
-				for (ListDetailElement e : prop.getListDetail()) {
-					source.add("        " + e.getId() + ",");
-				}
+				prop.getOptionIds().forEach(i -> source.add("        " + i + ","));
+//				for (ListDetailElement e : prop.getListDetail()) {
+//					source.add("        " + e.getId() + ",");
+//				}
 				source.add("    };");	
 				source.add("    public void set" + getMethodName(prop.getId()) + "(Enum" + methodName + " value) throws RequestRejectedException {");
 				source.add("        model.requestChange(ID." + prop.getId() + ", value.toString());");
@@ -135,7 +135,7 @@ public class JavaFileGenerator {
 					source.add("        model.requestChange(ID." + prop.getId() + ", index, value.toString());");
 					source.add("    }");
 					source.add("    public Enum" + methodName + " get" + getMethodName(prop.getId()) + "(int index) {");
-					source.add("        return Enum" + methodName + ".valueOf(model.getProperty(ID." + prop.getId() + " + \"@\" + index).getCurrentValue());");
+					source.add("        return Enum" + methodName + ".valueOf(model.getProperty(ID." + prop.getId() + " + \"" + RuntimeProperty.INDEXSIGN + "\" + index).getCurrentValue());");
 					source.add("    }");
 				}
 			}

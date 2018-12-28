@@ -17,7 +17,7 @@ public class PropertyHolder2 {
 		@Override
 		public void onIdChanged(String newId, String oldId) {
 			PropertyDef2 prop = properties.get(oldId);
-			properties.remove(oldId);
+			remove(oldId);
 			addProperty(prop);
 		}
 
@@ -27,13 +27,13 @@ public class PropertyHolder2 {
 		}
 
 		@Override
-		public void onParamChange(String id, Object value, String fieldName) {
-			fireParameterChange(id, fieldName, value);
+		public void onParamChange(String id, Object value, Object prev, String fieldName) {
+			fireParameterChange(id, fieldName, value, prev);
 		}
 
 		@Override
 		public void onTypeChange(String id, PropertyType2 value) {
-			fireParameterChange(id, "Type", value);
+			fireParameterChange(id, "Type", value, null);
 		}
 
 		@Override
@@ -55,11 +55,11 @@ public class PropertyHolder2 {
 	}
 
 	protected void fireOptionChange(String id) {
-		this.listeners.forEach(listener -> listener.onChange(id));
+		this.listeners.forEach(listener -> listener.onChange(id, "option", null, null));
 	}
 
-	protected void fireParameterChange(String id, String fieldName, Object value) {
-		this.listeners.forEach(listener -> listener.onChange(id));
+	protected void fireParameterChange(String id, String fieldName, Object value, Object prev) {
+		this.listeners.forEach(listener -> listener.onChange(id, fieldName, value, prev));
 	}
 
 	public Collection<PropertyDef2> getProperties() {
@@ -113,4 +113,5 @@ public class PropertyHolder2 {
 	public void removeListener(PropertDefHolderListener propertDefHolderListener) {
 		this.listeners .remove(propertDefHolderListener);
 	}
+
 }

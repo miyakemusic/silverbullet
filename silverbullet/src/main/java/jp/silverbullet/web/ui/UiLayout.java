@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import jp.silverbullet.property.SvProperty;
 import jp.silverbullet.property2.RuntimeProperty;
 import jp.silverbullet.web.UiLayoutListener;
 
@@ -17,7 +16,7 @@ public class UiLayout {
 	private Set<JsWidget> dynamicWidgets = new HashSet<>();
 	
 	private PropertyGetter propertyGetter;
-	private UiLayoutListener listener;
+	private Set<UiLayoutListener> listeners = new HashSet<>();
 	public UiLayout() {
 		root = createRoot();
 	}
@@ -28,7 +27,7 @@ public class UiLayout {
 	}
 
 	public void fireLayoutChange(String div) {	
-		this.listener.onLayoutChange(div, "");
+		this.listeners.forEach(listener -> listener.onLayoutChange(div, ""));
 	}
 
 	public void setPropertyGetter(PropertyGetter propertyGetter) {
@@ -61,31 +60,31 @@ public class UiLayout {
 		
 		for (String id : ids) {
 			RuntimeProperty property = propertyGetter.getProperty(id);
-			String type = property.getType();
+//			PropertyType2 type = property.getType();
 			JsWidget widget = new JsWidget();
 			widget.setId(id);
 			
-			if (type.equals(SvProperty.DOUBLE_PROPERTY) || type.equals(SvProperty.TEXT_PROPERTY) || type.equals(SvProperty.LONG_PROPERTY)) {
+			if (property.isNumericProperty() || property.isText()) {
 				widget.setWidgetType(JsWidget.TEXTFIELD);
 			}
-			else if (type.equals(SvProperty.LIST_PROPERTY)) {
-				if (property.getListDetail().size() < 3) {
+			else if (property.isList()) {
+				if (property.getOptionIds().size() < 3) {
 					widget.setWidgetType(JsWidget.RADIOBUTTON);
 				}
 				else {
 					widget.setWidgetType(JsWidget.COMBOBOX);
 				}
 			}
-			else if (type.equals(SvProperty.BOOLEAN_PROPERTY)) {
+			else if (property.isBoolean()) {
 				widget.setWidgetType(JsWidget.CHECKBOX);
 			}
-			else if (type.equals(SvProperty.ACTION_PROPERTY)) {
+			else if (property.isAction()) {
 				widget.setWidgetType(JsWidget.ACTIONBUTTON);
 			}
-			else if (type.equals(SvProperty.CHART_PROPERTY)) {
+			else if (property.isChartProperty()) {
 				widget.setWidgetType(JsWidget.CHART);
 			}	
-			else if (type.equals(SvProperty.TABLE_PROPERTY)) {
+			else if (property.isTable()) {
 				widget.setWidgetType(JsWidget.TABLE);
 			}	
 			panel.addChild(widget);
@@ -146,6 +145,7 @@ public class UiLayout {
 		JsWidget panel = createPanel();
 		panel.setWidth("300");
 		panel.setHeight("200");
+		panel.setLayout(JsWidget.VERTICALLAYOUT);
 		this.getDiv(unique).addChild(panel);
 	}
 
@@ -296,7 +296,7 @@ public class UiLayout {
 		JsWidget widget = getWidget(div);
 		if (widget.getWidgetType().equals(JsWidget.PANEL)) {
 			String id = widget.getChildren().get(0).getId();
-			int size = this.propertyGetter.getProperty(id).getProperty().getSize();
+			int size = this.propertyGetter.getProperty(id).getSize();
 			JsWidget parent = new UiParent(widget).getParent();
 			
 
@@ -312,7 +312,7 @@ public class UiLayout {
 		else {
 			String id = widget.getId();
 			JsWidget parent = new UiParent(widget).getParent();
-			for (int i = 1; i < this.propertyGetter.getProperty(id).getProperty().getSize(); i++) {
+			for (int i = 1; i < this.propertyGetter.getProperty(id).getSize(); i++) {
 				JsWidget clone = widget.clone();
 				clone.setIndex(i);
 				parent.addChild(clone);
@@ -346,8 +346,8 @@ public class UiLayout {
 				if (jsWidget.getCustomElement(CustomProperties.ARRAY).equals("true")) {
 					// count current widgets
 					JsWidget masterPanel = jsWidget.getChildren().get(0);
-					SvProperty property = propertyGetter.getProperty(masterPanel.getChildren().get(0).getId());
-					int size = property.getProperty().getSize();
+					RuntimeProperty property = propertyGetter.getProperty(masterPanel.getChildren().get(0).getId());
+					int size = property.getSize();
 					
 					if (jsWidget.getChildren().size() == size) {
 						return;
@@ -380,8 +380,8 @@ public class UiLayout {
 		for (JsWidget jsWidget : this.dynamicWidgets) {
 			// count current widgets
 			JsWidget masterPanel = jsWidget.getChildren().get(0);
-			SvProperty property = propertyGetter.getProperty(masterPanel.getChildren().get(0).getId());
-			int size = property.getProperty().getSize();
+			RuntimeProperty property = propertyGetter.getProperty(masterPanel.getChildren().get(0).getId());
+			int size = property.getSize();
 			
 			if (jsWidget.getChildren().size() == size) {
 				return;
@@ -426,8 +426,12 @@ public class UiLayout {
 		
 	}
 
-	public void setListener(UiLayoutListener listener) {
-		this.listener = listener;
+	public void addListener(UiLayoutListener listener) {
+		this.listeners.add(listener);
+	}
+
+	public void removeListener(UiLayoutListener listener) {
+		this.listeners.remove(listener);
 	}
 
 }

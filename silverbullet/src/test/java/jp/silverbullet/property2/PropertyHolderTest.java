@@ -49,7 +49,7 @@ public class PropertyHolderTest {
 	}
 	@Test
 	public void convert() {
-		PropertyHolder propertiesHolder = load(PropertyHolder.class, "C:\\Users\\a1199022\\git3\\openti\\openti\\sv_tmp\\id_def.xml");
+		PropertyHolder propertiesHolder = load(PropertyHolder.class, "C:\\Users\\çNçG\\git3\\openti\\openti\\sv_tmp\\id_def.xml");
 		PropertyHolder2 holder = new PropertyHolder2();
 		PropertyFactory factory = new PropertyFactory();
 		
@@ -78,7 +78,7 @@ public class PropertyHolderTest {
 			//def2.setDefaultValue(original.getArgumentValue("defaultValue"));
 		}
 		
-//		holder.save("C:\\Users\\a1199022\\git3\\openti\\openti\\newid2.json");
+		holder.save("C:\\Users\\çNçG\\git3\\openti\\openti\\newid2.json");
 //		holder.load("C:\\Users\\a1199022\\git3\\openti\\openti\\newid2.json");
 		
 		WebTableConverter converter = new WebTableConverter(holder);
@@ -122,6 +122,7 @@ public class PropertyHolderTest {
 		holder.addProperty(factory.createChart("ID_CHART"));
 		holder.addProperty(factory.createTable("ID_TABLE"));
 		
+		
 		{
 			// test options
 			PropertyDef2 def = holder.get("ID_LIST");
@@ -148,7 +149,7 @@ public class PropertyHolderTest {
 			assertEquals("ID_LIST_B", def.getOption(1).getId());
 			assertEquals("ID_LIST_D", def.getOption(2).getId());	
 			
-			def.deleteOption("ID_LIST_B");
+			def.removeOption("ID_LIST_B");
 			assertEquals(2, def.getOptionValues().size());
 			assertEquals("ID_LIST_A", def.getOption(0).getId());
 			assertEquals("ID_LIST_D", def.getOption(1).getId());	
@@ -230,7 +231,7 @@ public class PropertyHolderTest {
 		}
 		
 //		System.out.println(holder.getTypes().toString());
-		assertEquals("[List, Numeric, Text, Boolean, Chart, Table, Image, NotSpecified]", holder.getTypes().toString());
+		assertEquals("[NotSpecified, List, Numeric, Text, Boolean, Chart, Table, Image, Action]", holder.getTypes().toString());
 	}
 
 	@Test

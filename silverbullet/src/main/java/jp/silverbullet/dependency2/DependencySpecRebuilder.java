@@ -70,7 +70,8 @@ public class DependencySpecRebuilder {
 		}
 	}
 
-	private String createConditionEx(String id, String trigger, String option2, DependencySpecHolder depHolder, PropertyGetter store) {
+	private String createConditionEx(String id, String trigger, String option2, 
+			DependencySpecHolder depHolder, PropertyGetter store) {
 		ExpressionParser parser = new ExpressionParser(trigger);
 		String triggerId = parser.getId();
 		String triggerValue = parser.getValue();

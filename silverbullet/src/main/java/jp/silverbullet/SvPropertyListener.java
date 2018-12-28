@@ -2,22 +2,21 @@ package jp.silverbullet;
 
 public interface SvPropertyListener {
 
-	void onValueChanged(String id, int index, String value);
+	void onValueChange(String id, int index, String value);
 
-	void onEnableChanged(String id, int index, boolean b);
+	void onEnableChange(String id, int index, boolean b);
 
 	enum Flag {
 		MAX,
 		MIN,
 		LIST_ELEMENT_PRESENTATION, 
-		SIZE
+		SIZE, UNIT
 	}
-	void onFlagChanged(String id, int index, Flag flag);
+	void onFlagChange(String id, int index, Flag flag);
 
-	void onVisibleChanged(String id, int index, Boolean b);
+	void onListMaskChange(String id, int index, String optionId, boolean mask);
 
-	void onListMaskChanged(String id, int index, String string);
+	void onTitleChange(String id, int index, String title);
 
-	void onTitleChanged(String id, int index, String title);
 
 }

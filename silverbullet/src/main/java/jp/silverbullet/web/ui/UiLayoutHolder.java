@@ -44,7 +44,7 @@ public class UiLayoutHolder {
 				UiLayout tmpLayout = loadJson(UiLayout.class, filename);
 				tmpLayout.setPropertyGetter(this.propertyGetter);
 				tmpLayout.collectDynamicChangedPanel2();
-				tmpLayout.setListener(listener);
+				tmpLayout.addListener(listener);
 				layouts.put(p.getFileName().toFile().getName(), tmpLayout);
 			});
 			
@@ -98,6 +98,7 @@ public class UiLayoutHolder {
 	}
 
 	public void removeFile(String filename) {
+		this.layouts.get(filename).removeListener(listener);
 		this.layouts.remove(filename);
 	}
 

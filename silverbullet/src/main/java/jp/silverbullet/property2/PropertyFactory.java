@@ -3,8 +3,7 @@ package jp.silverbullet.property2;
 public class PropertyFactory {
 	
 	public PropertyDef2 create(String id, PropertyType2 type) {
-		PropertyDef2 ret = new PropertyDef2();
-		ret.setId(id);
+		PropertyDef2 ret = new PropertyDef2(id);
 		ret.setType(type);
 		return ret;
 	}

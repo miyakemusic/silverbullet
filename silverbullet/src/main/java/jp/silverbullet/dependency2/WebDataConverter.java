@@ -34,7 +34,7 @@ public class WebDataConverter {
 		return ret;
 	}
 	private boolean isList(String id) {
-		return this.properties.getProperty(id).isListProperty();
+		return this.properties.getProperty(id).isList();
 	}
 	private boolean isNumeric(String id) {
 		return this.properties.getProperty(id).isNumericProperty();

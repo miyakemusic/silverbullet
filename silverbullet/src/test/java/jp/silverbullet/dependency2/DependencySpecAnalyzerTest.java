@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import jp.silverbullet.dependency2.LinkGenerator.LinkLevel;
 
-class DependencySpecAnalyzerTest {
+public class DependencySpecAnalyzerTest {
 
 	@Test
 	public void test() {
