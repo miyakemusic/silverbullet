@@ -11,7 +11,6 @@ import jp.silverbullet.XmlPersistent;
 import jp.silverbullet.property.ArgumentDefInterface;
 import jp.silverbullet.property.PropertyDef;
 import jp.silverbullet.property.PropertyHolder;
-import jp.silverbullet.property.PropertyType;
 import jp.silverbullet.property2.PropertyDef2;
 import jp.silverbullet.property2.PropertyFactory;
 import jp.silverbullet.property2.PropertyHolder2;

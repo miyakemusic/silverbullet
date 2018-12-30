@@ -33,7 +33,7 @@ public class PropertyHolder2 {
 
 		@Override
 		public void onTypeChange(String id, PropertyType2 value) {
-			fireParameterChange(id, "Type", value, null);
+			fireParameterChange(id, PropertyDef2.TYPE, value, null);
 		}
 
 		@Override

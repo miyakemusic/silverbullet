@@ -8,6 +8,8 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class JsWidget implements Cloneable {
 
 	public static final String FLOWLAYOUT = "Flow Layout";
@@ -105,6 +107,7 @@ public class JsWidget implements Cloneable {
 		return unique;
 	}
 
+	@JsonIgnore
 	public String getUniqueText() {
 		return String.valueOf(this.unique);
 	}

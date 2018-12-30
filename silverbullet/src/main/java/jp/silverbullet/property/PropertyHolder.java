@@ -9,6 +9,8 @@ import java.util.Set;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import jp.silverbullet.property2.PropertyType;
+
 @XmlRootElement
 public class PropertyHolder {
 	private PropertyType types = new PropertyType();

@@ -1,6 +1,6 @@
 package jp.silverbullet.web.ui;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -136,17 +136,21 @@ public class UiLayout {
 		JsWidget widget = this.getDiv(unique);
 		widget.setWidth(width);
 		widget.setHeight(height);
-		
+	
 		fireLayoutChange(div);
+//		fireLayoutChange(String.valueOf(widget.getParentDiv()));
 	}
 
-	public void addPanel(String div) {
+	public JsWidget addPanel(String div) {
 		int unique = extractUnique(div);
 		JsWidget panel = createPanel();
 		panel.setWidth("300");
 		panel.setHeight("200");
 		panel.setLayout(JsWidget.VERTICALLAYOUT);
 		this.getDiv(unique).addChild(panel);
+		
+		this.fireLayoutChange(div);
+		return panel;
 	}
 
 	public void addTab(String div) {
@@ -156,6 +160,7 @@ public class UiLayout {
 		panel.setWidth("300");
 		panel.setHeight("200");
 		this.getDiv(unique).addChild(panel);
+		this.fireLayoutChange(div);
 	}
 
 	public void addRegisterShortcut(String div, String register) {
@@ -166,6 +171,8 @@ public class UiLayout {
 		panel.setWidth("100");
 		panel.setHeight("50");
 		this.getDiv(unique).addChild(panel);
+		
+		this.fireLayoutChange(div);
 	}
 
 	public JsWidget getWidget(String div) {
@@ -176,13 +183,14 @@ public class UiLayout {
 
 	public void remove(String div) {
 		removeDiv(root, extractUnique(div));
-		fireLayoutChange(div);
+//		fireLayoutChange(div);
 	}
 	
 	private boolean removeDiv(JsWidget parent, int unique) {
 		for (JsWidget jsWidget : parent.getChildren()) {
 			if (jsWidget.getUnique() == unique) {
 				parent.getChildren().remove(jsWidget);
+				this.fireLayoutChange(parent.getUniqueText());
 				return true;
 			}
 			boolean ret = removeDiv(jsWidget, unique);
@@ -199,14 +207,16 @@ public class UiLayout {
 		this.fireLayoutChange(div);
 	}
 
-	public void addDialog(String div, String id) {
+	public JsWidget addDialog(String div) {
 		int unique = extractUnique(div);
 		JsWidget panel = getDiv(unique);
 		JsWidget dialog = new JsWidget();
-		dialog.getCustom().put("id", id);
+		//dialog.getCustom().put("id", id);
+//		dialog.setCustomElemnt(CustomProperties.TARGET_GUI_ID, id);
 		dialog.setWidgetType(JsWidget.GUI_DIALOG);
 		panel.addChild(dialog);
 		this.fireLayoutChange(div);
+		return dialog;
 	}
 	
 	private JsWidget findPanel(JsWidget parent, String id) {
@@ -256,7 +266,8 @@ public class UiLayout {
 	
 	public void setCustomElement(String div, String customId, String customValue) {
 		JsWidget panel = getWidget(div);
-		panel.getCustom().put(customId, customValue);
+		//panel.getCustom().put(customId, customValue);
+		panel.setCustomElemnt(customId, customValue);
 		
 		if (customId.equals(CustomProperties.ARRAY)) {
 			if (customValue.equals(CustomProperties.True)) {
@@ -297,12 +308,12 @@ public class UiLayout {
 		if (widget.getWidgetType().equals(JsWidget.PANEL)) {
 			String id = widget.getChildren().get(0).getId();
 			int size = this.propertyGetter.getProperty(id).getSize();
-			JsWidget parent = new UiParent(widget).getParent();
+			JsWidget parent = getWidget(String.valueOf(widget.getParentDiv()));
 			
 
 			for (int i = 1; i < size; i++) {
 				JsWidget clonePanel = widget.clone();
-				clonePanel.setCustomElemnt(CustomProperties.COPIED, "true");
+				clonePanel.setCustomElemnt(CustomProperties.COPIED, CustomProperties.True);
 				for (JsWidget child : clonePanel.getChildren()) {
 					child.setIndex(i);
 				}
@@ -311,7 +322,7 @@ public class UiLayout {
 		}
 		else {
 			String id = widget.getId();
-			JsWidget parent = new UiParent(widget).getParent();
+			JsWidget parent = getWidget(String.valueOf(widget.getParentDiv()));
 			for (int i = 1; i < this.propertyGetter.getProperty(id).getSize(); i++) {
 				JsWidget clone = widget.clone();
 				clone.setIndex(i);
@@ -320,7 +331,7 @@ public class UiLayout {
 		}
 	}
 	
-	public void collectDynamicChangedPanel2() {
+	public void collectDynamicArrays() {
 		new WalkThrough(this.getRoot()) {
 			@Override
 			protected void handle(JsWidget jsWidget) {
@@ -328,59 +339,40 @@ public class UiLayout {
 					return;
 				}
 
-				if (jsWidget.getCustomElement(CustomProperties.ARRAY).equals("true")) {
+				if (jsWidget.getCustomElement(CustomProperties.ARRAY).equals(CustomProperties.True)) {
 					dynamicWidgets.add(jsWidget);
 				}
 			}
 		};
 	}
-	public List<JsWidget> collectDynamicChangedPanel_() {
-		List<JsWidget> changed = new ArrayList<>();
-		new WalkThrough(this.getRoot()) {
-			@Override
-			protected void handle(JsWidget jsWidget) {
-				if (!jsWidget.getWidgetType().equals(JsWidget.PANEL)) {
-					return;
-				}
 
-				if (jsWidget.getCustomElement(CustomProperties.ARRAY).equals("true")) {
-					// count current widgets
-					JsWidget masterPanel = jsWidget.getChildren().get(0);
-					RuntimeProperty property = propertyGetter.getProperty(masterPanel.getChildren().get(0).getId());
-					int size = property.getSize();
-					
-					if (jsWidget.getChildren().size() == size) {
-						return;
-					}
-					// clear copied widgets
-					Iterator<JsWidget> it = jsWidget.getChildren().iterator();
-					while(it.hasNext()) {
-						JsWidget child = it.next();
-						if (child.getCustomElement(CustomProperties.COPIED).equals("true")) {
-							it.remove();
-						}
-					}
-					
-					// copy widgets
-					for (int i = 1; i < size; i++) {
-						JsWidget child = masterPanel.clone();
-						child.setIndex(i);
-						child.setCustomElemnt(CustomProperties.COPIED, "true");
-						jsWidget.addChild(child);
-					}
-					
-					changed.add(jsWidget);
-				}
+	
+	private String findChildId(JsWidget child) {
+		String ret = "";
+		if (child.getId().isEmpty()) {
+			if (child.getChildren().size() > 0) {
+				ret = findChildId(child.getChildren().get(0));
 			}
-		};
-		return changed;
+		}
+		else {
+			ret = child.getId();
+		}
+		return ret;
 	}
 	
-	public void doDynamicPanel() {
+
+	
+	public void doAutoDynamicPanel() {
 		for (JsWidget jsWidget : this.dynamicWidgets) {
 			// count current widgets
 			JsWidget masterPanel = jsWidget.getChildren().get(0);
-			RuntimeProperty property = propertyGetter.getProperty(masterPanel.getChildren().get(0).getId());
+			
+			String id = findChildId(masterPanel);
+			if (id.isEmpty()) {
+				continue;
+			}
+
+			RuntimeProperty property = propertyGetter.getProperty(id);
 			int size = property.getSize();
 			
 			if (jsWidget.getChildren().size() == size) {
@@ -390,7 +382,7 @@ public class UiLayout {
 			Iterator<JsWidget> it = jsWidget.getChildren().iterator();
 			while(it.hasNext()) {
 				JsWidget child = it.next();
-				if (child.getCustomElement(CustomProperties.COPIED).equals("true")) {
+				if (child.getCustomElement(CustomProperties.COPIED).equals(CustomProperties.True)) {
 					it.remove();
 				}
 			}
@@ -399,31 +391,11 @@ public class UiLayout {
 			for (int i = 1; i < size; i++) {
 				JsWidget child = masterPanel.clone();
 				child.setIndex(i);
-				child.setCustomElemnt(CustomProperties.COPIED, "true");
+				child.setCustomElemnt(CustomProperties.COPIED, CustomProperties.True);
 				jsWidget.addChild(child);
 			}
 			this.fireLayoutChange(String.valueOf(jsWidget.getUnique()));
 		}
-	}
-	
-	class UiParent {
-		private JsWidget parent = null;
-		public UiParent(JsWidget child) {
-			
-			new WalkThrough(getRoot()) {
-				@Override
-				protected void handle(JsWidget jsWidget) {
-					if (jsWidget.getChildren().contains(child)) {
-						parent = jsWidget;
-						return;
-					}
-				}
-			};	
-		}
-		public JsWidget getParent() {
-			return parent;
-		}
-		
 	}
 
 	public void addListener(UiLayoutListener listener) {
@@ -433,6 +405,7 @@ public class UiLayout {
 	public void removeListener(UiLayoutListener listener) {
 		this.listeners.remove(listener);
 	}
+
 
 }
 

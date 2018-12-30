@@ -642,13 +642,6 @@ class JsDataTable extends JsSubWidget {
 		$('#' + this.baseId).empty();
 		this.tableid = this.baseId + "_table";
 		$('#' + this.baseId).append('<table id="' + this.tableid + '"><thead><tr><td></td></tr></thead><tbody></tbody></table>');
-//		this.table = $('#' + this.tableid).DataTable({
-//			ordering: false,
-//			paging: false
-//			destroy: true,
-//		});	
-//		$('#' + this.tableid + ' thead tr').css( "height", "12px");
-//		$('#' + this.tableid + ' tbody tr').css( "height", "12px");
 						
 		var headers = ['COL#1', 'COL#2', 'COL#3', 'COL#4'];
 		this.createTable(headers);
@@ -661,11 +654,7 @@ class JsDataTable extends JsSubWidget {
 		for (var i = 0; i < headers.length; i++) {
 			var head = headers[i];
 			$('#' + this.tableid + ' thead tr').append("<th>"+ head +"</th>");
-//			$( this.table.column( i ).header() ).text( headers[i] );
 		}
-
-//		this.table.columns().header(headers);		
-//		this.table.draw();
 	}
 }
 class JsDialogButton extends JsSubWidget {
@@ -710,6 +699,58 @@ class JsDialogButton extends JsSubWidget {
 			var layout = new LayoutBuilder(me.contentId, root);
 			$('#' + me.dialogId).dialog('open');
 		});
+	}
+	
+	updateLayout_new(info) {
+		$('#' + this.baseId).empty();
+		var root = info.custom["target_gui_id"];
+		$('#' + this.baseId).append('<Button id="' + this.buttonId + '">' + info.custom['caption'] + '</Button>');
+		$('#' + this.buttonId).button();
+		var me = this;
+		
+		$('#' + this.baseId).append('<div id="' + this.contentId + '" class="FlowLayout"></div>');
+		$('#' + me.buttonId).click(function() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/design/getDesign?root=" + root,
+			   success: function(msg){
+			   	buildPane(msg.unique, msg.parentDiv, me);
+			   }
+			});
+		});
+			
+		function buildPane(unique, parent, me) {
+			var dialogId = '#' + unique;
+			
+			$('#' + parent).detach('#' + unique);
+			$('#' + unique).appendTo('#' + me.contentId);
+			$('#' + unique).top(0).left(0);
+			
+			$('#' + me.contentId).dialog({
+				  autoOpen: false,
+				  title: 'Dialog',
+				  closeOnEscape: false,
+				  modal: true,
+				  buttons: {
+				    "OK": function(){
+				      $(this).dialog('close');
+				      $('#' + me.baseId).detach('#' + unique);
+				      $('#' + unique).appendTo('#' + parent);
+				    }
+				    ,
+				    "Cancel": function(){
+				      $(this).dialog('close');
+				      $('#' + me.baseId).detach('#' + unique);
+				      $('#' + unique).appendTo('#' + parent);
+				      
+				    }
+				  },
+				  width: 500,
+				  height: 400
+			});	
+			$('#' + me.contentId).dialog('open');
+		}
+
 	}
 }
 

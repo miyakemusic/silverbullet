@@ -297,6 +297,10 @@ class JsWidget {
 		var arg = editable ? 'enable' : 'destroy';
 		
 		// can resize
+		if ($('#' + this.baseId).hasClass('ui-resizable')) { // Don't know why. But has to destroy in advance if it already has this class.
+			$('#' + this.baseId).resizable('destroy');
+		}
+		
 		$('#' + this.baseId).resizable({
 	      stop: function( event, ui ) {
 	      	me.setSize();

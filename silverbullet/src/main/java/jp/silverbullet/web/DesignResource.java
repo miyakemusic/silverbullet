@@ -102,7 +102,7 @@ public class DesignResource {
 					return Reply.Accept;
 				}
 			});
-			StaticInstances.getInstance().getBuilderModel().getUiLayout().doDynamicPanel();
+			StaticInstances.getInstance().getBuilderModel().getUiLayout().doAutoDynamicPanel();
 //			for (JsWidget w : StaticInstances.getInstance().getBuilderModel().getUiLayout().collectDynamicChangedPanel()) {
 //				StaticInstances.getInstance().getBuilderModel().getUiLayout().fireLayoutChange(String.valueOf(w.getUnique()));				
 //			}
@@ -151,8 +151,8 @@ public class DesignResource {
 	@GET
 	@Path("/addDialog")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String addDialog(@QueryParam("div") String div, @QueryParam("id") String id) {
-		StaticInstances.getInstance().getBuilderModel().getUiLayout().addDialog(div, id);
+	public String addDialog(@QueryParam("div") String div) {
+		StaticInstances.getInstance().getBuilderModel().getUiLayout().addDialog(div);
 		return "OK";
 	}
 	
@@ -350,7 +350,7 @@ public class DesignResource {
 	@Path("buildUi")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<JsWidget> buildUi() {
-		StaticInstances.getInstance().getBuilderModel().getUiLayout().collectDynamicChangedPanel2();
+		//StaticInstances.getInstance().getBuilderModel().getUiLayout().collectDynamicChangedPanel2();
 		return null;
 	}
 }

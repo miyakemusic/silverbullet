@@ -35,6 +35,7 @@ public class UiLayoutHolder {
 	}
 	
 	public void load(String folder) {
+		this.layouts.clear();
 		try {
 			Files.list(Paths.get(folder))./*filter(file -> file.getFileName().endsWith(".ui")).*/forEach(p -> {
 				String filename = p.toAbsolutePath().toString();
@@ -43,7 +44,7 @@ public class UiLayoutHolder {
 				}
 				UiLayout tmpLayout = loadJson(UiLayout.class, filename);
 				tmpLayout.setPropertyGetter(this.propertyGetter);
-				tmpLayout.collectDynamicChangedPanel2();
+				tmpLayout.collectDynamicArrays();
 				tmpLayout.addListener(listener);
 				layouts.put(p.getFileName().toFile().getName(), tmpLayout);
 			});
@@ -81,13 +82,15 @@ public class UiLayoutHolder {
 
 	public List<String> getFileList() {
 		List<String> ret = new ArrayList<String>(this.layouts.keySet());
-		ret.remove(this.currentFilename);
-		ret.add(0, this.currentFilename);
+//		ret.remove(this.currentFilename);
+//		ret.add(0, this.currentFilename);
 		return ret;
 	}
 
 	public List<String> createNewFile(String filename) {
-		this.layouts.put(filename, new UiLayout(propertyGetter));
+		UiLayout uiLayout = new UiLayout(propertyGetter);
+		uiLayout.addListener(listener);
+		this.layouts.put(filename, uiLayout);
 		return getFileList();
 	}
 
@@ -97,9 +100,18 @@ public class UiLayoutHolder {
 		return this.currentUi;
 	}
 
-	public void removeFile(String filename) {
+	public boolean removeFile(String filename) {
+		if (this.layouts.size() == 1) {
+			return false;
+		}
 		this.layouts.get(filename).removeListener(listener);
 		this.layouts.remove(filename);
+		
+		if (this.currentFilename.equals(filename)) {
+			this.currentFilename = this.layouts.keySet().iterator().next();
+			this.currentUi = this.layouts.get(currentFilename);
+		}
+		return true;
 	}
 
 	public void createDefault() {
@@ -114,4 +126,9 @@ public class UiLayoutHolder {
 	public void removeListener(UiLayoutListener uiLayoutListener) {
 		this.listeners.remove(uiLayoutListener);
 	}
+
+	public String getCurrentFilename() {
+		return currentFilename;
+	}
+	
 }

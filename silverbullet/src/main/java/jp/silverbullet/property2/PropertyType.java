@@ -1,4 +1,4 @@
-package jp.silverbullet.property;
+package jp.silverbullet.property2;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -10,6 +10,8 @@ import java.util.Set;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import jp.silverbullet.property.StringArray;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PropertyType {

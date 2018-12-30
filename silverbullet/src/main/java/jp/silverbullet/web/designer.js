@@ -303,10 +303,7 @@ class DesignerClass {
 			updateGuiProperty('widgetType', $("#" + idWidgetType).val());
 		});
 		
-		$('#' + idAddDialog).click(function(e) {
-			addDialog('');
-			
-		});
+
 		$('#' + idCut).click(function(e) {
 			cut();
 		});

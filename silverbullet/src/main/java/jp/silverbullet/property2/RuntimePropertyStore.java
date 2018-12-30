@@ -26,6 +26,7 @@ public class RuntimePropertyStore {
 							Double.valueOf(value.toString()).intValue(), 
 							Double.valueOf(prevValue.toString()).intValue());
 				}
+
 			}
 
 			@Override
