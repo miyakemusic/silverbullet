@@ -8,7 +8,7 @@ public class RegisterInfo {
 	private BitSet mask;
 	private BitSet dataSet;
 
-	public RegisterInfo(String regName, String bitName, String value, RegisterProperty registerProperty) {
+	public RegisterInfo(String regName, String bitName, String value, RegisterSpecHolder registerProperty) {
 		SvRegister register  = registerProperty.getRegisterByName(regName);
 		RegisterBit bit = register.getBits().get(bitName);
 		

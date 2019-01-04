@@ -52,8 +52,7 @@ public class RegisterAccess {
 
 	public void writeIo(long address, int value, int bitFrom, int bitTo) {
 		BitSet data = new BitSet(32);
-	//	String bit = Integer.toBinaryString(value);
-		//data = BitSet.valueOf(new long[]{value});
+
 		for (int i = bitFrom; i <= bitTo; i++) {
 			data.set(i, ((value >> (i-bitFrom)) & 0x01) == 0x01 ? true : false);
 		}

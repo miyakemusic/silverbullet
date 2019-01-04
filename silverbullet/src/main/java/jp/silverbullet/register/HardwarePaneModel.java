@@ -6,6 +6,6 @@ public interface HardwarePaneModel {
 
 	PropertyHolder getPropertyHolder();
 
-	RegisterProperty getRegisterProperty();
+	RegisterSpecHolder getRegisterProperty();
 
 }

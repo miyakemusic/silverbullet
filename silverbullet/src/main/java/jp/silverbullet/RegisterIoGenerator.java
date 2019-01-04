@@ -12,18 +12,18 @@ import java.util.Map;
 import jp.silverbullet.handlers.RegisterAccess;
 import jp.silverbullet.register.RangeGetter;
 import jp.silverbullet.register.RegisterBit;
-import jp.silverbullet.register.RegisterProperty;
+import jp.silverbullet.register.RegisterSpecHolder;
 import jp.silverbullet.register.SvRegister;
 import jp.silverbullet.register.SvSimulator;
 import jp.silverbullet.register.RegisterBit.ReadWriteType;
 
 public class RegisterIoGenerator {
 
-	private RegisterProperty registerProperty;
+	private RegisterSpecHolder registerProperty;
 	private Map<String, String> addressNameMap = new HashMap<>();
 	private String userPackage;
 	
-	public RegisterIoGenerator(RegisterProperty registerProperty, String userPackage) {
+	public RegisterIoGenerator(RegisterSpecHolder registerProperty, String userPackage) {
 		this.registerProperty =registerProperty;
 		this.userPackage = userPackage;
 	}
@@ -36,7 +36,7 @@ public class RegisterIoGenerator {
 			source.add("import " + RegisterAccess.class.getName() + ";");
 			source.add("import jp.silverbullet.register.RegisterControl;");
 			source.add("public class " + className + " extends RegisterControl {");
-			for (SvRegister register : registerProperty.getRegisters()) {
+			for (SvRegister register : registerProperty.getRegisterList()) {
 				String registerAddressDef = "ADDR_" + convertName(register.getName()).toUpperCase();
 				addressNameMap.put(register.getAddress(), registerAddressDef);
 				source.add("    public static int " + registerAddressDef + " = " + convertAddress(register.getAddress()) + ";");
@@ -57,7 +57,7 @@ public class RegisterIoGenerator {
 			source.add("         this.registerAccess = registerAccess2;");
 			source.add("    }");
 			
-			for (SvRegister register : registerProperty.getRegisters()) {
+			for (SvRegister register : registerProperty.getRegisterList()) {
 				if (register.isBlock()) {
 					continue;
 				}
@@ -246,7 +246,7 @@ public class RegisterIoGenerator {
 			//source.add("	public void writeIo(long address, BitSet data, BitSet mask) {");
 			source.add("	public void " + method + " {");
 			int regCount = 0;
-			for (SvRegister register : registerProperty.getRegisters()) {
+			for (SvRegister register : registerProperty.getRegisterList()) {
 				if (regCount++ == 0) {
 					source.add("		if (address == SimRegisterControl." + getAddressDef(register.getAddress()) + ") {");
 				}
@@ -275,7 +275,7 @@ public class RegisterIoGenerator {
 		source.add("import java.util.BitSet;");
 		source.add("import " + SvSimulator.class.getName() + ";");
 		source.add("abstract public class AbstractUserSimulator extends SvSimulator {");
-		for (SvRegister register : registerProperty.getRegisters()) {
+		for (SvRegister register : registerProperty.getRegisterList()) {
 			for (RegisterBit bit : register.getBits().getBits()) {
 //				if (bit.getName().equals("Reserve")) {
 //					bit.setType(ReadWriteType.UNUSED);

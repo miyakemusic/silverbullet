@@ -70,7 +70,7 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 		minAddress = Long.MAX_VALUE;
 		maxAddress = Long.MIN_VALUE;
 		map.clear();
-		for (SvRegister register : builderModel.getRegisterProperty().getRegisters()) {
+		for (SvRegister register : builderModel.getRegisterSpecHolder().getRegisterList()) {
 			long address = 0;
 			if (register.isBlock()) {
 				String[] tmp = register.getAddress().split("-");
@@ -150,7 +150,7 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 		getIndex(address);	
 		SvRegister register = this.map.get(address);
 		Set<RegisterBit> changed = new HashSet<>();
-		for (int i = 0; i < builderModel.getRegisterProperty().getRegisterWidth(); i++) {
+		for (int i = 0; i < builderModel.getRegisterSpecHolder().getRegisterWidth(); i++) {
 			if (mask.get(i)) {
 				if (current.get(i) != data.get(i)) {
 					current.set(i, data.get(i));
@@ -321,6 +321,10 @@ public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 
 	public Map<Long, BitSet> getMapValue() {
 		return this.mapValue;
+	}
+
+	public String getCurrentValue(String regName, String bitName) {
+		return null;
 	}
 
 }

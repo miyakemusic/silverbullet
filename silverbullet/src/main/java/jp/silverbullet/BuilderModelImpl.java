@@ -30,9 +30,10 @@ import jp.silverbullet.property2.RuntimeProperty;
 import jp.silverbullet.property2.RuntimePropertyStore;
 import jp.silverbullet.register.RegisterMapModel;
 import jp.silverbullet.register.RegisterMapModelInterface;
-import jp.silverbullet.register.RegisterProperty;
+import jp.silverbullet.register.RegisterSpecHolder;
 import jp.silverbullet.register.RegisterShortCutHolder;
 import jp.silverbullet.register.SvSimulator;
+import jp.silverbullet.register2.RuntimeRegisterMap;
 import jp.silverbullet.remote.SvTexHolder;
 import jp.silverbullet.spec.SpecElement;
 import jp.silverbullet.test.TestRecorder;
@@ -64,7 +65,7 @@ public class BuilderModelImpl implements BuilderModel {
 	private PropertyHolder2 propertiesHolder2 = new PropertyHolder2();
 	private HandlerPropertyHolder handlerPropertyHolder = new HandlerPropertyHolder();
 	private SvTexHolder texHolder = new SvTexHolder();
-	private RegisterProperty registerProperty = new RegisterProperty();
+	private RegisterSpecHolder registerProperty = new RegisterSpecHolder();
 //	private DependencySpecHolder dependencySpecHolder = new DependencySpecHolder();
 	private jp.silverbullet.dependency2.DependencySpecHolder dependencySpecHolder2 = new jp.silverbullet.dependency2.DependencySpecHolder();
 	private SpecElement userStory = new SpecElement();
@@ -104,9 +105,14 @@ public class BuilderModelImpl implements BuilderModel {
 	
 	};
 	
+	private RuntimeRegisterMap registerMap = new RuntimeRegisterMap();
+	public RuntimeRegisterMap getRuntimRegisterMap() {
+		return this.registerMap;
+	}
+	
 	private RegisterMapModel registerMapModel = new RegisterMapModel(new RegisterMapModelInterface() {
 		@Override
-		public RegisterProperty getRegisterProperty() {
+		public RegisterSpecHolder getRegisterSpecHolder() {
 			return registerProperty;
 		}
 	});
@@ -205,6 +211,7 @@ public class BuilderModelImpl implements BuilderModel {
 
 	});
 	private DependencySpecHolder defaultDependency;
+	private RegisterSpecHolder registerSpecHolder;
 
 	public BuilderModelImpl() {
 		store = new RuntimePropertyStore(propertiesHolder2);
@@ -297,7 +304,7 @@ public class BuilderModelImpl implements BuilderModel {
 		propertiesHolder2.load(folder + "/" + ID_DEF_JSON);
 		
 		this.store = new RuntimePropertyStore(propertiesHolder2);
-		this.registerProperty = load(RegisterProperty.class, folder + "/" + REGISTER_XML);
+		this.registerProperty = load(RegisterSpecHolder.class, folder + "/" + REGISTER_XML);
 		this.handlerPropertyHolder = load(HandlerPropertyHolder.class, folder + "/" + HANDLER_XML);
 		this.texHolder = load(SvTexHolder.class, folder + "/" + REMOTE_XML);
 		this.hardSpec = load(SpecElement.class, folder + "/" + HARDSPEC_XML);
@@ -355,7 +362,7 @@ public class BuilderModelImpl implements BuilderModel {
 		this.propertiesHolder2.save(folder + "/" + ID_DEF_JSON);
 		save(this.handlerPropertyHolder, HandlerPropertyHolder.class, folder + "/" + HANDLER_XML);
 		save(this.texHolder, SvTexHolder.class, folder + "/" + REMOTE_XML);
-		save(this.registerProperty, RegisterProperty.class, folder + "/" + REGISTER_XML);
+		save(this.registerProperty, RegisterSpecHolder.class, folder + "/" + REGISTER_XML);
 		save(this.hardSpec, SpecElement.class, folder + "/" + HARDSPEC_XML);
 		save(this.userStory, SpecElement.class, folder + "/" + USERSTORY_XML);
 		save(this.registerShortCuts, RegisterShortCutHolder.class, folder + "/" + REGISTERSHORTCUT);
@@ -376,8 +383,8 @@ public class BuilderModelImpl implements BuilderModel {
 		tmpProps.initialize();
 		this.propertiesHolder.addAll(tmpProps);
 //		this.store.importProperties(tmpProps);
-		RegisterProperty tmpRegister = load(RegisterProperty.class, folder + "/" + REGISTER_XML);
-		this.registerProperty.addAll(tmpRegister.getRegisters());
+		RegisterSpecHolder tmpRegister = load(RegisterSpecHolder.class, folder + "/" + REGISTER_XML);
+//		this.registerProperty.addAll(tmpRegister.getRegisters());
 
 		HandlerPropertyHolder tmpHandler = load(HandlerPropertyHolder.class, folder + "/" + HANDLER_XML);
 		if (handlerPropertyHolder == null) {
@@ -433,7 +440,7 @@ public class BuilderModelImpl implements BuilderModel {
 	}
 
 	@Override
-	public RegisterProperty getRegisterProperty() {
+	public RegisterSpecHolder getRegisterProperty() {
 		return registerProperty;
 	}
 
@@ -583,5 +590,9 @@ public class BuilderModelImpl implements BuilderModel {
 
 	public DependencyEngine getDependency() {
 		return this.dependency;
+	}
+
+	public RegisterSpecHolder getRegisterSpecHolder() {
+		return this.registerSpecHolder;
 	}
 }

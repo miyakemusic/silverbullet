@@ -7,7 +7,7 @@ import jp.silverbullet.property2.PropertyType2;
 import jp.silverbullet.property2.RuntimeProperty;
 import jp.silverbullet.property2.RuntimePropertyStore;
 import jp.silverbullet.register.RegisterMapModel;
-import jp.silverbullet.register.RegisterProperty;
+import jp.silverbullet.register.RegisterSpecHolder;
 import jp.silverbullet.register.RegisterShortCutHolder;
 import jp.silverbullet.remote.SvTexHolder;
 import jp.silverbullet.spec.SpecElement;
@@ -49,7 +49,7 @@ public interface BuilderModel {
 
 	SvTexHolder getTexHolder();
 
-	RegisterProperty getRegisterProperty();
+	RegisterSpecHolder getRegisterProperty();
 
 	SpecElement getHardwareContorlProcedure();
 

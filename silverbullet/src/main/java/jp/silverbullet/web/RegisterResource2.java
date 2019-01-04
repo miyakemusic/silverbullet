@@ -22,22 +22,23 @@ import jp.silverbullet.handlers.RegisterAccess;
 import jp.silverbullet.register.BitSetToIntConverter;
 import jp.silverbullet.register.RegisterBit;
 import jp.silverbullet.register.RegisterInfo;
-import jp.silverbullet.register.RegisterBit.ReadWriteType;
-import jp.silverbullet.register.RegisterSpecHolder;
 import jp.silverbullet.register.RegisterShortCut;
+import jp.silverbullet.register.RegisterSpecHolder;
 import jp.silverbullet.register.SvRegister;
 import jp.silverbullet.register.SvSimulator;
+import jp.silverbullet.register.RegisterBit.ReadWriteType;
 import jp.silverbullet.register.json.SvRegisterJson;
 import jp.silverbullet.register.json.SvRegisterJsonHolder;
+import jp.silverbullet.register2.RegisterJsonController;
 
-@Path("/register")
-public class RegisterResource {
+@Path("/register2")
+public class RegisterResource2 {
 
 	@GET
 	@Path("/interrupt")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String interupt() {
-		StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().triggerInterrupt();
+		StaticInstances.getInstance().getBuilderModel().getRuntimRegisterMap().getRegisterController().triggerInterrupt();
 		return "OK";
 	}
 	
@@ -45,23 +46,7 @@ public class RegisterResource {
 	@Path("/getRegisters")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public SvRegisterJsonHolder getRegisters() {
-		RegisterSpecHolder regProp =  StaticInstances.getInstance().getBuilderModel().getRegisterProperty();
-		
-		SvRegisterJsonHolder ret = new SvRegisterJsonHolder();
-		for (SvRegister register : regProp.getRegisterList()) {
-			ret.addRegister(convertRegister(register));
-		}
-		
-		return ret;
-	}
-
-	private SvRegisterJson convertRegister(SvRegister register) {
-		SvRegisterJson ret = new SvRegisterJson();
-		ret.setAddress(register.getAddress());
-		ret.setDescription(register.getDescription());
-		ret.setName(register.getName());
-		ret.addAll(register.getBits().getBits());
-		return ret;
+		return new SvRegisterJsonHolder(StaticInstances.getInstance().getBuilderModel().getRegisterSpecHolder());
 	}
 	
 	@POST
@@ -69,59 +54,9 @@ public class RegisterResource {
 	@Consumes(MediaType.APPLICATION_JSON) 
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String postChanges(KeyValue[] changes) {
-		List<Integer> removes = new ArrayList<>();
-		boolean sortRequired = false;
-		
-		for (KeyValue kv : changes) {
-//			System.out.println(kv.getKey() + " = " + kv.getValue());
-			String[] tmp = kv.getKey().split("_");
-			String param = tmp[0];
-			int row = Integer.valueOf(tmp[1]);
-			SvRegister register =  StaticInstances.getInstance().getBuilderModel().getRegisterProperty().getRegisterList().get(row);
-			
-			if (param.equals("addr")) {
-				register.setAddressHex(kv.getValue());
-				sortRequired =true;
-			}
-			else if (param.equals("name")) {
-				register.setName(kv.getValue());
-			}
-			else if (param.equals("desc")) {
-				register.setDescription(kv.getValue());
-			}
-			else if (param.equals("bit")) {
-				String bitParam = tmp[2];
-				int bitRow = Integer.valueOf(tmp[3]);
-				RegisterBit bit = register.getBits().getBits().get(bitRow);
-				if (bitParam.equals("bit")) {
-					if (kv.getValue().isEmpty()) {
-						removes.add(bitRow);
-					}
-					else {
-						bit.setBit(kv.getValue());
-					}
-				}
-				else if (bitParam.equals("size")) {
-					bit.setSize(Integer.valueOf(kv.getValue()));
-				}
-				else if (bitParam.equals("type")) {
-					bit.setType(ReadWriteType.valueOf(kv.getValue()));
-				}
-				else if (bitParam.equals("name")) {
-					bit.setName(kv.getValue());
-				}
-				else if (bitParam.equals("desc")) {
-					bit.setDescription(kv.getValue());
-				}
-			}
-			
-			register.getBits().removeAll(removes);
-			register.getBits().sort();
-		}
-		
-		if (sortRequired) {
-			StaticInstances.getInstance().getBuilderModel().getRegisterProperty().sort();
-		}
+		RegisterJsonController controller = new RegisterJsonController(
+				StaticInstances.getInstance().getBuilderModel().getRegisterSpecHolder());
+		controller.handle(changes);
 		
 		return "OK";
 	}
@@ -129,14 +64,7 @@ public class RegisterResource {
 	@GET
 	@Path("/addNew")
 	public String addNew() {
-		RegisterSpecHolder registerProperty = StaticInstances.getInstance().getBuilderModel().getRegisterProperty();
-		
-		int last = registerProperty.getLastDecAddess();
-		int address = last + StaticInstances.getInstance().getBuilderModel().getRegisterProperty().getRegisterWidth()/8;
-		
-		registerProperty.addRegister("NewReg" + Calendar.getInstance().getTimeInMillis(), "0x"+Integer.toHexString(address), "NewRegister");
-		
-		StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().update();
+		StaticInstances.getInstance().getBuilderModel().getRegisterSpecHolder().addRegister();
 		return "OK";
 	}
 	
@@ -144,8 +72,7 @@ public class RegisterResource {
 	@Path("/addRow")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String addRow(@QueryParam("row") final Integer row) {
-		StaticInstances.getInstance().getBuilderModel().getRegisterProperty().insertRegisterAt(row);
-		StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().update();
+		StaticInstances.getInstance().getBuilderModel().getRegisterSpecHolder().insertRegisterAt(row);
 
 		return "OK";
 	}
@@ -154,8 +81,7 @@ public class RegisterResource {
 	@Path("/deleteRow")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String deleteRow(@QueryParam("row") final Integer row) {
-		StaticInstances.getInstance().getBuilderModel().getRegisterProperty().remove(row);
-		StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().update();
+		StaticInstances.getInstance().getBuilderModel().getRegisterSpecHolder().removeRow(row);
 
 		return "OK";
 	}
@@ -164,11 +90,7 @@ public class RegisterResource {
 	@Path("/addBitRow")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String addBitRow(@QueryParam("row") final int row) {
-		SvRegister register = StaticInstances.getInstance().getBuilderModel().getRegisterProperty().getRegisterList().get(row);
-		register.addBit("new bit", ReadWriteType.RW, "new bit", "new bit");
-		
-		StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().update();
-
+		StaticInstances.getInstance().getBuilderModel().getRegisterSpecHolder().getRegisterByIndex(row).addBit();
 		return "OK";
 	}
 
@@ -324,3 +246,4 @@ public class RegisterResource {
 	}
 
 }
+

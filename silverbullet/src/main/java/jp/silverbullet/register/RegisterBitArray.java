@@ -1,34 +1,44 @@
 package jp.silverbullet.register;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 import jp.silverbullet.register.RegisterBit.ReadWriteType;
 
-public class RegisterBitArray {
+public abstract class RegisterBitArray {
+	abstract protected int getRegisterWidth();
+	
 	private BitComparator comparator = new BitComparator();
 	private List<RegisterBit> bits = new ArrayList<RegisterBit>();
-	public int register_width = 32;
+	private RegisterBitListener listener = new RegisterBitListener() {
+		@Override
+		public void onBitChange(String bit, String prev, RegisterBit registerBit) {
+			sort();
+		}
+	};
 	
 	public RegisterBitArray() {
 		
 	}
-	public RegisterBitArray(int registerWidth) {
-		this.register_width = registerWidth;
-	}
-	
+
 	public List<RegisterBit> getBits() {
 		return bits;
 	}
 
 	public void setBits(List<RegisterBit> bits) {
 		this.bits = bits;
+		
+		this.bits.forEach(bit -> bit.addListener(listener));
 	}
 
 	public void add(RegisterBit registerBit) {
 		this.bits.add(registerBit);
+		registerBit.addListener(listener);
+		this.sort();
 	}
 
 	@Override
@@ -42,6 +52,7 @@ public class RegisterBitArray {
 	}
 
 	public void remove(int bitRow) {
+		this.bits.get(bitRow).removeListener(listener);
 		this.bits.remove(bitRow);
 	}
 	
@@ -51,13 +62,13 @@ public class RegisterBitArray {
 
 	public void removeAll(List<Integer> indexes) {
 		for (int i : indexes) {
-			this.bits.remove(i);
+			this.remove(i);
 		}
 	}
 
 	public void add(String name, ReadWriteType rw, String description2, String definition2) {
 		int startBit = 0;
-		int endBit = register_width - 1;
+		int endBit = getRegisterWidth() - 1;
 		if (this.bits.size() > 0) {
 			// Searches vacant bits
 			for (int i = this.bits.size()-1; i >= 0; i--) {
@@ -73,7 +84,9 @@ public class RegisterBitArray {
 			//startBit = this.getToBit(this.bits.get(this.bits.size()-1).getBit());
 		}
 				
-		this.add(new RegisterBit(name, startBit, endBit, ReadWriteType.RW, description2, definition2));
+		RegisterBit reg = new RegisterBit(name, startBit, endBit, ReadWriteType.RW, description2, definition2);
+		reg.addListener(listener);
+		this.add(reg);
 		this.sort();
 	}
 	
@@ -99,13 +112,52 @@ public class RegisterBitArray {
 		return null;
 	}
 
-	public RegisterBit getRegisterBit(int i) {
+	public RegisterBit getRegisterBit(int targetBit) {
 		for (RegisterBit bit: this.bits) {
-			if (bit.getStartBit() <= i && bit.getEndBit() >= i) {
+			if (bit.getStartBit() <= targetBit && bit.getEndBit() >= targetBit) {
 				return bit;
 			}
 		}
 		return null;
+	}
+
+	public void add() {
+		String name = "new" + Calendar.getInstance().getTimeInMillis();
+		if (this.getBits().size() > 0) {
+			String bits = this.getBits().get(0).getBit();
+			int max = Integer.valueOf(bits.split(":")[0]);
+			if (max < this.getRegisterWidth()-1) {
+				RegisterBit bit = new RegisterBit(name, max, this.getRegisterWidth()-1, ReadWriteType.RW, "Auto-added", "");
+				this.add(bit);
+			}
+			else {
+				for (int i = this.getBits().size()-1; i > 0; i--) {
+					RegisterBit bit = this.getBits().get(i);
+					RegisterBit nextBit = this.getBits().get(i-1);
+					int myMax = Integer.valueOf(bit.getBit().split(":")[0]);
+					int nextMin = Integer.valueOf(nextBit.getBit().split(":")[1]);
+					if (nextMin - myMax >= 2) {
+						RegisterBit newBit = new RegisterBit(name, myMax+1, nextMin-1, ReadWriteType.RW, "Auto-adde", "");
+						this.add(newBit);
+						break;
+					}
+				}
+			}
+		}
+		else {
+			this.add(name, ReadWriteType.RW , "Auto-added", "");
+		}
+		this.sort();
+	}
+
+	public void remove(String bitName) {
+		Iterator<RegisterBit> it = this.getBits().iterator();
+		while (it.hasNext()) {
+			if (it.next().getName().equals(bitName)) {
+				it.remove();
+				break;
+			}
+		}
 	}
 }
 

@@ -1,5 +1,8 @@
 package jp.silverbullet.register;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class RegisterBit {
 	public enum ReadWriteType {
 		RO, // Read Only
@@ -16,6 +19,8 @@ public class RegisterBit {
 	private String propertyFormula = "";
 	private int size;
 	public RegisterBit(){}
+	
+	private Set<RegisterBitListener> listeners = new HashSet<>();
 	
 	public RegisterBit(String name, int bitFrom, int bitTo, ReadWriteType type, String description, String definition2) {
 		super();
@@ -66,8 +71,10 @@ public class RegisterBit {
 	}
 
 	public void setBit(String bit) {
+		String prev = this.bit;
 		this.bit = bit;
 		calcSize();
+		listeners.forEach(listener -> listener.onBitChange(bit, prev, this));
 	}
 
 	public String getPropertyFormula() {
@@ -142,5 +149,13 @@ public class RegisterBit {
 			startBit = this.bit;
 		}
 		return Integer.valueOf(startBit);
+	}
+
+	public void addListener(RegisterBitListener listener) {
+		this.listeners.add(listener);
+	}
+
+	public void removeListener(RegisterBitListener listener) {
+		this.listeners.remove(listener);
 	}
 }
