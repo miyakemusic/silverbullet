@@ -9,13 +9,16 @@ class RegisterClass {
 		
 		$('#' + selectId).append($('<option>').text('Specification').val('Specification'));
 		$('#' + selectId).append($('<option>').text('Map').val('Map'));
+		
+		var me = this;
+		
 		$('#' + selectId).change(function() {
 			$('#' + regDiv).empty();
 			if ($(this).val() == 'Specification') {
-				new RegisterSpec(regDiv);
+				me.registerSpec = new RegisterSpec(regDiv);
 			}
 			else {
-				new RegisterMap(regDiv);
+				me.registerMap = new RegisterMap(regDiv);
 			}
 		});
 		

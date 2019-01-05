@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Set;
 
 import jp.silverbullet.register.RegisterSpecHolder;
-import jp.silverbullet.register.UserRuntimeRegisterHolderForTest.Register;
 
 public class RuntimeRegisterMap implements RegisterAccessor, RegisterAccessorListener {
 	private Map<String, RuntimeBit> registerValues = new HashMap<>();
@@ -40,7 +39,12 @@ public class RuntimeRegisterMap implements RegisterAccessor, RegisterAccessorLis
 
 	@Override
 	public int readRegister(Object regName, Object bitName) {
+		if (!this.registerValues.keySet().contains(regName.toString())) {
+			this.registerValues.put(regName.toString(), new RuntimeBit());
+		}
+		
 		return this.registerValues.get(regName.toString()).getValue(bitName.toString());
+		//return this.registerValues.get(regName.toString()).getValue(bitName.toString());
 	}
 
 	@Override

@@ -16,41 +16,12 @@ class RegisterMap {
 		this.bitInfo = new Map();
 		
 		var me = this;
-		var selectedValueId;
+//		var selectedValueId;
 		
 		// dialog for changing value
 		var dialogId = div + 'changeValueDialog';
 		var editValue = div + 'editValue';
 		var idBitName = div + 'dialogBitName';
-		$('#' + div).append('<div id="' + dialogId + '"><label id="' + idBitName + '"></label><br><input type="text" id="' + editValue + '"></div>');
-		$('#' + dialogId).dialog({
-			  autoOpen: false,
-			  title: 'Edit',
-			  closeOnEscape: false,
-			  modal: true,
-			  buttons: {
-			    "OK": function(){
-			    	$(this).dialog('close');
-			    	changeBitValue(selectedValueId, $('#' + editValue).val());
-			    }
-			    ,
-			    "Cancel": function(){
-			    	$(this).dialog('close');
-			    }
-			    ,
-			    "Create Shortcut": function() {
-			    	$(this).dialog('close');
-			    	createShortCut(selectedValueId);
-			    }
-			    ,
-			    "Add to Test": function() {
-			    	$(this).dialog('close');
-			    	addToTest(selectedValueId);
-			    }
-			  },
-			width: 400,
-			height: 300
-		});	
 		
 		initWebSocket();
 		getSimulators();
@@ -62,7 +33,7 @@ class RegisterMap {
 		function interrupt() {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/register/interrupt",
+			   url: "http://" + window.location.host + "/rest/register2/interrupt",
 			   success: function(msg){
 			   }
 			});		
@@ -72,7 +43,7 @@ class RegisterMap {
 		function getAddesSimulators() {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/register/getAddedSimulators",
+			   url: "http://" + window.location.host + "/rest/register2/getAddedSimulators",
 			   success: function(msg){
 			   		$('#' + idEnabledSimulators).empty();
 			   		$('#' + idEnabledSimulators).append('Loaded Simulators:');
@@ -94,7 +65,7 @@ class RegisterMap {
 		function unloadSimulator(sim) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/register/unloadSimulator?simulator=" + sim,
+			   url: "http://" + window.location.host + "/rest/register2/unloadSimulator?simulator=" + sim,
 			   success: function(msg){
 					getAddesSimulators();
 			   }
@@ -105,7 +76,7 @@ class RegisterMap {
 			$('#' + simButton).click(function() {
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/register/loadSimulator?simulator=" + $('#' + idSimulator).val(),
+				   url: "http://" + window.location.host + "/rest/register2/loadSimulator?simulator=" + $('#' + idSimulator).val(),
 				   success: function(msg){
 				   		for (var i = 0; i < msg.length; i++) {
 							var sim = msg[i];
@@ -118,7 +89,7 @@ class RegisterMap {
 			
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/register/getSimulators",
+			   url: "http://" + window.location.host + "/rest/register2/getSimulators",
 			   success: function(msg){
 			   		for (var i = 0; i < msg.length; i++) {
 						var sim = msg[i];
@@ -165,7 +136,7 @@ class RegisterMap {
 			$('#' + mainDiv).empty();
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/register/getRegisters",
+			   url: "http://" + window.location.host + "/rest/register2/getRegisters",
 			   success: function(msg){
 					createMapContent(msg);
 			   }
@@ -255,14 +226,51 @@ class RegisterMap {
 				$('#' + mapTableId + ' > tbody').append('<tr>' + row + '</tr>');
 				
 				$('.regButton').click(function() {
+					$('#' + div).append('<div id="' + dialogId + '"><label id="' + idBitName + '"></label><br><input type="text" id="' + editValue + '"></div>');
+	
 					var id = $(this).prop('id');
-					selectedValueId = id;
+					me.selectedValueId = id;
 					var text = $(this).text();
 					
 					var obj = me.bitInfo.get(id);
 					$('#'+ idBitName).html('Register: ' + obj.register + '(' + obj.address + ')' + '<br>' + 
 					'Bit: ' + obj.bitName + '[' + obj.bit + ']');
 					$('#' + editValue).val(text);
+						$('#' + dialogId).dialog({
+					  autoOpen: false,
+					  title: 'Edit',
+					  closeOnEscape: false,
+					  modal: true,
+					  buttons: {
+					    "OK": function(){
+					    	changeBitValue(me.selectedValueId, $('#' + editValue).val());
+					    	$(this).dialog('destroy');
+					    	$('#' + dialogId).remove();
+					    	
+					    }
+					    ,
+					    "Cancel": function(){
+					    	$(this).dialog('destroy');
+					    	$('#' + dialogId).remove();
+					    }
+					    ,
+					    "Create Shortcut": function() {
+					    	createShortCut(me.selectedValueId);
+					    	$(this).dialog('destroy');
+					    	$('#' + dialogId).remove();
+					    	
+					    }
+					    ,
+					    "Add to Test": function() {
+					    	addToTest(me.selectedValueId);
+					    	$(this).dialog('destroy');
+					    	$('#' + dialogId).remove();
+					    	
+					    }
+					  },
+					  width: 400,
+					  height: 300
+					});							
 					$('#' + dialogId).dialog('open');
 				});
 				
@@ -281,7 +289,7 @@ class RegisterMap {
 						   data: event.target.result,
 		//				   contentType: false,
         				   processData: false,
-						   url: "http://" + window.location.host + "/rest/register/setBlockData?regName=" + reg,
+						   url: "http://" + window.location.host + "/rest/register2/setBlockData?regName=" + reg,
 						   success: function(msg){
 						   }
 						});	
@@ -294,7 +302,7 @@ class RegisterMap {
 			var obj = me.bitInfo.get(buttonId);
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/register/setCurrentValue?regName=" + obj.register + '&bitName=' + obj.bitName + '&value=' + value,
+			   url: "http://" + window.location.host + "/rest/register2/setCurrentValue?regName=" + obj.register + '&bitName=' + obj.bitName + '&value=' + value,
 			   success: function(msg){
 			   }
 			});		
@@ -303,7 +311,7 @@ class RegisterMap {
 			var obj = me.bitInfo.get(buttonId);
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/register/createShortCut?regName=" + obj.register + '&bitName=' + obj.bitName,
+			   url: "http://" + window.location.host + "/rest/register2/createShortCut?regName=" + obj.register + '&bitName=' + obj.bitName,
 			   success: function(msg){
 			   }
 			});		
@@ -312,7 +320,7 @@ class RegisterMap {
 			var obj = me.bitInfo.get(buttonId);
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/register/addToTest?regName=" + obj.register + '&bitName=' + obj.bitName,
+			   url: "http://" + window.location.host + "/rest/register2/addToTest?regName=" + obj.register + '&bitName=' + obj.bitName,
 			   success: function(msg){
 			   }
 			});		
@@ -320,7 +328,7 @@ class RegisterMap {
 		function getCurrentValue(id, regName, bitName) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/register/getCurrentValue?regName=" + regName + '&bitName=' + bitName,
+			   url: "http://" + window.location.host + "/rest/register2/getCurrentValue?regName=" + regName + '&bitName=' + bitName,
 			   success: function(msg){
 					$('#' + id).html(msg);
 			   }

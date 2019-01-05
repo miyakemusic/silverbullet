@@ -127,7 +127,7 @@ public abstract class RegisterBitArray {
 			String bits = this.getBits().get(0).getBit();
 			int max = Integer.valueOf(bits.split(":")[0]);
 			if (max < this.getRegisterWidth()-1) {
-				RegisterBit bit = new RegisterBit(name, max, this.getRegisterWidth()-1, ReadWriteType.RW, "Auto-added", "");
+				RegisterBit bit = new RegisterBit(name, max + 1, this.getRegisterWidth()-1, ReadWriteType.RW, "Auto-added", "");
 				this.add(bit);
 			}
 			else {

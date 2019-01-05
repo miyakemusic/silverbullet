@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import jp.silverbullet.register.RegisterBit.ReadWriteType;
-import jp.silverbullet.register.UserRuntimeRegisterHolderForTest.Reg1;
 import jp.silverbullet.register2.SvRegisterListener;
 
 public abstract class SvRegister {
@@ -62,12 +61,16 @@ public abstract class SvRegister {
 		return address;
 	}
 
-	public void setAddressHex(String address) {
+	public boolean setAddressHex(String address) {
+		if (!address.startsWith("0x")) {
+			return false;
+		}
 		String prev = this.address;
 		this.address = address;
 		if (prev != null) {
 			this.listeners.forEach(listener -> listener.onAddressChange(this, this.address, prev));
 		}
+		return true;
 	}
 
 	public RegisterBitArray getBits() {

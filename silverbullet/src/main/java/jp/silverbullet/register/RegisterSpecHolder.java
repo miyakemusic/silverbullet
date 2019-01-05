@@ -122,7 +122,13 @@ public class RegisterSpecHolder {
 		newRegister.setName("NEW_" + row.toString()  + this.registers.size() + Calendar.getInstance().getTimeInMillis());
 		int iRow = Integer.valueOf(row);
 			
-		String currentAddress = registers.values().toArray(new SvRegister[0])[iRow].getAddress();
+		String currentAddress = "";
+		if (registers.size() == 0) {
+			currentAddress = "0x00";
+		}
+		else {
+			currentAddress = registers.values().toArray(new SvRegister[0])[iRow].getAddress();
+		}
 		if (currentAddress.contains("-")) {
 			currentAddress = currentAddress.split("-")[1];
 		}
@@ -206,6 +212,6 @@ public class RegisterSpecHolder {
 
 
 	public void removeRow(Integer row) {
-		this.remove(this.getRegisterList().indexOf(row));
+		this.remove(this.getRegisterList().get((row)));
 	}
 }

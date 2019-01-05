@@ -15,7 +15,10 @@ public class RuntimeBit {
 		this.bitValues.clear();
 	}
 
-	public int getValue(String bitName) {
+	public Integer getValue(String bitName) {
+		if (!this.bitValues.keySet().contains(bitName)) {
+			this.bitValues.put(bitName, 0);
+		}
 		return this.bitValues.get(bitName);
 	}
 

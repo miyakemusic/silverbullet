@@ -316,7 +316,7 @@ public class BuilderModelImpl implements BuilderModel {
 //		dependencySpecHolder = new AlternativeDependencyGenerator().convert(dependencySpecHolder);
 		
 		uiLayoutHolder.load(folder);
-
+		registerSpecHolder = load(RegisterSpecHolder.class, folder);
 		// UiLayout.getInstance().initialize();
 		
 		dependency = new DependencyEngine(dependencySpecHolder2, new PropertyGetter () {

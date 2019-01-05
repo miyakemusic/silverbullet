@@ -1,6 +1,7 @@
 package jp.silverbullet.web;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -14,8 +15,10 @@ import jp.silverbullet.dependency2.ChangedItemValue;
 import jp.silverbullet.dependency2.DependencyListener;
 import jp.silverbullet.dependency2.Id;
 import jp.silverbullet.property2.PropertDefHolderListener;
+import jp.silverbullet.register.BitUpdates;
 import jp.silverbullet.register.RegisterMapListener;
 import jp.silverbullet.register.RegisterUpdates;
+import jp.silverbullet.register2.RegisterAccessorListener;
 import jp.silverbullet.test.TestRecorderListener;
 
 public class WebClientManager {
@@ -135,6 +138,49 @@ public class WebClientManager {
 			}
 		});
 		
+		StaticInstances.getInstance().getBuilderModel().getRuntimRegisterMap().addListener(new RegisterAccessorListener() {
+			@Override
+			public void onUpdate(Object regName, Object bitName, int value) {
+				try {
+					RegisterUpdates updates = new RegisterUpdates();
+					updates.setName(regName.toString());
+					updates.setBits(Arrays.asList(new BitUpdates(bitName.toString(), String.valueOf(value))));
+					String val = new ObjectMapper().writeValueAsString(updates);
+					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("REGVAL", val));
+					WebSocketBroadcaster.getInstance().sendMessage(str);
+				} catch (JsonGenerationException e) {
+					e.printStackTrace();
+				} catch (JsonMappingException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+
+			@Override
+			public void onUpdate(Object regName, byte[] image) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onInterrupt() {
+				try {
+					RegisterUpdates updates = new RegisterUpdates();
+					updates.setName("@Interrupt@");
+					String val = new ObjectMapper().writeValueAsString(updates);
+					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("REGVAL", val));
+					WebSocketBroadcaster.getInstance().sendMessage(str);
+				} catch (JsonGenerationException e) {
+					e.printStackTrace();
+				} catch (JsonMappingException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			
+		});
 		StaticInstances.getInstance().getBuilderModel().getTestRecorder().addListener(new TestRecorderListener() {
 			@Override
 			public void onTestFinished() {

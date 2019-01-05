@@ -51,4 +51,12 @@ public class RegisterController implements RegisterAccessor {
 	public void triggerInterrupt() {
 		listener.onInterrupt();
 	}
+
+	public void write(String regName, byte[] data) {
+		listener.onUpdate(regName, data);
+	}
+
+	public void write(String regName, String bitName, String value) {
+		listener.onUpdate(regName, bitName, Integer.valueOf(value));
+	}
 }

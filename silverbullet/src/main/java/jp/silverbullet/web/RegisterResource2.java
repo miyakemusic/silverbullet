@@ -98,8 +98,9 @@ public class RegisterResource2 {
 	@Path("/setCurrentValue")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setCurrentValue(@QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName, @QueryParam("value") final String value) {
-		RegisterInfo regInfo = new RegisterInfo(regName, bitName, value, StaticInstances.getInstance().getBuilderModel().getRegisterProperty());
-		StaticInstances.getInstance().getSimulator().updateRegister(regInfo.getIntAddress(), regInfo.getDataSet(), regInfo.getMask());	
+		StaticInstances.getInstance().getBuilderModel().getRuntimRegisterMap().getRegisterController().write(regName, bitName, value);
+		//		RegisterInfo regInfo = new RegisterInfo(regName, bitName, value, StaticInstances.getInstance().getBuilderModel().getRegisterProperty());
+//		StaticInstances.getInstance().getSimulator().updateRegister(regInfo.getIntAddress(), regInfo.getDataSet(), regInfo.getMask());	
 		return "OK";
 	}	
 
@@ -109,9 +110,7 @@ public class RegisterResource2 {
 	@Produces(MediaType.TEXT_PLAIN)
 	public String setBlockData(String data, @QueryParam("regName") final String regName) {
 		byte[] b = Base64.decode(data.replace("data:application/octet-stream;base64,", ""));
-		
-		SvRegister register  = StaticInstances.getInstance().getBuilderModel().getRegisterProperty().getRegisterByName(regName);
-		StaticInstances.getInstance().getSimulator().updateBlockData(register.getDecAddress(), b);
+		StaticInstances.getInstance().getBuilderModel().getRuntimRegisterMap().getRegisterController().write(regName, b);
 		return "OK";
 	}
 	
@@ -154,20 +153,7 @@ public class RegisterResource2 {
 	@Path("/getCurrentValue")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String getCurrentValue(@QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName) {
-		SvRegister register  = StaticInstances.getInstance().getBuilderModel().getRegisterProperty().getRegisterByName(regName);
-		Map<Long, BitSet> value = StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().getMapValue();
-		String address = register.getAddress().replace("0x", "");
-		if (address.contains("-")) {
-			address = address.split("-")[0];
-		}
-		long intAddress = Integer.parseInt(address, 16);
-		BitSet bitSet = value.get(intAddress);
-		
-		RegisterBit bit = register.getBits().get(bitName);
-
-		int startBit = bit.getStartBit();
-		int endBit = bit.getEndBit();
-		int ret = new BitSetToIntConverter().convert(bitSet, startBit, endBit+1);
+		int ret = StaticInstances.getInstance().getBuilderModel().getRuntimRegisterMap().readRegister(regName, bitName);
 		return String.valueOf(ret);
 	}
 
