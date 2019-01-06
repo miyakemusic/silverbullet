@@ -3,8 +3,8 @@ package jp.silverbullet.register.json;
 import java.util.ArrayList;
 import java.util.List;
 
-import jp.silverbullet.register.RegisterSpecHolder;
-import jp.silverbullet.register.SvRegister;
+import jp.silverbullet.register2.RegisterSpecHolder;
+import jp.silverbullet.register2.SvRegister;
 
 public class SvRegisterJsonHolder {
 	private List<SvRegisterJson> registers = new ArrayList<>();

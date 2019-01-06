@@ -7,20 +7,22 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.BitSet;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import jp.silverbullet.register.RegisterBit.ReadWriteType;
 import jp.silverbullet.register.json.SvRegisterJsonHolder;
-import jp.silverbullet.register2.BitValue;
-import jp.silverbullet.register2.RealHardwareAccessor;
-import jp.silverbullet.register2.RegisterAccessorListener;
+import jp.silverbullet.register2.RegisterBit;
+import jp.silverbullet.register2.RegisterBit.ReadWriteType;
+import jp.silverbullet.register2.RegisterBitArray;
 import jp.silverbullet.register2.RuntimeRegisterMap;
+import jp.silverbullet.register2.SvRegister;
 import jp.silverbullet.web.KeyValue;
 import jp.silverbullet.register2.RegisterController;
 import jp.silverbullet.register2.RegisterJsonController;
+import jp.silverbullet.register2.RegisterSourceGenerator;
+import jp.silverbullet.register2.RegisterSpecHolder;
 
 public class RegisterSpecHolderTest {
 
@@ -108,9 +110,23 @@ public class RegisterSpecHolderTest {
 			holder.remove(0x10);
 			assertEquals("additional config", holder.getRegisterList().get(0).getName());
 			assertEquals("standard config", holder.getRegisterList().get(1).getName());
+			
+			assertEquals("0x204", holder.getRegisterByAddress(holder.getLastDecAddess()).getAddress());
+			SvRegister reg = holder.addRegister("will removed", "0x100000", "");
+			assertEquals(0x100000, holder.getLastDecAddess());
+			assertEquals(reg, holder.getRegisterByAddress(0x100000));
+			assertEquals("0x100000", holder.getRegisterByAddress(holder.getLastDecAddess()).getAddress());
+			holder.removeRow(holder.getRegisterList().size()-1);
+			assertEquals("0x204", holder.getRegisterByAddress(holder.getLastDecAddess()).getAddress());
+			
 		}
 		
 		{
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 			holder.addRegister();
 			SvRegister added = holder.getRegisterList().get(holder.size()-1);
 			assertTrue(added.getName().startsWith("NEW"));
@@ -120,18 +136,18 @@ public class RegisterSpecHolderTest {
 		// change address
 		{
 			SvRegister reg = holder.getRegisterByName("additional config");
-			reg.setAddress(0x1000);
+			reg.setAddressDec(0x1000);
 			assertEquals("standard config", holder.getRegisterList().get(0).getName());
 			
-			reg.setAddress(0x18);
+			reg.setAddressDec(0x18);
 			assertEquals("additional config", holder.getRegisterList().get(0).getName());
 			
-			reg.setAddressHex("0x1000");
+			reg.setAddress("0x1000");
 			assertEquals("standard config", holder.getRegisterList().get(0).getName());
 		}
 		{
 			SvRegister reg = holder.getRegisterByName("graph data");
-			reg.setAddress(0x2000, 0x2100);
+			reg.setAddressDec(0x2000, 0x2100);
 			
 			SvRegister lastReg = holder.getRegisterList().get(holder.size()-1);
 			assertEquals("graph data", lastReg.getName());
@@ -191,7 +207,7 @@ public class RegisterSpecHolderTest {
 			assertEquals("15:12", reg.getBit("add").getBit());
 			
 			reg.addBit();
-			assertEquals("31:19", reg.getBits().getBits().get(0).getBit());
+			assertEquals("31:20", reg.getBits().getBits().get(0).getBit());
 			
 			
 			reg.getBits().remove("bit5");
@@ -223,6 +239,40 @@ public class RegisterSpecHolderTest {
 				
 	}
 
+	@Test
+	public void testPersistent() {
+		RegisterSpecHolder holder = new RegisterSpecHolder(32);
+		holder.newRegister("register 1", 0x10, "register 1 description").
+			newBit("bit0", 0, 1, ReadWriteType.RW, "bit0").
+			newBit("bit1", 16, 31, ReadWriteType.RO, "bit1");
+		
+		holder.newRegister("register 2", 0x20, "register 2 description").
+			newBit("bit4", 0, 1, ReadWriteType.RW, "bit4 description").
+			newBit("bit5", 3, 2, ReadWriteType.RW, "bit5 description");	
+		
+		holder.save(".");
+		
+		RegisterSpecHolder newHolder = new RegisterSpecHolder();
+		newHolder.load(".");
+		assertEquals(holder.getRegisterWidth(), newHolder.getRegisterWidth());
+		assertEquals(holder.getRegisters().size(), newHolder.getRegisters().size());
+		assertEquals(holder.getRegisters().keySet().iterator().next(), newHolder.getRegisters().keySet().iterator().next());
+
+		assertEquals(holder.getRegisterList().get(0).getName(), newHolder.getRegisterList().get(0).getName());
+		assertEquals(holder.getRegisterList().get(0).getAddress(), newHolder.getRegisterList().get(0).getAddress());
+		assertEquals(holder.getRegisterList().get(0).getDecAddress(), newHolder.getRegisterList().get(0).getDecAddress());
+		assertEquals(holder.getRegisterList().get(0).getDescription(), newHolder.getRegisterList().get(0).getDescription());
+		assertEquals(holder.getRegisterList().get(0).getBits().getBits().get(0).getName(), newHolder.getRegisterList().get(0).getBits().getBits().get(0).getName());
+		assertEquals(holder.getRegisterList().get(0).getBits().getBits().get(0).getBit(), newHolder.getRegisterList().get(0).getBits().getBits().get(0).getBit());
+		assertEquals(holder.getRegisterList().get(0).getBits().getBits().get(0).getSize(), newHolder.getRegisterList().get(0).getBits().getBits().get(0).getSize());
+		assertEquals(holder.getRegisterList().get(0).getBits().getBits().get(0).getDescription(), newHolder.getRegisterList().get(0).getBits().getBits().get(0).getDescription());
+		assertEquals(holder.getRegisterList().get(0).getBits().getBits().get(0).getType(), newHolder.getRegisterList().get(0).getBits().getBits().get(0).getType());
+		assertEquals(holder.getRegisterList().get(0).getBits().getBits().get(0).getStartBit(), newHolder.getRegisterList().get(0).getBits().getBits().get(0).getStartBit());
+		assertEquals(holder.getRegisterList().get(0).getBits().getBits().get(0).getEndBit(), newHolder.getRegisterList().get(0).getBits().getBits().get(0).getEndBit());
+
+
+	}
+	
 	@Test
 	public void testGenerateSource() {
 		RegisterSpecHolder holder = new RegisterSpecHolder(32);
@@ -373,6 +423,25 @@ public class RegisterSpecHolderTest {
 		
 		SvRegisterJsonHolder json = new SvRegisterJsonHolder(holder);
 		assertEquals(UserRuntimeRegisterHolderForTest.Register.Reg1.toString(), json.getRegisters().get(0).getName());
+	
+		UserRuntimeRegisterHolderForTest user = new UserRuntimeRegisterHolderForTest(registerMap);
+		new Thread() {
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				simulator.triggerInterrupt();
+			}
+			
+		}.start();
+		long now = new Date().getTime();
+		user.waitInterrupt();
+		
+		assertTrue(new Date().getTime() - now > 100);
 	}
 
 }

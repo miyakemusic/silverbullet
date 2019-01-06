@@ -1,11 +1,11 @@
 package jp.silverbullet.register2;
 
+import java.util.HashSet;
 import java.util.List;
-
-import jp.silverbullet.register.RegisterSpecHolder;
+import java.util.Set;
 
 public class RegisterController implements RegisterAccessor {
-	private RegisterAccessorListener listener;
+	private Set<RegisterAccessorListener> listeners = new HashSet<>();
 
 	public RegisterController() {
 
@@ -31,15 +31,15 @@ public class RegisterController implements RegisterAccessor {
 
 	@Override
 	public void addListener(RegisterAccessorListener listener) {
-		this.listener = listener;
+		this.listeners.add(listener);
 	}
 
 	public void updateValue(Object regName, Object bitName, int value) {
-		listener.onUpdate(regName, bitName, value);
+		this.listeners.forEach(listener -> listener.onUpdate(regName, bitName, value));
 	}
 
 	public void updateValue(Object regName, byte[] image) {
-		listener.onUpdate(regName, image);
+		this.listeners.forEach(listener ->  listener.onUpdate(regName, image));
 	}
 
 	@Override
@@ -49,14 +49,14 @@ public class RegisterController implements RegisterAccessor {
 	}
 
 	public void triggerInterrupt() {
-		listener.onInterrupt();
+		listeners.forEach(listener -> listener.onInterrupt());
 	}
 
 	public void write(String regName, byte[] data) {
-		listener.onUpdate(regName, data);
+		listeners.forEach(listener -> listener.onUpdate(regName, data));
 	}
 
 	public void write(String regName, String bitName, String value) {
-		listener.onUpdate(regName, bitName, Integer.valueOf(value));
+		listeners.forEach(listener -> listener.onUpdate(regName, bitName, Integer.valueOf(value)));
 	}
 }

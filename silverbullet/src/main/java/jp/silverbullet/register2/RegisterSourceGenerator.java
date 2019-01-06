@@ -1,5 +1,9 @@
-package jp.silverbullet.register;
+package jp.silverbullet.register2;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
@@ -16,6 +20,19 @@ public class RegisterSourceGenerator {
 		this.className = className;
 	}
 
+	public void exportFile(String filename) {
+		List<String> lines = this.generate();
+		try {
+			String name = filename + "/" + this.className + ".java";
+			if (Files.exists(Paths.get(name))) {
+				Files.delete(Paths.get(name));
+			}
+			Files.write(Paths.get(name), lines, StandardOpenOption.CREATE);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public List<String> generate() {
 		List<String> lines = new ArrayList<>();
 		// package
@@ -48,7 +65,7 @@ public class RegisterSourceGenerator {
 			}
 			lines.add("	}");
 			
-			lines.add("	public RuntimeRegister<" + name + "> " + createInstanceName(register.getName()) + " = new RuntimeRegister<>(\"" + name + "\", accessor);");
+			lines.add("	public RuntimeRegister<" + name + "> " + createInstanceName(register.getName()) + " = new RuntimeRegister<>(Register." + name + ", accessor);");
 			
 		});
 

@@ -1,10 +1,10 @@
 package jp.silverbullet.register2;
 
 public class BitValue {
-	public BitValue(String bitName, int value) {
+	public BitValue(Object bitName, int value) {
 		this.bitName = bitName;
 		this.value = value;
 	}
-	public String bitName;
+	public Object bitName;
 	public Integer value;
 }

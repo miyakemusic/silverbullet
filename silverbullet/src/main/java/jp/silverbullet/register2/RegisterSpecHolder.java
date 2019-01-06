@@ -1,4 +1,4 @@
-package jp.silverbullet.register;
+package jp.silverbullet.register2;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -9,7 +9,9 @@ import java.util.Map;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import jp.silverbullet.register2.SvRegisterListener;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jp.silverbullet.JsonPersistent;
 @XmlRootElement
 public class RegisterSpecHolder {
 	private Map<Long, SvRegister> registers = new LinkedHashMap<>();
@@ -35,7 +37,7 @@ public class RegisterSpecHolder {
 		SvRegister register = this.createRegister();
 		register.setName(name);
 		register.setDescription(description);
-		register.setAddressHex(address);
+		register.setAddress(address);
 		
 		address = getStartAddress(address);
 //		this.registers.put(toDecAddess(address), register);
@@ -59,6 +61,7 @@ public class RegisterSpecHolder {
 		this.registers = newMap;
 	}
 	
+	@JsonIgnore
 	public List<SvRegister> getRegisterList() {
 		return new ArrayList<SvRegister>(this.registers.values());
 	}
@@ -93,11 +96,12 @@ public class RegisterSpecHolder {
 		return this.registers.get(address);
 	}
 
+	@JsonIgnore
 	public int getLastDecAddess() {
 		if (this.registers.size() == 0) {
 			return 0;
 		}
-		return this.registers.get((long)(this.registers.size()-1)).getDecAddress();
+		return this.getRegisterList().get(this.getRegisterList().size()-1).getDecAddress();
 	}
 
 	public int getRegisterWidth() {
@@ -106,7 +110,7 @@ public class RegisterSpecHolder {
 	public SvRegister newRegister(String name, long address, String description) {
 		SvRegister ret = createRegister();
 		ret.setName(name.toString());
-		ret.setAddress(address);
+		ret.setAddressDec(address);
 		ret.setDescription(description);
 		putNewRegister(address, ret);
 		this.sort();
@@ -143,36 +147,40 @@ public class RegisterSpecHolder {
 			i++;
 		}
 		
-		newRegister.setAddressHex(toHexAddress(address));
-		
+		newRegister.setAddress(toHexAddress(address));
+		newRegister.setDescription("description");
 		putNewRegister(address, newRegister);
 		this.sort();
 		
 		return newRegister;
 	}
 
-	private SvRegister createRegister() {
-		SvRegister newRegister = new SvRegister() {
-			@Override
-			protected int getRegisterWidth() {
-				return registerWidth;
-			}
+	private SvRegisterInterface registerInterface = new SvRegisterInterface() {
+		@Override
+		public int getRegisterWidth() {
+			return registerWidth;
+		}
 
-			@Override
-			protected boolean conflictsName(String name2, SvRegister svRegister) {
-				for (SvRegister reg : registers.values()) {
-					if (reg.equals(svRegister)) {
-						continue;
-					}
-					if (reg.getName().equals(name2)) {
-						return true;
-					}
+		@Override
+		public boolean conflictsName(String name2, SvRegister svRegister) {
+			for (SvRegister reg : registers.values()) {
+				if (reg.equals(svRegister)) {
+					continue;
 				}
-				return false;
+				if (reg.getName().equals(name2)) {
+					return true;
+				}
 			}
-		};
+			return false;
+		}
+		
+	};
+	private SvRegister createRegister() {
+		SvRegister newRegister = new SvRegister();
+		newRegister.setRegisterInterface(registerInterface);
 		return newRegister;
 	}
+	
 	public void newMultiRegister(String name, long startAddress, long endAddress, String description) {
 		this.addRegister(name, toHexAddress(startAddress, endAddress), description);
 	}
@@ -180,9 +188,11 @@ public class RegisterSpecHolder {
 	public static String toHexAddress(long startAddress, long endAddress) {
 		return toHexAddress(startAddress) + "-" + toHexAddress(endAddress);
 	}
+	
 	public static String toHexAddress(long decAddress) {
 		return "0x" + Long.toHexString(decAddress);
 	}
+	
 	public Integer size() {
 		return this.registers.size();
 	}
@@ -205,7 +215,6 @@ public class RegisterSpecHolder {
 		return this.getRegisterList().get(row);
 	}
 
-
 	public void addRegister() {
 		this.insertRegisterAt(this.size()-1);
 	}
@@ -213,5 +222,19 @@ public class RegisterSpecHolder {
 
 	public void removeRow(Integer row) {
 		this.remove(this.getRegisterList().get((row)));
+	}
+
+
+	public void load(String folder) {
+		RegisterSpecHolder loadded = new JsonPersistent().loadJson(this.getClass(), folder + "/registerspec.json");
+		this.registers = loadded.registers;
+		this.registerWidth = loadded.registerWidth;
+		
+		this.registers.values().forEach(register -> register.setRegisterInterface(registerInterface));
+	}
+
+
+	public void save(String folder) {
+		new JsonPersistent().saveJson(this, folder + "/registerspec.json");
 	}
 }

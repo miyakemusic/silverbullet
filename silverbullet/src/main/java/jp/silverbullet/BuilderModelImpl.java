@@ -30,9 +30,10 @@ import jp.silverbullet.property2.RuntimeProperty;
 import jp.silverbullet.property2.RuntimePropertyStore;
 import jp.silverbullet.register.RegisterMapModel;
 import jp.silverbullet.register.RegisterMapModelInterface;
-import jp.silverbullet.register.RegisterSpecHolder;
 import jp.silverbullet.register.RegisterShortCutHolder;
 import jp.silverbullet.register.SvSimulator;
+import jp.silverbullet.register2.RegisterAccessor;
+import jp.silverbullet.register2.RegisterSpecHolder;
 import jp.silverbullet.register2.RuntimeRegisterMap;
 import jp.silverbullet.remote.SvTexHolder;
 import jp.silverbullet.spec.SpecElement;
@@ -70,6 +71,8 @@ public class BuilderModelImpl implements BuilderModel {
 	private jp.silverbullet.dependency2.DependencySpecHolder dependencySpecHolder2 = new jp.silverbullet.dependency2.DependencySpecHolder();
 	private SpecElement userStory = new SpecElement();
 	private RegisterShortCutHolder registerShortCuts = new RegisterShortCutHolder();
+	private RuntimeRegisterMap registerMap = new RuntimeRegisterMap();
+	
 	private UiLayoutHolder uiLayoutHolder = new UiLayoutHolder(new PropertyGetter() {
 		@Override
 		public RuntimeProperty getProperty(String id) {
@@ -105,7 +108,6 @@ public class BuilderModelImpl implements BuilderModel {
 	
 	};
 	
-	private RuntimeRegisterMap registerMap = new RuntimeRegisterMap();
 	public RuntimeRegisterMap getRuntimRegisterMap() {
 		return this.registerMap;
 	}
@@ -146,27 +148,27 @@ public class BuilderModelImpl implements BuilderModel {
 //
 //	};
 
-	private EasyAccessModel easyAccessModel = new EasyAccessModel() {
-		@Override
-		public void requestChange(final String id, final String value) {
-			try {
-				sequencer.requestChange(id, value);
-			} catch (RequestRejectedException e) {
-				e.printStackTrace();
-			}
-		}
-
-		@Override
-		public RuntimeProperty getProperty(String id) {
-			return store.get(id);
-		}
-	};
+//	private EasyAccessModel easyAccessModel = new EasyAccessModel() {
+//		@Override
+//		public void requestChange(final String id, final String value) {
+//			try {
+//				sequencer.requestChange(id, value);
+//			} catch (RequestRejectedException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//
+//		@Override
+//		public RuntimeProperty getProperty(String id) {
+//			return store.get(id);
+//		}
+//	};
 
 	public PropertyHolder2 getPropertiesHolder2() {
 		return propertiesHolder2;
 	}
 
-	private RegisterAccess regiseterAccess;
+//	private RegisterAccess regiseterAccess;
 
 	private TestRecorder testRecorder = new TestRecorder(new TestRecorderInterface() {
 		@Override
@@ -211,12 +213,12 @@ public class BuilderModelImpl implements BuilderModel {
 
 	});
 	private DependencySpecHolder defaultDependency;
-	private RegisterSpecHolder registerSpecHolder;
+	private RegisterSpecHolder registerSpecHolder = new RegisterSpecHolder();
 
 	public BuilderModelImpl() {
 		store = new RuntimePropertyStore(propertiesHolder2);
 
-		this.setDeviceDriver(registerMapModel);
+//		this.setDeviceDriver(registerMapModel);
 		registerMapModel.addListener(this.testRecorder);
 
 		this.sequencer = new Sequencer() {
@@ -241,13 +243,13 @@ public class BuilderModelImpl implements BuilderModel {
 			}
 
 			@Override
-			protected EasyAccessModel getEasyAccessModel() {
-				return easyAccessModel;
+			protected EasyAccessInterface getEasyAccessInterface() {
+				return easyAccessInterface;
 			}
 
 			@Override
-			protected RegisterAccess getRegisterAccess() {
-				return regiseterAccess;
+			protected RegisterAccessor getRegisterAccessor() {
+				return registerMap;
 			}
 		};
 
@@ -316,7 +318,9 @@ public class BuilderModelImpl implements BuilderModel {
 //		dependencySpecHolder = new AlternativeDependencyGenerator().convert(dependencySpecHolder);
 		
 		uiLayoutHolder.load(folder);
-		registerSpecHolder = load(RegisterSpecHolder.class, folder);
+	
+		registerSpecHolder.load(folder);// = load(RegisterSpecHolder.class, folder);
+		
 		// UiLayout.getInstance().initialize();
 		
 		dependency = new DependencyEngine(dependencySpecHolder2, new PropertyGetter () {
@@ -351,7 +355,6 @@ public class BuilderModelImpl implements BuilderModel {
 				try {
 					Files.delete(path);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			});
@@ -369,6 +372,7 @@ public class BuilderModelImpl implements BuilderModel {
 //		save(this.dependencySpecHolder, DependencySpecHolder.class, folder + "/" + DEPENDENCYSPEC2_XML);
 		saveJson(this.dependencySpecHolder2, folder + "/" + DEPENDENCYSPEC3_XML);
 
+		this.registerSpecHolder.save(folder);
 		// saveJson(this.uiLayout, folder + "/" + "default.ui");
 		this.uiLayoutHolder.save(folder);
 	}
@@ -464,15 +468,15 @@ public class BuilderModelImpl implements BuilderModel {
 		return this.sequencer;
 	}
 
-	@Override
-	public void setDeviceDriver(SvDevice deviceDriver) {
-		regiseterAccess = new RegisterAccess(deviceDriver);
-	}
+//	@Override
+//	public void setDeviceDriver(SvDevice deviceDriver) {
+//		regiseterAccess = new RegisterAccess(deviceDriver);
+//	}
 
-	@Override
-	public RegisterAccess getRegisterAccess() {
-		return this.regiseterAccess;
-	}
+//	@Override
+//	public RegisterAccess getRegisterAccess() {
+//		return this.regiseterAccess;
+//	}
 
 	@Override
 	public void setUserPath(String userPath) {
@@ -494,11 +498,11 @@ public class BuilderModelImpl implements BuilderModel {
 	public RegisterShortCutHolder getRegisterShortCut() {
 		return this.registerShortCuts;
 	}
-
-	@Override
-	public EasyAccessModel getEasyAccess() {
-		return this.easyAccessModel;
-	}
+//
+//	@Override
+//	public EasyAccessModel getEasyAccess() {
+//		return this.easyAccessModel;
+//	}
 
 	@Override
 	public UiLayout getUiLayout() {

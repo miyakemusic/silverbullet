@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import jp.silverbullet.register.RegisterSpecHolder;
-
 public class RuntimeRegisterMap implements RegisterAccessor, RegisterAccessorListener {
 	private Map<String, RuntimeBit> registerValues = new HashMap<>();
 	private Set<RegisterAccessor> devices = new HashSet<>();

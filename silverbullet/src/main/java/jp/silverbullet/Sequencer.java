@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Set;
 
 import jp.silverbullet.dependency2.ChangedItemValue;
-//import jp.silverbullet.dependency.ChangedItemValue;
-//import jp.silverbullet.dependency.DependencyInterface;
 import jp.silverbullet.dependency2.CommitListener;
 import jp.silverbullet.dependency2.DependencyEngine;
 import jp.silverbullet.dependency2.DependencyListener;
@@ -17,23 +15,21 @@ import jp.silverbullet.dependency2.Id;
 import jp.silverbullet.dependency2.RequestRejectedException;
 import jp.silverbullet.handlers.AbstractSvHandler;
 import jp.silverbullet.handlers.CommonSvHandler;
-import jp.silverbullet.handlers.EasyAccessModel;
+import jp.silverbullet.handlers.EasyAccessInterface;
 import jp.silverbullet.handlers.HandlerProperty;
 import jp.silverbullet.handlers.HandlerPropertyHolder;
-import jp.silverbullet.handlers.RegisterAccess;
 import jp.silverbullet.handlers.SvHandlerModel;
-import jp.silverbullet.property.SvProperty;
-import jp.silverbullet.property.SvPropertyStore;
 import jp.silverbullet.property2.RuntimeProperty;
 import jp.silverbullet.property2.RuntimePropertyStore;
+import jp.silverbullet.register2.RegisterAccessor;
 
 public abstract class Sequencer {
 	abstract protected RuntimePropertyStore getPropertiesStore();
 	abstract protected HandlerPropertyHolder getHandlerPropertyHolder();
 	abstract protected DependencyEngine getDependency();
 	abstract protected String getUserApplicationPath();
-	abstract protected EasyAccessModel getEasyAccessModel();
-	abstract protected RegisterAccess getRegisterAccess();
+	abstract protected EasyAccessInterface getEasyAccessInterface();
+	abstract protected RegisterAccessor getRegisterAccessor();
 	
 	private List<AbstractSvHandler> handlers = new ArrayList<>();
 	private Set<SequencerListener> listeners = new HashSet<SequencerListener>();
@@ -41,6 +37,30 @@ public abstract class Sequencer {
 	LinkedHashMap<String, List<ChangedItemValue>> history = new LinkedHashMap<>();
 	private List<String> debugDepLog;
 
+	private EasyAccessInterface easyAccessInterface = new EasyAccessInterface() {
+		@Override
+		public void requestChange(final String id, final String value) throws RequestRejectedException {
+			requestChange(id, 0, value);
+		}
+
+		@Override
+		public void requestChange(String id, int index, String value) throws RequestRejectedException {
+			try {
+				fireChangeFromSystem(id, value);
+				getDependency().requestChange(id, index, value);
+				debugDepLog.addAll(getDependency().getDebugLog());
+				
+			} catch (RequestRejectedException e) {
+				e.printStackTrace();
+			}			
+		}
+		@Override
+		public RuntimeProperty getProperty(String id) {
+			return getPropertiesStore().get(id);
+		}
+		
+	};
+	
 	public Sequencer() {
 		Thread.currentThread().getId();
 	}
@@ -86,35 +106,18 @@ public abstract class Sequencer {
 		
 		SvHandlerModel model = new SvHandlerModel() {
 			@Override
-			public RuntimeProperty getProperty(String id) {
-				return getPropertiesStore().get(id);
-			}
-
-			@Override
-			public void requestChange(final String id, final String value) throws RequestRejectedException {
-				requestChange(id, 0, value);
-			}
-
-			@Override
 			public String getUserApplicationPath() {
 				return Sequencer.this.getUserApplicationPath();
 			}
 
 			@Override
-			public RegisterAccess getRegisterAccess() {
-				return Sequencer.this.getRegisterAccess();
+			public RegisterAccessor getRegisterAccessor() {
+				return Sequencer.this.getRegisterAccessor();
 			}
 
 			@Override
-			public void requestChange(String id, int index, String value) throws RequestRejectedException {
-				try {
-					fireChangeFromSystem(id, value);
-					getDependency().requestChange(id, index, value);
-					debugDepLog.addAll(getDependency().getDebugLog());
-					
-				} catch (RequestRejectedException e) {
-					e.printStackTrace();
-				}			
+			public EasyAccessInterface getEasyAccessInterface() {
+				return easyAccessInterface;
 			}
 
 		};

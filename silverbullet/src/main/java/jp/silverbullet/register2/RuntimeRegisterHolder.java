@@ -4,9 +4,32 @@ import java.util.List;
 
 public class RuntimeRegisterHolder {
 	protected RegisterAccessor registerAccess;
-
+	private Object sync = new Object();
+	
 	public RuntimeRegisterHolder(RegisterAccessor registerAccess) {
 		this.registerAccess = registerAccess;
+		this.registerAccess.addListener(new RegisterAccessorListener() {
+
+			@Override
+			public void onUpdate(Object regName, Object bitName, int value) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onUpdate(Object regName, byte[] image) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onInterrupt() {
+				synchronized(sync) {
+					sync.notifyAll();
+				}
+			}
+			
+		});
 	}
 	
 	protected RegisterAccessor accessor = new RegisterAccessor() {
@@ -27,7 +50,6 @@ public class RuntimeRegisterHolder {
 
 		@Override
 		public void addListener(RegisterAccessorListener listener) {
-			// TODO Auto-generated method stub
 			
 		}
 
@@ -37,4 +59,15 @@ public class RuntimeRegisterHolder {
 		}
 	
 	};
+	
+	public void waitInterrupt() {
+		try {
+			synchronized(sync) {
+				sync.wait();
+			}
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }

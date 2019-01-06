@@ -1,7 +1,9 @@
-package jp.silverbullet.register;
+package jp.silverbullet.register2;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class RegisterBit {
 	public enum ReadWriteType {
@@ -98,14 +100,17 @@ public class RegisterBit {
 		return this.bit + "\t" + this.name + "\t" + this.description;
 	}
 
+	@JsonIgnore
 	public boolean isReadEnabled() {
 		return type.equals(ReadWriteType.RO) || type.equals(ReadWriteType.RW) || type.equals(ReadWriteType.RC);
 	}
 	
+	@JsonIgnore
 	public boolean isWriteEnabled() {
 		return type.equals(ReadWriteType.WO) || type.equals(ReadWriteType.RW);
 	}
 
+	@JsonIgnore
 	public boolean isSingle() {
 		return !this.bit.contains(":");
 	}
@@ -132,10 +137,12 @@ public class RegisterBit {
 		}
 	}
 
+	@JsonIgnore
 	public int getStartBit() {
 		return getBitRange(1);
 	}
 	
+	@JsonIgnore
 	public int getEndBit() {
 		return getBitRange(0);
 	}

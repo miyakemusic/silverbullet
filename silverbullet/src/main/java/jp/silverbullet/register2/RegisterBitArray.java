@@ -1,4 +1,4 @@
-package jp.silverbullet.register;
+package jp.silverbullet.register2;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -7,10 +7,10 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import jp.silverbullet.register.RegisterBit.ReadWriteType;
+import jp.silverbullet.register2.RegisterBit.ReadWriteType;
 
-public abstract class RegisterBitArray {
-	abstract protected int getRegisterWidth();
+public class RegisterBitArray {
+//	abstract protected int getRegisterWidth();
 	
 	private BitComparator comparator = new BitComparator();
 	private List<RegisterBit> bits = new ArrayList<RegisterBit>();
@@ -20,6 +20,7 @@ public abstract class RegisterBitArray {
 			sort();
 		}
 	};
+	private SvRegisterInterface registerInterface;
 	
 	public RegisterBitArray() {
 		
@@ -68,7 +69,7 @@ public abstract class RegisterBitArray {
 
 	public void add(String name, ReadWriteType rw, String description2, String definition2) {
 		int startBit = 0;
-		int endBit = getRegisterWidth() - 1;
+		int endBit = this.registerInterface.getRegisterWidth() - 1;
 		if (this.bits.size() > 0) {
 			// Searches vacant bits
 			for (int i = this.bits.size()-1; i >= 0; i--) {
@@ -126,8 +127,8 @@ public abstract class RegisterBitArray {
 		if (this.getBits().size() > 0) {
 			String bits = this.getBits().get(0).getBit();
 			int max = Integer.valueOf(bits.split(":")[0]);
-			if (max < this.getRegisterWidth()-1) {
-				RegisterBit bit = new RegisterBit(name, max + 1, this.getRegisterWidth()-1, ReadWriteType.RW, "Auto-added", "");
+			if (max < this.registerInterface.getRegisterWidth()-1) {
+				RegisterBit bit = new RegisterBit(name, max + 1, this.registerInterface.getRegisterWidth()-1, ReadWriteType.RW, "Auto-added", "");
 				this.add(bit);
 			}
 			else {
@@ -158,6 +159,10 @@ public abstract class RegisterBitArray {
 				break;
 			}
 		}
+	}
+
+	public void setRegisterInterface(SvRegisterInterface registerInterface) {
+		this.registerInterface = registerInterface;
 	}
 }
 

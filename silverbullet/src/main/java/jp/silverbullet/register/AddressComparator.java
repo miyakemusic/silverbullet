@@ -2,6 +2,8 @@ package jp.silverbullet.register;
 
 import java.util.Comparator;
 
+import jp.silverbullet.register2.SvRegister;
+
 public class AddressComparator implements Comparator<SvRegister> {
 	@Override
 	public int compare(SvRegister o1, SvRegister o2) {

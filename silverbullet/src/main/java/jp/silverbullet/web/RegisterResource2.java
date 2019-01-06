@@ -1,12 +1,7 @@
 package jp.silverbullet.web;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Map;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -18,16 +13,8 @@ import javax.ws.rs.core.MediaType;
 import com.sun.jersey.core.util.Base64;
 
 import jp.silverbullet.StaticInstances;
-import jp.silverbullet.handlers.RegisterAccess;
-import jp.silverbullet.register.BitSetToIntConverter;
-import jp.silverbullet.register.RegisterBit;
-import jp.silverbullet.register.RegisterInfo;
 import jp.silverbullet.register.RegisterShortCut;
-import jp.silverbullet.register.RegisterSpecHolder;
-import jp.silverbullet.register.SvRegister;
 import jp.silverbullet.register.SvSimulator;
-import jp.silverbullet.register.RegisterBit.ReadWriteType;
-import jp.silverbullet.register.json.SvRegisterJson;
 import jp.silverbullet.register.json.SvRegisterJsonHolder;
 import jp.silverbullet.register2.RegisterJsonController;
 
@@ -183,35 +170,7 @@ public class RegisterResource2 {
 	@Path("loadSimulator")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String loadSimulator(@QueryParam("simulator") final String simulator) {
-		try {
-			Class<?> c = Class.forName(StaticInstances.getInstance().getBuilderModel().getUserApplicationPath() + ".test." + simulator);	
-//System.out.println(c);
-			SvSimulator object = (SvSimulator)c.getConstructor(RegisterAccess.class).newInstance(StaticInstances.getInstance().getBuilderModel().getRegisterAccess());
-//System.out.println(object);
-			StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().addSimulator(object);
-			StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().update();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
 		return "OK";
 	}
 	
@@ -219,7 +178,6 @@ public class RegisterResource2 {
 	@Path("unloadSimulator")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String unloadSimulator(@QueryParam("simulator") final String simulator) {
-		StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().removeSimulator(simulator);
 		return "OK";
 	}
 	
@@ -227,7 +185,6 @@ public class RegisterResource2 {
 	@Path("/setCheck")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setCheck(@QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName, @QueryParam("value") final String value) {
-		StaticInstances.getInstance().getBuilderModel().getRegisterShortCut().updateCheck(regName, bitName, value.equals("on"));
 		return "OK";
 	}
 

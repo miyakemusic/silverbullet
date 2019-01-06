@@ -5,14 +5,14 @@ import java.util.List;
 
 public 	class RuntimeRegister<T> {
 	private List<BitValue> cache = new ArrayList<>();
-	private String regName;
+	private Object regName;
 	private RegisterAccessor accessor;
-	public RuntimeRegister(String regName, RegisterAccessor accessor) {
+	public RuntimeRegister(Object regName, RegisterAccessor accessor) {
 		this.regName = regName;
 		this.accessor = accessor;
 	}
 	public RuntimeRegister<T> set(T bit, int value) {
-		cache.add(new BitValue(bit.toString(), value));
+		cache.add(new BitValue(bit, value));
 		return this;
 	}
 
@@ -29,8 +29,11 @@ public 	class RuntimeRegister<T> {
 		accessor.clear(this.getRegName());
 	}
 	
-	private String getRegName() {
+	private Object getRegName() {
 		return this.regName;
+	}
+	public byte[] read() {
+		return this.accessor.readRegister(this.regName);
 	}
 
 }

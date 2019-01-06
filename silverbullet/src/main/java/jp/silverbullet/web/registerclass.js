@@ -43,6 +43,7 @@ class RegisterClass {
 		});	
 		
 		$('#' + showExternalId).click(function() {
+			$('#' + dialogPaneId).empty();
 			$('#' + dialogId).dialog('open');
 			new RegisterMap(dialogPaneId);
 		});

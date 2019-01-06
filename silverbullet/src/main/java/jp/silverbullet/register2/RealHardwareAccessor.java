@@ -3,9 +3,6 @@ package jp.silverbullet.register2;
 import java.util.BitSet;
 import java.util.List;
 
-import jp.silverbullet.register.RegisterSpecHolder;
-import jp.silverbullet.register.SvRegister;
-
 public class RealHardwareAccessor implements RegisterAccessor {
 
 	private RegisterAccessorListener listener;

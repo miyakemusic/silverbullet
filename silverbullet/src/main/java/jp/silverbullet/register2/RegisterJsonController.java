@@ -1,10 +1,7 @@
 package jp.silverbullet.register2;
 
 import jp.silverbullet.StaticInstances;
-import jp.silverbullet.register.RegisterBit;
-import jp.silverbullet.register.SvRegister;
-import jp.silverbullet.register.RegisterBit.ReadWriteType;
-import jp.silverbullet.register.RegisterSpecHolder;
+import jp.silverbullet.register2.RegisterBit.ReadWriteType;
 import jp.silverbullet.web.KeyValue;
 
 public class RegisterJsonController {
@@ -23,7 +20,7 @@ public class RegisterJsonController {
 			SvRegister register = this.specHolder.getRegisterByIndex(row);
 			
 			if (param.equals("addr")) {
-				register.setAddressHex(kv.getValue());
+				register.setAddress(kv.getValue());
 			}
 			else if (param.equals("name")) {
 				register.setName(kv.getValue());

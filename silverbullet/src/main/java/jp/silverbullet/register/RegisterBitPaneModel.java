@@ -1,6 +1,7 @@
 package jp.silverbullet.register;
 
 import jp.silverbullet.property.PropertyHolder;
+import jp.silverbullet.register2.SvRegister;
 
 public interface RegisterBitPaneModel {
 

@@ -2,6 +2,10 @@ package jp.silverbullet.register;
 
 import java.util.BitSet;
 
+import jp.silverbullet.register2.RegisterBit;
+import jp.silverbullet.register2.RegisterSpecHolder;
+import jp.silverbullet.register2.SvRegister;
+
 public class RegisterInfo {
 
 	private int intAddress;

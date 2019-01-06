@@ -1,28 +1,30 @@
-package jp.silverbullet.register;
+package jp.silverbullet.register2;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import jp.silverbullet.register.RegisterBit.ReadWriteType;
-import jp.silverbullet.register2.SvRegisterListener;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public abstract class SvRegister {
-	abstract protected int getRegisterWidth();
+import jp.silverbullet.register2.RegisterBit.ReadWriteType;
+
+public class SvRegister {
 	
 	private String name = "";
 	private String description;
 	private String address;
 	private Set<SvRegisterListener> listeners = new HashSet<>();
 	
-	private RegisterBitArray bits = new RegisterBitArray() {
-		@Override
-		protected int getRegisterWidth() {
-			return SvRegister.this.getRegisterWidth();
-		}
-	};
+	private RegisterBitArray bits = new RegisterBitArray();
+	private SvRegisterInterface registerInterface;
 	
 	public SvRegister() {
 		
+	}
+	
+	@JsonIgnore
+	public void setRegisterInterface(SvRegisterInterface registerInterface) {
+		this.registerInterface = registerInterface;
+		this.bits.setRegisterInterface(this.registerInterface);
 	}
 	
 	public SvRegister(String name2, String description2, String address2) {
@@ -32,7 +34,8 @@ public abstract class SvRegister {
 	}
 	
 	public void addBit(String name, int from, int to, RegisterBit.ReadWriteType rw, String description, String definition) {
-		this.bits.add(new RegisterBit(name, from, to, rw, description, definition));
+		RegisterBit bit = new RegisterBit(name, from, to, rw, description, definition);
+		this.bits.add(bit);
 	}
 
 	public String getName() {
@@ -40,14 +43,12 @@ public abstract class SvRegister {
 	}
 
 	public boolean setName(String name) {
-		if (!conflictsName(name, this)) {
+		if (this.registerInterface == null || !registerInterface.conflictsName(name, this)) {
 			this.name = name;
 			return true;
 		}
 		return false;
 	}
-
-	abstract protected boolean conflictsName(String name2, SvRegister svRegister);
 
 	public String getDescription() {
 		return description;
@@ -61,13 +62,13 @@ public abstract class SvRegister {
 		return address;
 	}
 
-	public boolean setAddressHex(String address) {
+	public boolean setAddress(String address) {
 		if (!address.startsWith("0x")) {
 			return false;
 		}
 		String prev = this.address;
 		this.address = address;
-		if (prev != null) {
+		if (prev != null && listeners != null) {
 			this.listeners.forEach(listener -> listener.onAddressChange(this, this.address, prev));
 		}
 		return true;
@@ -81,6 +82,7 @@ public abstract class SvRegister {
 		this.bits = bits;
 	}
 
+	@JsonIgnore
 	public boolean isBlock() {
 		return this.address.contains("-");
 	}
@@ -94,6 +96,7 @@ public abstract class SvRegister {
 		return this;
 	}
 	
+	@JsonIgnore
 	public int getDecAddress() {
 		String hexAddress = "";
 		if (this.getAddress().contains("-")) {
@@ -105,13 +108,14 @@ public abstract class SvRegister {
 		return Integer.parseInt(hexAddress.replace("0x", ""), 16);
 	}
 
-	public void setAddress(long addressDec) {
-		this.setAddressHex(RegisterSpecHolder.toHexAddress(addressDec));
+	@JsonIgnore
+	public void setAddressDec(long addressDec) {
+		this.setAddress(RegisterSpecHolder.toHexAddress(addressDec));
 
 	}
 	
-	public void setAddress(long from, long to) {
-		this.setAddressHex(RegisterSpecHolder.toHexAddress(from, to));		
+	public void setAddressDec(long from, long to) {
+		this.setAddress(RegisterSpecHolder.toHexAddress(from, to));		
 	}	
 	
 	public RegisterBit getBit(String bitName) {

@@ -236,36 +236,37 @@ class RegisterMap {
 					$('#'+ idBitName).html('Register: ' + obj.register + '(' + obj.address + ')' + '<br>' + 
 					'Bit: ' + obj.bitName + '[' + obj.bit + ']');
 					$('#' + editValue).val(text);
-						$('#' + dialogId).dialog({
+					
+					$('#' + dialogId).dialog({
 					  autoOpen: false,
 					  title: 'Edit',
 					  closeOnEscape: false,
 					  modal: true,
 					  buttons: {
-					    "OK": function(){
+					    "OK": function(event){
 					    	changeBitValue(me.selectedValueId, $('#' + editValue).val());
-					    	$(this).dialog('destroy');
-					    	$('#' + dialogId).remove();
-					    	
-					    }
-					    ,
-					    "Cancel": function(){
-					    	$(this).dialog('destroy');
+					    	$(this).dialog('destroy');	
+					    	$('#' + dialogId).empty();
 					    	$('#' + dialogId).remove();
 					    }
 					    ,
-					    "Create Shortcut": function() {
+					    "Cancel": function(event){
+					    	$(this).dialog('destroy');
+					    	$('#' + dialogId).empty();
+					    	$('#' + dialogId).remove();
+					    }
+					    ,
+					    "Create Shortcut": function(event) {
 					    	createShortCut(me.selectedValueId);
-					    	$(this).dialog('destroy');
-					    	$('#' + dialogId).remove();
+					    	$(this).dialog('destroy');	
+							$(event.target).remove();
 					    	
 					    }
 					    ,
-					    "Add to Test": function() {
+					    "Add to Test": function(event) {
 					    	addToTest(me.selectedValueId);
-					    	$(this).dialog('destroy');
-					    	$('#' + dialogId).remove();
-					    	
+					    	$(this).dialog('destroy');	
+							$(event.target).remove();
 					    }
 					  },
 					  width: 400,

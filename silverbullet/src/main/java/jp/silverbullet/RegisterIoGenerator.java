@@ -11,11 +11,11 @@ import java.util.Map;
 
 import jp.silverbullet.handlers.RegisterAccess;
 import jp.silverbullet.register.RangeGetter;
-import jp.silverbullet.register.RegisterBit;
-import jp.silverbullet.register.RegisterSpecHolder;
-import jp.silverbullet.register.SvRegister;
 import jp.silverbullet.register.SvSimulator;
-import jp.silverbullet.register.RegisterBit.ReadWriteType;
+import jp.silverbullet.register2.RegisterBit;
+import jp.silverbullet.register2.RegisterSpecHolder;
+import jp.silverbullet.register2.SvRegister;
+import jp.silverbullet.register2.RegisterBit.ReadWriteType;
 
 public class RegisterIoGenerator {
 

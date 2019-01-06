@@ -14,10 +14,10 @@ public class RegisterSource extends RuntimeRegisterHolder {
 		Bit2, 
 		Bit1, 
 	}
-	public RuntimeRegister<Reg1> reg1 = new RuntimeRegister<>("Reg1", accessor);
+	public RuntimeRegister<Reg1> reg1 = new RuntimeRegister<>(Register.Reg1, accessor);
 	public enum Reg2 {
 		Bit_4, 
 		Bit_3, 
 	}
-	public RuntimeRegister<Reg2> reg2 = new RuntimeRegister<>("Reg2", accessor);
+	public RuntimeRegister<Reg2> reg2 = new RuntimeRegister<>(Register.Reg2, accessor);
 }

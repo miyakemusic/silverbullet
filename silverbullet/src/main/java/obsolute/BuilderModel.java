@@ -7,8 +7,8 @@ import jp.silverbullet.property2.PropertyType2;
 import jp.silverbullet.property2.RuntimeProperty;
 import jp.silverbullet.property2.RuntimePropertyStore;
 import jp.silverbullet.register.RegisterMapModel;
-import jp.silverbullet.register.RegisterSpecHolder;
 import jp.silverbullet.register.RegisterShortCutHolder;
+import jp.silverbullet.register2.RegisterSpecHolder;
 import jp.silverbullet.remote.SvTexHolder;
 import jp.silverbullet.spec.SpecElement;
 import jp.silverbullet.test.TestRecorder;
@@ -59,11 +59,11 @@ public interface BuilderModel {
 
 	Sequencer getSequencer();
 
-	void setDeviceDriver(SvDevice deviceDriver);
+//	void setDeviceDriver(SvDevice deviceDriver);
 
 	void loadDefault();
 
-	RegisterAccess getRegisterAccess();
+//	RegisterAccess getRegisterAccess();
 
 	void setUserPath(String userPath);
 
@@ -73,7 +73,7 @@ public interface BuilderModel {
 
 	RegisterShortCutHolder getRegisterShortCut();
 	
-	EasyAccessModel getEasyAccess();
+//	EasyAccessModel getEasyAccess();
 	
 	UiLayout getUiLayout();
 

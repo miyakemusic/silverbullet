@@ -7,6 +7,7 @@ import java.util.BitSet;
 
 import jp.silverbullet.property.editor.PropertyListModel;
 import jp.silverbullet.register.SvSimulator;
+import jp.silverbullet.register2.RegisterSourceGenerator;
 
 public class StaticInstances {
 	public static final String TMP_FOLDER = "./sv_tmp";
@@ -95,7 +96,8 @@ public class StaticInstances {
 		String path = getBuilderModel().getUserApplicationPath();
 		new JavaFileGenerator(getBuilderModel().getAllProperties()).generate(path);
 		new RegisterIoGenerator(getBuilderModel().getRegisterProperty(), path).generate(path);
-
+		new RegisterSourceGenerator(getBuilderModel().getRegisterSpecHolder(), getBuilderModel().getUserApplicationPath(), "UserRegister").
+			exportFile("src/main/java/" + path);
 	}
 
 }

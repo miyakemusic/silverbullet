@@ -17,6 +17,8 @@ import com.sun.jersey.core.util.Base64;
 
 import jp.silverbullet.handlers.InterruptHandler;
 import jp.silverbullet.handlers.SvDevice;
+import jp.silverbullet.register2.RegisterBit;
+import jp.silverbullet.register2.SvRegister;
 
 public class RegisterMapModel implements SvDevice, SvDeviceHandler {
 	private Map<Long, SvRegister> map = new LinkedHashMap<>();
