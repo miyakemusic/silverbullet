@@ -1,4 +1,4 @@
-package jp.silverbullet.register;
+package jp.silverbullet.register2;
 
 public class BitUpdates {
 

@@ -9,13 +9,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jp.silverbullet.handlers.RegisterAccess;
-import jp.silverbullet.register.RangeGetter;
-import jp.silverbullet.register.SvSimulator;
 import jp.silverbullet.register2.RegisterBit;
 import jp.silverbullet.register2.RegisterSpecHolder;
 import jp.silverbullet.register2.SvRegister;
 import jp.silverbullet.register2.RegisterBit.ReadWriteType;
+import obsolute.register.RangeGetter;
+import obsolute.register.RegisterAccess;
+import obsolute.register.SvSimulator;
 
 public class RegisterIoGenerator {
 

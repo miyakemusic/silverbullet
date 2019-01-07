@@ -19,6 +19,7 @@ import jp.silverbullet.register2.RegisterBitArray;
 import jp.silverbullet.register2.RuntimeRegisterMap;
 import jp.silverbullet.register2.SvRegister;
 import jp.silverbullet.web.KeyValue;
+import obsolute.register.RegisterMapModelInterface;
 import jp.silverbullet.register2.RegisterController;
 import jp.silverbullet.register2.RegisterJsonController;
 import jp.silverbullet.register2.RegisterSourceGenerator;

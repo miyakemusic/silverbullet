@@ -3,12 +3,12 @@ package jp.silverbullet.register2;
 import java.util.List;
 
 public class RuntimeRegisterHolder {
-	protected RegisterAccessor registerAccess;
+	protected RegisterAccessor registerAccessor;
 	private Object sync = new Object();
 	
-	public RuntimeRegisterHolder(RegisterAccessor registerAccess) {
-		this.registerAccess = registerAccess;
-		this.registerAccess.addListener(new RegisterAccessorListener() {
+	public RuntimeRegisterHolder(RegisterAccessor registerAccessor) {
+		this.registerAccessor = registerAccessor;
+		this.registerAccessor.addListener(new RegisterAccessorListener() {
 
 			@Override
 			public void onUpdate(Object regName, Object bitName, int value) {
@@ -35,17 +35,17 @@ public class RuntimeRegisterHolder {
 	protected RegisterAccessor accessor = new RegisterAccessor() {
 		@Override
 		public void write(Object regName, List<BitValue> data) {
-			registerAccess.write(regName, data);
+			registerAccessor.write(regName, data);
 		}
 
 		@Override
 		public int readRegister(Object regName, Object bitName) {
-			return registerAccess.readRegister(regName, bitName);
+			return registerAccessor.readRegister(regName, bitName);
 		}
 
 		@Override
 		public void clear(Object regName) {
-			registerAccess.clear(regName);
+			registerAccessor.clear(regName);
 		}
 
 		@Override
@@ -55,7 +55,7 @@ public class RuntimeRegisterHolder {
 
 		@Override
 		public byte[] readRegister(Object regName) {
-			return registerAccess.readRegister(regName);
+			return registerAccessor.readRegister(regName);
 		}
 	
 	};

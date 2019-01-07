@@ -1,4 +1,4 @@
-package jp.silverbullet.register;
+package obsolute.register;
 
 import javax.xml.bind.annotation.XmlRootElement;
 

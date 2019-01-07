@@ -1,4 +1,4 @@
-package jp.silverbullet.register;
+package obsolute.register;
 
 import java.util.ArrayList;
 import java.util.List;

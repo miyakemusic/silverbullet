@@ -1,7 +1,6 @@
-package jp.silverbullet.register;
+package obsolute.register;
 
 import jp.silverbullet.handlers.InterruptHandler;
-import jp.silverbullet.handlers.RegisterAccess;
 
 public class RegisterControl {
     private Object lock = new Object();

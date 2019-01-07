@@ -23,26 +23,23 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.core.util.Base64;
 
 import jp.silverbullet.SequencerListener;
-import jp.silverbullet.StaticInstances;
 import jp.silverbullet.Zip;
 import jp.silverbullet.dependency2.RequestRejectedException;
 import jp.silverbullet.property2.RuntimeProperty;
-import jp.silverbullet.register.BitUpdates;
-import jp.silverbullet.register.RegisterInfo;
-import jp.silverbullet.register.RegisterMapListener;
-import jp.silverbullet.register.RegisterUpdates;
-import jp.silverbullet.register.SvSimulator;
+import jp.silverbullet.register2.BitValue;
+import jp.silverbullet.register2.RegisterAccessor;
+import jp.silverbullet.register2.RegisterAccessorListener;
+import jp.silverbullet.register2.RegisterController;
 
-public class TestRecorder implements SequencerListener, RegisterMapListener {
+public class TestRecorder implements SequencerListener, RegisterAccessorListener {
 	private static final String TEST_FOLDER = "testdata/";
 	
 	private TestScript script = new TestScript();
 	private TestResult result = new TestResult(script);
 	private boolean redording;
 	private TestRecorderInterface testRecorderInterface;
-	private SvSimulator simulator;
+	private RegisterController registerContoller;
 
-	
 	private Set<TestRecorderListener> listeners = new HashSet<>();
 
 	private long currentRowSerial = -1;
@@ -56,8 +53,8 @@ public class TestRecorder implements SequencerListener, RegisterMapListener {
 				e.printStackTrace();
 			}
 		}
-		simulator = testRecorderInterface.createSimulator();
-		
+		registerContoller = testRecorderInterface.getRegisterController();
+
 		load();
 	}
 
@@ -83,11 +80,6 @@ public class TestRecorder implements SequencerListener, RegisterMapListener {
 	}
 
 	@Override
-	public void onUpdate(RegisterUpdates updates) {
-
-	}
-
-	@Override
 	public void onInterrupt() {
 		if (this.redording) {
 //			this.script.add(new TestItem(TestItem.TYPE_CONTROL, TestItem.WAIT, "100"));
@@ -95,23 +87,41 @@ public class TestRecorder implements SequencerListener, RegisterMapListener {
 		}
 	}
 
+//	@Override
+//	public void onUpdate(RegisterUpdates updates) {
+//		if (!this.redording) {
+//			return;
+//		}
+//		
+//		for (BitUpdates bit : updates.getBits()) {
+//			String val = "";
+//			if (bit.getVal().startsWith("data:application/octet-stream;base64,")) {
+//				val = convertBlockData(bit.getVal());
+//			}
+//			else {
+//				val = bit.getVal();
+//			}
+//			
+//			this.script.add(new TestItem(TestItem.TYPE_REGISTER, updates.getName() + "::" + bit.getName(), val));
+//		}		
+//	}
+	
+
 	@Override
-	public void onUpdatedByHardware(RegisterUpdates updates) {
+	public void onUpdate(Object regName, Object bitName, int value) {
 		if (!this.redording) {
 			return;
 		}
+		this.script.add(new TestItem(TestItem.TYPE_REGISTER, regName.toString() + "::" + bitName.toString(), String.valueOf(value)));
+//		data.forEach(bit -> {
+//			this.script.add(new TestItem(TestItem.TYPE_REGISTER, regName.toString() + "::" + bit.bitName.toString(), String.valueOf(bit.value)));
+//		});
+	}
+
+	@Override
+	public void onUpdate(Object regName, byte[] image) {
+		// TODO Auto-generated method stub
 		
-		for (BitUpdates bit : updates.getBits()) {
-			String val = "";
-			if (bit.getVal().startsWith("data:application/octet-stream;base64,")) {
-				val = convertBlockData(bit.getVal());
-			}
-			else {
-				val = bit.getVal();
-			}
-			
-			this.script.add(new TestItem(TestItem.TYPE_REGISTER, updates.getName() + "::" + bit.getName(), val));
-		}		
 	}
 
 	private String convertBlockData(String val) {
@@ -231,8 +241,7 @@ public class TestRecorder implements SequencerListener, RegisterMapListener {
 					String filename = item.blockFilename();
 					try {
 						byte[] data = Files.readAllBytes(Paths.get(TEST_FOLDER + filename));
-						long address = StaticInstances.getInstance().getBuilderModel().getRegisterProperty().getRegisterByName(regName).getDecAddress();
-						updateBlockData(data, address);
+						writeBlockData(regName, data);
 
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -244,17 +253,18 @@ public class TestRecorder implements SequencerListener, RegisterMapListener {
 				else {
 					String bitName = tmp[1];
 					String bitValue = item.bitValue();
-					RegisterInfo regInfo = new RegisterInfo(regName, bitName, bitValue, StaticInstances.getInstance().getBuilderModel().getRegisterProperty());
-					StaticInstances.getInstance().getSimulator().updateRegister(regInfo.getIntAddress(), regInfo.getDataSet(), regInfo.getMask());	
+					writeRegister(regName, bitName, Integer.valueOf(bitValue));
+//					RegisterInfo regInfo = new RegisterInfo(regName, bitName, bitValue, .getInstance().getBuilderModel().getRegisterProperty());
+//					.getInstance().getSimulator().updateRegister(regInfo.getIntAddress(), regInfo.getDataSet(), regInfo.getMask());	
 					
-					updateRegister(regInfo);
+//					updateRegister(regInfo);
 				}
 			}
 			else if (item.getType().equals(TestItem.TYPE_REGISTER_TEST)) {
 				String[] tmp = item.getTarget().split("::");
 				String regName = tmp[0];
 				String bitName = tmp[1].replace("?", "");
-				int value = StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().getValue(regName, bitName);
+				int value = testRecorderInterface.getRegisterValue(regName, bitName);
 				this.result.addResult(item.getSerial(), String.valueOf(value), value == Integer.valueOf(item.getExpected()));
 			}
 			else if (item.getType().equals(TestItem.TYPE_CONTROL)) {
@@ -275,24 +285,29 @@ public class TestRecorder implements SequencerListener, RegisterMapListener {
 		}
 	}
 
-	private void updateRegister(RegisterInfo regInfo) {
-		simulator.updateRegister(regInfo.getIntAddress(), regInfo.getDataSet(), regInfo.getMask());
+	private void writeRegister(String regName, String bitName, Integer value) {
+		registerContoller.updateValue(regName, bitName, value);
+//		this.registerListeners.forEach(listener -> listener.onUpdate(regName, bitName, value));
+	}
+
+	private void updateRegister(String regName, String bitName, String value) {
+		this.onUpdate(regName, bitName, Integer.valueOf(value));
 	}
 
 	private void triggerInterrupt() {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				StaticInstances.getInstance().getSimulator().triggerInterrupt();
+				registerContoller.triggerInterrupt();
 			}
 		});
 	}
 
-	private void updateBlockData(byte[] data, long address) {
+	private void writeBlockData(String regName, byte[] image) {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				StaticInstances.getInstance().getSimulator().updateBlockData(address, data);
+				onUpdate(regName, image);
 			}
 		});
 	}

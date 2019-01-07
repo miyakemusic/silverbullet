@@ -13,10 +13,10 @@ import javax.ws.rs.core.MediaType;
 import com.sun.jersey.core.util.Base64;
 
 import jp.silverbullet.StaticInstances;
-import jp.silverbullet.register.RegisterShortCut;
-import jp.silverbullet.register.SvSimulator;
 import jp.silverbullet.register.json.SvRegisterJsonHolder;
 import jp.silverbullet.register2.RegisterJsonController;
+import obsolute.register.RegisterShortCut;
+import obsolute.register.SvSimulator;
 
 @Path("/register2")
 public class RegisterResource2 {
@@ -85,7 +85,7 @@ public class RegisterResource2 {
 	@Path("/setCurrentValue")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setCurrentValue(@QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName, @QueryParam("value") final String value) {
-		StaticInstances.getInstance().getBuilderModel().getRuntimRegisterMap().getRegisterController().write(regName, bitName, value);
+		StaticInstances.getInstance().getBuilderModel().getRuntimRegisterMap().getRegisterController().updateValue(regName, bitName, Integer.valueOf(value));
 		//		RegisterInfo regInfo = new RegisterInfo(regName, bitName, value, StaticInstances.getInstance().getBuilderModel().getRegisterProperty());
 //		StaticInstances.getInstance().getSimulator().updateRegister(regInfo.getIntAddress(), regInfo.getDataSet(), regInfo.getMask());	
 		return "OK";
@@ -97,7 +97,7 @@ public class RegisterResource2 {
 	@Produces(MediaType.TEXT_PLAIN)
 	public String setBlockData(String data, @QueryParam("regName") final String regName) {
 		byte[] b = Base64.decode(data.replace("data:application/octet-stream;base64,", ""));
-		StaticInstances.getInstance().getBuilderModel().getRuntimRegisterMap().getRegisterController().write(regName, b);
+		StaticInstances.getInstance().getBuilderModel().getRuntimRegisterMap().getRegisterController().updateValue(regName, b);
 		return "OK";
 	}
 	
@@ -124,8 +124,8 @@ public class RegisterResource2 {
 	@Path("/addToTest")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String addToTest(@QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName) {
-		int value = StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().getValue(regName, bitName);
-		StaticInstances.getInstance().getBuilderModel().getTestRecorder().addRegisterQuery(regName, bitName, value);
+//		int value = StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().getValue(regName, bitName);
+//		StaticInstances.getInstance().getBuilderModel().getTestRecorder().addRegisterQuery(regName, bitName, value);
 		return "OK";
 	}
 	
@@ -148,7 +148,8 @@ public class RegisterResource2 {
 	@Path("/getSimulators")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<String> getSimulators() {
-		return StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().getSimulatorClasses(StaticInstances.getInstance().getBuilderModel().getUserApplicationPath());
+//		return StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().getSimulatorClasses(StaticInstances.getInstance().getBuilderModel().getUserApplicationPath());
+		return null;
 	}
 	
 	@GET
@@ -156,12 +157,12 @@ public class RegisterResource2 {
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<String> getAddedSimulators() {
 		List<String> ret = new ArrayList<>();
-		for (SvSimulator simulator : StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().getSimulators()) {
-			String sim = simulator.getClass().getSimpleName();
-			if (!sim.isEmpty()) {
-				ret.add(sim);
-			}
-		}
+//		for (SvSimulator simulator : StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().getSimulators()) {
+//			String sim = simulator.getClass().getSimpleName();
+//			if (!sim.isEmpty()) {
+//				ret.add(sim);
+//			}
+//		}
 
 		return ret;
 	}

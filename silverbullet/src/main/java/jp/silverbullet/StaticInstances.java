@@ -6,8 +6,8 @@ import java.nio.file.Paths;
 import java.util.BitSet;
 
 import jp.silverbullet.property.editor.PropertyListModel;
-import jp.silverbullet.register.SvSimulator;
 import jp.silverbullet.register2.RegisterSourceGenerator;
+import obsolute.register.SvSimulator;
 
 public class StaticInstances {
 	public static final String TMP_FOLDER = "./sv_tmp";
@@ -53,8 +53,8 @@ public class StaticInstances {
 			}
 		};
 
-		builderModel.getRegisterMapModel().addSimulator(simulator);
-		simulator.setDevice(builderModel.getRegisterMapModel());
+//		builderModel.getRegisterMapModel().addSimulator(simulator);
+//		simulator.setDevice(builderModel.getRegisterMapModel());
 	}
 	
 
@@ -85,7 +85,7 @@ public class StaticInstances {
 		else {
 			builderModel.loadDefault();
 		}
-		builderModel.getRegisterMapModel().update();
+//		builderModel.getRegisterMapModel().update();
 	}
 
 	public PropertyListModel getPropertyListModel() {

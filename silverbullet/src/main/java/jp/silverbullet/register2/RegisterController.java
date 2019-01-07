@@ -52,11 +52,11 @@ public class RegisterController implements RegisterAccessor {
 		listeners.forEach(listener -> listener.onInterrupt());
 	}
 
-	public void write(String regName, byte[] data) {
-		listeners.forEach(listener -> listener.onUpdate(regName, data));
-	}
-
-	public void write(String regName, String bitName, String value) {
-		listeners.forEach(listener -> listener.onUpdate(regName, bitName, Integer.valueOf(value)));
-	}
+//	public void write(String regName, byte[] data) {
+//		listeners.forEach(listener -> listener.onUpdate(regName, data));
+//	}
+//
+//	public void write(String regName, String bitName, String value) {
+//		listeners.forEach(listener -> listener.onUpdate(regName, bitName, Integer.valueOf(value)));
+//	}
 }

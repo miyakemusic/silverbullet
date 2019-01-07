@@ -6,19 +6,19 @@ import jp.silverbullet.property.PropertyHolder;
 import jp.silverbullet.property2.PropertyType2;
 import jp.silverbullet.property2.RuntimeProperty;
 import jp.silverbullet.property2.RuntimePropertyStore;
-import jp.silverbullet.register.RegisterMapModel;
-import jp.silverbullet.register.RegisterShortCutHolder;
 import jp.silverbullet.register2.RegisterSpecHolder;
 import jp.silverbullet.remote.SvTexHolder;
 import jp.silverbullet.spec.SpecElement;
 import jp.silverbullet.test.TestRecorder;
 import jp.silverbullet.web.ui.UiLayout;
+import obsolute.register.RegisterAccess;
+import obsolute.register.RegisterMapModel;
+import obsolute.register.RegisterShortCutHolder;
 import jp.silverbullet.Sequencer;
 //import jp.silverbullet.dependency.DependencyInterface;
 import jp.silverbullet.handlers.EasyAccessInterface;
 import jp.silverbullet.handlers.EasyAccessModel;
 import jp.silverbullet.handlers.HandlerPropertyHolder;
-import jp.silverbullet.handlers.RegisterAccess;
 import jp.silverbullet.handlers.SvDevice;
 
 public interface BuilderModel {
@@ -93,7 +93,7 @@ public interface BuilderModel {
 
 	TestRecorder getTestRecorder();
 
-	RegisterMapModel getRegisterMapModel();
+//	RegisterMapModel getRegisterMapModel();
 	void switchDependency(String type);
 
 	jp.silverbullet.dependency2.DependencySpecHolder getDependencySpecHolder2();

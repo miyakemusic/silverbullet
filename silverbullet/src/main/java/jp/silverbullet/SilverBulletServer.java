@@ -1,12 +1,12 @@
 package jp.silverbullet;
 
 import jp.silverbullet.handlers.EasyAccessModel;
-import jp.silverbullet.handlers.RegisterAccess;
-import jp.silverbullet.register.RegisterMapModel;
 import jp.silverbullet.web.BuilderServer;
 import jp.silverbullet.web.BuilderServerListener;
 import jp.silverbullet.web.WebClientManager;
 import obsolute.BuilderModel;
+import obsolute.register.RegisterAccess;
+import obsolute.register.RegisterMapModel;
 
 public abstract class SilverBulletServer {
 
@@ -20,7 +20,7 @@ public abstract class SilverBulletServer {
 		builderModel = StaticInstances.getInstance().getBuilderModel();
 		builderModel.setUserPath(getUserPath());
 
-		registerMapModel = StaticInstances.getInstance().getBuilderModel().getRegisterMapModel();
+//		registerMapModel = StaticInstances.getInstance().getBuilderModel().getRegisterMapModel();
 			
 		startWebServer(Integer.valueOf(port));
 	}

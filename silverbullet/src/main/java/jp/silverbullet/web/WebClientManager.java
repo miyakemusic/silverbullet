@@ -15,10 +15,9 @@ import jp.silverbullet.dependency2.ChangedItemValue;
 import jp.silverbullet.dependency2.DependencyListener;
 import jp.silverbullet.dependency2.Id;
 import jp.silverbullet.property2.PropertDefHolderListener;
-import jp.silverbullet.register.BitUpdates;
-import jp.silverbullet.register.RegisterMapListener;
-import jp.silverbullet.register.RegisterUpdates;
+import jp.silverbullet.register2.BitUpdates;
 import jp.silverbullet.register2.RegisterAccessorListener;
+import jp.silverbullet.register2.RegisterUpdates;
 import jp.silverbullet.test.TestRecorderListener;
 
 public class WebClientManager {
@@ -98,46 +97,46 @@ public class WebClientManager {
 			}
 		});
 			
-		StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().addListener(new RegisterMapListener() {
-			@Override
-			public void onInterrupt() {
-				try {
-					RegisterUpdates updates = new RegisterUpdates();
-					updates.setName("@Interrupt@");
-					String val = new ObjectMapper().writeValueAsString(updates);
-					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("REGVAL", val));
-					WebSocketBroadcaster.getInstance().sendMessage(str);
-				} catch (JsonGenerationException e) {
-					e.printStackTrace();
-				} catch (JsonMappingException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-
-			@Override
-			public void onUpdate(RegisterUpdates updates) {
-				try {
-					String val = new ObjectMapper().writeValueAsString(updates);
-					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("REGVAL", val));
-					WebSocketBroadcaster.getInstance().sendMessage(str);
-				} catch (JsonGenerationException e) {
-					e.printStackTrace();
-				} catch (JsonMappingException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-
-			@Override
-			public void onUpdatedByHardware(RegisterUpdates updates) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
-		
+//		StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().addListener(new RegisterMapListener() {
+//			@Override
+//			public void onInterrupt() {
+//				try {
+//					RegisterUpdates updates = new RegisterUpdates();
+//					updates.setName("@Interrupt@");
+//					String val = new ObjectMapper().writeValueAsString(updates);
+//					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("REGVAL", val));
+//					WebSocketBroadcaster.getInstance().sendMessage(str);
+//				} catch (JsonGenerationException e) {
+//					e.printStackTrace();
+//				} catch (JsonMappingException e) {
+//					e.printStackTrace();
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//
+//			@Override
+//			public void onUpdate(RegisterUpdates updates) {
+//				try {
+//					String val = new ObjectMapper().writeValueAsString(updates);
+//					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("REGVAL", val));
+//					WebSocketBroadcaster.getInstance().sendMessage(str);
+//				} catch (JsonGenerationException e) {
+//					e.printStackTrace();
+//				} catch (JsonMappingException e) {
+//					e.printStackTrace();
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//
+//			@Override
+//			public void onUpdatedByHardware(RegisterUpdates updates) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//		});
+//		
 		StaticInstances.getInstance().getBuilderModel().getRuntimRegisterMap().addListener(new RegisterAccessorListener() {
 			@Override
 			public void onUpdate(Object regName, Object bitName, int value) {

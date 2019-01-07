@@ -1,11 +1,12 @@
-package jp.silverbullet.handlers;
+package obsolute.register;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.BitSet;
 
-import jp.silverbullet.register.RegisterValueCalculator;
+import jp.silverbullet.handlers.InterruptHandler;
+import jp.silverbullet.handlers.SvDevice;
 
 abstract class Converter {
 	private ByteArrayOutputStream stream = new ByteArrayOutputStream();

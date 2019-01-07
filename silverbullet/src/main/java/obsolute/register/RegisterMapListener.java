@@ -1,6 +1,8 @@
-package jp.silverbullet.register;
+package obsolute.register;
 
 import java.util.BitSet;
+
+import jp.silverbullet.register2.RegisterUpdates;
 
 public interface RegisterMapListener {
 

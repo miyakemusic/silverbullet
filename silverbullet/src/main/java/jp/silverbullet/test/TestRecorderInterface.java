@@ -4,7 +4,8 @@ import java.util.List;
 
 import jp.silverbullet.dependency2.RequestRejectedException;
 import jp.silverbullet.property2.RuntimeProperty;
-import jp.silverbullet.register.SvSimulator;
+import jp.silverbullet.register2.RegisterAccessor;
+import jp.silverbullet.register2.RegisterController;
 
 public interface TestRecorderInterface {
 
@@ -12,13 +13,12 @@ public interface TestRecorderInterface {
 
 	void requestChange(String id, String value) throws RequestRejectedException;
 
-	SvSimulator createSimulator();
-
-	long getAddress(String id);
-
 	List<RuntimeProperty> getProperties();
 
 	RuntimeProperty getProperty(String target);
 
+	int getRegisterValue(String regName, String bitName);
+
+	RegisterController getRegisterController();
 
 }

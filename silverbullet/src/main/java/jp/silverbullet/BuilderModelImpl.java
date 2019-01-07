@@ -3,36 +3,23 @@ package jp.silverbullet;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.List;
-import java.util.Set;
-
 import javax.xml.bind.JAXBException;
 
 import jp.silverbullet.dependency2.DependencySpecRebuilder;
 import jp.silverbullet.dependency2.IdValue;
 import jp.silverbullet.dependency2.RequestRejectedException;
-import jp.silverbullet.dependency2.DepPropertyStore;
 import jp.silverbullet.dependency2.DependencyEngine;
 import jp.silverbullet.dependency2.DependencySpecHolder;
 import jp.silverbullet.handlers.EasyAccessInterface;
-import jp.silverbullet.handlers.EasyAccessModel;
 import jp.silverbullet.handlers.HandlerPropertyHolder;
-import jp.silverbullet.handlers.RegisterAccess;
-import jp.silverbullet.handlers.SvDevice;
 import jp.silverbullet.property.PropertyHolder;
-import jp.silverbullet.property.SvProperty;
-import jp.silverbullet.property.SvPropertyStore;
 import jp.silverbullet.property2.PropertyHolder2;
 import jp.silverbullet.property2.PropertyType2;
 import jp.silverbullet.property2.RuntimeProperty;
 import jp.silverbullet.property2.RuntimePropertyStore;
-import jp.silverbullet.register.RegisterMapModel;
-import jp.silverbullet.register.RegisterMapModelInterface;
-import jp.silverbullet.register.RegisterShortCutHolder;
-import jp.silverbullet.register.SvSimulator;
 import jp.silverbullet.register2.RegisterAccessor;
+import jp.silverbullet.register2.RegisterController;
 import jp.silverbullet.register2.RegisterSpecHolder;
 import jp.silverbullet.register2.RuntimeRegisterMap;
 import jp.silverbullet.remote.SvTexHolder;
@@ -43,6 +30,7 @@ import jp.silverbullet.web.ui.PropertyGetter;
 import jp.silverbullet.web.ui.UiLayout;
 import jp.silverbullet.web.ui.UiLayoutHolder;
 import obsolute.BuilderModel;
+import obsolute.register.RegisterShortCutHolder;
 
 public class BuilderModelImpl implements BuilderModel {
 
@@ -112,12 +100,12 @@ public class BuilderModelImpl implements BuilderModel {
 		return this.registerMap;
 	}
 	
-	private RegisterMapModel registerMapModel = new RegisterMapModel(new RegisterMapModelInterface() {
-		@Override
-		public RegisterSpecHolder getRegisterSpecHolder() {
-			return registerProperty;
-		}
-	});
+//	private RegisterMapModel registerMapModel = new RegisterMapModel(new RegisterMapModelInterface() {
+//		@Override
+//		public RegisterSpecHolder getRegisterSpecHolder() {
+//			return registerProperty;
+//		}
+//	});
 
 	@Override
 	public HandlerPropertyHolder getHandlerPropertyHolder() {
@@ -182,26 +170,6 @@ public class BuilderModelImpl implements BuilderModel {
 		}
 
 		@Override
-		public SvSimulator createSimulator() {
-			SvSimulator simulator = new SvSimulator() {
-				@Override
-				protected void writeIo(long address, BitSet data, BitSet mask) {
-				}
-
-				@Override
-				protected void writeBlock(long address, byte[] data) {
-				}
-			};
-			BuilderModelImpl.this.registerMapModel.addSimulator(simulator);
-			return simulator;
-		}
-
-		@Override
-		public long getAddress(String regName) {
-			return registerProperty.getRegisterByName(regName).getDecAddress();
-		}
-
-		@Override
 		public List<RuntimeProperty> getProperties() {
 			return store.getAllProperties();
 		}
@@ -211,6 +179,15 @@ public class BuilderModelImpl implements BuilderModel {
 			return store.get(id);
 		}
 
+		@Override
+		public int getRegisterValue(String regName, String bitName) {
+			return BuilderModelImpl.this.getRuntimRegisterMap().readRegister(regName, bitName);
+		}
+
+		@Override
+		public RegisterController getRegisterController() {
+			return BuilderModelImpl.this.getRuntimRegisterMap().getRegisterController();
+		}
 	});
 	private DependencySpecHolder defaultDependency;
 	private RegisterSpecHolder registerSpecHolder = new RegisterSpecHolder();
@@ -219,8 +196,10 @@ public class BuilderModelImpl implements BuilderModel {
 		store = new RuntimePropertyStore(propertiesHolder2);
 
 //		this.setDeviceDriver(registerMapModel);
-		registerMapModel.addListener(this.testRecorder);
-
+//		registerMapModel.addListener(this.testRecorder);
+		this.getRuntimRegisterMap().addListener(this.testRecorder);
+//		this.getRuntimRegisterMap().addDevice(this.testRecorder.getDevice()); // for Interrupt
+		
 		this.sequencer = new Sequencer() {
 			@Override
 			protected RuntimePropertyStore getPropertiesStore() {
@@ -559,10 +538,10 @@ public class BuilderModelImpl implements BuilderModel {
 		return this.testRecorder;
 	}
 
-	@Override
-	public RegisterMapModel getRegisterMapModel() {
-		return this.registerMapModel;
-	}
+//	@Override
+//	public RegisterMapModel getRegisterMapModel() {
+//		return this.registerMapModel;
+//	}
 
 	@Override
 	public void switchDependency(String type) {

@@ -1,4 +1,4 @@
-package jp.silverbullet.register;
+package obsolute.register;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -17,7 +17,9 @@ import com.sun.jersey.core.util.Base64;
 
 import jp.silverbullet.handlers.InterruptHandler;
 import jp.silverbullet.handlers.SvDevice;
+import jp.silverbullet.register2.BitUpdates;
 import jp.silverbullet.register2.RegisterBit;
+import jp.silverbullet.register2.RegisterUpdates;
 import jp.silverbullet.register2.SvRegister;
 
 public class RegisterMapModel implements SvDevice, SvDeviceHandler {
