@@ -213,7 +213,7 @@ public class RegisterSpecHolderTest {
 			
 			reg.getBits().remove("bit5");
 			reg.addBit();
-			assertTrue(reg.getBits().getBits().get(4).getName().startsWith("new"));
+			assertTrue(reg.getBits().getBits().get(4).getName().startsWith("NEW"));
 			assertEquals("7:6", reg.getBits().getBits().get(4).getBit());
 			reg.getBits().remove(0);
 		}
@@ -320,22 +320,22 @@ public class RegisterSpecHolderTest {
 			keyValue.add(new KeyValue("bit_1_desc_1", "new description"));
 			controller.handle(keyValue.toArray(new KeyValue[0]));
 			
-			assertEquals("0x1234", holder.getRegisterByName("reg222").getAddress());
-			assertEquals("desc1111", holder.getRegisterByName("reg222").getDescription());
-			assertEquals("bit2", holder.getRegisterByName("reg222").getBits().getBits().get(0).getName());
-			assertEquals("new name", holder.getRegisterByName("reg222").getBits().getBits().get(1).getName());
-			assertEquals("4:1", holder.getRegisterByName("reg222").getBits().getBits().get(0).getBit());
-			assertEquals(4, holder.getRegisterByName("reg222").getBits().getBits().get(0).getSize());
-			assertEquals(ReadWriteType.RO, holder.getRegisterByName("reg222").getBits().getBits().get(1).getType());
-			assertEquals("new description", holder.getRegisterByName("reg222").getBits().getBits().get(1).getDescription());
+			assertEquals("0x1234", holder.getRegisterByName("REG222").getAddress());
+			assertEquals("desc1111", holder.getRegisterByName("REG222").getDescription());
+			assertEquals("bit2", holder.getRegisterByName("REG222").getBits().getBits().get(0).getName());
+			assertEquals("NEW_NAME", holder.getRegisterByName("REG222").getBits().getBits().get(1).getName());
+			assertEquals("4:1", holder.getRegisterByName("REG222").getBits().getBits().get(0).getBit());
+			assertEquals(4, holder.getRegisterByName("REG222").getBits().getBits().get(0).getSize());
+			assertEquals(ReadWriteType.RO, holder.getRegisterByName("REG222").getBits().getBits().get(1).getType());
+			assertEquals("new description", holder.getRegisterByName("REG222").getBits().getBits().get(1).getDescription());
 		}
 		
 		{
 			List<KeyValue> keyValue = new ArrayList<>();
 			keyValue.add(new KeyValue("bit_1_bit_0", "")); // bit2
 			controller.handle(keyValue.toArray(new KeyValue[0]));
-			assertEquals(1, holder.getRegisterByName("reg222").getBits().getBits().size());
-			assertEquals("new name", holder.getRegisterByName("reg222").getBits().getBits().get(0).getName());
+			assertEquals(1, holder.getRegisterByName("REG222").getBits().getBits().size());
+			assertEquals("NEW_NAME", holder.getRegisterByName("REG222").getBits().getBits().get(0).getName());
 		}
 	}
 	

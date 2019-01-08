@@ -6,8 +6,39 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class RuntimeRegisterMap implements RegisterAccessor, RegisterAccessorListener {
+class RegisterValue {
 	private Map<String, RuntimeBit> registerValues = new HashMap<>();
+
+	private RuntimeBit getBit(String regName) {
+		if (!this.registerValues.keySet().contains(regName)) {
+			this.registerValues.put(regName, new RuntimeBit());
+		}
+		return this.registerValues.get(regName);
+	}
+	
+	public int get(String regName, String bitName) {
+		return this.getBit(regName).getValue(bitName);
+	}
+
+	public void clear(String regName) {
+		this.registerValues.get(regName).clear();
+	}
+
+	public void set(String regName, byte[] image) {
+		this.getBit(regName).setValue(image);
+	}
+
+	public byte[] get(String regName) {
+		return this.getBit(regName).getImage();
+	}
+
+	public void set(String regName, String bitName, int value) {
+		this.getBit(regName).setValue(bitName, value);
+	}
+}
+
+public class RuntimeRegisterMap implements RegisterAccessor, RegisterAccessorListener {
+	private RegisterValue registerValue = new RegisterValue();
 	private Set<RegisterAccessor> devices = new HashSet<>();
 	private Set<RegisterAccessorListener> listeners = new HashSet<>();
 	private RegisterController registerController = new RegisterController();
@@ -24,31 +55,21 @@ public class RuntimeRegisterMap implements RegisterAccessor, RegisterAccessorLis
 	}
 
 	private void storeValue(Object regName, Object bitName, int value) {
-		this.getReg(regName.toString()).setValue(bitName.toString(), value);
+		this.registerValue.set(regName.toString(), bitName.toString(), value);
+//		this.getReg(regName.toString()).setValue(bitName.toString(), value);
 		this.listeners.forEach(listener -> listener.onUpdate(regName, bitName, value));
-	}
-	
-	private RuntimeBit getReg(String regName) {
-		if (!registerValues.keySet().contains(regName)) {
-			this.registerValues.put(regName, new RuntimeBit());
-		}
-		return this.registerValues.get(regName);
 	}
 
 	@Override
 	public int readRegister(Object regName, Object bitName) {
-		if (!this.registerValues.keySet().contains(regName.toString())) {
-			this.registerValues.put(regName.toString(), new RuntimeBit());
-		}
-		
-		return this.registerValues.get(regName.toString()).getValue(bitName.toString());
+		return this.registerValue.get(regName.toString(), bitName.toString());
 		//return this.registerValues.get(regName.toString()).getValue(bitName.toString());
 	}
 
 	@Override
 	public void clear(Object regName) {
 		String reg = regName.toString();
-		this.registerValues.get(reg).clear();
+		this.registerValue.clear(regName.toString());
 		this.devices.forEach(device -> device.clear(reg));
 	}
 
@@ -59,9 +80,6 @@ public class RuntimeRegisterMap implements RegisterAccessor, RegisterAccessorLis
 
 	@Override // SimulatorListener
 	public void onUpdate(Object regName, Object bitName, int value) {
-		String reg = regName.toString();
-		String bit = bitName.toString();
-		//getReg(reg).setValue(bit, value);
 		this.storeValue(regName, bitName, value);
 	}
 	
@@ -76,13 +94,14 @@ public class RuntimeRegisterMap implements RegisterAccessor, RegisterAccessorLis
 	}
 
 	private void storeValue(Object regName, byte[] image) {
-		getReg(regName.toString()).setValue(image);
+		this.registerValue.set(regName.toString(), image);
 		this.listeners.forEach(listener -> listener.onUpdate(regName, image));
 	}
 
 	@Override
 	public byte[] readRegister(Object regName) {
-		return this.getReg(regName.toString()).getImages();
+		return this.registerValue.get(regName.toString());
+//		return this.getReg(regName.toString()).getImages();
 	}
 
 	@Override

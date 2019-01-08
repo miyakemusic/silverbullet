@@ -23,7 +23,7 @@ public class RuntimeBit {
 	}
 
 	
-	public byte[] getImages() {
+	public byte[] getImage() {
 		return images;
 	}
 

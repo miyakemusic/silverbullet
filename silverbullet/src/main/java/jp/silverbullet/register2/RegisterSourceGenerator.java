@@ -52,20 +52,20 @@ public class RegisterSourceGenerator {
 		// Register name enum
 		lines.add("	public enum Register {" );
 		holder.getRegisterList().forEach(register -> {
-			lines.add("		" + createClassName(register.getName()) + ", ");
+			lines.add("		" + RegisterCommon.createClassName(register.getName()) + ", ");
 		});
 		lines.add("	}");
 		
 		// each register
 		holder.getRegisterList().forEach(register -> {
-			String name = createClassName(register.getName());
+			String name = RegisterCommon.createClassName(register.getName());
 			lines.add("	public enum " + name + " {");
 			for (RegisterBit bit : register.getBits().getBits()) {
-				lines.add("		" + createClassName(bit.getName()) + ", ");
+				lines.add("		" + RegisterCommon.createClassName(bit.getName()) + ", ");
 			}
 			lines.add("	}");
 			
-			lines.add("	public RuntimeRegister<" + name + "> " + createInstanceName(register.getName()) + " = new RuntimeRegister<>(Register." + name + ", accessor);");
+			lines.add("	public RuntimeRegister<" + name + "> " + RegisterCommon.createInstanceName(register.getName()) + " = new RuntimeRegister<>(Register." + name + ", accessor);");
 			
 		});
 
@@ -73,11 +73,5 @@ public class RegisterSourceGenerator {
 		return lines;
 	}
 
-	private String createInstanceName(String name) {
-		return StringUtils.uncapitalize(name.replaceAll("[^A-Za-z0-9]", "_"));
-	}
 
-	private String createClassName(String name) {
-		return StringUtils.capitalize(name.replaceAll("[^A-Za-z0-9]", "_"));
-	}
 }

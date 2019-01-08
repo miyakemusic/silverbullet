@@ -123,7 +123,7 @@ public class RegisterBitArray {
 	}
 
 	public void add() {
-		String name = "new" + Calendar.getInstance().getTimeInMillis();
+		String name = "NEW" + Calendar.getInstance().getTimeInMillis();
 		if (this.getBits().size() > 0) {
 			String bits = this.getBits().get(0).getBit();
 			int max = Integer.valueOf(bits.split(":")[0]);

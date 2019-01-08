@@ -1,6 +1,5 @@
 package jp.silverbullet.register2;
 
-import jp.silverbullet.StaticInstances;
 import jp.silverbullet.register2.RegisterBit.ReadWriteType;
 import jp.silverbullet.web.KeyValue;
 
@@ -23,7 +22,7 @@ public class RegisterJsonController {
 				register.setAddress(kv.getValue());
 			}
 			else if (param.equals("name")) {
-				register.setName(kv.getValue());
+				register.setName(RegisterCommon.createClassName(kv.getValue()));
 			}
 			else if (param.equals("desc")) {
 				register.setDescription(kv.getValue());
@@ -41,13 +40,18 @@ public class RegisterJsonController {
 					}
 				}
 				else if (bitParam.equals("size")) {
-					bit.setSize(Integer.valueOf(kv.getValue()));
+					if (kv.getValue().isEmpty()) {
+						bit.setSize(0);
+					}
+					else {
+						bit.setSize(Integer.valueOf(kv.getValue()));
+					}
 				}
 				else if (bitParam.equals("type")) {
 					bit.setType(ReadWriteType.valueOf(kv.getValue()));
 				}
 				else if (bitParam.equals("name")) {
-					bit.setName(kv.getValue());
+					bit.setName(RegisterCommon.createClassName(kv.getValue()));
 				}
 				else if (bitParam.equals("desc")) {
 					bit.setDescription(kv.getValue());

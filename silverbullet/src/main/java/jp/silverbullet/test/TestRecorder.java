@@ -4,12 +4,15 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.swing.SwingUtilities;
@@ -113,17 +116,38 @@ public class TestRecorder implements SequencerListener, RegisterAccessorListener
 			return;
 		}
 		this.script.add(new TestItem(TestItem.TYPE_REGISTER, regName.toString() + "::" + bitName.toString(), String.valueOf(value)));
-//		data.forEach(bit -> {
-//			this.script.add(new TestItem(TestItem.TYPE_REGISTER, regName.toString() + "::" + bit.bitName.toString(), String.valueOf(bit.value)));
-//		});
 	}
 
 	@Override
 	public void onUpdate(Object regName, byte[] image) {
-		// TODO Auto-generated method stub
+		if (!this.redording) {
+			return;
+		}
+		this.script.add(new TestItem(TestItem.TYPE_REGISTER, regName.toString(), TestItem.FILE + createBinaryFile(regName.toString(), image)));
 		
 	}
 
+	private Map<String, Integer> binaryCounter = new HashMap<>();
+	private String createBinaryFile(String regName, byte[] image) {
+		if (!binaryCounter.containsKey(regName)) {
+			binaryCounter.put(regName, 0);
+		}
+		String filename = regName + "_" + binaryCounter.get(regName) + ".bin";
+		
+		try {
+			if (Files.exists(Paths.get(TEST_FOLDER + filename))) {
+				Files.delete(Paths.get(TEST_FOLDER + filename));
+			}
+			Files.write(Paths.get(TEST_FOLDER + filename), image, StandardOpenOption.CREATE_NEW);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		binaryCounter.put(regName, binaryCounter.get(regName) + 1);
+		
+		return filename;
+	}
+	
 	private String convertBlockData(String val) {
 		String str = val.replace("data:application/octet-stream;base64,", "");
 		String filename = "blockdata-" + String.valueOf(Calendar.getInstance().getTime().getTime() + ".block");
@@ -304,12 +328,13 @@ public class TestRecorder implements SequencerListener, RegisterAccessorListener
 	}
 
 	private void writeBlockData(String regName, byte[] image) {
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				onUpdate(regName, image);
-			}
-		});
+		this.registerContoller.updateValue(regName, image);
+//		SwingUtilities.invokeLater(new Runnable() {
+//			@Override
+//			public void run() {
+//				onUpdate(regName, image);
+//			}
+//		});
 	}
 
 	private void requestChange(TestItem item) {
@@ -404,7 +429,6 @@ public class TestRecorder implements SequencerListener, RegisterAccessorListener
 		try {
 			FileUtils.cleanDirectory(new File(TEST_FOLDER));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		Zip.unzip(testName, TEST_FOLDER);
@@ -414,6 +438,4 @@ public class TestRecorder implements SequencerListener, RegisterAccessorListener
 	public void selectRow(long serial) {
 		this.currentRowSerial  = serial;
 	}
-
-
 }
