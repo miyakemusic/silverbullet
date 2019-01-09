@@ -1,8 +1,8 @@
 package jp.silverbullet.remote.engine;
 
-import jp.silverbullet.property.SvProperty;
 import jp.silverbullet.remote.SvTexHolder;
 import obsolute.DependencyInterface;
+import obsolute.property.SvProperty;
 
 public interface RemoteServerModel {
 

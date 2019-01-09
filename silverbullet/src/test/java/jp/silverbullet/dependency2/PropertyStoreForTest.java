@@ -4,12 +4,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jp.silverbullet.dependency.speceditor3.SvPropertyFactory;
+import jp.silverbullet.dependency.speceditor3.RuntimePropertyFactory;
 import jp.silverbullet.property2.RuntimeProperty;
 import jp.silverbullet.web.ui.PropertyGetter;
 
 public class PropertyStoreForTest implements PropertyGetter {
-	private SvPropertyFactory factory = new SvPropertyFactory();
+	private RuntimePropertyFactory factory = new RuntimePropertyFactory();
 	private Map<String, RuntimeProperty> props = new HashMap<>();
 
 	@Override

@@ -3,8 +3,8 @@ package jp.silverbullet.remote.engine;
 import java.util.LinkedList;
 
 import jp.silverbullet.dependency2.RequestRejectedException;
-import jp.silverbullet.property.SvProperty;
 import jp.silverbullet.remote.SvTexHolder;
+import obsolute.property.SvProperty;
 
 public interface RemoteCommandDi {
 	LinkedList<RemoteError> getErrors();

@@ -87,6 +87,7 @@ class LayoutBuilder {
 					addTestQuery();
 					break;
 				case "addCommand":
+					addPropertyCommand();
 					break;
 				}
 			},
@@ -104,6 +105,14 @@ class LayoutBuilder {
 			$.ajax({
 			   type: "GET", 
 			   url: "http://" + window.location.host + "/rest/test/addPropertyTest?div=" + me.getSelectedDiv(),
+			   success: function(msg){
+			   }
+			});	
+		}
+		function addPropertyCommand() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/test/addPropertyCommand?div=" + me.getSelectedDiv(),
 			   success: function(msg){
 			   }
 			});	

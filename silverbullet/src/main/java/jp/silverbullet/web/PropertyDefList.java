@@ -5,7 +5,7 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import jp.silverbullet.property.PropertyDef;
+import obsolute.property.PropertyDef;
 
 @XmlRootElement
 public class PropertyDefList {

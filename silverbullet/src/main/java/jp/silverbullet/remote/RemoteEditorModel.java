@@ -2,9 +2,9 @@ package jp.silverbullet.remote;
 
 import java.util.List;
 
-import jp.silverbullet.property.PropertyHolder;
-import jp.silverbullet.property.SvProperty;
 import jp.silverbullet.handlers.HandlerProperty;
+import obsolute.property.PropertyHolder;
+import obsolute.property.SvProperty;
 
 public interface RemoteEditorModel {
 

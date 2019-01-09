@@ -9,8 +9,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jp.silverbullet.SvPropertyListener;
-import jp.silverbullet.SvPropertyListener.Flag;
+import jp.silverbullet.property2.RuntimePropertyListener.Flag;
 
 public class RuntimeProperty implements Cloneable {
 	private String currentValue = "";
@@ -21,7 +20,7 @@ public class RuntimeProperty implements Cloneable {
 	
 	private PropertyDef2 property;
 	private String prevValue = "";
-	private Set<SvPropertyListener> listeners = new HashSet<SvPropertyListener>();
+	private Set<RuntimePropertyListener> listeners = new HashSet<RuntimePropertyListener>();
 	private Map<String, Boolean> listMask = new HashMap<String, Boolean>();
 	private boolean enabled = true;
 
@@ -79,7 +78,7 @@ public class RuntimeProperty implements Cloneable {
 	public RuntimeProperty clone()  {
 		try {
 			RuntimeProperty ret = (RuntimeProperty)super.clone();
-			ret.listeners = new HashSet<SvPropertyListener>();
+			ret.listeners = new HashSet<RuntimePropertyListener>();
 			ret.listMask = new HashMap<String, Boolean>();
 			return ret;
 		} catch (CloneNotSupportedException e) {
@@ -115,11 +114,11 @@ public class RuntimeProperty implements Cloneable {
 		this.listeners.forEach(listener -> listener.onValueChange(property.getId(), property.getIndex(), this.currentValue));
 	}
 	
-	public void addListener(SvPropertyListener SvPropertyListener) {
+	public void addListener(RuntimePropertyListener SvPropertyListener) {
 		this.listeners.add(SvPropertyListener);
 	}
 	
-	public void removeListener(SvPropertyListener SvPropertyListener) {
+	public void removeListener(RuntimePropertyListener SvPropertyListener) {
 		this.listeners.remove(SvPropertyListener);
 	}
 	
@@ -295,7 +294,7 @@ public class RuntimeProperty implements Cloneable {
 			return;
 		}
 		this.property.setUnit(string);
-		this.listeners.forEach(listener -> listener.onFlagChange(getId(), getIndex(), SvPropertyListener.Flag.UNIT));
+		this.listeners.forEach(listener -> listener.onFlagChange(getId(), getIndex(), RuntimePropertyListener.Flag.UNIT));
 	}
 
 	public void clearOptionMask() {

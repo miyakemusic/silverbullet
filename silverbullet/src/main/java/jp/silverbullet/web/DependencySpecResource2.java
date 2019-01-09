@@ -10,19 +10,15 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import jp.silverbullet.StaticInstances;
-import jp.silverbullet.dependency2.DependencyRestriction;
 import jp.silverbullet.dependency2.DependencySpec;
 import jp.silverbullet.dependency2.DependencySpecAnalyzer;
 import jp.silverbullet.dependency2.DependencySpecHolder;
-import jp.silverbullet.dependency2.Expression;
 import jp.silverbullet.dependency2.GenericLinks;
 import jp.silverbullet.dependency2.LinkGenerator;
 import jp.silverbullet.dependency2.LinkGenerator.LinkLevel;
 import jp.silverbullet.dependency2.WebDataConverter;
 import jp.silverbullet.dependency2.WebDependencySpec;
 import jp.silverbullet.dependency2.WebPair;
-import jp.silverbullet.property.SvProperty;
-import jp.silverbullet.property2.ListDetailElement;
 import jp.silverbullet.property2.PropertyType2;
 import jp.silverbullet.property2.RuntimeProperty;
 import jp.silverbullet.web.ui.PropertyGetter;
@@ -134,11 +130,11 @@ public class DependencySpecResource2 {
 		return "OK";
 	}
 	
-	@GET
-	@Path("/getRestrictions")
-	@Produces(MediaType.APPLICATION_JSON)
-	public DependencyRestriction getRestrictions() {
-		DependencySpecHolder specHolder = StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder2();
-		return specHolder.getDependencyRestriction();
-	}
+//	@GET
+//	@Path("/getRestrictions")
+//	@Produces(MediaType.APPLICATION_JSON)
+//	public DependencyRestriction getRestrictions() {
+//		DependencySpecHolder specHolder = StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder2();
+//		return specHolder.getDependencyRestriction();
+//	}
 }

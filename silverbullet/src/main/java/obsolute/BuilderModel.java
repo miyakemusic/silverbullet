@@ -2,7 +2,6 @@ package obsolute;
 
 import java.util.List;
 
-import jp.silverbullet.property.PropertyHolder;
 import jp.silverbullet.property2.PropertyType2;
 import jp.silverbullet.property2.RuntimeProperty;
 import jp.silverbullet.property2.RuntimePropertyStore;
@@ -11,6 +10,7 @@ import jp.silverbullet.remote.SvTexHolder;
 import jp.silverbullet.spec.SpecElement;
 import jp.silverbullet.test.TestRecorder;
 import jp.silverbullet.web.ui.UiLayout;
+import obsolute.property.PropertyHolder;
 import obsolute.register.RegisterAccess;
 import obsolute.register.RegisterMapModel;
 import obsolute.register.RegisterShortCutHolder;

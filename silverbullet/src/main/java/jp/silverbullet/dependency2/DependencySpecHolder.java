@@ -10,8 +10,6 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jp.silverbullet.StaticInstances;
-import jp.silverbullet.property.SvProperty;
-import jp.silverbullet.property2.ListDetailElement;
 import jp.silverbullet.property2.RuntimeProperty;
 
 public class DependencySpecHolder {
@@ -126,20 +124,20 @@ public class DependencySpecHolder {
 		
 	}
 
-	@JsonIgnore
-	public DependencyRestriction getDependencyRestriction() {
-		DependencyRestriction ret = new DependencyRestriction();
-		DependencySpecHolder specHolder = this;
-		for (String id : specHolder.getAllIds()) {
-			RuntimeProperty property = StaticInstances.getInstance().getBuilderModel().getProperty(id);
-			ret.addColumn(property.getId(), DependencySpec.Enable);
-			ret.addColumn(property.getId(), DependencySpec.Value);
-			if (property.isList()) {
-				property.getOptionIds().forEach(s -> ret.addColumn(property.getId() + "." + s , DependencySpec.Enable));
-			}
-		}
-		ret.build();
-		return ret;
-	}
+//	@JsonIgnore
+//	public DependencyRestriction getDependencyRestriction() {
+//		DependencyRestriction ret = new DependencyRestriction();
+//		DependencySpecHolder specHolder = this;
+//		for (String id : specHolder.getAllIds()) {
+//			RuntimeProperty property = StaticInstances.getInstance().getBuilderModel().getProperty(id);
+//			ret.addColumn(property.getId(), DependencySpec.Enable);
+//			ret.addColumn(property.getId(), DependencySpec.Value);
+//			if (property.isList()) {
+//				property.getOptionIds().forEach(s -> ret.addColumn(property.getId() + "." + s , DependencySpec.Enable));
+//			}
+//		}
+//		ret.build();
+//		return ret;
+//	}
 
 }

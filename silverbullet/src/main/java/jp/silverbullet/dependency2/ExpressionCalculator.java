@@ -7,7 +7,6 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-import jp.silverbullet.property.SvProperty;
 import jp.silverbullet.property2.RuntimeProperty;
 
 public abstract class ExpressionCalculator {

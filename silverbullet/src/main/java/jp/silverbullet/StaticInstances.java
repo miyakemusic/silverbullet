@@ -5,8 +5,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.BitSet;
 
-import jp.silverbullet.property.editor.PropertyListModel;
 import jp.silverbullet.register2.RegisterSourceGenerator;
+import obsolute.RegisterIoGenerator;
+import obsolute.property.editor.PropertyListModel;
 import obsolute.register.SvSimulator;
 
 public class StaticInstances {

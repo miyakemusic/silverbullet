@@ -1,4 +1,4 @@
-package jp.silverbullet.property;
+package obsolute.property;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import jp.silverbullet.SvPropertyListener;
-import jp.silverbullet.SvPropertyListener.Flag;
 import jp.silverbullet.property2.ListDetailElement;
+import jp.silverbullet.property2.RuntimePropertyListener;
+import jp.silverbullet.property2.RuntimePropertyListener.Flag;
 
 import javax.swing.SwingUtilities;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -61,7 +61,7 @@ public class SvProperty implements Cloneable {
 	private PropertyDef property;
 	private String currentValue = "";
 	private String prevValue = "";
-	private Set<SvPropertyListener> listeners = new HashSet<SvPropertyListener>();
+	private Set<RuntimePropertyListener> listeners = new HashSet<RuntimePropertyListener>();
 	private Map<String, Boolean> listMask = new HashMap<String, Boolean>();
 	private boolean enabled = true;
 	private Boolean visible = true;
@@ -155,7 +155,7 @@ public class SvProperty implements Cloneable {
 			this.currentValue = value;
 			
 			listenerTouching = true;
-			for (SvPropertyListener listener : listeners) {
+			for (RuntimePropertyListener listener : listeners) {
 				listener.onValueChange(property.getId(), this.getIndex(), value);
 			}
 			listenerTouching = false;
@@ -174,7 +174,7 @@ public class SvProperty implements Cloneable {
 		return ret;
 	}
 
-	public void addListener(SvPropertyListener propertyListener) {
+	public void addListener(RuntimePropertyListener propertyListener) {
 		this.listeners.add(propertyListener);
 	}
 
@@ -184,7 +184,7 @@ public class SvProperty implements Cloneable {
 
 	public void setEnabled(boolean b) {
 		this.enabled = b;
-		for (SvPropertyListener listener : listeners) {
+		for (RuntimePropertyListener listener : listeners) {
 			listener.onEnableChange(property.getId(), this.getIndex(), b);
 		}
 	}
@@ -228,7 +228,7 @@ public class SvProperty implements Cloneable {
 	}
 
 	private void fireListMaskChanged(String id, String listId, boolean mask) {
-		for (SvPropertyListener listener : listeners) {
+		for (RuntimePropertyListener listener : listeners) {
 			listener.onListMaskChange(property.getId(), this.getIndex(), listId, mask);
 		}
 	}
@@ -255,7 +255,7 @@ public class SvProperty implements Cloneable {
 		return this.property.getType().equals(TEXT_PROPERTY);
 	}
 
-	public void removeListener(final SvPropertyListener listener) {
+	public void removeListener(final RuntimePropertyListener listener) {
 		if (this.listenerTouching) {
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
@@ -308,7 +308,7 @@ public class SvProperty implements Cloneable {
 	}
 
 	public void fireFlagChanged(Flag flag) {
-		for (SvPropertyListener listener : this.listeners) {
+		for (RuntimePropertyListener listener : this.listeners) {
 			listener.onFlagChange(this.getId(), this.getIndex(), flag);
 		}
 	}

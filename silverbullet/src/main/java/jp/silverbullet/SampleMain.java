@@ -1,6 +1,8 @@
 package jp.silverbullet;
 
-import obsolute.BuilderModel;
+import java.util.List;
+
+import jp.silverbullet.register2.RegisterAccessor;
 
 public class SampleMain extends SilverBulletServer {
 
@@ -25,6 +27,12 @@ public class SampleMain extends SilverBulletServer {
 	protected void onStart(BuilderModelImpl model) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	protected List<RegisterAccessor> getSimulators() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

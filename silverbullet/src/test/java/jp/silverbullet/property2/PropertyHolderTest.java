@@ -8,15 +8,15 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import jp.silverbullet.XmlPersistent;
-import jp.silverbullet.property.ArgumentDefInterface;
-import jp.silverbullet.property.PropertyDef;
-import jp.silverbullet.property.PropertyHolder;
 import jp.silverbullet.property2.PropertyDef2;
 import jp.silverbullet.property2.PropertyFactory;
 import jp.silverbullet.property2.PropertyHolder2;
 import jp.silverbullet.property2.PropertyType2;
 import jp.silverbullet.property2.WebTableConverter;
 import jp.silverbullet.web.JsonTable;
+import obsolute.property.ArgumentDefInterface;
+import obsolute.property.PropertyDef;
+import obsolute.property.PropertyHolder;
 
 public class PropertyHolderTest {
 	private PropertyType types = new PropertyType();

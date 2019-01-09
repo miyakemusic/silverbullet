@@ -20,7 +20,7 @@ import jp.silverbullet.Sequencer;
 import jp.silverbullet.StaticInstances;
 import jp.silverbullet.dependency2.CommitListener;
 import jp.silverbullet.dependency2.RequestRejectedException;
-import jp.silverbullet.property.ChartContent;
+import jp.silverbullet.property2.ChartContent;
 import jp.silverbullet.property2.RuntimeProperty;
 import jp.silverbullet.web.ui.CustomProperties;
 import jp.silverbullet.web.ui.JsProperty;

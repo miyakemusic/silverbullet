@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
-import jp.silverbullet.property.SvProperty;
 import jp.silverbullet.property2.RuntimeProperty;
 import jp.silverbullet.web.ui.PropertyGetter;
 

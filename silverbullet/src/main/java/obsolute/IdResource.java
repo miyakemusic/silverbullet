@@ -1,4 +1,4 @@
-package jp.silverbullet.web;
+package obsolute;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,10 +12,12 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import jp.silverbullet.StaticInstances;
-import jp.silverbullet.property.PropertyDef;
-import jp.silverbullet.property.editor.PropertyListModel;
 import jp.silverbullet.property2.ListDetailElement;
 import jp.silverbullet.property2.PropertyType;
+import jp.silverbullet.web.JsonTable;
+import jp.silverbullet.web.PropertyDefList;
+import obsolute.property.PropertyDef;
+import obsolute.property.editor.PropertyListModel;
 
 @Path("/id")
 public class IdResource {

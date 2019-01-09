@@ -1,8 +1,6 @@
 package jp.silverbullet.property2;
 
-import jp.silverbullet.SvPropertyListener;
-
-public class PropertyListenerForTest implements SvPropertyListener {
+public class PropertyListenerForTest implements RuntimePropertyListener {
 
 	@Override
 	public void onValueChange(String id, int index, String value) {

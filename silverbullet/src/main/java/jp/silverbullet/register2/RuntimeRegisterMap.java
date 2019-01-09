@@ -2,6 +2,7 @@ package jp.silverbullet.register2;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -116,6 +117,24 @@ public class RuntimeRegisterMap implements RegisterAccessor, RegisterAccessorLis
 	public RegisterSpecHolder getSpecs() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public Set<RegisterAccessor> getDevices() {
+		return this.devices;
+	}
+
+	public void removeDevice(RegisterAccessor rg) {
+		this.devices.remove(rg);
+	}
+
+	public Set<RegisterAccessor> getUserDevices() {
+		Set<RegisterAccessor> ret = new HashSet<>(); 
+		if (this.devices.size() >= 2) {
+			Iterator<RegisterAccessor> it = this.devices.iterator();
+			it.next();
+			ret.add(it.next());
+		}
+		return ret;
 	}
 
 }

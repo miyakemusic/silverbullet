@@ -29,8 +29,6 @@ import jp.silverbullet.SequencerListener;
 import jp.silverbullet.Zip;
 import jp.silverbullet.dependency2.RequestRejectedException;
 import jp.silverbullet.property2.RuntimeProperty;
-import jp.silverbullet.register2.BitValue;
-import jp.silverbullet.register2.RegisterAccessor;
 import jp.silverbullet.register2.RegisterAccessorListener;
 import jp.silverbullet.register2.RegisterController;
 
@@ -228,7 +226,20 @@ public class TestRecorder implements SequencerListener, RegisterAccessorListener
 		new Thread() {
 			@Override
 			public void run() {
-				doLoop();
+				for (TestItem item : script.getScript()) {
+					SwingUtilities.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+							handle(item);
+						}
+					});
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
@@ -249,62 +260,50 @@ public class TestRecorder implements SequencerListener, RegisterAccessorListener
 		this.listeners.forEach(listener -> listener.onTestStart());
 	}
 
-	private void doLoop() {
-		for (TestItem item : this.script.getScript()) {
-			if (item.getType().equals(TestItem.TYPE_PROPERTY)) {
-				requestChange(item);
-			}
-			else if (item.getType().equals(TestItem.TYPE_PROPERTY_TEST)) {
-				RuntimeProperty prop = this.testRecorderInterface.getProperty(item.getTarget().replace("?", ""));
-				this.result.addResult(item.getSerial(), prop.getCurrentValue(), item.getExpected().equals(prop.getCurrentValue()));
-			}
-			else if (item.getType().equals(TestItem.TYPE_REGISTER)) {
-				String tmp[] = item.getTarget().split("::");
-				String regName = tmp[0];
-				if (item.isFile()) {
-					String filename = item.blockFilename();
-					try {
-						byte[] data = Files.readAllBytes(Paths.get(TEST_FOLDER + filename));
-						writeBlockData(regName, data);
+	public void handle(TestItem item) {
+		if (item.getType().equals(TestItem.TYPE_PROPERTY)) {
+			requestChange(item);
+		}
+		else if (item.getType().equals(TestItem.TYPE_PROPERTY_TEST)) {
+			RuntimeProperty prop = this.testRecorderInterface.getProperty(item.getTarget().replace("?", ""));
+			this.result.addResult(item.getSerial(), prop.getCurrentValue(), item.getExpected().equals(prop.getCurrentValue()));
+		}
+		else if (item.getType().equals(TestItem.TYPE_REGISTER)) {
+			String tmp[] = item.getTarget().split("::");
+			String regName = tmp[0];
+			if (item.isFile()) {
+				String filename = item.blockFilename();
+				try {
+					byte[] data = Files.readAllBytes(Paths.get(TEST_FOLDER + filename));
+					writeBlockData(regName, data);
 
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-				else if (item.isInterrupt()) {
-					triggerInterrupt();
-				}
-				else {
-					String bitName = tmp[1];
-					String bitValue = item.bitValue();
-					writeRegister(regName, bitName, Integer.valueOf(bitValue));
-//					RegisterInfo regInfo = new RegisterInfo(regName, bitName, bitValue, .getInstance().getBuilderModel().getRegisterProperty());
-//					.getInstance().getSimulator().updateRegister(regInfo.getIntAddress(), regInfo.getDataSet(), regInfo.getMask());	
-					
-//					updateRegister(regInfo);
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
 			}
-			else if (item.getType().equals(TestItem.TYPE_REGISTER_TEST)) {
-				String[] tmp = item.getTarget().split("::");
-				String regName = tmp[0];
-				String bitName = tmp[1].replace("?", "");
-				int value = testRecorderInterface.getRegisterValue(regName, bitName);
-				this.result.addResult(item.getSerial(), String.valueOf(value), value == Integer.valueOf(item.getExpected()));
+			else if (item.isInterrupt()) {
+				triggerInterrupt();
 			}
-			else if (item.getType().equals(TestItem.TYPE_CONTROL)) {
-				if (item.getTarget().equals("WAIT")) {
-					try {
-						Thread.sleep(Integer.valueOf(item.getValue()));
-					} catch (NumberFormatException | InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+			else {
+				String bitName = tmp[1];
+				String bitValue = item.bitValue();
+				writeRegister(regName, bitName, Integer.valueOf(bitValue));
+			}
+		}
+		else if (item.getType().equals(TestItem.TYPE_REGISTER_TEST)) {
+			String[] tmp = item.getTarget().split("::");
+			String regName = tmp[0];
+			String bitName = tmp[1].replace("?", "");
+			int value = testRecorderInterface.getRegisterValue(regName, bitName);
+			this.result.addResult(item.getSerial(), String.valueOf(value), value == Integer.valueOf(item.getExpected()));
+		}
+		else if (item.getType().equals(TestItem.TYPE_CONTROL)) {
+			if (item.getTarget().equals("WAIT")) {
+				try {
+					Thread.sleep(Integer.valueOf(item.getValue()));
+				} catch (NumberFormatException | InterruptedException e) {
+					e.printStackTrace();
 				}
-			}
-			try {
-				Thread.sleep(10);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
 			}
 		}
 	}
@@ -319,12 +318,13 @@ public class TestRecorder implements SequencerListener, RegisterAccessorListener
 	}
 
 	private void triggerInterrupt() {
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				registerContoller.triggerInterrupt();
-			}
-		});
+		registerContoller.triggerInterrupt();
+//		SwingUtilities.invokeLater(new Runnable() {
+//			@Override
+//			public void run() {
+//				registerContoller.triggerInterrupt();
+//			}
+//		});
 	}
 
 	private void writeBlockData(String regName, byte[] image) {
@@ -383,6 +383,12 @@ public class TestRecorder implements SequencerListener, RegisterAccessorListener
 		addQueryTest(this.testRecorderInterface.getProperty(id));
 	}
 
+	public void addPropertyCommand(String id) {
+		RuntimeProperty prop = this.testRecorderInterface.getProperty(id);
+		TestItem test = new TestItem(TestItem.TYPE_PROPERTY, prop.getId(), prop.getCurrentValue(), ""); 
+		this.script.add(test, this.currentRowSerial);
+	}
+	
 	public void addCommand(String type, String target, String value, long serial) {
 		this.script.add(new TestItem(type, target, value), serial);
 	}
@@ -438,4 +444,5 @@ public class TestRecorder implements SequencerListener, RegisterAccessorListener
 	public void selectRow(long serial) {
 		this.currentRowSerial  = serial;
 	}
+
 }

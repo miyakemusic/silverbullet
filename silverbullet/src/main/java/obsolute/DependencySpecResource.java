@@ -18,10 +18,10 @@ import javax.ws.rs.core.MediaType;
 
 import jp.silverbullet.StaticInstances;
 import jp.silverbullet.dependency2.DependencySpecHolder;
-import jp.silverbullet.property.PropertyHolder;
-import jp.silverbullet.property.SvProperty;
-import jp.silverbullet.property.SvPropertyStore;
 import jp.silverbullet.web.JsonTable;
+import obsolute.property.PropertyHolder;
+import obsolute.property.SvProperty;
+import obsolute.property.SvPropertyStore;
 
 
 @Path("/dependencySpec")

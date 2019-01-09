@@ -8,10 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import jp.silverbullet.SvPropertyListener;
 import jp.silverbullet.dependency2.ChangedItemValue;
 import jp.silverbullet.property2.RuntimeProperty;
-import jp.silverbullet.property2.RuntimePropertyStore;
+import jp.silverbullet.property2.RuntimePropertyListener;
 import jp.silverbullet.web.ui.PropertyGetter;
 
 public class CachedPropertyStore implements PropertyGetter {
@@ -20,7 +19,7 @@ public class CachedPropertyStore implements PropertyGetter {
 	private List<String> debugLog = new ArrayList<>();
 	private Map<String, List<ChangedItemValue>> changedHistory = new LinkedHashMap<>();
 	
-	private SvPropertyListener listener = new SvPropertyListener() {
+	private RuntimePropertyListener listener = new RuntimePropertyListener() {
 		@Override
 		public void onValueChange(String id, int index, String value) {
 			appendChange(new Id(id, index), new ChangedItemValue(DependencySpec.Value, value));

@@ -1,4 +1,4 @@
-package jp.silverbullet.property;
+package obsolute.property;
 
 public interface PropertyDefListener {
 

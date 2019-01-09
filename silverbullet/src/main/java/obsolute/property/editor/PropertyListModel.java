@@ -1,4 +1,4 @@
-package jp.silverbullet.property.editor;
+package obsolute.property.editor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,11 +8,11 @@ import java.util.regex.Pattern;
 
 import javax.swing.table.AbstractTableModel;
 
-import jp.silverbullet.property.PropertyDef;
-import jp.silverbullet.property.PropertyHolder;
-import jp.silverbullet.property.PropertyHolderListener;
-import jp.silverbullet.property.SvProperty;
 import jp.silverbullet.property2.ListDetailElement;
+import obsolute.property.PropertyDef;
+import obsolute.property.PropertyHolder;
+import obsolute.property.PropertyHolderListener;
+import obsolute.property.SvProperty;
 
 public class PropertyListModel extends AbstractTableModel {
 

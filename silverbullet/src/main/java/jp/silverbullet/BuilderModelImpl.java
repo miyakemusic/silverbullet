@@ -13,7 +13,6 @@ import jp.silverbullet.dependency2.DependencyEngine;
 import jp.silverbullet.dependency2.DependencySpecHolder;
 import jp.silverbullet.handlers.EasyAccessInterface;
 import jp.silverbullet.handlers.HandlerPropertyHolder;
-import jp.silverbullet.property.PropertyHolder;
 import jp.silverbullet.property2.PropertyHolder2;
 import jp.silverbullet.property2.PropertyType2;
 import jp.silverbullet.property2.RuntimeProperty;
@@ -30,6 +29,7 @@ import jp.silverbullet.web.ui.PropertyGetter;
 import jp.silverbullet.web.ui.UiLayout;
 import jp.silverbullet.web.ui.UiLayoutHolder;
 import obsolute.BuilderModel;
+import obsolute.property.PropertyHolder;
 import obsolute.register.RegisterShortCutHolder;
 
 public class BuilderModelImpl implements BuilderModel {
@@ -191,6 +191,7 @@ public class BuilderModelImpl implements BuilderModel {
 	});
 	private DependencySpecHolder defaultDependency;
 	private RegisterSpecHolder registerSpecHolder = new RegisterSpecHolder();
+	private List<RegisterAccessor> simulators;
 
 	public BuilderModelImpl() {
 		store = new RuntimePropertyStore(propertiesHolder2);
@@ -577,5 +578,22 @@ public class BuilderModelImpl implements BuilderModel {
 
 	public RegisterSpecHolder getRegisterSpecHolder() {
 		return this.registerSpecHolder;
+	}
+
+	public List<RegisterAccessor> getSimulators() {
+		return simulators;
+	}
+
+	public void setSimulators(List<RegisterAccessor> simulators) {
+		this.simulators = simulators;
+	}
+
+	public RegisterAccessor getSimulator(String simulator) {
+		for (RegisterAccessor a : this.simulators) {
+			if (a.getClass().getSimpleName().equals(simulator)) {
+				return a;
+			}
+		}
+		return null;
 	}
 }

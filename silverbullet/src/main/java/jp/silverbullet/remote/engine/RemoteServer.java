@@ -5,11 +5,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 import jp.silverbullet.dependency2.RequestRejectedException;
-import jp.silverbullet.property.SvProperty;
 import jp.silverbullet.remote.SvTexHolder;
 import jp.silverbullet.remote.commands.ClearCommandExecutor;
 import jp.silverbullet.remote.commands.CommandCompleteCommandExecutor;
 import jp.silverbullet.remote.commands.ErrorCommandExecutor;
+import obsolute.property.SvProperty;
 
 public class RemoteServer {
 	private SvSocketHandler remoteHandler = new SvSocketHandlerImpl();

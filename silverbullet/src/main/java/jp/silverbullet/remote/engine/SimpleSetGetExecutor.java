@@ -4,12 +4,12 @@ import java.util.List;
 
 import javax.swing.SwingUtilities;
 
-import jp.silverbullet.SvPropertyListener;
 import jp.silverbullet.dependency2.RequestRejectedException;
-import jp.silverbullet.property.SvProperty;
+import jp.silverbullet.property2.RuntimePropertyListener;
 import jp.silverbullet.remote.SvTex;
+import obsolute.property.SvProperty;
 
-public class SimpleSetGetExecutor extends AbstractCommandExecutor implements SvPropertyListener {
+public class SimpleSetGetExecutor extends AbstractCommandExecutor implements RuntimePropertyListener {
 
 private String value;
 

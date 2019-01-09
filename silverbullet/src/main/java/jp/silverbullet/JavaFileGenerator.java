@@ -11,8 +11,6 @@ import java.util.Set;
 
 import jp.silverbullet.dependency2.RequestRejectedException;
 import jp.silverbullet.handlers.EasyAccessInterface;
-import jp.silverbullet.property.SvProperty;
-import jp.silverbullet.property2.ListDetailElement;
 import jp.silverbullet.property2.RuntimeProperty;
 
 public class JavaFileGenerator {

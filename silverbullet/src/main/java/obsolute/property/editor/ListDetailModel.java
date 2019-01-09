@@ -1,8 +1,8 @@
-package jp.silverbullet.property.editor;
+package obsolute.property.editor;
 
 import javax.swing.table.AbstractTableModel;
 
-import jp.silverbullet.property.PropertyDef;
+import obsolute.property.PropertyDef;
 
 public class ListDetailModel extends AbstractTableModel {
 	private static final String COMMENT = "comment";

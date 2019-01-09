@@ -79,10 +79,11 @@ public class TestResource {
 	}
 
 	@GET
-	@Path("/addCommand")
+	@Path("/addPropertyCommand")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public String addCommand(@QueryParam("type") final String type, @QueryParam("target") final String target, @QueryParam("value") final String value, @QueryParam("serial") final long serial) {
-		StaticInstances.getInstance().getBuilderModel().getTestRecorder().addCommand(type, target, value, serial);
+	public String addCommand(@QueryParam("div") final String div) {
+		JsWidget widget = StaticInstances.getInstance().getBuilderModel().getUiLayout().getWidget(div);
+		StaticInstances.getInstance().getBuilderModel().getTestRecorder().addPropertyCommand(widget.getId());
 		return "OK";
 	}
 	

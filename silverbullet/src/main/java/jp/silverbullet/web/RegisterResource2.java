@@ -2,6 +2,8 @@ package jp.silverbullet.web;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -14,6 +16,7 @@ import com.sun.jersey.core.util.Base64;
 
 import jp.silverbullet.StaticInstances;
 import jp.silverbullet.register.json.SvRegisterJsonHolder;
+import jp.silverbullet.register2.RegisterAccessor;
 import jp.silverbullet.register2.RegisterJsonController;
 import obsolute.register.RegisterShortCut;
 import obsolute.register.SvSimulator;
@@ -124,8 +127,8 @@ public class RegisterResource2 {
 	@Path("/addToTest")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String addToTest(@QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName) {
-//		int value = StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().getValue(regName, bitName);
-//		StaticInstances.getInstance().getBuilderModel().getTestRecorder().addRegisterQuery(regName, bitName, value);
+		int value = StaticInstances.getInstance().getBuilderModel().getRuntimRegisterMap().readRegister(regName, bitName);
+		StaticInstances.getInstance().getBuilderModel().getTestRecorder().addRegisterQuery(regName, bitName, value);
 		return "OK";
 	}
 	
@@ -148,22 +151,19 @@ public class RegisterResource2 {
 	@Path("/getSimulators")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<String> getSimulators() {
-//		return StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().getSimulatorClasses(StaticInstances.getInstance().getBuilderModel().getUserApplicationPath());
-		return null;
+		List<RegisterAccessor> sims = StaticInstances.getInstance().getBuilderModel().getSimulators();
+		List<String> ret = new ArrayList<>();
+		sims.forEach(a -> ret.add(a.getClass().getSimpleName()));
+		return ret;
 	}
 	
 	@GET
 	@Path("getAddedSimulators")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<String> getAddedSimulators() {
+		Set<RegisterAccessor> list = StaticInstances.getInstance().getBuilderModel().getRuntimRegisterMap().getUserDevices();
 		List<String> ret = new ArrayList<>();
-//		for (SvSimulator simulator : StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().getSimulators()) {
-//			String sim = simulator.getClass().getSimpleName();
-//			if (!sim.isEmpty()) {
-//				ret.add(sim);
-//			}
-//		}
-
+		list.forEach(a -> ret.add(a.getClass().getSimpleName()));
 		return ret;
 	}
 	
@@ -171,7 +171,8 @@ public class RegisterResource2 {
 	@Path("loadSimulator")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String loadSimulator(@QueryParam("simulator") final String simulator) {
-
+		RegisterAccessor rg = StaticInstances.getInstance().getBuilderModel().getSimulator(simulator);
+		StaticInstances.getInstance().getBuilderModel().getRuntimRegisterMap().addDevice(rg);
 		return "OK";
 	}
 	
@@ -179,6 +180,8 @@ public class RegisterResource2 {
 	@Path("unloadSimulator")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String unloadSimulator(@QueryParam("simulator") final String simulator) {
+		RegisterAccessor rg = StaticInstances.getInstance().getBuilderModel().getSimulator(simulator);
+		StaticInstances.getInstance().getBuilderModel().getRuntimRegisterMap().removeDevice(rg);
 		return "OK";
 	}
 	

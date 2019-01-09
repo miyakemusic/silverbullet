@@ -1,4 +1,4 @@
-package jp.silverbullet.property;
+package obsolute.property;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import jp.silverbullet.property2.PropertyType;
+import jp.silverbullet.property2.StringArray;
 
 @XmlRootElement
 public class PropertyHolder {

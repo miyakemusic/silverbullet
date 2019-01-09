@@ -1,4 +1,4 @@
-package jp.silverbullet.property;
+package obsolute.property;
 
 import java.io.IOException;
 import java.nio.charset.Charset;

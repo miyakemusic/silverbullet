@@ -2,8 +2,8 @@ package jp.silverbullet.remote;
 
 import java.util.List;
 
-import jp.silverbullet.property.SvProperty;
 import jp.silverbullet.property2.ListDetailElement;
+import obsolute.property.SvProperty;
 
 public class AutoGenerator {
 	private SvTexHolder texHolder = new SvTexHolder();

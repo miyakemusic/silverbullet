@@ -1,6 +1,6 @@
-package jp.silverbullet;
+package jp.silverbullet.property2;
 
-public interface SvPropertyListener {
+public interface RuntimePropertyListener {
 
 	void onValueChange(String id, int index, String value);
 
