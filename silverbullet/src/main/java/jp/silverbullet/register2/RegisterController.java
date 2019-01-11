@@ -13,8 +13,9 @@ public class RegisterController implements RegisterAccessor {
 
 	@Override
 	public void write(Object regName, List<BitValue> data) {
-		// TODO Auto-generated method stub
-
+//		data.forEach(d  -> {
+//			updateValue(regName, d.bitName, d.value);
+//		});
 	}
 
 	@Override
@@ -51,12 +52,4 @@ public class RegisterController implements RegisterAccessor {
 	public void triggerInterrupt() {
 		listeners.forEach(listener -> listener.onInterrupt());
 	}
-
-//	public void write(String regName, byte[] data) {
-//		listeners.forEach(listener -> listener.onUpdate(regName, data));
-//	}
-//
-//	public void write(String regName, String bitName, String value) {
-//		listeners.forEach(listener -> listener.onUpdate(regName, bitName, Integer.valueOf(value)));
-//	}
 }

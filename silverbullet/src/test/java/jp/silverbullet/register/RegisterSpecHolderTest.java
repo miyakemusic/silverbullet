@@ -19,7 +19,6 @@ import jp.silverbullet.register2.RegisterBitArray;
 import jp.silverbullet.register2.RuntimeRegisterMap;
 import jp.silverbullet.register2.SvRegister;
 import jp.silverbullet.web.KeyValue;
-import obsolute.register.RegisterMapModelInterface;
 import jp.silverbullet.register2.RegisterController;
 import jp.silverbullet.register2.RegisterJsonController;
 import jp.silverbullet.register2.RegisterSourceGenerator;
@@ -350,13 +349,6 @@ public class RegisterSpecHolderTest {
 			newBit(UserRuntimeRegisterHolderForTest.Reg1.bit2.toString(), 1, 1, ReadWriteType.RW, "");
 		holder.newMultiRegister("area", 0x20, 0x80, "");
 		//////////////// Map ////////////////
-		RegisterMapModelInterface modelInterface = new RegisterMapModelInterface() {
-			@Override
-			public RegisterSpecHolder getRegisterSpecHolder() {
-				return holder;
-			}
-		};
-		
 		RuntimeRegisterMap registerMap = new RuntimeRegisterMap();
 		RegisterAccessorListenerImpl listener = new RegisterAccessorListenerImpl();
 		registerMap.addListener(listener);

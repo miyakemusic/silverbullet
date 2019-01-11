@@ -47,10 +47,9 @@ class RegisterMap {
 			   success: function(msg){
 			   		$('#' + idEnabledSimulators).empty();
 			   		$('#' + idEnabledSimulators).append('Loaded Simulators:');
-//			   		var val = '';
+
 			   		for (var i = 0; i < msg.length; i++) {
 						var val = msg[i];
-//						val += sim + " ";
 						$('#' + idEnabledSimulators).append('<button name="' + val + '" class="simulatorDisable">Unload ' + val + '</button>');
 
 					}
@@ -159,6 +158,7 @@ class RegisterMap {
 				$('#' + mapTableId).append('<colgroup><col style="width:20px"></colgroup>');
 			}
 			for (var i = 0; i < obj.registers.length; i++) {
+				var titleMap = new Map();
 				var register = obj.registers[i];
 				var row = '<td>' + register.address + '</td><td>' + register.name + '</td>';
 				
@@ -176,12 +176,11 @@ class RegisterMap {
 					var buttonInfoObj = new Object();
 					buttonInfoObj.address = register.address;
 					buttonInfoObj.register = register.name;
-					//buttonInfoObj.bitName = ;''
-					//buttonInfoObj.bit = bit.bit;
+			
 					me.bitInfo.set(buttonId, buttonInfoObj);
 							
 					var name = '<div>' + bit.name + '</div><div><input type="file" id="' + register.name + '"class="blockData"></div>';
-					//getCurrentValue(buttonId, register.name, bit.name);
+
 					colSpan = 32;
 					row += '<td colspan="' + colSpan + '">' + name + '</td>';
 				}
@@ -211,6 +210,8 @@ class RegisterMap {
 							buttonInfoObj.bit = bit.bit;
 							me.bitInfo.set(buttonId, buttonInfoObj);
 							
+							titleMap.set(buttonId, bit.name);
+							
 							var name = '<div>' + bit.name + '</div><div><Button id="' + buttonId + '" class="regButton"></Button></div>';
 							getCurrentValue(buttonId, register.name, bit.name);
 							row += '<td colspan="' + colSpan + '">' + name + '</td>';
@@ -224,6 +225,10 @@ class RegisterMap {
 					}
 				}
 				$('#' + mapTableId + ' > tbody').append('<tr>' + row + '</tr>');
+				
+				titleMap.forEach((value, key) => {
+				    $('#' + key).attr('title', value);
+				});
 				
 				$('.regButton').click(function() {
 					$('#' + div).append('<div id="' + dialogId + '"><label id="' + idBitName + '"></label><br><input type="text" id="' + editValue + '"></div>');

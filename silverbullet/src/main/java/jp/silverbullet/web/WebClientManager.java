@@ -19,6 +19,7 @@ import jp.silverbullet.register2.BitUpdates;
 import jp.silverbullet.register2.RegisterAccessorListener;
 import jp.silverbullet.register2.RegisterUpdates;
 import jp.silverbullet.test.TestRecorderListener;
+import jp.silverbullet.web.ui.UiLayoutListener;
 
 public class WebClientManager {
 
@@ -195,6 +196,18 @@ public class WebClientManager {
 
 			@Override
 			public void onTestStart() {
+			}
+
+			@Override
+			public void onAdd(String string) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onUpdate() {
+				// TODO Auto-generated method stub
+				
 			}
 		});
 	}

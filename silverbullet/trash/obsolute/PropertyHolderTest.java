@@ -14,74 +14,77 @@ import jp.silverbullet.property2.PropertyHolder2;
 import jp.silverbullet.property2.PropertyType2;
 import jp.silverbullet.property2.WebTableConverter;
 import jp.silverbullet.web.JsonTable;
+import obsolute.property.ArgumentDefInterface;
+import obsolute.property.PropertyDef;
+import obsolute.property.PropertyHolder;
 
 public class PropertyHolderTest {
 	private PropertyType types = new PropertyType();
-//	private ArgumentDefInterface argDef = new ArgumentDefInterface() {
-//
-//		@Override
-//		public int indexOf(String type, String key) {
-//			return types.getArguments(type).indexOf(key);
-//		}
-//
-//		@Override
-//		public List<String> get(String type) {
-//			return types.getArguments(type);
-//		}
-//		
-//	};
-//	private <T> T load(Class<T> clazz, String filename) {
-//		XmlPersistent<T> propertyPersister = new XmlPersistent<>();
-//		try {
-//			return propertyPersister.load(filename, clazz);
-//		} catch (Exception e) {
-//			try {
-//				return clazz.newInstance();
-//			} catch (InstantiationException | IllegalAccessException e1) {
-//				e1.printStackTrace();
-//			}
-//		}
-//		return null;
-//	}
-//	@Test
-//	public void convert() {
-//		PropertyHolder propertiesHolder = load(PropertyHolder.class, "C:\\Users\\çNçG\\git3\\openti\\openti\\sv_tmp\\id_def.xml");
-//		PropertyHolder2 holder = new PropertyHolder2();
-//		PropertyFactory factory = new PropertyFactory();
-//		
-//		for (PropertyDef original : propertiesHolder.getProperties()) {
-//			original.setArgumentDef(argDef);
-//			
-//			PropertyDef2 def2 = new PropertyDef2();
-//			def2.setId(original.getId());
-//			def2.setType(getType(original.getType()));
-//			def2.setArraySize(original.getSize());
-//			def2.setComment(original.getComment());
-//			def2.setTitle(original.getTitle());
-//			def2.setGroup(original.getGroup());
-//			if (def2.getType().equals(PropertyType2.Numeric)) {
-//				def2.setUnit(original.getOthers().get(0));
-//				def2.setDecimals(Integer.valueOf(getInt(original.getOthers().get(1))));
-//				def2.setMin(Double.valueOf(original.getOthers().get(2)));
-//				def2.setMax(Double.valueOf(original.getOthers().get(3)));
-////				def2.setDefaultValue(original.getOthers().get(4));
-//			}
-//			else if (def2.getType().equals(PropertyType2.List)) {
-//				def2.setAllOptions(original.getListDetail());
-//				def2.setDefaultId(original.getOthers().get(2));
-//			}
-//			holder.addProperty(def2);
-//			//def2.setDefaultValue(original.getArgumentValue("defaultValue"));
-//		}
-//		
-//		holder.save("C:\\Users\\çNçG\\git3\\openti\\openti\\newid2.json");
-////		holder.load("C:\\Users\\a1199022\\git3\\openti\\openti\\newid2.json");
-//		
-//		WebTableConverter converter = new WebTableConverter(holder);
-//		JsonTable table = converter.createIdTable(PropertyType2.NotSpecified);
-//		
-////		new JsonPersistent().saveJson(holder, "C:\\Users\\a1199022\\git3\\openti\\openti\\newid.json");
-//	}
+	private ArgumentDefInterface argDef = new ArgumentDefInterface() {
+
+		@Override
+		public int indexOf(String type, String key) {
+			return types.getArguments(type).indexOf(key);
+		}
+
+		@Override
+		public List<String> get(String type) {
+			return types.getArguments(type);
+		}
+		
+	};
+	private <T> T load(Class<T> clazz, String filename) {
+		XmlPersistent<T> propertyPersister = new XmlPersistent<>();
+		try {
+			return propertyPersister.load(filename, clazz);
+		} catch (Exception e) {
+			try {
+				return clazz.newInstance();
+			} catch (InstantiationException | IllegalAccessException e1) {
+				e1.printStackTrace();
+			}
+		}
+		return null;
+	}
+	@Test
+	public void convert() {
+		PropertyHolder propertiesHolder = load(PropertyHolder.class, "C:\\Users\\çNçG\\git3\\openti\\openti\\sv_tmp\\id_def.xml");
+		PropertyHolder2 holder = new PropertyHolder2();
+		PropertyFactory factory = new PropertyFactory();
+		
+		for (PropertyDef original : propertiesHolder.getProperties()) {
+			original.setArgumentDef(argDef);
+			
+			PropertyDef2 def2 = new PropertyDef2();
+			def2.setId(original.getId());
+			def2.setType(getType(original.getType()));
+			def2.setArraySize(original.getSize());
+			def2.setComment(original.getComment());
+			def2.setTitle(original.getTitle());
+			def2.setGroup(original.getGroup());
+			if (def2.getType().equals(PropertyType2.Numeric)) {
+				def2.setUnit(original.getOthers().get(0));
+				def2.setDecimals(Integer.valueOf(getInt(original.getOthers().get(1))));
+				def2.setMin(Double.valueOf(original.getOthers().get(2)));
+				def2.setMax(Double.valueOf(original.getOthers().get(3)));
+//				def2.setDefaultValue(original.getOthers().get(4));
+			}
+			else if (def2.getType().equals(PropertyType2.List)) {
+				def2.setAllOptions(original.getListDetail());
+				def2.setDefaultId(original.getOthers().get(2));
+			}
+			holder.addProperty(def2);
+			//def2.setDefaultValue(original.getArgumentValue("defaultValue"));
+		}
+		
+		holder.save("C:\\Users\\çNçG\\git3\\openti\\openti\\newid2.json");
+//		holder.load("C:\\Users\\a1199022\\git3\\openti\\openti\\newid2.json");
+		
+		WebTableConverter converter = new WebTableConverter(holder);
+		JsonTable table = converter.createIdTable(PropertyType2.NotSpecified);
+		
+//		new JsonPersistent().saveJson(holder, "C:\\Users\\a1199022\\git3\\openti\\openti\\newid.json");
+	}
 	
 	private int getInt(String string) {
 		try {

@@ -2,6 +2,7 @@ package jp.silverbullet.web;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -62,8 +63,8 @@ public class DependencySpecResource2 {
 	@GET
 	@Path("/getIds")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public List<String> getIds() {
-		return StaticInstances.getInstance().getBuilderModel().getPropertyHolder().getAllIds();
+	public Set<String> getIds() {
+		return StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder2().getAllIds();
 	}
 	
 	@GET

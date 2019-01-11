@@ -1,4 +1,4 @@
-package jp.silverbullet.web;
+package jp.silverbullet.web.ui;
 
 public interface UiLayoutListener {
 

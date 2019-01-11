@@ -162,7 +162,7 @@ class DependencySpecEditor {
 		
 		var idCopyButton = this.div + '_copy_' + elementName;
 		var idCopySelect = this.div + '_copyselect_' + elementName;
-		$('#' + this.div).append('<div id="' + divName + '"><b>' + elementName + '</b><span>..........</span><button id="' + idCopyButton + '" name="' + elementName + '">Copy From</button><select id="' + idCopySelect + '" class="copySelect"></select></div>');
+		$('#' + this.div).append('<div id="' + divName + '"><b>' + elementName + '</b><span>..........</span><button id="' + idCopyButton + '" name="' + elementName + '" class="small">Copy From</button><select id="' + idCopySelect + '" class="copySelect"></select></div>');
 		$('#' + idCopyButton).click(function() {
 			var to = $(this).prop('name');//.replace( me.div + '_copyselect_', ' ');
 			var from = $('#' + idCopySelect).val();

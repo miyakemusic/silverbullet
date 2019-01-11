@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Set;
 
 import jp.silverbullet.JsonPersistent;
-import jp.silverbullet.web.UiLayoutListener;
 
 public class UiLayoutHolder {
 

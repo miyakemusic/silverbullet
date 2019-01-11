@@ -57,7 +57,6 @@ class DesignerClass {
 		var idAddNewFile = prefix + '_addNewFile';
 		var idRemoveFile = prefix + '_removeFile';
 		var idArrayButton = prefix + '_arrayButton';
-		var idBuild = prefix + '_build';
 		
 		$('#' + idBase).append('<div><select id="' + idFile + '"></select><button id="' + idAddNewFile + '">Add File</button><button id="' + idRemoveFile + '">Remove</button></div>');
 		
@@ -86,7 +85,6 @@ class DesignerClass {
 		$('#' + idToolbar2).append('<button id="' + idRemove + '" class="layoutAction">Remove</button>');
 		$('#' + idToolbar2).append('<input type="checkbox" id="' + idEdit + '">Edit');
 		$('#' + idToolbar2).append('<button id="' + idArrayButton + '">Array</button>');
-		$('#' + idToolbar2).append('<button id="' + idBuild + '">Build</button>');
 
 		new UiTree(idNorth, function(baseId) {
 			layout.selectedDiv = baseId;
@@ -322,10 +320,6 @@ class DesignerClass {
 		$('#' + idArrayButton).click(function(e) {
 			addArray();
 		});
-		$('#' + idBuild).click(function(e) {
-			buildUi();
-		});
-
 
 		// Register shortcut
 		var idRegisterShortcutDiv = div + 'registerShortcutDiv';
@@ -565,18 +559,6 @@ class DesignerClass {
 			});	
 		}
 		
-		function buildUi() {
-			$.ajax({
-			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/design/buildUi",
-			   success: function(msg){
-					layout.updatePartUI(msg);
-			   },
-			   error: function(msg) {
-			   }
-			});	
-		}
-			
 		$('#' + idEdit).trigger('click');
 
 	}

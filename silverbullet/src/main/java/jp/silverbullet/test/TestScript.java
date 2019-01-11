@@ -9,7 +9,7 @@ public class TestScript {
 	public String getScriptName() {
 		return scriptName;
 	}
-	public List<TestItem> getScript() {
+	public List<TestItem> getScripts() {
 		return script;
 	}
 	public void setScriptName(String scriptName) {
@@ -69,7 +69,7 @@ public class TestScript {
 		new Mover(serial) {
 			@Override
 			protected int calcIndex(int index) {
-				if (index > 1) {
+				if (index >= 1) {
 					index--;
 				}
 				return index;

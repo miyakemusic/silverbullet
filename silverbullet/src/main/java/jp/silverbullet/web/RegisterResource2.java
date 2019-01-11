@@ -18,8 +18,7 @@ import jp.silverbullet.StaticInstances;
 import jp.silverbullet.register.json.SvRegisterJsonHolder;
 import jp.silverbullet.register2.RegisterAccessor;
 import jp.silverbullet.register2.RegisterJsonController;
-import obsolute.register.RegisterShortCut;
-import obsolute.register.SvSimulator;
+import jp.silverbullet.register2.RegisterShortCut;
 
 @Path("/register2")
 public class RegisterResource2 {

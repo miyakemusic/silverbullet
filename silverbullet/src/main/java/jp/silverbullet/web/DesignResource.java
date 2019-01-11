@@ -35,57 +35,9 @@ public class DesignResource {
 	@Produces(MediaType.APPLICATION_JSON) 
 	public JsProperty getProperty(@QueryParam("id") String id, @QueryParam("index") Integer index, @QueryParam("ext") String ext) {
 		RuntimeProperty property = StaticInstances.getInstance().getBuilderModel().getProperty(RuntimeProperty.createIdText(id,index));
-		JsProperty ret = convertProperty(property, ext);
-		return ret;
+		return new JsProperty(property, ext);
 	}
-	
-	private JsProperty convertProperty(RuntimeProperty property, String ext) {
-		JsProperty ret = new JsProperty();
-		ret.setId(property.getId());
-		ret.setTitle(property.getTitle());
-		ret.setUnit(property.getUnit());
-		ret.setElements(property.getAvailableListDetail());
-		ret.setEnabled(property.isEnabled());
-		
-		if (property.isChartProperty()) {
-			if (ext == null) {
-				ret.setCurrentValue("REQUEST_AGAIN");
-			}
-			else {
-				try {
-					if (property.getCurrentValue().isEmpty()) {
-						return ret;
-					}
-					ChartContent chartContent = new ObjectMapper().readValue(property.getCurrentValue(), ChartContent.class);
-					int point = Integer.valueOf(ext);
-					int allSize = chartContent.getY().length;
-					double step = (double)allSize / (double)point;
-					String[] y = new String[point];
-					for (int i = 0; i < point; i++) {
-						y[i] = chartContent.getY()[(int)((double)i*step)];
-					}
-					chartContent.setY(y);
-					ret.setCurrentValue(new ObjectMapper().writeValueAsString(chartContent));
-				} catch (JsonParseException e) {
-					e.printStackTrace();
-				} catch (JsonMappingException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		else if (property.isList()) {
-			ret.setCurrentValue(property.getSelectedListTitle());
-			ret.setCurrentSelectionId(property.getCurrentValue());
-		}
-		else {
-			ret.setCurrentValue(property.getCurrentValue());
-		}
-		
 
-		return ret;
-	}
 	
 	@GET
 	@Path("/setValue")
@@ -103,9 +55,6 @@ public class DesignResource {
 				}
 			});
 			StaticInstances.getInstance().getBuilderModel().getUiLayout().doAutoDynamicPanel();
-//			for (JsWidget w : StaticInstances.getInstance().getBuilderModel().getUiLayout().collectDynamicChangedPanel()) {
-//				StaticInstances.getInstance().getBuilderModel().getUiLayout().fireLayoutChange(String.valueOf(w.getUnique()));				
-//			}
 
 			ret.result = "Accepted";
 		} catch (RequestRejectedException e) {
@@ -122,15 +71,7 @@ public class DesignResource {
 	@Path("/getDesign")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public JsWidget getDesign(@QueryParam("root") String root) {
-		JsWidget ret;
-		if (root == null || root.isEmpty()) {
-			ret = StaticInstances.getInstance().getBuilderModel().getUiLayout().getRoot();// StaticInstances.getInstance().getBuilderModel().getUiLayout().getRoot();
-		}
-		else {
-			ret = StaticInstances.getInstance().getBuilderModel().getUiLayout().getSubTree(root);
-		}
-
-		return ret;
+		return StaticInstances.getInstance().getBuilderModel().getUiLayout().getDesign(root);
 	}
 	
 	@GET
@@ -168,7 +109,6 @@ public class DesignResource {
 	@Path("/move")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String move(@QueryParam("div") String div, @QueryParam("x") String x, @QueryParam("y") String y) {
-//		System.out.println(x + "," + y);
 		StaticInstances.getInstance().getBuilderModel().getUiLayout().move(div, x, y);
 		return "OK";
 	}
@@ -256,14 +196,6 @@ public class DesignResource {
 	}
 
 	@GET
-	@Path("setCustom")
-	@Produces(MediaType.TEXT_PLAIN) 
-	public String setCustom(@QueryParam("div") String div, @QueryParam("custom") String custom) {
-		//StaticInstances.getInstance().getBuilderModel().getUiLayout().setCustom(div, custom);
-		return "OK";
-	}
-	
-	@GET
 	@Path("cutPaste")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String cutPaste(@QueryParam("newBaseDiv") String newBaseDiv, @QueryParam("itemDiv") String itemDiv) {
@@ -345,12 +277,5 @@ public class DesignResource {
 		StaticInstances.getInstance().getBuilderModel().getUiLayout().addArray(div);
 		return "OK";
 	}
-	
-	@GET
-	@Path("buildUi")
-	@Produces(MediaType.APPLICATION_JSON) 
-	public List<JsWidget> buildUi() {
-		//StaticInstances.getInstance().getBuilderModel().getUiLayout().collectDynamicChangedPanel2();
-		return null;
-	}
+
 }

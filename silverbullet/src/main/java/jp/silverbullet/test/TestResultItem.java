@@ -7,7 +7,7 @@ public class TestResultItem {
 		NOT_TESTED
 	}
 
-	private TestItem test;
+//	private TestItem test;
 	private PassFail passFail = PassFail.NOT_TESTED;
 	private String elapsed;
 	private String result;
@@ -23,17 +23,17 @@ public class TestResultItem {
 		}
 	}
 
-	public TestItem getTest() {
-		return test;
-	}
+//	public TestItem getTest() {
+//		return test;
+//	}
 
 	public String getElapsed() {
 		return elapsed;
 	}
 
-	public void setTest(TestItem test) {
-		this.test = test;
-	}
+//	public void setTest(TestItem test) {
+//		this.test = test;
+//	}
 
 	public void setElapsed(String elapsed) {
 		this.elapsed = elapsed;

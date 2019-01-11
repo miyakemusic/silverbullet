@@ -106,7 +106,7 @@ class RegisterSpec {
 		}
 		
 		function createEditable(value, id, type) {
-			if (value == '') {
+			if (value == '' || value == null) {
 				value = '----';
 			}
 			var labelId = 'L' + id;

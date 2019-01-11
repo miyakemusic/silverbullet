@@ -13,7 +13,6 @@ import jp.silverbullet.property2.PropertyHolder2;
 import jp.silverbullet.property2.PropertyType2;
 import jp.silverbullet.property2.RuntimeProperty;
 import jp.silverbullet.property2.RuntimePropertyStore;
-import jp.silverbullet.web.UiLayoutListener;
 
 public class UiLayoutHolderTest {
 

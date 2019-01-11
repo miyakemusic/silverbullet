@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import jp.silverbullet.StaticInstances;
 import jp.silverbullet.property2.RuntimeProperty;
-import jp.silverbullet.web.UiLayoutListener;
 
 public class UiLayout {
 
@@ -403,6 +403,17 @@ public class UiLayout {
 
 	public void removeListener(UiLayoutListener listener) {
 		this.listeners.remove(listener);
+	}
+
+	public JsWidget getDesign(String root2) {
+		JsWidget ret = null;
+		if (root2 == null || root2.isEmpty()) {
+			ret = getRoot();
+		}
+		else {
+			ret = getSubTree(root2);
+		}
+		return ret;
 	}
 
 

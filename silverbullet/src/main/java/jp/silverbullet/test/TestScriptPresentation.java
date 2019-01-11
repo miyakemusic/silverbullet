@@ -8,7 +8,7 @@ public class TestScriptPresentation {
 	
 	public TestScriptPresentation(TestResult result) {
 		int num = 1;
-		for (TestItem testItem : result.getScript().getScript()) {
+		for (TestItem testItem : result.getScript().getScripts()) {
 			TestResultItem resultItem = result.getResult().get(testItem.getSerial());
 			
 			String result2 = "";

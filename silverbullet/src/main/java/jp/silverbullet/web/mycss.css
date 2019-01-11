@@ -251,6 +251,10 @@ button.changed {
  	font-size:10px;
  }
  
+button.small {
+ 	font-size:10px;
+ }
+ 
 .handsontable td {
   font-size: 11px;
 }

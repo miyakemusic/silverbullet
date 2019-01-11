@@ -6,15 +6,12 @@ import java.nio.file.Paths;
 import java.util.BitSet;
 
 import jp.silverbullet.register2.RegisterSourceGenerator;
-import obsolute.RegisterIoGenerator;
-import obsolute.property.editor.PropertyListModel;
-import obsolute.register.SvSimulator;
 
 public class StaticInstances {
 	public static final String TMP_FOLDER = "./sv_tmp";
 	
 	private static StaticInstances instance;
-	private PropertyListModel propertyListModel = null;
+//	private PropertyListModel propertyListModel = null;
 	
 	private BuilderModelImpl builderModel;
 	private String currentFilename = "";
@@ -25,13 +22,7 @@ public class StaticInstances {
 		}
 		return instance;
 	}
-	
-	public SvSimulator getSimulator() {
-		return simulator;
-	}
-
-	private SvSimulator simulator;
-	
+		
 	public BuilderModelImpl getBuilderModel() {
 		return builderModel;
 	}
@@ -42,17 +33,17 @@ public class StaticInstances {
 	}
 
 	private void createOtherInstances() {
-		propertyListModel = new PropertyListModel(getBuilderModel().getPropertyHolder());
-		
-		simulator = new SvSimulator() {
-			@Override
-			protected void writeIo(long address, BitSet data, BitSet mask) {
-			}
-
-			@Override
-			protected void writeBlock(long address, byte[] data) {
-			}
-		};
+//		propertyListModel = new PropertyListModel(getBuilderModel().getPropertyHolder());
+//		
+//		simulator = new SvSimulator() {
+//			@Override
+//			protected void writeIo(long address, BitSet data, BitSet mask) {
+//			}
+//
+//			@Override
+//			protected void writeBlock(long address, byte[] data) {
+//			}
+//		};
 
 //		builderModel.getRegisterMapModel().addSimulator(simulator);
 //		simulator.setDevice(builderModel.getRegisterMapModel());
@@ -89,14 +80,14 @@ public class StaticInstances {
 //		builderModel.getRegisterMapModel().update();
 	}
 
-	public PropertyListModel getPropertyListModel() {
-		return propertyListModel;
-	}
+//	public PropertyListModel getPropertyListModel() {
+//		return propertyListModel;
+//	}
 
 	public void generateSource() {
 		String path = getBuilderModel().getUserApplicationPath();
 		new JavaFileGenerator(getBuilderModel().getAllProperties()).generate(path);
-		new RegisterIoGenerator(getBuilderModel().getRegisterProperty(), path).generate(path);
+//		new RegisterIoGenerator(getBuilderModel().getRegisterProperty(), path).generate(path);
 		new RegisterSourceGenerator(getBuilderModel().getRegisterSpecHolder(), getBuilderModel().getUserApplicationPath(), "UserRegister").
 			exportFile("src/main/java/" + path);
 	}

@@ -3,7 +3,6 @@ package jp.silverbullet.web.ui;
 import java.util.ArrayList;
 import java.util.List;
 import jp.silverbullet.web.KeyValue;
-import jp.silverbullet.web.UiLayoutListener;
 
 public class UiLayoutListenerImpl implements UiLayoutListener {
 	private List<KeyValue> log = new ArrayList<>();

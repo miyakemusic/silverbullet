@@ -79,5 +79,9 @@ public class TestItem {
 	public void setSerial(long serial) {
 		this.serial = serial;
 	}
+	@Override
+	public String toString() {
+		return this.type + "." + this.target + "." + this.expected + "." + this.value;
+	}
 
 }

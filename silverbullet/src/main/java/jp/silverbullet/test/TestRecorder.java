@@ -56,7 +56,7 @@ public class TestRecorder implements SequencerListener, RegisterAccessorListener
 		}
 		registerContoller = testRecorderInterface.getRegisterController();
 
-		load();
+//		load();
 	}
 
 	private void load() {
@@ -83,30 +83,9 @@ public class TestRecorder implements SequencerListener, RegisterAccessorListener
 	@Override
 	public void onInterrupt() {
 		if (this.redording) {
-//			this.script.add(new TestItem(TestItem.TYPE_CONTROL, TestItem.WAIT, "100"));
 			this.script.add(new TestItem(TestItem.TYPE_REGISTER, TestItem.INTERRPT, "ON"));
 		}
 	}
-
-//	@Override
-//	public void onUpdate(RegisterUpdates updates) {
-//		if (!this.redording) {
-//			return;
-//		}
-//		
-//		for (BitUpdates bit : updates.getBits()) {
-//			String val = "";
-//			if (bit.getVal().startsWith("data:application/octet-stream;base64,")) {
-//				val = convertBlockData(bit.getVal());
-//			}
-//			else {
-//				val = bit.getVal();
-//			}
-//			
-//			this.script.add(new TestItem(TestItem.TYPE_REGISTER, updates.getName() + "::" + bit.getName(), val));
-//		}		
-//	}
-	
 
 	@Override
 	public void onUpdate(Object regName, Object bitName, int value) {
@@ -145,18 +124,18 @@ public class TestRecorder implements SequencerListener, RegisterAccessorListener
 		
 		return filename;
 	}
-	
-	private String convertBlockData(String val) {
-		String str = val.replace("data:application/octet-stream;base64,", "");
-		String filename = "blockdata-" + String.valueOf(Calendar.getInstance().getTime().getTime() + ".block");
-		try {
-			Files.write(Paths.get(TEST_FOLDER + filename), Base64.decode(str));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		String ret = TestItem.FILE + filename;
-		return ret;
-	}
+//	
+//	private String convertBlockData(String val) {
+//		String str = val.replace("data:application/octet-stream;base64,", "");
+//		String filename = "blockdata-" + String.valueOf(Calendar.getInstance().getTime().getTime() + ".block");
+//		try {
+//			Files.write(Paths.get(TEST_FOLDER + filename), Base64.decode(str));
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//		String ret = TestItem.FILE + filename;
+//		return ret;
+//	}
 
 	public void startRecording() {
 		this.script.clear();
@@ -183,6 +162,8 @@ public class TestRecorder implements SequencerListener, RegisterAccessorListener
 	private void addQueryTest(RuntimeProperty prop) {
 		TestItem test = new TestItem(TestItem.TYPE_PROPERTY_TEST, prop.getId() + "?", "", prop.getCurrentValue()); 
 		this.script.add(test, this.currentRowSerial);
+		
+		this.listeners.forEach(listener -> listener.onAdd(test.toString()));
 	}
 
 	public void overwrite() {
@@ -226,7 +207,7 @@ public class TestRecorder implements SequencerListener, RegisterAccessorListener
 		new Thread() {
 			@Override
 			public void run() {
-				for (TestItem item : script.getScript()) {
+				for (TestItem item : script.getScripts()) {
 					SwingUtilities.invokeLater(new Runnable() {
 						@Override
 						public void run() {
@@ -319,35 +300,19 @@ public class TestRecorder implements SequencerListener, RegisterAccessorListener
 
 	private void triggerInterrupt() {
 		registerContoller.triggerInterrupt();
-//		SwingUtilities.invokeLater(new Runnable() {
-//			@Override
-//			public void run() {
-//				registerContoller.triggerInterrupt();
-//			}
-//		});
 	}
 
 	private void writeBlockData(String regName, byte[] image) {
 		this.registerContoller.updateValue(regName, image);
-//		SwingUtilities.invokeLater(new Runnable() {
-//			@Override
-//			public void run() {
-//				onUpdate(regName, image);
-//			}
-//		});
 	}
 
 	private void requestChange(TestItem item) {
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					testRecorderInterface.requestChange(item.getTarget(), item.getValue());
-				} catch (RequestRejectedException e) {
-					e.printStackTrace();
-				}
-			}
-		});
+		try {
+			testRecorderInterface.requestChange(item.getTarget(), item.getValue());
+		} catch (RequestRejectedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public TestScript getScript() {
@@ -367,7 +332,7 @@ public class TestRecorder implements SequencerListener, RegisterAccessorListener
 	}
 
 	private TestItem getItem(long serial) {
-		for (TestItem item : this.script.getScript()) {
+		for (TestItem item : this.script.getScripts()) {
 			if (item.getSerial() == serial) {
 				return item;
 			}
@@ -387,32 +352,38 @@ public class TestRecorder implements SequencerListener, RegisterAccessorListener
 		RuntimeProperty prop = this.testRecorderInterface.getProperty(id);
 		TestItem test = new TestItem(TestItem.TYPE_PROPERTY, prop.getId(), prop.getCurrentValue(), ""); 
 		this.script.add(test, this.currentRowSerial);
+		
+		this.listeners.forEach(listener -> listener.onAdd(test.toString()));
 	}
-	
-	public void addCommand(String type, String target, String value, long serial) {
-		this.script.add(new TestItem(type, target, value), serial);
-	}
-	public void addCommand(String type, String target, String value) {
-		this.script.add(new TestItem(type, target, value), this.currentRowSerial);
-	}
-	
+		
 	public void moveUp(long serial) {
 		this.script.moveUp(serial);
+		this.listeners.forEach(listener -> listener.onUpdate());
 	}
 	
 	public void moveDown(long serial) {
 		this.script.moveDown(serial);
+		this.listeners.forEach(listener -> listener.onUpdate());
 	}
 
 	public void addRegisterQuery(String regName, String bitName, int value) {
 		TestItem test = new TestItem(TestItem.TYPE_REGISTER_TEST, regName + "::" + bitName + "?", "", String.valueOf(value));
 		this.script.add(test, this.currentRowSerial);
+		this.listeners.forEach(listener -> listener.onAdd(test.toString()));
 	}
 
 	public void save(String testName) {
 		this.overwrite();
 		if (!testName.toUpperCase().endsWith(".TEST")) {
 			testName += ".test";
+		}
+		if (Files.exists(Paths.get(testName))) {
+			try {
+				Files.delete(Paths.get(testName));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		Zip.zip(TestRecorder.TEST_FOLDER, testName);
 	}
@@ -443,6 +414,14 @@ public class TestRecorder implements SequencerListener, RegisterAccessorListener
 
 	public void selectRow(long serial) {
 		this.currentRowSerial  = serial;
+	}
+
+	public TestItem getScript(int i) {
+		return this.script.getScripts().get(i);
+	}
+
+	public TestResultItem getResult(long serial) {
+		return this.result.getResult().get(serial);
 	}
 
 }
