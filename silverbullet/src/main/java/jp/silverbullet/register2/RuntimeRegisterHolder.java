@@ -39,7 +39,7 @@ public class RuntimeRegisterHolder {
 		}
 
 		@Override
-		public int readRegister(Object regName, Object bitName) {
+		public long readRegister(Object regName, Object bitName) {
 			return registerAccessor.readRegister(regName, bitName);
 		}
 

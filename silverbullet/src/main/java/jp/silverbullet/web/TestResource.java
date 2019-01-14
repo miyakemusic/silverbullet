@@ -73,7 +73,7 @@ public class TestResource {
 	@Path("/addPropertyTest")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public String addPropertyTest(@QueryParam("div") final String div) {
-		JsWidget widget = StaticInstances.getInstance().getBuilderModel().getUiLayout().getWidget(div);
+		JsWidget widget = StaticInstances.getInstance().getBuilderModel().getUiLayoutHolder().getCurrentUi().getWidget(div);
 		StaticInstances.getInstance().getBuilderModel().getTestRecorder().addPropertyTest(widget.getId());
 		return "OK";
 	}
@@ -82,7 +82,7 @@ public class TestResource {
 	@Path("/addPropertyCommand")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public String addCommand(@QueryParam("div") final String div) {
-		JsWidget widget = StaticInstances.getInstance().getBuilderModel().getUiLayout().getWidget(div);
+		JsWidget widget = StaticInstances.getInstance().getBuilderModel().getUiLayoutHolder().getCurrentUi().getWidget(div);
 		StaticInstances.getInstance().getBuilderModel().getTestRecorder().addPropertyCommand(widget.getId());
 		return "OK";
 	}

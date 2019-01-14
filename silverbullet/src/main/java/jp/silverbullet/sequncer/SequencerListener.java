@@ -1,4 +1,4 @@
-package jp.silverbullet;
+package jp.silverbullet.sequncer;
 
 public interface SequencerListener {
 

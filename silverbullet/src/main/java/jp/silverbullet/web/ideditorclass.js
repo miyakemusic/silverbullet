@@ -33,6 +33,11 @@ class IdEditorClass {
 			var command = msg.split(':')[0];
 			var id = msg.split(':')[1];
 			
+			if (command == 'Remove') {
+				id = msg.split(':')[2];
+				me.currentId = id;
+			}
+			
 			if (command == 'Change' || command == 'Add' || command == 'Remove') {
 				me.updateMainTable();
 				me.collectSelections(id, function(message) {

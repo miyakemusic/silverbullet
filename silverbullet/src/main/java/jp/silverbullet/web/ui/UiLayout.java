@@ -182,7 +182,6 @@ public class UiLayout {
 
 	public void remove(String div) {
 		removeDiv(root, extractUnique(div));
-//		fireLayoutChange(div);
 	}
 	
 	private boolean removeDiv(JsWidget parent, int unique) {

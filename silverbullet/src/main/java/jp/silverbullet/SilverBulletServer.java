@@ -2,7 +2,6 @@ package jp.silverbullet;
 
 import java.util.List;
 
-import jp.silverbullet.handlers.EasyAccessModel;
 import jp.silverbullet.register2.RegisterAccessor;
 import jp.silverbullet.web.BuilderServer;
 import jp.silverbullet.web.BuilderServerListener;
@@ -16,16 +15,16 @@ public abstract class SilverBulletServer {
 		String filename = getDefaultFilename();
 		StaticInstances.getInstance().load(filename);
 		builderModel = StaticInstances.getInstance().getBuilderModel();
-		builderModel.setUserPath(getUserPath());
+//		builderModel.setUserPath(getUserPath());
 			
 		startWebServer(Integer.valueOf(port));
 	}
 
 	protected abstract String getDefaultFilename();
-	protected abstract String getUserPath();
 	protected abstract void onStart(BuilderModelImpl model);
 	protected abstract List<RegisterAccessor> getSimulators();
-	
+	protected abstract String getBaseFolderAndPackage();
+
 	protected void startWebServer(Integer port) {
 		new WebClientManager();
 		webServer = new BuilderServer(port, new BuilderServerListener() {
@@ -33,10 +32,10 @@ public abstract class SilverBulletServer {
 			public void onStarted() {
 				SilverBulletServer.this.onStart(builderModel);
 				builderModel.setSimulators(getSimulators());
+				builderModel.setSourceInfo(getBaseFolderAndPackage());
+//				builderModel.setNativeAccessor(getNativeAccessor());
 			}
 		});
 	}
-
-	
 
 }

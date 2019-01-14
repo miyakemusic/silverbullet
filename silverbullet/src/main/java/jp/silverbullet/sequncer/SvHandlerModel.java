@@ -1,10 +1,10 @@
-package jp.silverbullet.handlers;
+package jp.silverbullet.sequncer;
 
 import jp.silverbullet.register2.RegisterAccessor;
 
 public interface SvHandlerModel {
 
-	String getUserApplicationPath();
+//	String getUserApplicationPath();
 
 	EasyAccessInterface getEasyAccessInterface();
 	RegisterAccessor getRegisterAccessor();

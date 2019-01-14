@@ -16,7 +16,7 @@ public 	class RuntimeRegister<T> {
 		return this;
 	}
 
-	public int read(T bit) {
+	public long read(T bit) {
 		return accessor.readRegister(this.getRegName(), bit.toString());
 	}
 

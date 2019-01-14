@@ -2,6 +2,7 @@ package jp.silverbullet.web.ui;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -180,7 +181,7 @@ public class JsWidget implements Cloneable {
 	}
 
 	public String getCustomElement(String id) {
-		String v = this.custom.get(id);//CustomProperties.GUI_ID
+		String v = this.custom.get(id);
 		if (v == null) {
 			v = "";
 		}
@@ -241,6 +242,14 @@ public class JsWidget implements Cloneable {
 
 	public void setParentDiv(int parantDiv) {
 		this.parentDiv = parantDiv;
+	}
+
+	public static List<String> getAllWidgetTypes() {
+		return Arrays.asList(JsWidget.ROOT, JsWidget.TOGGLEBUTTON, JsWidget.CSSBUTTON, JsWidget.ACTIONBUTTON, 
+				JsWidget.COMBOBOX, JsWidget.RADIOBUTTON, JsWidget.TEXTFIELD,
+				JsWidget.CHART, JsWidget.CHART_CANVASJS, JsWidget.TABLE, JsWidget.DATATABLE, JsWidget.CHECKBOX, JsWidget.GUI_DIALOG, 
+				JsWidget.PANEL, JsWidget.TAB, JsWidget.LABEL, JsWidget.MESSAGEBOX, JsWidget.ROOT, JsWidget.REGISTERSHORTCUT);
+
 	}
 	
 }

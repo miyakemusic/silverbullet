@@ -39,8 +39,9 @@ public class DependencySpec {
 		this.dependencySpecDetail.add(DependencySpec.OptionEnable, option, enabled, trigger, condition);
 	}
 	
-	public void addOptionEnabled(String option, String enabled, String trigger) {
+	public DependencySpec addOptionEnabled(String option, String enabled, String trigger) {
 		addOptionEnabled(option, enabled, trigger, "");
+		return this;
 	}
 
 	public void addEnable(String enabled, String trigger, String condition) {
@@ -73,8 +74,9 @@ public class DependencySpec {
 		this.dependencySpecDetail.add(DependencySpec.Value, value, trigger, condition);
 	}
 
-	public void addValue(String value, String trigger) {
+	public DependencySpec addValue(String value, String trigger) {
 		addValue(value, trigger, "");
+		return this;
 	}
 	
 	public String getId() {
@@ -89,16 +91,18 @@ public class DependencySpec {
 		this.dependencySpecDetail.add(DependencySpec.Min, String.valueOf(min), trigger, condition);
 	}
 	
-	public void addMin(double min, String trigger) {
+	public DependencySpec addMin(double min, String trigger) {
 		addMin(min, trigger, "");
+		return this;
 	}
 
 	public void addMax(double max, String trigger, String condition) {
 		this.dependencySpecDetail.add(DependencySpec.Max, String.valueOf(max), trigger, condition);
 	}
 	
-	public void addMax(double max, String trigger) {
+	public DependencySpec addMax(double max, String trigger) {
 		addMax(max, trigger, "");
+		return this;
 	}
 
 	public void addArraySize(int size, String trigger, String condition) {

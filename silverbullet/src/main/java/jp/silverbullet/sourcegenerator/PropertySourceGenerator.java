@@ -1,4 +1,4 @@
-package jp.silverbullet;
+package jp.silverbullet.sourcegenerator;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -10,20 +10,20 @@ import java.util.List;
 import java.util.Set;
 
 import jp.silverbullet.dependency2.RequestRejectedException;
-import jp.silverbullet.handlers.EasyAccessInterface;
 import jp.silverbullet.property2.RuntimeProperty;
+import jp.silverbullet.sequncer.EasyAccessInterface;
 
-public class JavaFileGenerator {
+public class PropertySourceGenerator {
 
 	private List<RuntimeProperty> properties;
 	private Set<String> exists = new HashSet<String>();
-	public JavaFileGenerator(List<RuntimeProperty> properties) {
+	public PropertySourceGenerator(List<RuntimeProperty> properties) {
 		this.properties = properties;
 	}
 
-	public void generate(String path) {
+	public void generate(String baseFolder, String packageName){
 		List<String> lines = new ArrayList<String>();
-		lines.add("package " + path + ";");
+		lines.add("package " + packageName + ";");
 		lines.add("public class ID {");
 		for (RuntimeProperty prop : properties) {
 			if (prop.getIndex() > 0) { // This is tentative code
@@ -32,28 +32,23 @@ public class JavaFileGenerator {
 			lines.add(createLine(prop.getId()));
 			if (prop.isList()) {
 				prop.getListIds().forEach(optionId -> lines.add(createLine(optionId)));
-//				for (ListDetailElement e : prop.getListDetail()) {
-//					lines.add(createLine(e.getId()));
-//				}
 			}
 		}
 		lines.add("}");
 		try {
-			
-			//String path = this.getClass().getPackage().getName();
-			String path2 = "src/main/java/" + path.replace(".", "/");// + "/handlers/user/";
+			String path2 = baseFolder + "/" + packageName.replace(".", "/");
 			Files.write(Paths.get(path2 + "/ID.java"), lines, StandardCharsets.UTF_8);
 			
-			Files.write(Paths.get(path2 + "/UserEasyAccess.java"), generateSimple(path), StandardCharsets.UTF_8);
+			Files.write(Paths.get(path2 + "/UserEasyAccess.java"), generateSimple(packageName), StandardCharsets.UTF_8);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
 	}
 
-	public List<String> generateSimple(String path) {
+	public List<String> generateSimple(String packageName) {
 		List<String> source = new ArrayList<String>();
-		source.add("package " + path +";");
+		source.add("package " + packageName +";");
 //		source.add("import " + EasyAccessModel.class.getName() + ";");
 		source.add("import " + RequestRejectedException.class.getName() + ";");
 		source.add("import " + EasyAccessInterface.class.getName() + ";");

@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jp.silverbullet.SvHandlerModel;
 import jp.silverbullet.dependency2.ChangedItemValue;
 import jp.silverbullet.dependency2.DependencySpec;
 import jp.silverbullet.dependency2.Id;

@@ -35,7 +35,7 @@ public class RuntimePropertyStore {
 			}
 
 			@Override
-			public void onRemove(String id) {
+			public void onRemove(String id, String replacedId) {
 				for (Iterator<String> i = runtimeProperties.keySet().iterator(); i.hasNext();) {
 					  if (i.next().split(RuntimeProperty.INDEXSIGN)[0].equals(id)) {
 					    i.remove();

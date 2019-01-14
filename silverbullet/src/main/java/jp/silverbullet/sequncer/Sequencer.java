@@ -1,40 +1,32 @@
-package jp.silverbullet;
+package jp.silverbullet.sequncer;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import jp.silverbullet.dependency2.ChangedItemValue;
 import jp.silverbullet.dependency2.CommitListener;
 import jp.silverbullet.dependency2.DependencyEngine;
 import jp.silverbullet.dependency2.DependencyListener;
 import jp.silverbullet.dependency2.Id;
 import jp.silverbullet.dependency2.RequestRejectedException;
-import jp.silverbullet.handlers.AbstractSvHandler;
-import jp.silverbullet.handlers.CommonSvHandler;
-import jp.silverbullet.handlers.EasyAccessInterface;
-import jp.silverbullet.handlers.HandlerProperty;
-import jp.silverbullet.handlers.HandlerPropertyHolder;
-import jp.silverbullet.handlers.SvHandlerModel;
 import jp.silverbullet.property2.RuntimeProperty;
 import jp.silverbullet.property2.RuntimePropertyStore;
 import jp.silverbullet.register2.RegisterAccessor;
 
 public abstract class Sequencer {
 	abstract protected RuntimePropertyStore getPropertiesStore();
-	abstract protected HandlerPropertyHolder getHandlerPropertyHolder();
+//	abstract protected HandlerPropertyHolder getHandlerPropertyHolder();
 	abstract protected DependencyEngine getDependency();
-	abstract protected String getUserApplicationPath();
+//	abstract protected String getUserApplicationPath();
 	abstract protected EasyAccessInterface getEasyAccessInterface();
 	abstract protected RegisterAccessor getRegisterAccessor();
 	
-	private List<AbstractSvHandler> handlers = new ArrayList<>();
+//	private List<AbstractSvHandler> handlers = new ArrayList<>();
 	private Set<SequencerListener> listeners = new HashSet<SequencerListener>();
+	private List<UserSequencer> userSequencers = new ArrayList<>();
 	
-	LinkedHashMap<String, List<ChangedItemValue>> history = new LinkedHashMap<>();
+//	private LinkedHashMap<String, List<ChangedItemValue>> history = new LinkedHashMap<>();
 	private List<String> debugDepLog;
 
 	private EasyAccessInterface easyAccessInterface = new EasyAccessInterface() {
@@ -60,7 +52,7 @@ public abstract class Sequencer {
 		}
 		
 	};
-	
+		
 	public Sequencer() {
 		Thread.currentThread().getId();
 	}
@@ -91,25 +83,20 @@ public abstract class Sequencer {
 		
 		List<String> changedIds = engine.getChangedIds();
 
-		Set<HandlerProperty> toRunHandlers = new LinkedHashSet<>();
-		for (HandlerProperty handler : getHandlerPropertyHolder().getHandlers()) {
-			for (String changed : changedIds) {
-				if (changed.contains(RuntimeProperty.INDEXSIGN)) {
-					changed = changed.split(RuntimeProperty.INDEXSIGN)[0];
-				}
-				if (handler.getIds().contains(changed)) {
-					toRunHandlers.add(handler);
-					break;
-				}
-			}
-		}
+//		Set<HandlerProperty> toRunHandlers = new LinkedHashSet<>();
+//		for (HandlerProperty handler : getHandlerPropertyHolder().getHandlers()) {
+//			for (String changed : changedIds) {
+//				if (changed.contains(RuntimeProperty.INDEXSIGN)) {
+//					changed = changed.split(RuntimeProperty.INDEXSIGN)[0];
+//				}
+//				if (handler.getIds().contains(changed)) {
+//					toRunHandlers.add(handler);
+//					break;
+//				}
+//			}
+//		}
 		
 		SvHandlerModel model = new SvHandlerModel() {
-			@Override
-			public String getUserApplicationPath() {
-				return Sequencer.this.getUserApplicationPath();
-			}
-
 			@Override
 			public RegisterAccessor getRegisterAccessor() {
 				return Sequencer.this.getRegisterAccessor();
@@ -122,12 +109,25 @@ public abstract class Sequencer {
 
 		};
 		
-		for (HandlerProperty handler : toRunHandlers) {
-			new CommonSvHandler(model, handler).execute(getDependency().getChagedItems());
+		for (UserSequencer us : this.userSequencers) {
+			if (matches(us.targetIds(), changedIds)) {
+				us.handle(model, getDependency().getChagedItems());
+			}
 		}
+//		for (HandlerProperty handler : toRunHandlers) {
+//			new CommonSvHandler(model, handler).execute(getDependency().getChagedItems());
+//		}
 		
 	}
 
+	private boolean matches(List<String> targetIds, List<String> changedIds) {
+		for (String id : changedIds) {
+			if (targetIds.contains(id.split(RuntimeProperty.INDEXSIGN)[0])) {
+				return true;
+			}
+		}
+		return false;
+	}
 	public List<String> getDebugDepLog() {
 		return debugDepLog;
 	}
@@ -146,9 +146,9 @@ public abstract class Sequencer {
 		getDependency().addDependencyListener(dependencyListener);
 	}
 
-	public void add(AbstractSvHandler handler) {
-		this.handlers.add(handler);
-	}
+//	public void add(AbstractSvHandler handler) {
+//		this.handlers.add(handler);
+//	}
 	
 	public void addSequencerListener(SequencerListener sequencerListener) {
 		this.listeners.add(sequencerListener);
@@ -159,6 +159,9 @@ public abstract class Sequencer {
 	}
 	public void removeDependencyListener(DependencyListener listener) {
 		this.getDependency().removeDependencyListener(listener);
+	}
+	public void addUserSequencer(UserSequencer testSequencer) {
+		this.userSequencers.add(testSequencer);
 	}
 
 }

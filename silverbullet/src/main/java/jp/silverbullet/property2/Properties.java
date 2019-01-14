@@ -1,7 +1,7 @@
 package jp.silverbullet.property2;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -13,9 +13,19 @@ public class Properties {
 		return properties.get(id);
 	}
 
-	public void remove(String id) {
+	public String remove(String id) {
+		int index = new ArrayList<>(this.properties.keySet()).indexOf(id);
 		this.properties.get(id).clearListeners();
 		this.properties.remove(id);
+		if (index > properties.size()-1) {
+			index--;
+		}
+		if (this.properties.size() == 0) {
+			return "";
+		}
+		else {
+			return new ArrayList<>(this.properties.keySet()).get(index);
+		}
 		
 	}
 

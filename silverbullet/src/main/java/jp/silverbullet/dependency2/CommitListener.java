@@ -5,7 +5,7 @@ public interface CommitListener {
 	public enum Reply {
 		Accept,
 		Reject,
-		Pending
+		Pend
 	}
 
 	public Reply confirm(String message);

@@ -10,7 +10,6 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import jp.silverbullet.SequencerListener;
 import jp.silverbullet.dependency2.RequestRejectedException;
 import jp.silverbullet.property2.PropertyDef2;
 import jp.silverbullet.property2.PropertyFactory;
@@ -21,6 +20,7 @@ import jp.silverbullet.register2.BitValue;
 import jp.silverbullet.register2.RegisterAccessor;
 import jp.silverbullet.register2.RegisterAccessorListener;
 import jp.silverbullet.register2.RegisterController;
+import jp.silverbullet.sequncer.SequencerListener;
 import jp.silverbullet.test.TestResultItem.PassFail;
 
 public class TestRecorderTest {
@@ -83,7 +83,7 @@ public class TestRecorderTest {
 		}
 
 		@Override
-		public int getRegisterValue(String regName, String bitName) {
+		public long getRegisterValue(String regName, String bitName) {
 			return values.get(regName.toString() + bitName.toString());
 		}
 

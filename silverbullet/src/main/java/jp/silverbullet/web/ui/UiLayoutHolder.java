@@ -4,21 +4,29 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import jp.silverbullet.JsonPersistent;
+import jp.silverbullet.StaticInstances;
+import jp.silverbullet.web.Pair;
 
 public class UiLayoutHolder {
 
 	private PropertyGetter propertyGetter;
-	private Map<String, UiLayout> layouts = new HashMap<>();
+	private Map<String, UiLayout> layouts = new LinkedHashMap<>();
 	private UiLayout currentUi;// = new UiLayout();
 	private String currentFilename;
 	private Set<UiLayoutListener> listeners = new HashSet<>();
+	private CustomProperties customProperties = new CustomProperties();
+	
 	private UiLayoutListener listener = new UiLayoutListener() {
 		@Override
 		public void onLayoutChange(String div, String filename) {
@@ -86,13 +94,26 @@ public class UiLayoutHolder {
 		return ret;
 	}
 
-	public List<String> createNewFile(String filename) {
+	private List<String> createFile(String filename) {
 		UiLayout uiLayout = new UiLayout(propertyGetter);
 		uiLayout.addListener(listener);
 		this.layouts.put(filename, uiLayout);
 		return getFileList();
 	}
 
+	public List<String> createNewFile(String filename) {
+		if (filename.isEmpty()) {
+			filename = Calendar.getInstance().getTimeInMillis() + ".ui";
+		}
+		else if (!filename.toUpperCase().endsWith(".UI")){
+			Pattern illegalFileNamePattern = Pattern.compile("[(\\|/|:|\\*|?|\"|<|>|\\\\|)]");
+			illegalFileNamePattern.matcher(filename).replaceAll("-");
+			filename = filename + ".ui";
+		}
+		return this.createFile(filename);
+//		return StaticInstances.getInstance().getBuilderModel().createUiFile(filename);
+	}
+	
 	public UiLayout switchFile(String filename) {
 		this.currentFilename = filename;
 		this.currentUi = this.layouts.get(filename);
@@ -114,7 +135,7 @@ public class UiLayoutHolder {
 	}
 
 	public void createDefault() {
-		createNewFile("default.ui");
+		createFile("default.ui");
 		this.switchFile("default.ui");
 	}
 
@@ -129,5 +150,15 @@ public class UiLayoutHolder {
 	public String getCurrentFilename() {
 		return currentFilename;
 	}
+
+	public List<String> getStyleClasses(String type) {
+		return Arrays.asList("tabs-top", "tabs-bottom", "itemBox", 
+				"BigGrid", "noborder", "fontVeryBig", "fontBig", "fontMedium", "fontSmall");
+	}
+
+	public Map<String, List<Pair>> getCustomDefinitions() {
+		return customProperties.getMap();
+	}
+
 	
 }

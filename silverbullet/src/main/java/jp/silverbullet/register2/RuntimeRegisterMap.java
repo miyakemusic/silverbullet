@@ -57,14 +57,12 @@ public class RuntimeRegisterMap implements RegisterAccessor, RegisterAccessorLis
 
 	private void storeValue(Object regName, Object bitName, int value) {
 		this.registerValue.set(regName.toString(), bitName.toString(), value);
-//		this.getReg(regName.toString()).setValue(bitName.toString(), value);
 		this.listeners.forEach(listener -> listener.onUpdate(regName, bitName, value));
 	}
 
 	@Override
-	public int readRegister(Object regName, Object bitName) {
+	public long readRegister(Object regName, Object bitName) {
 		return this.registerValue.get(regName.toString(), bitName.toString());
-		//return this.registerValues.get(regName.toString()).getValue(bitName.toString());
 	}
 
 	@Override
@@ -102,7 +100,6 @@ public class RuntimeRegisterMap implements RegisterAccessor, RegisterAccessorLis
 	@Override
 	public byte[] readRegister(Object regName) {
 		return this.registerValue.get(regName.toString());
-//		return this.getReg(regName.toString()).getImages();
 	}
 
 	@Override
@@ -112,11 +109,6 @@ public class RuntimeRegisterMap implements RegisterAccessor, RegisterAccessorLis
 
 	public RegisterController getRegisterController() {
 		return this.registerController;
-	}
-
-	public RegisterSpecHolder getSpecs() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	public Set<RegisterAccessor> getDevices() {

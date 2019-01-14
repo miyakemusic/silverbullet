@@ -19,7 +19,7 @@ public class RegisterController implements RegisterAccessor {
 	}
 
 	@Override
-	public int readRegister(Object regName, Object bitName) {
+	public long readRegister(Object regName, Object bitName) {
 		// TODO Auto-generated method stub
 		return 0;
 	}

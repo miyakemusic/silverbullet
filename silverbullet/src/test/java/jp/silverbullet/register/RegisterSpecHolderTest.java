@@ -15,13 +15,13 @@ import org.junit.jupiter.api.Test;
 import jp.silverbullet.register.json.SvRegisterJsonHolder;
 import jp.silverbullet.register2.RegisterBit;
 import jp.silverbullet.register2.RegisterBit.ReadWriteType;
+import jp.silverbullet.sourcegenerator.RegisterSourceGenerator;
 import jp.silverbullet.register2.RegisterBitArray;
 import jp.silverbullet.register2.RuntimeRegisterMap;
 import jp.silverbullet.register2.SvRegister;
 import jp.silverbullet.web.KeyValue;
 import jp.silverbullet.register2.RegisterController;
 import jp.silverbullet.register2.RegisterJsonController;
-import jp.silverbullet.register2.RegisterSourceGenerator;
 import jp.silverbullet.register2.RegisterSpecHolder;
 
 public class RegisterSpecHolderTest {
@@ -283,15 +283,17 @@ public class RegisterSpecHolderTest {
 			newBit("bit 3", 0, 1, ReadWriteType.RW, "").
 			newBit("bit$4", 1, 1, ReadWriteType.RW, "");
 		
-		RegisterSourceGenerator generator = new RegisterSourceGenerator(holder, "jp.silverbullet.register", "RegisterSource");
-		List<String> source = generator.generate();
+		RegisterSourceGenerator generator = new RegisterSourceGenerator(holder);
+		//List<String> source = generator.generate("jp.silverbullet.register");
+		generator.exportFile("src\\test\\java", "jp.silverbullet.register");
 		
-		try {
-			Files.write(Paths.get("src\\test\\java\\jp\\silverbullet\\register\\RegisterSource.java"), source, StandardOpenOption.CREATE);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+		assertTrue(Files.exists(Paths.get("src/test/java/jp/silverbullet/register/UserRegister.java")));
+//		try {
+//			Files.write(Paths.get("src\\test\\java\\jp\\silverbullet\\register\\UserRegister.java"), source, StandardOpenOption.CREATE);
+//		}
+//		catch (Exception e) {
+//			e.printStackTrace();
+//		}
 		//System.out.println(source);
 	}
 	
@@ -424,8 +426,6 @@ public class RegisterSpecHolderTest {
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				}
 				simulator.triggerInterrupt();
 			}

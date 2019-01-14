@@ -126,7 +126,7 @@ public class RegisterResource2 {
 	@Path("/addToTest")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String addToTest(@QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName) {
-		int value = StaticInstances.getInstance().getBuilderModel().getRuntimRegisterMap().readRegister(regName, bitName);
+		long value = StaticInstances.getInstance().getBuilderModel().getRuntimRegisterMap().readRegister(regName, bitName);
 		StaticInstances.getInstance().getBuilderModel().getTestRecorder().addRegisterQuery(regName, bitName, value);
 		return "OK";
 	}
@@ -142,7 +142,7 @@ public class RegisterResource2 {
 	@Path("/getCurrentValue")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String getCurrentValue(@QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName) {
-		int ret = StaticInstances.getInstance().getBuilderModel().getRuntimRegisterMap().readRegister(regName, bitName);
+		long ret = StaticInstances.getInstance().getBuilderModel().getRuntimRegisterMap().readRegister(regName, bitName);
 		return String.valueOf(ret);
 	}
 

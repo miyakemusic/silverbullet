@@ -4,7 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class RegisterCommon {
 	static public String createInstanceName(String name) {
-		return StringUtils.uncapitalize(name.replaceAll("[^A-Za-z0-9]", "_"));
+		return name.replaceAll("[^A-Za-z0-9]", "_").toLowerCase();
 	}
 
 	static public String createClassName(String name) {

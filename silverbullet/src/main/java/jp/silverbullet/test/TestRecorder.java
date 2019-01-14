@@ -7,7 +7,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,14 +22,13 @@ import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.jersey.core.util.Base64;
 
-import jp.silverbullet.SequencerListener;
 import jp.silverbullet.Zip;
 import jp.silverbullet.dependency2.RequestRejectedException;
 import jp.silverbullet.property2.RuntimeProperty;
 import jp.silverbullet.register2.RegisterAccessorListener;
 import jp.silverbullet.register2.RegisterController;
+import jp.silverbullet.sequncer.SequencerListener;
 
 public class TestRecorder implements SequencerListener, RegisterAccessorListener {
 	private static final String TEST_FOLDER = "testdata/";
@@ -275,8 +273,8 @@ public class TestRecorder implements SequencerListener, RegisterAccessorListener
 			String[] tmp = item.getTarget().split("::");
 			String regName = tmp[0];
 			String bitName = tmp[1].replace("?", "");
-			int value = testRecorderInterface.getRegisterValue(regName, bitName);
-			this.result.addResult(item.getSerial(), String.valueOf(value), value == Integer.valueOf(item.getExpected()));
+			long value = testRecorderInterface.getRegisterValue(regName, bitName);
+			this.result.addResult(item.getSerial(), String.valueOf(value), value == Long.valueOf(item.getExpected()));
 		}
 		else if (item.getType().equals(TestItem.TYPE_CONTROL)) {
 			if (item.getTarget().equals("WAIT")) {
@@ -366,7 +364,7 @@ public class TestRecorder implements SequencerListener, RegisterAccessorListener
 		this.listeners.forEach(listener -> listener.onUpdate());
 	}
 
-	public void addRegisterQuery(String regName, String bitName, int value) {
+	public void addRegisterQuery(String regName, String bitName, long value) {
 		TestItem test = new TestItem(TestItem.TYPE_REGISTER_TEST, regName + "::" + bitName + "?", "", String.valueOf(value));
 		this.script.add(test, this.currentRowSerial);
 		this.listeners.forEach(listener -> listener.onAdd(test.toString()));

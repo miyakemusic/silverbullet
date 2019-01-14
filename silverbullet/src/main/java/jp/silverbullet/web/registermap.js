@@ -210,7 +210,7 @@ class RegisterMap {
 							buttonInfoObj.bit = bit.bit;
 							me.bitInfo.set(buttonId, buttonInfoObj);
 							
-							titleMap.set(buttonId, bit.name);
+							titleMap.set(buttonId, bit.description);
 							
 							var name = '<div>' + bit.name + '</div><div><Button id="' + buttonId + '" class="regButton"></Button></div>';
 							getCurrentValue(buttonId, register.name, bit.name);

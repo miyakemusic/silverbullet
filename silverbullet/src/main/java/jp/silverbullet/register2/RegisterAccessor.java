@@ -6,7 +6,7 @@ public interface RegisterAccessor {
 
 	void write(Object regName, List<BitValue> data);
 
-	int readRegister(Object regName, Object bitName);
+	long readRegister(Object regName, Object bitName);
 
 	void clear(Object regName);
 

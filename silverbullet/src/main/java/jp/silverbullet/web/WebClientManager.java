@@ -76,9 +76,9 @@ public class WebClientManager {
 			}
 
 			@Override
-			public void onRemove(String id) {
+			public void onRemove(String id, String replacedId) {
 				try {
-					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("ID", "Remove:" + id));
+					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("ID", "Remove:" + id + ":" + replacedId));
 					WebSocketBroadcaster.getInstance().sendMessage(str);
 				} catch (JsonProcessingException e) {
 					e.printStackTrace();
@@ -97,47 +97,7 @@ public class WebClientManager {
 				}
 			}
 		});
-			
-//		StaticInstances.getInstance().getBuilderModel().getRegisterMapModel().addListener(new RegisterMapListener() {
-//			@Override
-//			public void onInterrupt() {
-//				try {
-//					RegisterUpdates updates = new RegisterUpdates();
-//					updates.setName("@Interrupt@");
-//					String val = new ObjectMapper().writeValueAsString(updates);
-//					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("REGVAL", val));
-//					WebSocketBroadcaster.getInstance().sendMessage(str);
-//				} catch (JsonGenerationException e) {
-//					e.printStackTrace();
-//				} catch (JsonMappingException e) {
-//					e.printStackTrace();
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
-//			}
-//
-//			@Override
-//			public void onUpdate(RegisterUpdates updates) {
-//				try {
-//					String val = new ObjectMapper().writeValueAsString(updates);
-//					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("REGVAL", val));
-//					WebSocketBroadcaster.getInstance().sendMessage(str);
-//				} catch (JsonGenerationException e) {
-//					e.printStackTrace();
-//				} catch (JsonMappingException e) {
-//					e.printStackTrace();
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
-//			}
-//
-//			@Override
-//			public void onUpdatedByHardware(RegisterUpdates updates) {
-//				// TODO Auto-generated method stub
-//				
-//			}
-//		});
-//		
+
 		StaticInstances.getInstance().getBuilderModel().getRuntimRegisterMap().addListener(new RegisterAccessorListener() {
 			@Override
 			public void onUpdate(Object regName, Object bitName, int value) {

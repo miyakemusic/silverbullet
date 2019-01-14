@@ -1,28 +1,19 @@
 package jp.silverbullet.web;
 
-import java.io.IOException;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jp.silverbullet.Sequencer;
 import jp.silverbullet.StaticInstances;
 import jp.silverbullet.dependency2.CommitListener;
 import jp.silverbullet.dependency2.RequestRejectedException;
-import jp.silverbullet.property2.ChartContent;
 import jp.silverbullet.property2.RuntimeProperty;
-import jp.silverbullet.web.ui.CustomProperties;
+import jp.silverbullet.sequncer.Sequencer;
 import jp.silverbullet.web.ui.JsProperty;
 import jp.silverbullet.web.ui.JsWidget;
 import jp.silverbullet.web.ui.UiLayout;
@@ -54,7 +45,7 @@ public class DesignResource {
 					return Reply.Accept;
 				}
 			});
-			StaticInstances.getInstance().getBuilderModel().getUiLayout().doAutoDynamicPanel();
+			StaticInstances.getInstance().getBuilderModel().getUiLayoutHolder().getCurrentUi().doAutoDynamicPanel();
 
 			ret.result = "Accepted";
 		} catch (RequestRejectedException e) {
@@ -71,21 +62,21 @@ public class DesignResource {
 	@Path("/getDesign")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public JsWidget getDesign(@QueryParam("root") String root) {
-		return StaticInstances.getInstance().getBuilderModel().getUiLayout().getDesign(root);
+		return StaticInstances.getInstance().getBuilderModel().getUiLayoutHolder().getCurrentUi().getDesign(root);
 	}
 	
 	@GET
 	@Path("/getSubDesign")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public JsWidget getSubDesign(@QueryParam("div") String div) {
-		return StaticInstances.getInstance().getBuilderModel().getUiLayout().getWidget(div);
+		return StaticInstances.getInstance().getBuilderModel().getUiLayoutHolder().getCurrentUi().getWidget(div);
 	}
 	
 	@GET
 	@Path("/addWidget")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String addWidget(@QueryParam("id") List<String> ids, @QueryParam("div") String div) {
-		StaticInstances.getInstance().getBuilderModel().getUiLayout().addWidget(div, ids);
+		StaticInstances.getInstance().getBuilderModel().getUiLayoutHolder().getCurrentUi().addWidget(div, ids);
 		return "OK";
 	}
 
@@ -93,7 +84,7 @@ public class DesignResource {
 	@Path("/addDialog")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String addDialog(@QueryParam("div") String div) {
-		StaticInstances.getInstance().getBuilderModel().getUiLayout().addDialog(div);
+		StaticInstances.getInstance().getBuilderModel().getUiLayoutHolder().getCurrentUi().addDialog(div);
 		return "OK";
 	}
 	
@@ -101,7 +92,7 @@ public class DesignResource {
 	@Path("/remove")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String remove(@QueryParam("div") String div) {
-		StaticInstances.getInstance().getBuilderModel().getUiLayout().remove(div);
+		StaticInstances.getInstance().getBuilderModel().getUiLayoutHolder().getCurrentUi().remove(div);
 		return "OK";
 	}
 	
@@ -109,7 +100,7 @@ public class DesignResource {
 	@Path("/move")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String move(@QueryParam("div") String div, @QueryParam("x") String x, @QueryParam("y") String y) {
-		StaticInstances.getInstance().getBuilderModel().getUiLayout().move(div, x, y);
+		StaticInstances.getInstance().getBuilderModel().getUiLayoutHolder().getCurrentUi().move(div, x, y);
 		return "OK";
 	}
 
@@ -117,7 +108,7 @@ public class DesignResource {
 	@Path("/addPanel")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String addPanel(@QueryParam("div") String div) {
-		StaticInstances.getInstance().getBuilderModel().getUiLayout().addPanel(div);
+		StaticInstances.getInstance().getBuilderModel().getUiLayoutHolder().getCurrentUi().addPanel(div);
 		return "OK";
 	}
 
@@ -125,7 +116,7 @@ public class DesignResource {
 	@Path("/addTab")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String addTab(@QueryParam("div") String div) {
-		StaticInstances.getInstance().getBuilderModel().getUiLayout().addTab(div);
+		StaticInstances.getInstance().getBuilderModel().getUiLayoutHolder().getCurrentUi().addTab(div);
 		return "OK";
 	}
 
@@ -133,7 +124,7 @@ public class DesignResource {
 	@Path("/addRegisterShortcut")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String addRegisterShortcut(@QueryParam("div") String div, @QueryParam("register") String register) {
-		StaticInstances.getInstance().getBuilderModel().getUiLayout().addRegisterShortcut(div, register);
+		StaticInstances.getInstance().getBuilderModel().getUiLayoutHolder().getCurrentUi().addRegisterShortcut(div, register);
 		return "OK";
 	}
 	
@@ -142,7 +133,7 @@ public class DesignResource {
 	@Path("/clearLayout")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String clearLayout() {
-		StaticInstances.getInstance().getBuilderModel().getUiLayout().clear();
+		StaticInstances.getInstance().getBuilderModel().getUiLayoutHolder().getCurrentUi().clear();
 		return "OK";
 	}
 	
@@ -150,7 +141,7 @@ public class DesignResource {
 	@Path("/setLayout")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String move(@QueryParam("div") String div, @QueryParam("layout") String layout) {
-		StaticInstances.getInstance().getBuilderModel().getUiLayout().updateProperty(div, "layout", layout);
+		StaticInstances.getInstance().getBuilderModel().getUiLayoutHolder().getCurrentUi().updateProperty(div, "layout", layout);
 		return "OK";
 	}
 
@@ -158,7 +149,7 @@ public class DesignResource {
 	@Path("/resize")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String resize(@QueryParam("div") String div, @QueryParam("width") String width, @QueryParam("height") String height) {
-		StaticInstances.getInstance().getBuilderModel().getUiLayout().resize(div, width, height);
+		StaticInstances.getInstance().getBuilderModel().getUiLayoutHolder().getCurrentUi().resize(div, width, height);
 		return "OK";
 	}
 	
@@ -166,7 +157,7 @@ public class DesignResource {
 	@Path("/updateGuiProperty")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String updateGuiProperty(@QueryParam("div") String div, @QueryParam("propertyType") String propertyType, @QueryParam("value") String value) {
-		StaticInstances.getInstance().getBuilderModel().getUiLayout().updateProperty(div, propertyType, value);
+		StaticInstances.getInstance().getBuilderModel().getUiLayoutHolder().getCurrentUi().updateProperty(div, propertyType, value);
 		return "OK";
 	}
 
@@ -174,7 +165,7 @@ public class DesignResource {
 	@Path("/updateGuiBooleanProperty")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String updateGuiBooleanProperty(@QueryParam("div") String div, @QueryParam("propertyType") String propertyType, @QueryParam("value") Boolean value) {
-		StaticInstances.getInstance().getBuilderModel().getUiLayout().updateBooleanProperty(div, propertyType, value);
+		StaticInstances.getInstance().getBuilderModel().getUiLayoutHolder().getCurrentUi().updateBooleanProperty(div, propertyType, value);
 		return "OK";
 	}
 	
@@ -189,17 +180,14 @@ public class DesignResource {
 	@Path("getWidgetTypes")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<String> getWidgetTypes() {
-		return Arrays.asList(JsWidget.ROOT, JsWidget.TOGGLEBUTTON, JsWidget.CSSBUTTON, JsWidget.ACTIONBUTTON, 
-				JsWidget.COMBOBOX, JsWidget.RADIOBUTTON, JsWidget.TEXTFIELD,
-				JsWidget.CHART, JsWidget.CHART_CANVASJS, JsWidget.TABLE, JsWidget.DATATABLE, JsWidget.CHECKBOX, JsWidget.GUI_DIALOG, 
-				JsWidget.PANEL, JsWidget.TAB, JsWidget.LABEL, JsWidget.MESSAGEBOX, JsWidget.ROOT, JsWidget.REGISTERSHORTCUT);
+		return JsWidget.getAllWidgetTypes();	
 	}
 
 	@GET
 	@Path("cutPaste")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String cutPaste(@QueryParam("newBaseDiv") String newBaseDiv, @QueryParam("itemDiv") String itemDiv) {
-		StaticInstances.getInstance().getBuilderModel().getUiLayout().cutPaste(newBaseDiv, itemDiv);
+		StaticInstances.getInstance().getBuilderModel().getUiLayoutHolder().getCurrentUi().cutPaste(newBaseDiv, itemDiv);
 		return "OK";
 	}
 	
@@ -207,7 +195,7 @@ public class DesignResource {
 	@Path("copyPaste")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String copyPaste(@QueryParam("newBaseDiv") String newBaseDiv, @QueryParam("itemDiv") String itemDiv) {
-		StaticInstances.getInstance().getBuilderModel().getUiLayout().copyPaste(newBaseDiv, itemDiv);
+		StaticInstances.getInstance().getBuilderModel().getUiLayoutHolder().getCurrentUi().copyPaste(newBaseDiv, itemDiv);
 		return "OK";
 	}
 	
@@ -215,21 +203,21 @@ public class DesignResource {
 	@Path("getStyleClasses")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<String> getStyleClasses(@QueryParam("type") String type) {
-		return Arrays.asList("tabs-top", "tabs-bottom", "itemBox", "BigGrid", "noborder", "fontVeryBig", "fontBig", "fontMedium", "fontSmall");
+		return StaticInstances.getInstance().getBuilderModel().getUiLayoutHolder().getStyleClasses(type);
 	}
 	
 	@GET
 	@Path("getCustromDefinition")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public Map<String, List<Pair>> getCustromDefinition() {
-		return CustomProperties.getInstance().getMap();
+		return StaticInstances.getInstance().getBuilderModel().getUiLayoutHolder().getCustomDefinitions();
 	}	
 	
 	@GET
 	@Path("setCustomElement")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setCustomElement(@QueryParam("div") String div, @QueryParam("customId") String customId, @QueryParam("customValue") String customValue) {
-		StaticInstances.getInstance().getBuilderModel().getUiLayout().setCustomElement(div, customId, customValue);
+		StaticInstances.getInstance().getBuilderModel().getUiLayoutHolder().getCurrentUi().setCustomElement(div, customId, customValue);
 		return "OK";
 	}
 	
@@ -237,29 +225,21 @@ public class DesignResource {
 	@Path("getFiles")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<String> getFiles() {
-		return StaticInstances.getInstance().getBuilderModel().getUiFiles();
+		return StaticInstances.getInstance().getBuilderModel().getUiLayoutHolder().getFileList();
 	}
 	
 	@GET
 	@Path("createNewFile")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<String> createNewFile(@QueryParam("filename") String filename) {
-		if (filename.isEmpty()) {
-			filename = Calendar.getInstance().getTimeInMillis() + ".ui";
-		}
-		else if (!filename.toUpperCase().endsWith(".UI")){
-			Pattern illegalFileNamePattern = Pattern.compile("[(\\|/|:|\\*|?|\"|<|>|\\\\|)]");
-			illegalFileNamePattern.matcher(filename).replaceAll("-");
-			filename = filename + ".ui";
-		}
-		return StaticInstances.getInstance().getBuilderModel().createUiFile(filename);
+		return StaticInstances.getInstance().getBuilderModel().getUiLayoutHolder().createNewFile(filename);
 	}
 	
 	@GET
 	@Path("removeFile")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public String removeFile(@QueryParam("filename") String filename) {
-		StaticInstances.getInstance().getBuilderModel().removeUiFile(filename);
+		StaticInstances.getInstance().getBuilderModel().getUiLayoutHolder().removeFile(filename);
 		return "OK";
 	}
 	
@@ -274,7 +254,7 @@ public class DesignResource {
 	@Path("addArray")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String addArray(@QueryParam("div") String div) {
-		StaticInstances.getInstance().getBuilderModel().getUiLayout().addArray(div);
+		StaticInstances.getInstance().getBuilderModel().getUiLayoutHolder().getCurrentUi().addArray(div);
 		return "OK";
 	}
 

@@ -22,17 +22,17 @@ public class CustomProperties {
 	public static final String True = "true";
 	public static final String False = "false";
 	
-	private static CustomProperties instance = null;
+//	private static CustomProperties instance = null;
 	private Map<String, List<Pair>> map = new HashMap<>();
 	
-	public static CustomProperties getInstance() {
-		if (instance == null) {
-			instance = new CustomProperties();
-		}
-		return instance;
-	}
+//	public static CustomProperties getInstance() {
+//		if (instance == null) {
+//			instance = new CustomProperties();
+//		}
+//		return instance;
+//	}
 	
-	private CustomProperties() {		
+	public CustomProperties() {		
 		map.put(JsWidget.TAB, Arrays.asList(new Pair(GUI_ID, "string")));
 		map.put(JsWidget.TOGGLEBUTTON, Arrays.asList(new Pair(FRAME, "boolean")));
 		map.put(JsWidget.GUI_DIALOG, Arrays.asList(new Pair(TARGET_GUI_ID, "string"), new Pair(CAPTION, "string")));

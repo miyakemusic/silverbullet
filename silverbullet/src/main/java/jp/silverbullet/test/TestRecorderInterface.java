@@ -17,7 +17,7 @@ public interface TestRecorderInterface {
 
 	RuntimeProperty getProperty(String target);
 
-	int getRegisterValue(String regName, String bitName);
+	long getRegisterValue(String regName, String bitName);
 
 	RegisterController getRegisterController();
 

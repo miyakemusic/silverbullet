@@ -14,6 +14,7 @@ import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jp.silverbullet.dependency2.CommitListener.Reply;
 import jp.silverbullet.dependency2.LinkGenerator.LinkLevel;
 
 public class DependencySpecTest {
@@ -26,29 +27,37 @@ public class DependencySpecTest {
 		store.addListProperty("ID_STRONG", Arrays.asList("ID_STRONG_A", "ID_STRONG_B"), "ID_STRONG_A");
 		
 		DependencySpec specValue = new DependencySpec("ID_VALUE");
-		specValue.addMin(-10, "$ID_STRONG==%ID_STRONG_A");
+		specValue.addMin(-10, "$ID_STRONG==%ID_STRONG_A").addMax(10, "$ID_STRONG==%ID_STRONG_A");
 
 		DependencySpecHolder specHolder = new DependencySpecHolder();
 		specHolder.addSpec(specValue);
 		
 		DependencyEngine engine = new DependencyEngine(specHolder, store);
+		
+		// ID_STRONG is stronger than ID_VALUE
+		specHolder.setPriority("ID_VALUE", 10);
+		specHolder.setPriority("ID_STRONG", 11);
 		try {
-			specHolder.setPriority("ID_VALUE", 10);
-			specHolder.setPriority("ID_STRONG", 11);
-			
 			store.getProperty("ID_VALUE").setCurrentValue("-100");
 			engine.requestChange("ID_STRONG", "ID_STRONG_A");
 			CachedPropertyStore cached = engine.getCachedPropertyStore();
 			assertEquals("-10", cached.getProperty("ID_VALUE").getCurrentValue());
 		} catch (RequestRejectedException e) {
 		}
+		try {
+			store.getProperty("ID_VALUE").setCurrentValue("100");
+			engine.requestChange("ID_STRONG", "ID_STRONG_A");
+			CachedPropertyStore cached = engine.getCachedPropertyStore();
+			assertEquals("10", cached.getProperty("ID_VALUE").getCurrentValue());
+		} catch (RequestRejectedException e) {
+		}
 		
+		// ID_VALUE is stronger than ID_STRING
+		specHolder.setPriority("ID_VALUE", 13);
+		specHolder.setPriority("ID_STRONG", 11);
 		{
 			boolean rejected = false;
-			try {
-				specHolder.setPriority("ID_VALUE", 13);
-				specHolder.setPriority("ID_STRONG", 11);
-				
+			try {				
 				store.getProperty("ID_VALUE").setCurrentValue("-100");
 				engine.requestChange("ID_STRONG", "ID_STRONG_A");
 			} catch (RequestRejectedException e) {
@@ -57,6 +66,18 @@ public class DependencySpecTest {
 			CachedPropertyStore cached = engine.getCachedPropertyStore();
 			assertEquals(true, rejected);
 			assertEquals("-100", cached.getProperty("ID_VALUE").getCurrentValue());
+		}
+		{
+			boolean rejected = false;
+			try {				
+				store.getProperty("ID_VALUE").setCurrentValue("100");
+				engine.requestChange("ID_STRONG", "ID_STRONG_A");
+			} catch (RequestRejectedException e) {
+				rejected = true;
+			}
+			CachedPropertyStore cached = engine.getCachedPropertyStore();
+			assertEquals(true, rejected);
+			assertEquals("100", cached.getProperty("ID_VALUE").getCurrentValue());
 		}
 	}
 	
@@ -249,6 +270,7 @@ public class DependencySpecTest {
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
 		}
+		
 	}
 	
 	@Test
@@ -360,7 +382,6 @@ public class DependencySpecTest {
 				store.getProperty("ID_LEFT").setCurrentValue("10");
 				engine.requestChanges(Arrays.asList(new IdValue("ID_MODE", "ID_MODE_NARROW"), new IdValue("ID_LEFT", "200")));
 			} catch (RequestRejectedException e) {
-			//	e.printStackTrace();
 				rejected = true;
 			}
 			CachedPropertyStore cached = engine.getCachedPropertyStore();
@@ -375,7 +396,6 @@ public class DependencySpecTest {
 				store.getProperty("ID_LEFT").setCurrentValue("10");
 				engine.requestChanges(Arrays.asList(new IdValue("ID_MODE", "ID_MODE_NARROW"), new IdValue("ID_LEFT", "-200")));
 			} catch (RequestRejectedException e) {
-			//	e.printStackTrace();
 				rejected = true;
 			}
 			CachedPropertyStore cached = engine.getCachedPropertyStore();
@@ -623,6 +643,92 @@ public class DependencySpecTest {
 		} catch (JsonMappingException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void complexTest() {
+		PropertyStoreForTest store = new PropertyStoreForTest();
+		store.addListProperty("ID_A", Arrays.asList("ID_A_1", "ID_A_2", "ID_A_3", "ID_A_4", "ID_A_5"), "ID_A_1");
+		store.addListProperty("ID_MODE", Arrays.asList("ID_MODE_A", "ID_MODE_B"), "ID_MODE_B");
+		DependencySpecHolder specHolder = new DependencySpecHolder();
+		specHolder.newSpec("ID_A")
+			.addValue("ID_A_1", "$ID_MODE==%ID_MODE_A")
+			.addValue("ID_A_5", "$ID_MODE==%ID_MODE_A");
+//			.addOptionEnabled("ID_STRONG_A", DependencySpec.True, "$ID_MODE==%ID_MODE_A")
+//			.addOptionEnabled("ID_STRONG_A", DependencySpec.True, "$ID_MODE==%ID_MODE_A")
+//			.addOptionEnabled("ID_STRONG_B", DependencySpec.False, DependencySpec.Else);
+
+		DependencyEngine engine = new DependencyEngine(specHolder, store);
+
+		// if two candidates exist, a close value to current value will be selected.
+		
+		// if current is ID_A_2 ID_A_1 should be selected. (should not be selected ID_A_5
+		try {
+			store.getProperty("ID_A").setCurrentValue("ID_A_2");
+			engine.requestChange("ID_MODE", "ID_MODE_A");
+	//		CachedPropertyStore cached = engine.getCachedPropertyStore();
+			assertEquals("ID_A_1", store.getProperty("ID_A").getCurrentValue());	
+		} catch (RequestRejectedException e) {
+			e.printStackTrace();
+		}
+		// if current is ID_A_4 ID_A_1 should be selected. (should not be selected ID_A_1
+		try {
+			store.getProperty("ID_A").setCurrentValue("ID_A_4");
+			engine.requestChange("ID_MODE", "ID_MODE_A");
+//			CachedPropertyStore cached = engine.getCachedPropertyStore();
+			assertEquals("ID_A_5", store.getProperty("ID_A").getCurrentValue());	
+		} catch (RequestRejectedException e) {
+			e.printStackTrace();
+		}
+		
+		// Commit is accepted
+		engine.setCommitListener(new CommitListener() {
+			@Override
+			public Reply confirm(String message) {
+				return Reply.Accept;
+			}
+		});
+		try {
+			engine.requestChange("ID_A", "ID_A_2");
+			assertEquals("ID_A_2", store.getProperty("ID_A").getCurrentValue());			
+		} catch (RequestRejectedException e) {
+			e.printStackTrace();
+		}
+		
+		// Commit is rejected
+		engine.setCommitListener(new CommitListener() {
+			@Override
+			public Reply confirm(String message) {
+				return Reply.Reject;
+			}
+		});
+		try {
+			store.getProperty("ID_A").setCurrentValue("ID_A_2");
+			engine.requestChange("ID_A", "ID_A_5");
+			//CachedPropertyStore cached = engine.getCachedPropertyStore();
+			assertEquals("ID_A_2", store.getProperty("ID_A").getCurrentValue());			
+		} catch (RequestRejectedException e) {
+			e.printStackTrace();
+		}
+		
+		// Commit is pended
+		engine.setCommitListener(new CommitListener() {
+			@Override
+			public Reply confirm(String message) {
+				return Reply.Pend;
+			}
+		});
+		try {
+			store.getProperty("ID_A").setCurrentValue("ID_A_2");
+			engine.requestChange("ID_A", "ID_A_5");
+			//CachedPropertyStore cached = engine.getCachedPropertyStore();
+			assertEquals("ID_A_2", store.getProperty("ID_A").getCurrentValue());	
+			
+			engine.setPendedReply(Reply.Accept);
+			assertEquals("ID_A_5", store.getProperty("ID_A").getCurrentValue());
+		} catch (RequestRejectedException e) {
 			e.printStackTrace();
 		}
 	}

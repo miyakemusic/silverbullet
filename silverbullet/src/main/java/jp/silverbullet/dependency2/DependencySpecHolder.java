@@ -124,6 +124,12 @@ public class DependencySpecHolder {
 		
 	}
 
+	public DependencySpec newSpec(String id) {
+		DependencySpec spec = new DependencySpec(id);
+		this.addSpec(spec);
+		return spec;
+	}
+
 //	@JsonIgnore
 //	public DependencyRestriction getDependencyRestriction() {
 //		DependencyRestriction ret = new DependencyRestriction();

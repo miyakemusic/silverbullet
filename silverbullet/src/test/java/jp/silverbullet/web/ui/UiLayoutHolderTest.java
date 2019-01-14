@@ -26,7 +26,7 @@ public class UiLayoutHolderTest {
 		holder.addProperty(factory.create("ID_NUMERIC", PropertyType2.Numeric));
 		holder.addProperty(factory.create("ID_BOOLEAN", PropertyType2.Boolean));
 		holder.addProperty(factory.create("ID_TEXT", PropertyType2.Text));
-
+		
 		
 		PropertyGetter getter = new PropertyGetter() {
 
@@ -71,6 +71,9 @@ public class UiLayoutHolderTest {
 		
 		panel.setCustomElemnt(CustomProperties.GUI_ID, "MYPANEL");
 		assertEquals(JsWidget.VERTICALLAYOUT, panel.getLayout());
+		
+		assertEquals(panel, layout.getDesign("MYPANEL"));
+		assertEquals(root, layout.getDesign(""));
 		
 		layout.addWidget(String.valueOf(panel.getUnique()), Arrays.asList("ID_LIST", "ID_LIST2", "ID_NUMERIC", "ID_TEXT", "ID_BOOLEAN"));
 		
@@ -219,6 +222,18 @@ public class UiLayoutHolderTest {
 		uiHolder.getCurrentUi().clear();
 		uiHolder.getCurrentUi().addTab(uiHolder.getCurrentUi().getRoot().getUniqueText());
 		assertEquals(JsWidget.TAB, uiHolder.getCurrentUi().getRoot().getChildren().get(0).getWidgetType());
+		
+		assertEquals(2, uiHolder.createNewFile("").size());
+		Thread.sleep(100);
+		assertEquals(3, uiHolder.createNewFile("").size());
+
+		uiHolder.createNewFile("aaaa");
+		assertEquals(4, uiHolder.getFileList().size());
+		assertEquals("aaaa.ui", uiHolder.getFileList().get(3));
+		
+//		JsWidget miyake = uiHolder.getCurrentUi().getDesign("MYPANEL");
+//		assertEquals("MYPANEL", miyake.getCustomElement(CustomProperties.GUI_ID));
+		
 	}
 
 	@Test

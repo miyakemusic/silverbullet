@@ -71,12 +71,12 @@ public class PropertyHolder2 {
 	}
 
 	public void remove(String id) {
-		this.properties.remove(id);
-		fireOnRemove(id);
+		String replacedId = this.properties.remove(id);
+		fireOnRemove(id, replacedId);
 	}
 
-	private void fireOnRemove(String id) {
-		this.listeners.forEach(listener -> listener.onRemove(id));
+	private void fireOnRemove(String id, String replacedId) {
+		this.listeners.forEach(listener -> listener.onRemove(id, replacedId));
 	}
 
 	public void createClone(String id, String newId) {

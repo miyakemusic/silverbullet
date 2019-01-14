@@ -1,7 +1,7 @@
 package jp.silverbullet.property2;
 
 public class ChartContent {
-	enum ChartType {
+	public enum ChartType {
 		XY,
 	}
 	private ChartType chartType;

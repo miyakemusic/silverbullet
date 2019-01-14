@@ -6,6 +6,6 @@ public interface PropertDefHolderListener {
 
 	void onAdd(String id);
 
-	void onRemove(String id);
+	void onRemove(String id, String replacedId);
 
 }

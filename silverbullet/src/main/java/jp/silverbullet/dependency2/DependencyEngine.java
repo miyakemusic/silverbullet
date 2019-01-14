@@ -8,9 +8,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import jp.silverbullet.dependency2.CommitListener.Reply;
 import jp.silverbullet.property2.RuntimeProperty;
 import jp.silverbullet.web.ui.PropertyGetter;
 
+/**
+ * @author NG
+ *
+ */
+/**
+ * @author NG
+ *
+ */
 public class DependencyEngine {
 
 	private PropertyGetter  store;
@@ -43,9 +52,8 @@ public class DependencyEngine {
 	}
 	
 	public void requestChange(Id id, String value) throws RequestRejectedException {
-		for (DependencyListener listener : this.listeners) {
-			listener.onStart(id, value);
-		}
+		this.listeners.forEach(listener -> listener.onStart(id, value));
+
 		this.cachedPropertyStore = new CachedPropertyStore(store);
 		changeValue(id, value);
 		
@@ -58,7 +66,7 @@ public class DependencyEngine {
 			else if (reply.equals(CommitListener.Reply.Reject)) {
 				// Do nothing
 			}
-			else if (reply.equals(CommitListener.Reply.Pending)) {
+			else if (reply.equals(CommitListener.Reply.Pend)) {
 				
 			}
 		}
@@ -71,9 +79,7 @@ public class DependencyEngine {
 	private void fireCompleteEvent() {
 		String changedIds = this.getChangedIds().toString().replace("[", "").replace("]", "").replaceAll(" ", "");
 		if (!changedIds.isEmpty()) {
-			for (DependencyListener listener : this.listeners) {
-				listener.onCompleted(changedIds);
-			}
+			this.listeners.forEach(listener -> listener.onCompleted(changedIds));
 		}
 	}
 
@@ -135,7 +141,7 @@ public class DependencyEngine {
 						throw new RequestRejectedException(property.getId() + "Selection is valid");
 					}
 					else {
-						reselectNearestValue(property);
+						reselectClosestValue(property);
 					}
 				}
 			}
@@ -226,7 +232,7 @@ public class DependencyEngine {
 			}
 		}
 		
-		/// selects only one spec.
+		/// selects only one spec when multiple candidates exist
 		selectOnlyOneSpec(values, ret);
 		return ret;
 	}
@@ -238,6 +244,7 @@ public class DependencyEngine {
 		return string;
 	}
 
+	
 	private void selectOnlyOneSpec(Map<String, Set<RuntimeDependencySpec>> values, List<RuntimeDependencySpec> ret) {
 		RuntimeDependencySpec targetSpec = null;
 		for (String id : values.keySet()) {
@@ -297,7 +304,7 @@ public class DependencyEngine {
 		return Double.valueOf(val1) > Double.valueOf(val2);
 	}
 
-	private void reselectNearestValue(RuntimeProperty property) {
+	private void reselectClosestValue(RuntimeProperty property) {
 		List<String> listIds = property.getListIds();
 		int currentIndex = listIds.indexOf(property.getCurrentValue());
 		int limit = Math.max(listIds.size() - currentIndex, currentIndex);
@@ -318,14 +325,14 @@ public class DependencyEngine {
 	}
 
 
-	private boolean canSelect(int index, List<String> listIds, Map<String, Boolean> listMask) {
-		if (index < 0 || index >= listIds.size()) {
-			return false;
-		}
-		Boolean mask = listMask.get(listIds.get(index));
-		
-		return (mask == null) || !mask;
-	}
+//	private boolean canSelect(int index, List<String> listIds, Map<String, Boolean> listMask) {
+//		if (index < 0 || index >= listIds.size()) {
+//			return false;
+//		}
+//		Boolean mask = listMask.get(listIds.get(index));
+//		
+//		return (mask == null) || !mask;
+//	}
 
 	public CachedPropertyStore getCachedPropertyStore() {
 		return this.cachedPropertyStore;
@@ -361,6 +368,12 @@ public class DependencyEngine {
 
 	public void requestChange(String id, String value) throws RequestRejectedException {
 		requestChange(id, 0, value);
+	}
+
+	public void setPendedReply(Reply accept) {
+		if (accept.equals(Reply.Accept)) {
+			this.cachedPropertyStore.commit();
+		}
 	}
 
 }

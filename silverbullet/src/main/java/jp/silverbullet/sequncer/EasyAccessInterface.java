@@ -1,4 +1,4 @@
-package jp.silverbullet.handlers;
+package jp.silverbullet.sequncer;
 
 import jp.silverbullet.dependency2.RequestRejectedException;
 import jp.silverbullet.property2.RuntimeProperty;

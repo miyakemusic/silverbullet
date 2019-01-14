@@ -11,8 +11,6 @@ import jp.silverbullet.dependency2.IdValue;
 import jp.silverbullet.dependency2.RequestRejectedException;
 import jp.silverbullet.dependency2.DependencyEngine;
 import jp.silverbullet.dependency2.DependencySpecHolder;
-import jp.silverbullet.handlers.EasyAccessInterface;
-import jp.silverbullet.handlers.HandlerPropertyHolder;
 import jp.silverbullet.property2.PropertyHolder2;
 import jp.silverbullet.property2.PropertyType2;
 import jp.silverbullet.property2.RuntimeProperty;
@@ -22,8 +20,8 @@ import jp.silverbullet.register2.RegisterController;
 import jp.silverbullet.register2.RegisterShortCutHolder;
 import jp.silverbullet.register2.RegisterSpecHolder;
 import jp.silverbullet.register2.RuntimeRegisterMap;
-//import jp.silverbullet.remote.SvTexHolder;
-import jp.silverbullet.spec.SpecElement;
+import jp.silverbullet.sequncer.EasyAccessInterface;
+import jp.silverbullet.sequncer.Sequencer;
 import jp.silverbullet.test.TestRecorder;
 import jp.silverbullet.test.TestRecorderInterface;
 import jp.silverbullet.web.ui.PropertyGetter;
@@ -42,16 +40,16 @@ public class BuilderModelImpl {
 
 	private List<String> selectedId;
 	private RuntimePropertyStore store;
-	private SpecElement hardSpec = new SpecElement();
+//	private SpecElement hardSpec = new SpecElement();
 	private String userApplicationPath = "";
 	private Sequencer sequencer;
 	private PropertyHolder2 propertiesHolder2 = new PropertyHolder2();
-	private HandlerPropertyHolder handlerPropertyHolder = new HandlerPropertyHolder();
+//	private HandlerPropertyHolder handlerPropertyHolder = new HandlerPropertyHolder();
 	private RegisterSpecHolder registerProperty = new RegisterSpecHolder();
-	private jp.silverbullet.dependency2.DependencySpecHolder dependencySpecHolder2 = new jp.silverbullet.dependency2.DependencySpecHolder();
-	private SpecElement userStory = new SpecElement();
+	private DependencySpecHolder dependencySpecHolder2 = new jp.silverbullet.dependency2.DependencySpecHolder();
+//	private SpecElement userStory = new SpecElement();
 	private RegisterShortCutHolder registerShortCuts = new RegisterShortCutHolder();
-	private RuntimeRegisterMap registerMap = new RuntimeRegisterMap();
+	private RuntimeRegisterMap runtimeRegisterMap = new RuntimeRegisterMap();
 	
 	private UiLayoutHolder uiLayoutHolder = new UiLayoutHolder(new PropertyGetter() {
 		public RuntimeProperty getProperty(String id) {
@@ -82,12 +80,12 @@ public class BuilderModelImpl {
 	};
 	
 	public RuntimeRegisterMap getRuntimRegisterMap() {
-		return this.registerMap;
+		return this.runtimeRegisterMap;
 	}
 		
-	public HandlerPropertyHolder getHandlerPropertyHolder() {
-		return handlerPropertyHolder;
-	}
+//	public HandlerPropertyHolder getHandlerPropertyHolder() {
+//		return handlerPropertyHolder;
+//	}
 
 	private DependencyEngine dependency = null;
 
@@ -113,7 +111,7 @@ public class BuilderModelImpl {
 			return store.get(id);
 		}
 		
-		public int getRegisterValue(String regName, String bitName) {
+		public long getRegisterValue(String regName, String bitName) {
 			return BuilderModelImpl.this.getRuntimRegisterMap().readRegister(regName, bitName);
 		}
 		
@@ -124,6 +122,7 @@ public class BuilderModelImpl {
 	private DependencySpecHolder defaultDependency;
 	private RegisterSpecHolder registerSpecHolder = new RegisterSpecHolder();
 	private List<RegisterAccessor> simulators;
+	private String sourceInfo;
 
 	public BuilderModelImpl() {
 		store = new RuntimePropertyStore(propertiesHolder2);
@@ -134,16 +133,8 @@ public class BuilderModelImpl {
 				return store;
 			}
 
-			protected HandlerPropertyHolder getHandlerPropertyHolder() {
-				return handlerPropertyHolder;
-			}
-
 			protected DependencyEngine getDependency() {
 				return dependency;
-			}
-
-			protected String getUserApplicationPath() {
-				return userApplicationPath;
 			}
 			
 			protected EasyAccessInterface getEasyAccessInterface() {
@@ -151,7 +142,7 @@ public class BuilderModelImpl {
 			}
 			
 			protected RegisterAccessor getRegisterAccessor() {
-				return registerMap;
+				return runtimeRegisterMap;
 			}
 		};
 
@@ -193,9 +184,9 @@ public class BuilderModelImpl {
 		
 		this.store = new RuntimePropertyStore(propertiesHolder2);
 		this.registerProperty = load(RegisterSpecHolder.class, folder + "/" + REGISTER_XML);
-		this.handlerPropertyHolder = load(HandlerPropertyHolder.class, folder + "/" + HANDLER_XML);
-		this.hardSpec = load(SpecElement.class, folder + "/" + HARDSPEC_XML);
-		this.userStory = load(SpecElement.class, folder + "/" + USERSTORY_XML);
+//		this.handlerPropertyHolder = load(HandlerPropertyHolder.class, folder + "/" + HANDLER_XML);
+//		this.hardSpec = load(SpecElement.class, folder + "/" + HARDSPEC_XML);
+//		this.userStory = load(SpecElement.class, folder + "/" + USERSTORY_XML);
 		this.registerShortCuts = load(RegisterShortCutHolder.class, folder + "/" + REGISTERSHORTCUT);
 		this.dependencySpecHolder2 = loadJson(jp.silverbullet.dependency2.DependencySpecHolder.class, folder + "/" + DEPENDENCYSPEC3_XML);
 		defaultDependency = this.dependencySpecHolder2;
@@ -214,7 +205,7 @@ public class BuilderModelImpl {
 			}
 		}) {
 
-			protected jp.silverbullet.dependency2.DependencySpecHolder getSpecHolder() {
+			protected DependencySpecHolder getSpecHolder() {
 				return dependencySpecHolder2;
 			}
 		};
@@ -239,10 +230,10 @@ public class BuilderModelImpl {
 
 		}
 		this.propertiesHolder2.save(folder + "/" + ID_DEF_JSON);
-		save(this.handlerPropertyHolder, HandlerPropertyHolder.class, folder + "/" + HANDLER_XML);
+//		save(this.handlerPropertyHolder, HandlerPropertyHolder.class, folder + "/" + HANDLER_XML);
 		save(this.registerProperty, RegisterSpecHolder.class, folder + "/" + REGISTER_XML);
-		save(this.hardSpec, SpecElement.class, folder + "/" + HARDSPEC_XML);
-		save(this.userStory, SpecElement.class, folder + "/" + USERSTORY_XML);
+//		save(this.hardSpec, SpecElement.class, folder + "/" + HARDSPEC_XML);
+//		save(this.userStory, SpecElement.class, folder + "/" + USERSTORY_XML);
 		save(this.registerShortCuts, RegisterShortCutHolder.class, folder + "/" + REGISTERSHORTCUT);
 		saveJson(this.dependencySpecHolder2, folder + "/" + DEPENDENCYSPEC3_XML);
 
@@ -280,29 +271,9 @@ public class BuilderModelImpl {
 			e.printStackTrace();
 		}
 	}
-	
-	public RegisterSpecHolder getRegisterProperty() {
-		return registerProperty;
-	}
-	
-	public SpecElement getHardwareContorlProcedure() {
-		return hardSpec;
-	}
-	
-	public SpecElement getUserStory() {
-		return userStory;
-	}
-	
-	public String getUserApplicationPath() {
-		return this.userApplicationPath;
-	}
-
+		
 	public Sequencer getSequencer() {
 		return this.sequencer;
-	}
-	
-	public void setUserPath(String userPath) {
-		userApplicationPath = userPath;
 	}
 	
 	public DependencySpecHolder getDependencySpecHolder2() {
@@ -313,11 +284,6 @@ public class BuilderModelImpl {
 	public RegisterShortCutHolder getRegisterShortCut() {
 		return this.registerShortCuts;
 	}
-	
-	public UiLayout getUiLayout() {
-		return uiLayoutHolder.getCurrentUi();
-	}
-
 	
 	public void changeId(String prevId, String newId) {
 		this.dependencySpecHolder2.changeId(prevId, newId);
@@ -340,27 +306,11 @@ public class BuilderModelImpl {
 		}
 	}
 
-	
-	public List<String> getUiFiles() {
-		return uiLayoutHolder.getFileList();
-	}
-
-	
-	public List<String> createUiFile(String filename) {
-		return uiLayoutHolder.createNewFile(filename);
-	}
-
-	
+		
 	public UiLayout switchUiFile(String filename) {
 		return this.uiLayoutHolder.switchFile(filename);
 	}
 
-	
-	public void removeUiFile(String filename) {
-		this.uiLayoutHolder.removeFile(filename);
-	}
-
-	
 	public TestRecorder getTestRecorder() {
 		return this.testRecorder;
 	}
@@ -416,4 +366,13 @@ public class BuilderModelImpl {
 		}
 		return null;
 	}
+
+	public void setSourceInfo(String baseFolderAndPackage) {
+		this.sourceInfo = baseFolderAndPackage;
+	}
+
+	public String getSourceInfo() {
+		return sourceInfo;
+	}
+	
 }

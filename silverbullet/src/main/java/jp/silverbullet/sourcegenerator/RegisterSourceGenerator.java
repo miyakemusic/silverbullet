@@ -1,4 +1,4 @@
-package jp.silverbullet.register2;
+package jp.silverbullet.sourcegenerator;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -8,22 +8,27 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
+import jp.silverbullet.register2.RegisterBit;
+import jp.silverbullet.register2.RegisterCommon;
+import jp.silverbullet.register2.RegisterSpecHolder;
+
 public class RegisterSourceGenerator {
 
 	private RegisterSpecHolder holder;
-	private String packageName;
+//	private String packageName;
 	private String className;
 
-	public RegisterSourceGenerator(RegisterSpecHolder holder, String packageName, String className) {
+	public RegisterSourceGenerator(RegisterSpecHolder holder) {
 		this.holder = holder;
-		this.packageName = packageName;
-		this.className = className;
+//		this.packageName = packageName;
+		this.className = "UserRegister";
 	}
 
-	public void exportFile(String filename) {
-		List<String> lines = this.generate();
+	public void exportFile(String filename, String packageName) {
+		List<String> lines = this.generate(packageName);
+		String path = combineFolderPackage(filename, packageName);
 		try {
-			String name = filename + "/" + this.className + ".java";
+			String name = path + "/" + this.className + ".java";
 			if (Files.exists(Paths.get(name))) {
 				Files.delete(Paths.get(name));
 			}
@@ -32,11 +37,16 @@ public class RegisterSourceGenerator {
 			e.printStackTrace();
 		}
 	}
+
+	public String combineFolderPackage(String filename, String packageName) {
+		String path = filename + "/" + packageName.replace(".", "/");
+		return path;
+	}
 	
-	public List<String> generate() {
+	public List<String> generate(String packageName) {
 		List<String> lines = new ArrayList<>();
 		// package
-		lines.add("package " + this.packageName + ";"); 
+		lines.add("package " + packageName + ";"); 
 		
 		// import
 		lines.add("import jp.silverbullet.register2.RegisterAccessor;");

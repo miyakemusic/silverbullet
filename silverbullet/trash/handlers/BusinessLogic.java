@@ -3,6 +3,7 @@ package jp.silverbullet.handlers;
 import java.util.List;
 import java.util.Map;
 
+import jp.silverbullet.SvHandlerModel;
 import jp.silverbullet.dependency2.ChangedItemValue;
 
 public interface BusinessLogic {
