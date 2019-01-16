@@ -3,6 +3,7 @@ package jp.silverbullet;
 import java.util.List;
 
 import jp.silverbullet.register2.RegisterAccessor;
+import jp.silverbullet.sequncer.UserSequencer;
 
 public class SampleMain extends SilverBulletServer {
 
@@ -32,6 +33,24 @@ public class SampleMain extends SilverBulletServer {
 	protected String getBaseFolderAndPackage() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	protected RegisterAccessor getHardwareAccessor(BuilderModelImpl model) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected List<UserSequencer> getUserSequencers(BuilderModelImpl model) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected int getInstanceCount() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

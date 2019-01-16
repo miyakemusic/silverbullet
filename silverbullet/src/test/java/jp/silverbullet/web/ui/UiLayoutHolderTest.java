@@ -223,9 +223,11 @@ public class UiLayoutHolderTest {
 		uiHolder.getCurrentUi().addTab(uiHolder.getCurrentUi().getRoot().getUniqueText());
 		assertEquals(JsWidget.TAB, uiHolder.getCurrentUi().getRoot().getChildren().get(0).getWidgetType());
 		
-		assertEquals(2, uiHolder.createNewFile("").size());
+		uiHolder.createNewFile("");
+		assertEquals(2, uiHolder.getFileList().size());
 		Thread.sleep(100);
-		assertEquals(3, uiHolder.createNewFile("").size());
+		uiHolder.createNewFile("");
+		assertEquals(3, uiHolder.getFileList().size());
 
 		uiHolder.createNewFile("aaaa");
 		assertEquals(4, uiHolder.getFileList().size());

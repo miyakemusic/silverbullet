@@ -3,6 +3,9 @@ package jp.silverbullet;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+
 import jp.silverbullet.sourcegenerator.PropertySourceGenerator;
 import jp.silverbullet.sourcegenerator.RegisterSourceGenerator;
 
@@ -11,7 +14,7 @@ public class StaticInstances {
 	
 	private static StaticInstances instance;
 	
-	private BuilderModelImpl builderModel;
+	private List<BuilderModelImpl> builderModels = new ArrayList<>();
 	private String currentFilename = "";
 
 	public static StaticInstances getInstance() {
@@ -21,18 +24,18 @@ public class StaticInstances {
 		return instance;
 	}
 		
-	public BuilderModelImpl getBuilderModel() {
-		return builderModel;
+	public BuilderModelImpl getBuilderModel(int index) {
+		return builderModels.get(index);
 	}
 
 	private StaticInstances() {
-		builderModel = new BuilderModelImpl();
+//		builderModel = new BuilderModelImpl();
 	}
 
 
 	public void save() {
 		createTmpFolderIfNotExists();
-		getBuilderModel().save(StaticInstances.TMP_FOLDER);
+		getBuilderModel(0).save(StaticInstances.TMP_FOLDER);
 		Zip.zip(StaticInstances.TMP_FOLDER, currentFilename);
 	}
 
@@ -53,18 +56,29 @@ public class StaticInstances {
 			Zip.unzip(filename, StaticInstances.TMP_FOLDER);
 			getBuilderModel().load(StaticInstances.TMP_FOLDER);
 		}
-		else {
-			builderModel.loadDefault();
-		}
+	}
+
+	public BuilderModelImpl getBuilderModel() {
+		return this.getBuilderModel(0);
 	}
 
 	public void generateSource() {
-		String info = getBuilderModel().getSourceInfo();
+		String info = getBuilderModel(0).getSourceInfo();
 		String folder = info.split(";")[0];
 		String packageName = info.split(";")[1];
 		new PropertySourceGenerator(getBuilderModel().getAllProperties()).generate(folder, packageName);
 		new RegisterSourceGenerator(getBuilderModel().getRegisterSpecHolder()).
 			exportFile(folder, packageName);
+	}
+
+	public void createInstances(int instanceCount) {
+		for (int i = 0; i < instanceCount; i++) {
+			this.builderModels.add(new BuilderModelImpl());
+		}
+	}
+
+	public List<BuilderModelImpl> getBuilderModels() {
+		return this.builderModels;
 	}
 
 }

@@ -147,7 +147,12 @@ public class TestAlternativeDependency {
 		
 		Expression exp2 = newMid.get(6);
 		
-		DependencyEngine engine = new DependencyEngine(newHolder, store);
+		DependencyEngine engine = new DependencyEngine(store) {
+			@Override
+			protected DependencySpecHolder getSpecHolder() {
+				return newHolder;
+			}
+		};
 		try {
 			store.getProperty("ID_MIDDLE").setCurrentValue("ID_MIDDLE_C");
 			engine.requestChange("ID_LEAF", "ID_LEAF_C");

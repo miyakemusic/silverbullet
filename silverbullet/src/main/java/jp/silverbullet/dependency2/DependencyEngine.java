@@ -20,19 +20,19 @@ import jp.silverbullet.web.ui.PropertyGetter;
  * @author çNçG
  *
  */
-public class DependencyEngine {
+public abstract class DependencyEngine {
 
 	private PropertyGetter  store;
-	private DependencySpecHolder specHolder;
+//	private DependencySpecHolder specHolder;
 	private CachedPropertyStore cachedPropertyStore;
 	private ExpressionCalculator calculator;
 	private Id userChangedId;
 	private List<DependencyListener> listeners = new ArrayList<>();
 	private CommitListener commitListener;
 	
-	public DependencyEngine(DependencySpecHolder specHolder, PropertyGetter  store) {
+	public DependencyEngine(PropertyGetter  store) {
 		this.store = store;
-		this.specHolder = specHolder;
+//		this.specHolder = specHolder;
 		calculator = new ExpressionCalculator() {
 			@Override
 			protected RuntimeProperty getProperty(String id) {
@@ -279,9 +279,7 @@ public class DependencyEngine {
 
 	}
 
-	protected DependencySpecHolder getSpecHolder() {
-		return this.specHolder;
-	}
+	abstract protected DependencySpecHolder getSpecHolder();
 
 	private void setCurrentValue(RuntimeProperty property, String val) throws RequestRejectedException {
 		if (property.isNumericProperty()) {

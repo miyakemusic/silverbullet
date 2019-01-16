@@ -13,11 +13,15 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import jp.silverbullet.register.json.SvRegisterJsonHolder;
+import jp.silverbullet.register2.BitValue;
+import jp.silverbullet.register2.RegisterAccessor;
+import jp.silverbullet.register2.RegisterAccessorListener;
 import jp.silverbullet.register2.RegisterBit;
 import jp.silverbullet.register2.RegisterBit.ReadWriteType;
 import jp.silverbullet.sourcegenerator.RegisterSourceGenerator;
 import jp.silverbullet.register2.RegisterBitArray;
 import jp.silverbullet.register2.RuntimeRegisterMap;
+import jp.silverbullet.register2.RuntimeRegisterMap.DeviceType;
 import jp.silverbullet.register2.SvRegister;
 import jp.silverbullet.web.KeyValue;
 import jp.silverbullet.register2.RegisterController;
@@ -382,7 +386,7 @@ public class RegisterSpecHolderTest {
 		
 		// simualtor
 		RegisterController simulator = new RegisterController();
-		registerMap.addDevice(simulator);
+		registerMap.addDevice(DeviceType.SIMULATOR, simulator);
 
 		assertEquals(0x00, registerMap.readRegister(
 				UserRuntimeRegisterHolderForTest.Register.Reg1, 
@@ -437,4 +441,35 @@ public class RegisterSpecHolderTest {
 		assertTrue(new Date().getTime() - now > 100);
 	}
 
+	@Test
+	public void testHardware() {
+		RegisterSpecHolder holder = new RegisterSpecHolder(32);
+		holder.newRegister(UserRuntimeRegisterHolderForTest.Register.Reg1.toString(), 0x10, "ret1").
+			newBit(UserRuntimeRegisterHolderForTest.Reg1.bit1.toString(), 0, 1, ReadWriteType.RW, "").
+			newBit(UserRuntimeRegisterHolderForTest.Reg1.bit2.toString(), 1, 1, ReadWriteType.RW, "");
+		holder.newRegister(UserRuntimeRegisterHolderForTest.Register.Reg2.toString(), 0x14, "reg2").
+			newBit(UserRuntimeRegisterHolderForTest.Reg1.bit1.toString(), 0, 1, ReadWriteType.RW, "").
+			newBit(UserRuntimeRegisterHolderForTest.Reg1.bit2.toString(), 1, 1, ReadWriteType.RW, "");
+		holder.newMultiRegister("area", 0x20, 0x80, "");
+		//////////////// Map ////////////////
+		RuntimeRegisterMap registerMap = new RuntimeRegisterMap();
+		RegisterAccessorImpl simulator = new RegisterAccessorImpl();
+		RegisterAccessorImpl hardware = new RegisterAccessorImpl();
+		
+		registerMap.addDevice(DeviceType.SIMULATOR, simulator);
+		registerMap.addDevice(DeviceType.HARDWARE, hardware);
+		
+		registerMap.write(UserRuntimeRegisterHolderForTest.Register.Reg1, Arrays.asList(new BitValue(UserRuntimeRegisterHolderForTest.Reg1.bit1, 1)));
+		assertEquals(true, simulator.isWritten());
+		assertEquals(true, hardware.isWritten());
+		
+		registerMap.readRegister(UserRuntimeRegisterHolderForTest.Register.Reg1);
+		assertEquals(false, simulator.isBlockRead());
+		assertEquals(true, hardware.isBlockRead());
+
+		registerMap.readRegister(UserRuntimeRegisterHolderForTest.Register.Reg1, UserRuntimeRegisterHolderForTest.Reg1.bit1);
+		assertEquals(false, simulator.isRegRead());
+		assertEquals(true, hardware.isRegRead());
+		
+	}
 }

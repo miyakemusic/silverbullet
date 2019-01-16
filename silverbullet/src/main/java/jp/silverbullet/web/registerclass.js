@@ -2,7 +2,18 @@ class RegisterClass {
 	constructor(div) {
 		var selectId = div + '_depselect';		
 		var showExternalId = div + '_external';
-		$('#' + div).append('<div>Type:<select id="' + selectId + '"></select><button id="' + showExternalId + '">Show Map</button></div>');
+		
+		var hardOrSimId = div + '_hardOrSim';
+		
+		$('#' + div).append('<select id="' + hardOrSimId + '"></input>');
+		$('#' + hardOrSimId).append($('<option>').text('Hardware').val('Hardware'));
+		$('#' + hardOrSimId).append($('<option>').text('Simulator').val('Simulator'));
+		
+		var simDiv = div + '_simDiv';
+		$('#' + div).append('<div id="' + simDiv + '"></div>');
+		//$('#' + simDiv).show();
+		
+		$('#' + simDiv).append('<div>Type:<select id="' + selectId + '"></select><button id="' + showExternalId + '">Show Map</button></div>');
 		
 		var regDiv = div + '_regDiv';
 		$('#' + div).append('<div id="' + regDiv + '"></div>');
@@ -21,6 +32,16 @@ class RegisterClass {
 				me.registerMap = new RegisterMap(regDiv);
 			}
 		});
+		
+		$('#' + hardOrSimId).change(function() {
+			if ($(this).val() == 'Simulator') {
+				$('#' + simDiv).show();
+			}
+			else {
+				$('#' + simDiv).hide();
+			}
+		});
+		$('#' + hardOrSimId).val('Simulator');
 		
 		new RegisterSpec(regDiv);
 		
@@ -47,5 +68,14 @@ class RegisterClass {
 			$('#' + dialogId).dialog('open');
 			new RegisterMap(dialogPaneId);
 		});
+		
+		function setRegisterType(type) {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/register2/setRegisterType?type=" + type,
+			   success: function(msg){
+			   }
+			});		
+		}
 	}
 }

@@ -232,7 +232,8 @@ public class DesignResource {
 	@Path("createNewFile")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<String> createNewFile(@QueryParam("filename") String filename) {
-		return StaticInstances.getInstance().getBuilderModel().getUiLayoutHolder().createNewFile(filename);
+		StaticInstances.getInstance().getBuilderModel().getUiLayoutHolder().createNewFile(filename);
+		return StaticInstances.getInstance().getBuilderModel().getUiLayoutHolder().getFileList();
 	}
 	
 	@GET

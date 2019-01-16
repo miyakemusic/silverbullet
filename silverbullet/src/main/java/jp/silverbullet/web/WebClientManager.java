@@ -98,7 +98,7 @@ public class WebClientManager {
 			}
 		});
 
-		StaticInstances.getInstance().getBuilderModel().getRuntimRegisterMap().addListener(new RegisterAccessorListener() {
+		StaticInstances.getInstance().getBuilderModel().getRegisterAccessor().addListener(new RegisterAccessorListener() {
 			@Override
 			public void onUpdate(Object regName, Object bitName, int value) {
 				try {

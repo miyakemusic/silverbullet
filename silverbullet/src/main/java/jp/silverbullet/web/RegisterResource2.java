@@ -14,11 +14,13 @@ import javax.ws.rs.core.MediaType;
 
 import com.sun.jersey.core.util.Base64;
 
+import jp.silverbullet.BuilderModelImpl.RegisterTypeEnum;
 import jp.silverbullet.StaticInstances;
 import jp.silverbullet.register.json.SvRegisterJsonHolder;
 import jp.silverbullet.register2.RegisterAccessor;
 import jp.silverbullet.register2.RegisterJsonController;
 import jp.silverbullet.register2.RegisterShortCut;
+import jp.silverbullet.register2.RuntimeRegisterMap.DeviceType;
 
 @Path("/register2")
 public class RegisterResource2 {
@@ -87,9 +89,9 @@ public class RegisterResource2 {
 	@Path("/setCurrentValue")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setCurrentValue(@QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName, @QueryParam("value") final String value) {
+//		StaticInstances.getInstance().getBuilderModel().getRuntimRegisterMap().getRegisterController().updateValue(regName, bitName, Integer.valueOf(value));
 		StaticInstances.getInstance().getBuilderModel().getRuntimRegisterMap().getRegisterController().updateValue(regName, bitName, Integer.valueOf(value));
-		//		RegisterInfo regInfo = new RegisterInfo(regName, bitName, value, StaticInstances.getInstance().getBuilderModel().getRegisterProperty());
-//		StaticInstances.getInstance().getSimulator().updateRegister(regInfo.getIntAddress(), regInfo.getDataSet(), regInfo.getMask());	
+
 		return "OK";
 	}	
 
@@ -126,7 +128,7 @@ public class RegisterResource2 {
 	@Path("/addToTest")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String addToTest(@QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName) {
-		long value = StaticInstances.getInstance().getBuilderModel().getRuntimRegisterMap().readRegister(regName, bitName);
+		long value = StaticInstances.getInstance().getBuilderModel().getRegisterAccessor().readRegister(regName, bitName);
 		StaticInstances.getInstance().getBuilderModel().getTestRecorder().addRegisterQuery(regName, bitName, value);
 		return "OK";
 	}
@@ -142,7 +144,7 @@ public class RegisterResource2 {
 	@Path("/getCurrentValue")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String getCurrentValue(@QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName) {
-		long ret = StaticInstances.getInstance().getBuilderModel().getRuntimRegisterMap().readRegister(regName, bitName);
+		long ret = StaticInstances.getInstance().getBuilderModel().getRegisterAccessor().readRegister(regName, bitName);
 		return String.valueOf(ret);
 	}
 
@@ -171,7 +173,7 @@ public class RegisterResource2 {
 	@Produces(MediaType.TEXT_PLAIN)
 	public String loadSimulator(@QueryParam("simulator") final String simulator) {
 		RegisterAccessor rg = StaticInstances.getInstance().getBuilderModel().getSimulator(simulator);
-		StaticInstances.getInstance().getBuilderModel().getRuntimRegisterMap().addDevice(rg);
+		StaticInstances.getInstance().getBuilderModel().getRuntimRegisterMap().addDevice(DeviceType.SIMULATOR, rg);
 		return "OK";
 	}
 	
@@ -191,5 +193,13 @@ public class RegisterResource2 {
 		return "OK";
 	}
 
+	@GET
+	@Path("/setRegisterType")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String setRegisterType(@QueryParam("type") final String type) {
+		StaticInstances.getInstance().getBuilderModel().setRegisterType(RegisterTypeEnum.valueOf(type));
+		return "OK";
+	}
+	
 }
 

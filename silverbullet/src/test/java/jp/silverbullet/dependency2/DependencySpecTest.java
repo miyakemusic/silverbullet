@@ -32,7 +32,7 @@ public class DependencySpecTest {
 		DependencySpecHolder specHolder = new DependencySpecHolder();
 		specHolder.addSpec(specValue);
 		
-		DependencyEngine engine = new DependencyEngine(specHolder, store);
+		DependencyEngine engine = createDependencyEngine(store, specHolder);
 		
 		// ID_STRONG is stronger than ID_VALUE
 		specHolder.setPriority("ID_VALUE", 10);
@@ -80,6 +80,16 @@ public class DependencySpecTest {
 			assertEquals("100", cached.getProperty("ID_VALUE").getCurrentValue());
 		}
 	}
+
+	public DependencyEngine createDependencyEngine(PropertyStoreForTest store, DependencySpecHolder specHolder) {
+		DependencyEngine engine = new DependencyEngine(store) {
+			@Override
+			protected DependencySpecHolder getSpecHolder() {
+				return specHolder;
+			}
+		};
+		return engine;
+	}
 	
 	@Test
 	public void testOptionEnabled() {
@@ -104,7 +114,7 @@ public class DependencySpecTest {
 		DependencySpecHolder specHolder = new DependencySpecHolder();
 		specHolder.addSpec(spec);
 		
-		DependencyEngine engine = new DependencyEngine(specHolder, store);
+				DependencyEngine engine = createDependencyEngine(store, specHolder);
 		try {
 			engine.requestChange("ID_ROOT", "ID_ROOTA");
 			CachedPropertyStore cached = engine.getCachedPropertyStore();
@@ -156,7 +166,7 @@ public class DependencySpecTest {
 		store.addListProperty("ID_MIDDLE", Arrays.asList("ID_MIDDLE_A1", "ID_MIDDLE_A2", "ID_MIDDLE_B1", "ID_MIDDLE_B2"), "ID_MIDDLE_A1");
 		store.addListProperty("ID_ROOT", Arrays.asList("ID_ROOTA", "ID_ROOTA2", "ID_ROOTB"), "ID_ROOTA");
 
-		DependencyEngine engine = new DependencyEngine(specHolder, store);
+				DependencyEngine engine = createDependencyEngine(store, specHolder);
 		try {
 			store.getProperty("ID_MIDDLE").setEnabled(false);
 			engine.requestChange("ID_ROOT", "ID_ROOTA");
@@ -193,7 +203,7 @@ public class DependencySpecTest {
 		DependencySpecHolder specHolder = new DependencySpecHolder();
 		specHolder.addSpec(spec);
 		
-		DependencyEngine engine = new DependencyEngine(specHolder, store);
+				DependencyEngine engine = createDependencyEngine(store, specHolder);
 		try {
 			engine.requestChange("ID_ROOT", "ID_ROOTA");
 			CachedPropertyStore cached = engine.getCachedPropertyStore();
@@ -252,7 +262,7 @@ public class DependencySpecTest {
 		DependencySpecHolder specHolder = new DependencySpecHolder();
 		specHolder.addSpec(spec);
 		
-		DependencyEngine engine = new DependencyEngine(specHolder, store);
+				DependencyEngine engine = createDependencyEngine(store, specHolder);
 		try {
 			engine.requestChange("ID_LEFT", "0");
 			CachedPropertyStore cached = engine.getCachedPropertyStore();
@@ -286,7 +296,7 @@ public class DependencySpecTest {
 		DependencySpecHolder specHolder = new DependencySpecHolder();
 		specHolder.addSpec(spec);
 		
-		DependencyEngine engine = new DependencyEngine(specHolder, store);
+				DependencyEngine engine = createDependencyEngine(store, specHolder);
 		try {
 			store.getProperty("ID_RIGHT").setCurrentValue("20");
 			engine.requestChange("ID_LEFT", "10");
@@ -324,7 +334,7 @@ public class DependencySpecTest {
 		specHolder.addSpec(specAvg);
 		specHolder.addSpec(specRange);
 		
-		DependencyEngine engine = new DependencyEngine(specHolder, store);
+				DependencyEngine engine = createDependencyEngine(store, specHolder);
 		try {
 			engine.requestChange("ID_AVERAGE", "100");
 			CachedPropertyStore cached = engine.getCachedPropertyStore();
@@ -356,7 +366,7 @@ public class DependencySpecTest {
 		DependencySpecHolder specHolder = new DependencySpecHolder();
 		specHolder.addSpec(spec);
 		
-		DependencyEngine engine = new DependencyEngine(specHolder, store);
+				DependencyEngine engine = createDependencyEngine(store, specHolder);
 		try {
 			engine.requestChange("ID_MODE", "ID_MODE_WIDE");
 			CachedPropertyStore cached = engine.getCachedPropertyStore();
@@ -439,7 +449,7 @@ public class DependencySpecTest {
 		specHolder.addSpec(specMiddle);
 		specHolder.addSpec(specLeaf);
 		
-		DependencyEngine engine = new DependencyEngine(specHolder, store);
+				DependencyEngine engine = createDependencyEngine(store, specHolder);
 		try {
 			engine.requestChange("ID_ROOT", "ID_ROOT_B");
 			CachedPropertyStore cached = engine.getCachedPropertyStore();
@@ -483,7 +493,7 @@ public class DependencySpecTest {
 		specHolder.addSpec(specBand);
 		specHolder.addSpec(specValue);
 		
-		DependencyEngine engine = new DependencyEngine(specHolder, store);
+				DependencyEngine engine = createDependencyEngine(store, specHolder);
 		try {
 			engine.requestChange("ID_VALUE", "10");
 			CachedPropertyStore cached = engine.getCachedPropertyStore();
@@ -532,7 +542,7 @@ public class DependencySpecTest {
 		DependencySpecHolder specHolder = new DependencySpecHolder();
 		specHolder.addSpec(spec);
 		
-		DependencyEngine engine = new DependencyEngine(specHolder, store);
+				DependencyEngine engine = createDependencyEngine(store, specHolder);
 		try {
 			store.getProperty("ID_MIDDLE").setCurrentValue("ID_MIDDLE_A2");
 			store.getProperty("ID_MODE").setCurrentValue("ID_MODE_A");
@@ -582,7 +592,7 @@ public class DependencySpecTest {
 		specHolder.setPriority("ID_WEAK", 99);
 		specHolder.setPriority("ID_STRONG", 100);
 		
-		DependencyEngine engine = new DependencyEngine(specHolder, store);
+				DependencyEngine engine = createDependencyEngine(store, specHolder);
 		try {
 			store.getProperty("ID_WEAK").setCurrentValue("ID_WEAK_A");
 			engine.requestChange("ID_STRONG", "ID_STRONG_B");
@@ -660,7 +670,7 @@ public class DependencySpecTest {
 //			.addOptionEnabled("ID_STRONG_A", DependencySpec.True, "$ID_MODE==%ID_MODE_A")
 //			.addOptionEnabled("ID_STRONG_B", DependencySpec.False, DependencySpec.Else);
 
-		DependencyEngine engine = new DependencyEngine(specHolder, store);
+				DependencyEngine engine = createDependencyEngine(store, specHolder);
 
 		// if two candidates exist, a close value to current value will be selected.
 		

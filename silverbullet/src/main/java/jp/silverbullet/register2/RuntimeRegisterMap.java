@@ -39,12 +39,18 @@ class RegisterValue {
 }
 
 public class RuntimeRegisterMap implements RegisterAccessor, RegisterAccessorListener {
+	public enum DeviceType {
+		SIMULATOR,
+		HARDWARE,
+		CONTROLLER
+	}
+	
 	private RegisterValue registerValue = new RegisterValue();
-	private Set<RegisterAccessor> devices = new HashSet<>();
+	private Map<DeviceType, RegisterAccessor> devices = new HashMap<>();
 	private Set<RegisterAccessorListener> listeners = new HashSet<>();
-	private RegisterController registerController = new RegisterController();
+//	private RegisterController registerController = new RegisterController();
 	public RuntimeRegisterMap() {
-		this.addDevice(registerController);
+//		this.addDevice(DeviceType.CONTROLLER, registerController);
 	}
 	
 	@Override
@@ -52,7 +58,7 @@ public class RuntimeRegisterMap implements RegisterAccessor, RegisterAccessorLis
 		for (BitValue regValue : data) {
 			storeValue(regName, regValue.bitName, regValue.value);
 		}
-		this.devices.forEach(device -> device.write(regName, data));
+		this.devices.values().forEach(device -> device.write(regName, data));
 	}
 
 	private void storeValue(Object regName, Object bitName, int value) {
@@ -62,6 +68,9 @@ public class RuntimeRegisterMap implements RegisterAccessor, RegisterAccessorLis
 
 	@Override
 	public long readRegister(Object regName, Object bitName) {
+		if (this.devices.get(DeviceType.HARDWARE) != null) {
+			return this.devices.get(DeviceType.HARDWARE).readRegister(regName, bitName);
+		}
 		return this.registerValue.get(regName.toString(), bitName.toString());
 	}
 
@@ -69,14 +78,18 @@ public class RuntimeRegisterMap implements RegisterAccessor, RegisterAccessorLis
 	public void clear(Object regName) {
 		String reg = regName.toString();
 		this.registerValue.clear(regName.toString());
-		this.devices.forEach(device -> device.clear(reg));
+		this.devices.values().forEach(device -> device.clear(reg));
 	}
 
-	public void addDevice(RegisterAccessor accessor) {
-		this.devices .add(accessor);
+	public void addDevice(DeviceType deviceType, RegisterAccessor accessor) {
+		this.devices .put(deviceType, accessor);
 		accessor.addListener(this);
 	}
 
+	public RegisterAccessor getDevice(DeviceType deviceType) {
+		return this.devices.get(deviceType);
+	}
+	
 	@Override // SimulatorListener
 	public void onUpdate(Object regName, Object bitName, int value) {
 		this.storeValue(regName, bitName, value);
@@ -99,6 +112,9 @@ public class RuntimeRegisterMap implements RegisterAccessor, RegisterAccessorLis
 
 	@Override
 	public byte[] readRegister(Object regName) {
+		if (this.devices.get(DeviceType.HARDWARE) != null) {
+			return this.devices.get(DeviceType.HARDWARE).readRegister(regName);
+		}
 		return this.registerValue.get(regName.toString());
 	}
 
@@ -107,26 +123,29 @@ public class RuntimeRegisterMap implements RegisterAccessor, RegisterAccessorLis
 		this.listeners.forEach(listener -> listener.onInterrupt());
 	}
 
-	public RegisterController getRegisterController() {
-		return this.registerController;
-	}
-
-	public Set<RegisterAccessor> getDevices() {
-		return this.devices;
-	}
-
 	public void removeDevice(RegisterAccessor rg) {
-		this.devices.remove(rg);
+		for (DeviceType key : this.devices.keySet()) {
+			if (this.devices.get(key).equals(rg)) {
+				this.devices.remove(key);
+				return;
+			}
+		}
 	}
 
 	public Set<RegisterAccessor> getUserDevices() {
-		Set<RegisterAccessor> ret = new HashSet<>(); 
-		if (this.devices.size() >= 2) {
-			Iterator<RegisterAccessor> it = this.devices.iterator();
-			it.next();
-			ret.add(it.next());
+		Set<RegisterAccessor> ret = new HashSet<>();
+		if (this.devices.containsKey(DeviceType.HARDWARE)) {
+			ret.add(this.devices.get(DeviceType.HARDWARE));
+		}
+
+		if (this.devices.containsKey(DeviceType.SIMULATOR)) {
+			ret.add(this.devices.get(DeviceType.SIMULATOR));
 		}
 		return ret;
+	}
+
+	public RegisterController getRegisterController() {
+		return (RegisterController)this.devices.get(DeviceType.CONTROLLER);
 	}
 
 }

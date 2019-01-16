@@ -20,6 +20,7 @@ import jp.silverbullet.register2.RegisterController;
 import jp.silverbullet.register2.RegisterShortCutHolder;
 import jp.silverbullet.register2.RegisterSpecHolder;
 import jp.silverbullet.register2.RuntimeRegisterMap;
+import jp.silverbullet.register2.RuntimeRegisterMap.DeviceType;
 import jp.silverbullet.sequncer.EasyAccessInterface;
 import jp.silverbullet.sequncer.Sequencer;
 import jp.silverbullet.test.TestRecorder;
@@ -31,25 +32,21 @@ import jp.silverbullet.web.ui.UiLayoutHolder;
 public class BuilderModelImpl {
 
 	private static final String ID_DEF_JSON = "id_def.json";
-	private static final String HANDLER_XML = "handlers.xml";
 	private static final String REGISTER_XML = "register.xml";
-	private static final String HARDSPEC_XML = "hardspec.xml";
-	private static final String USERSTORY_XML = "userstory.xml";
 	private static final String REGISTERSHORTCUT = "registershortcuts.xml";
 	private static final String DEPENDENCYSPEC3_XML = "dependencyspec3.xml";
 
 	private List<String> selectedId;
 	private RuntimePropertyStore store;
-//	private SpecElement hardSpec = new SpecElement();
-	private String userApplicationPath = "";
 	private Sequencer sequencer;
 	private PropertyHolder2 propertiesHolder2 = new PropertyHolder2();
-//	private HandlerPropertyHolder handlerPropertyHolder = new HandlerPropertyHolder();
 	private RegisterSpecHolder registerProperty = new RegisterSpecHolder();
-	private DependencySpecHolder dependencySpecHolder2 = new jp.silverbullet.dependency2.DependencySpecHolder();
-//	private SpecElement userStory = new SpecElement();
+	private DependencySpecHolder dependencySpecHolder2 = new DependencySpecHolder();
 	private RegisterShortCutHolder registerShortCuts = new RegisterShortCutHolder();
+	
+	private RegisterController registerController = new RegisterController();
 	private RuntimeRegisterMap runtimeRegisterMap = new RuntimeRegisterMap();
+	private RegisterAccessor currentRegisterAccessor = runtimeRegisterMap;
 	
 	private UiLayoutHolder uiLayoutHolder = new UiLayoutHolder(new PropertyGetter() {
 		public RuntimeProperty getProperty(String id) {
@@ -79,13 +76,9 @@ public class BuilderModelImpl {
 		}
 	};
 	
-	public RuntimeRegisterMap getRuntimRegisterMap() {
-		return this.runtimeRegisterMap;
+	public RegisterAccessor getRegisterAccessor() {
+		return this.currentRegisterAccessor;
 	}
-		
-//	public HandlerPropertyHolder getHandlerPropertyHolder() {
-//		return handlerPropertyHolder;
-//	}
 
 	private DependencyEngine dependency = null;
 
@@ -112,22 +105,28 @@ public class BuilderModelImpl {
 		}
 		
 		public long getRegisterValue(String regName, String bitName) {
-			return BuilderModelImpl.this.getRuntimRegisterMap().readRegister(regName, bitName);
+			return BuilderModelImpl.this.getRegisterAccessor().readRegister(regName, bitName);
 		}
 		
 		public RegisterController getRegisterController() {
-			return BuilderModelImpl.this.getRuntimRegisterMap().getRegisterController();
+			return registerController;
 		}
 	});
 	private DependencySpecHolder defaultDependency;
 	private RegisterSpecHolder registerSpecHolder = new RegisterSpecHolder();
 	private List<RegisterAccessor> simulators;
 	private String sourceInfo;
+	private RegisterAccessor hardwareAccessor;
+
+	public enum RegisterTypeEnum {
+		Simulator,
+		Hardware,
+	};
 
 	public BuilderModelImpl() {
 		store = new RuntimePropertyStore(propertiesHolder2);
-		this.getRuntimRegisterMap().addListener(this.testRecorder);
-		
+		this.getRegisterAccessor().addListener(this.testRecorder);
+		this.getRuntimRegisterMap().addDevice(DeviceType.CONTROLLER, this.registerController);
 		this.sequencer = new Sequencer() {
 			protected RuntimePropertyStore getPropertiesStore() {
 				return store;
@@ -142,12 +141,15 @@ public class BuilderModelImpl {
 			}
 			
 			protected RegisterAccessor getRegisterAccessor() {
-				return runtimeRegisterMap;
+				return currentRegisterAccessor;
 			}
 		};
 
 		sequencer.addSequencerListener(testRecorder);
-		this.loadDefault();
+		this.uiLayoutHolder.createDefault();
+		createDependencyEngine();
+		
+//		this.setRegisterType(RegisterTypeEnum.Hardware);
 	}
 
 	public RuntimeProperty getProperty(String id) {
@@ -177,25 +179,26 @@ public class BuilderModelImpl {
 	public List<String> getIds(PropertyType2 type) {
 		return store.getIds(type);
 	}
-	
+		
 	public void load(String folder) {
 
 		propertiesHolder2.load(folder + "/" + ID_DEF_JSON);
 		
 		this.store = new RuntimePropertyStore(propertiesHolder2);
 		this.registerProperty = load(RegisterSpecHolder.class, folder + "/" + REGISTER_XML);
-//		this.handlerPropertyHolder = load(HandlerPropertyHolder.class, folder + "/" + HANDLER_XML);
-//		this.hardSpec = load(SpecElement.class, folder + "/" + HARDSPEC_XML);
-//		this.userStory = load(SpecElement.class, folder + "/" + USERSTORY_XML);
 		this.registerShortCuts = load(RegisterShortCutHolder.class, folder + "/" + REGISTERSHORTCUT);
-		this.dependencySpecHolder2 = loadJson(jp.silverbullet.dependency2.DependencySpecHolder.class, folder + "/" + DEPENDENCYSPEC3_XML);
+		this.dependencySpecHolder2 = loadJson(DependencySpecHolder.class, folder + "/" + DEPENDENCYSPEC3_XML);
 		defaultDependency = this.dependencySpecHolder2;
 	
 		uiLayoutHolder.load(folder);
 	
 		registerSpecHolder.load(folder);// = load(RegisterSpecHolder.class, folder);
 
-		dependency = new DependencyEngine(dependencySpecHolder2, new PropertyGetter () {
+//		createDependencyEngine(dependencySpecHolder2);
+	}
+
+	public void createDependencyEngine() {
+		PropertyGetter getter = new PropertyGetter () {
 			public RuntimeProperty getProperty(String id) {
 				return store.get(id);
 			}
@@ -203,8 +206,9 @@ public class BuilderModelImpl {
 			public RuntimeProperty getProperty(String id, int index) {
 				return store.get(id, index);
 			}
-		}) {
-
+		};
+		
+		dependency = new DependencyEngine(getter) {
 			protected DependencySpecHolder getSpecHolder() {
 				return dependencySpecHolder2;
 			}
@@ -229,11 +233,15 @@ public class BuilderModelImpl {
 		} catch (Exception e) {
 
 		}
+		if (!Files.exists(Paths.get(folder))) {
+			try {
+				Files.createDirectory(Paths.get(folder));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 		this.propertiesHolder2.save(folder + "/" + ID_DEF_JSON);
-//		save(this.handlerPropertyHolder, HandlerPropertyHolder.class, folder + "/" + HANDLER_XML);
 		save(this.registerProperty, RegisterSpecHolder.class, folder + "/" + REGISTER_XML);
-//		save(this.hardSpec, SpecElement.class, folder + "/" + HARDSPEC_XML);
-//		save(this.userStory, SpecElement.class, folder + "/" + USERSTORY_XML);
 		save(this.registerShortCuts, RegisterShortCutHolder.class, folder + "/" + REGISTERSHORTCUT);
 		saveJson(this.dependencySpecHolder2, folder + "/" + DEPENDENCYSPEC3_XML);
 
@@ -245,9 +253,6 @@ public class BuilderModelImpl {
 		new JsonPersistent().saveJson(object, filename);
 	}
 
-	public void loadDefault() {
-		this.uiLayoutHolder.createDefault();
-	}
 
 	private <T> T load(Class<T> clazz, String filename) {
 		XmlPersistent<T> propertyPersister = new XmlPersistent<>();
@@ -286,6 +291,7 @@ public class BuilderModelImpl {
 	}
 	
 	public void changeId(String prevId, String newId) {
+		this.propertiesHolder2.get(prevId).setId(newId);
 		this.dependencySpecHolder2.changeId(prevId, newId);
 		this.uiLayoutHolder.changeId(prevId, newId);
 	}
@@ -373,6 +379,23 @@ public class BuilderModelImpl {
 
 	public String getSourceInfo() {
 		return sourceInfo;
+	}
+
+	public RuntimeRegisterMap getRuntimRegisterMap() {
+		return this.runtimeRegisterMap;
+	}
+
+	public void setRegisterType(RegisterTypeEnum type) {
+		if (type.equals(RegisterTypeEnum.Simulator)) {
+			this.currentRegisterAccessor = this.runtimeRegisterMap;
+		}
+		else if (type.equals(RegisterTypeEnum.Hardware)) {
+			this.currentRegisterAccessor = this.hardwareAccessor;
+		}
+	}
+
+	public void setHardwareAccessor(RegisterAccessor hardwareAccessor2) {
+		this.hardwareAccessor = hardwareAccessor2;
 	}
 	
 }

@@ -94,14 +94,14 @@ public class UiLayoutHolder {
 		return ret;
 	}
 
-	private List<String> createFile(String filename) {
+	private UiLayout createFile(String filename) {
 		UiLayout uiLayout = new UiLayout(propertyGetter);
 		uiLayout.addListener(listener);
 		this.layouts.put(filename, uiLayout);
-		return getFileList();
+		return uiLayout;
 	}
 
-	public List<String> createNewFile(String filename) {
+	public UiLayout createNewFile(String filename) {
 		if (filename.isEmpty()) {
 			filename = Calendar.getInstance().getTimeInMillis() + ".ui";
 		}

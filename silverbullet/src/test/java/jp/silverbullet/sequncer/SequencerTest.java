@@ -51,7 +51,7 @@ public class SequencerTest {
 		RuntimePropertyStore store = new RuntimePropertyStore(holder);
 		
 		DependencySpecHolder specHolder = new DependencySpecHolder();
-		DependencyEngine engine = new DependencyEngine(specHolder, new PropertyGetter() {
+		DependencyEngine engine = new DependencyEngine(new PropertyGetter() {
 			@Override
 			public RuntimeProperty getProperty(String id) {
 				return store.get(id);
@@ -61,7 +61,14 @@ public class SequencerTest {
 			public RuntimeProperty getProperty(String id, int index) {
 				return store.get(id, index);
 			}
-		});
+		}) {
+
+			@Override
+			protected DependencySpecHolder getSpecHolder() {
+				return specHolder;
+			}
+			
+		};
 		
 		Sequencer sequencer = new Sequencer() {
 			@Override
