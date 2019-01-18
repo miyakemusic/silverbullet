@@ -108,5 +108,11 @@ public class JsProperty {
 	public void setCurrentSelectionId(String currentSelectionId) {
 		this.currentSelectionId = currentSelectionId;
 	}
+
+	public static List<JsProperty> convert(List<RuntimeProperty> allProperties) {
+		List<JsProperty> ret = new ArrayList<>();
+		allProperties.forEach(prop -> ret.add(new JsProperty(prop, "")));
+		return ret;
+	}
 	
 }

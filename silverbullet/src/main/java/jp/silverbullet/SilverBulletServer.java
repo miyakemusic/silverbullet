@@ -35,7 +35,7 @@ public abstract class SilverBulletServer {
 			@Override
 			public void onStarted() {
 				StaticInstances.getInstance().getBuilderModels().forEach(builderModel -> {
-					SilverBulletServer.this.onStart(builderModel);
+					onStart(builderModel);
 					builderModel.setSimulators(getSimulators());
 					builderModel.setSourceInfo(getBaseFolderAndPackage());
 					builderModel.setHardwareAccessor(getHardwareAccessor(builderModel));

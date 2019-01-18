@@ -225,7 +225,7 @@ class JsWidget {
 		else {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/design/getProperty?id=" + id + "&index=" + index,
+			   url: "http://" + window.location.host + "/rest/runtime/getProperty?id=" + id + "&index=" + index,
 			   success: function(property){
 			   		if (me.subWidget != null) {
 			   			me.subWidget.updateValue(property);
@@ -254,7 +254,7 @@ class JsWidget {
 		else {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/design/getProperty?id=" + id + '&index=' + me.info.index,
+			   url: "http://" + window.location.host + "/rest/runtime/getProperty?id=" + id + '&index=' + me.info.index,
 			   success: function(property){
 			   		if (me.subWidget != null) {
 			   			me.subWidget.updateLayout(property);

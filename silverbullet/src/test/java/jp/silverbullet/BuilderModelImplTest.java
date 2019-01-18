@@ -93,18 +93,18 @@ public class BuilderModelImplTest {
 		BuilderModelImpl builder2 = new BuilderModelImpl();
 		builder2.load("testFoler");
 		assertEquals("ID_MODE", builder2.getPropertiesHolder2().get("ID_MODE").getId());
-		assertEquals("ID_MODE", builder2.getProperty("ID_MODE").getId());
+		assertEquals("ID_MODE", builder2.getRuntimePropertyStore().get("ID_MODE").getId());
 		
 		builder.saveParameters("param");
 		
 		builder.getSequencer().requestChange("ID_MODE", "ID_MODE_A");
 		
 		builder.loadParameters("param");
-		assertEquals("ID_MODE_B", builder.getProperty("ID_MODE").getCurrentValue());
+		assertEquals("ID_MODE_B", builder.getRuntimePropertyStore().get("ID_MODE").getCurrentValue());
 		
 		/// test hardware
-		builder.getProperty("ID_MODE").setCurrentValue("ID_MODE_A");
-		builder.getProperty("ID_START").setCurrentValue("ID_START_OFF");
+		builder.getRuntimePropertyStore().get("ID_MODE").setCurrentValue("ID_MODE_A");
+		builder.getRuntimePropertyStore().get("ID_START").setCurrentValue("ID_START_OFF");
 		RegisterAccessorImpl hardware = new RegisterAccessorImpl();
 		builder.setHardwareAccessor(hardware);
 		builder.setRegisterType(RegisterTypeEnum.Hardware);
@@ -116,10 +116,76 @@ public class BuilderModelImplTest {
 		assertEquals(true, hardware.isWritten());
 		
 		builder.changeId("ID_MODE", "ID_NEWMODE");
-		assertEquals("ID_NEWMODE", builder.getProperty("ID_NEWMODE").getId());
+		assertEquals("ID_NEWMODE", builder.getRuntimePropertyStore().get("ID_NEWMODE").getId());
 		assertEquals("ID_NEWMODE", builder.getDependencySpecHolder2().getSpec("ID_NEWMODE").getId());
 		assertEquals("ID_NEWMODE", builder.getUiLayoutHolder().getCurrentUi().getRoot().getChildren().get(0).getId());
 	}
 
 
+	@Test
+	public void testRespondMessage() throws Exception {
+		BuilderModelImpl builder = new BuilderModelImpl();
+		builder.setRegisterType(RegisterTypeEnum.Simulator);
+		PropertyFactory factory = new PropertyFactory();
+
+		builder.getPropertiesHolder2().addProperty(factory.create("ID_MESSAGE", PropertyType2.List).
+				option("ID_MESSAGE_NONE", "", "").option("ID_MESSAGE_ERROR", "ERROR", "").defaultId("ID_MESSAGE_NONE"));
+
+		builder.getDependency().requestChange("ID_MESSAGE", "ID_MESSAGE_ERROR");
+		builder.respondToMessage("ID_MESSAGE", "OK");
+		assertEquals("ID_MESSAGE_NONE", builder.getRuntimePropertyStore().get("ID_MESSAGE").getCurrentValue());
+	}
+	
+	class Sim1 implements RegisterAccessor {
+		@Override
+		public void write(Object regName, List<BitValue> data) {}
+		@Override
+		public long readRegister(Object regName, Object bitName) {
+			return 0;
+		}
+
+		@Override
+		public void clear(Object regName) {	}
+
+		@Override
+		public void addListener(RegisterAccessorListener listener) {}
+
+		@Override
+		public byte[] readRegister(Object regName) {
+			return null;
+		}
+	};
+	class Sim2 implements RegisterAccessor {
+		@Override
+		public void write(Object regName, List<BitValue> data) {}
+		@Override
+		public long readRegister(Object regName, Object bitName) {
+			return 0;
+		}
+
+		@Override
+		public void clear(Object regName) {	}
+
+		@Override
+		public void addListener(RegisterAccessorListener listener) {}
+
+		@Override
+		public byte[] readRegister(Object regName) {
+			return null;
+		}
+	};
+	@Test
+	public void testSimulator() {
+		BuilderModelImpl builder = new BuilderModelImpl();
+		RegisterAccessor sim1;
+		builder.setSimulators(Arrays.asList(sim1 = new Sim1(), new Sim2()));
+		assertEquals(sim1, builder.getSimulator("Sim1"));
+	}
+	
+	@Test
+	public void testSource() {
+		BuilderModelImpl builder = new BuilderModelImpl();
+		builder.setSourceInfo("tmp/src:mypackage");
+		builder.getSourceInfo();
+	}
 }

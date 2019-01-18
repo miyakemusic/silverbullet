@@ -35,12 +35,12 @@ public class DependencySpecResource2 {
 		WebDataConverter converter = new WebDataConverter(holder, new PropertyGetter() {
 			@Override
 			public RuntimeProperty getProperty(String id) {
-				return StaticInstances.getInstance().getBuilderModel().getProperty(id);
+				return StaticInstances.getInstance().getBuilderModel().getRuntimePropertyStore().get(id);
 			}
 
 			@Override
 			public RuntimeProperty getProperty(String id, int index) {
-				return StaticInstances.getInstance().getBuilderModel().getProperty(RuntimeProperty.createIdText(id, index));
+				return StaticInstances.getInstance().getBuilderModel().getRuntimePropertyStore().get(RuntimeProperty.createIdText(id, index));
 			}			
 		});
 		return converter.getSpec(id);

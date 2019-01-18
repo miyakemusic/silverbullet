@@ -1,7 +1,9 @@
 class DebugClass {
 	constructor(div) {
-		this.div = div;
-		this.initialize();
+		new PropertyDebug(div);
+		
+//		this.div = div;
+//		this.initialize();
 	}
 	
 	initialize() {

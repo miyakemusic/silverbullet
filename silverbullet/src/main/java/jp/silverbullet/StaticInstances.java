@@ -66,7 +66,7 @@ public class StaticInstances {
 		String info = getBuilderModel(0).getSourceInfo();
 		String folder = info.split(";")[0];
 		String packageName = info.split(";")[1];
-		new PropertySourceGenerator(getBuilderModel().getAllProperties()).generate(folder, packageName);
+		new PropertySourceGenerator(getBuilderModel().getRuntimePropertyStore().getAllProperties()).generate(folder, packageName);
 		new RegisterSourceGenerator(getBuilderModel().getRegisterSpecHolder()).
 			exportFile(folder, packageName);
 	}

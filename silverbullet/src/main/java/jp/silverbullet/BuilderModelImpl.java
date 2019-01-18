@@ -36,7 +36,7 @@ public class BuilderModelImpl {
 	private static final String REGISTERSHORTCUT = "registershortcuts.xml";
 	private static final String DEPENDENCYSPEC3_XML = "dependencyspec3.xml";
 
-	private List<String> selectedId;
+//	private List<String> selectedId;
 	private RuntimePropertyStore store;
 	private Sequencer sequencer;
 	private PropertyHolder2 propertiesHolder2 = new PropertyHolder2();
@@ -151,34 +151,34 @@ public class BuilderModelImpl {
 		
 //		this.setRegisterType(RegisterTypeEnum.Hardware);
 	}
+//
+//	public RuntimeProperty getProperty(String id) {
+//		return store.get(id);
+//	}
 
-	public RuntimeProperty getProperty(String id) {
-		return store.get(id);
-	}
-
-	public List<String> getAllTypes() {
-		return propertiesHolder2.getTypes();
-	}
-
-	public List<RuntimeProperty> getAllProperties() {
-		return store.getAllProperties();
-	}
+//	public List<String> getAllTypes() {
+//		return propertiesHolder2.getTypes();
+//	}
+//
+//	public List<RuntimeProperty> getAllProperties() {
+//		return store.getAllProperties();
+//	}
 	
-	public RuntimePropertyStore getPropertyStore() {
+	public RuntimePropertyStore getRuntimePropertyStore() {
 		return store;
 	}
 
-	public List<RuntimeProperty> getAllProperties(PropertyType2 type) {
-		return store.getAllProperties(type);
-	}
+//	public List<RuntimeProperty> getAllProperties(PropertyType2 type) {
+//		return store.getAllProperties(type);
+//	}
 
-	public List<String> getSelectedIds() {
-		return selectedId;
-	}
+//	public List<String> getSelectedIds() {
+//		return selectedId;
+//	}
 
-	public List<String> getIds(PropertyType2 type) {
-		return store.getIds(type);
-	}
+//	public List<String> getIds(PropertyType2 type) {
+//		return store.getIds(type);
+//	}
 		
 	public void load(String folder) {
 
@@ -298,12 +298,12 @@ public class BuilderModelImpl {
 
 	
 	public void saveParameters(String filename) {
-		this.getPropertyStore().save(filename);
+		this.getRuntimePropertyStore().save(filename);
 	}
 
 	
 	public void loadParameters(String filename) {
-		List<IdValue> changedIds = this.getPropertyStore().load(filename).idValue;
+		List<IdValue> changedIds = this.getRuntimePropertyStore().load(filename).idValue;
 
 		try {
 			this.dependency.requestChanges(changedIds);
@@ -396,6 +396,15 @@ public class BuilderModelImpl {
 
 	public void setHardwareAccessor(RegisterAccessor hardwareAccessor2) {
 		this.hardwareAccessor = hardwareAccessor2;
+	}
+
+	public void respondToMessage(String id, String type) {
+		String defaultVal = getPropertiesHolder2().get(id).getDefaultId();
+		try {
+			getDependency().requestChange(id, defaultVal);
+		} catch (RequestRejectedException e) {
+			e.printStackTrace();
+		}
 	}
 	
 }

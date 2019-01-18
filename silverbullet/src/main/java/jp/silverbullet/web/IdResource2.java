@@ -68,7 +68,8 @@ public class IdResource2 {
 	@Path("/properties")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public JsonTable test(@QueryParam("type") final String type) {
-		return new WebTableConverter(StaticInstances.getInstance().getBuilderModel().getPropertiesHolder2()).createIdTable(PropertyType2.valueOf(type));
+		return new WebTableConverter(StaticInstances.getInstance().getBuilderModel().getPropertiesHolder2()).
+				createIdTable(PropertyType2.valueOf(type));
 	}
 
 	@GET

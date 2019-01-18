@@ -195,14 +195,18 @@ class JsMessageBox extends JsSubWidget {
 	
 	updateValue(property) {
 		$('#' + this.contentId).text(property.currentValue);
-		$('#' + this.dialogId).dialog('open');
+		if (property.currentValue == '') {
+			$('#' + this.dialogId).dialog('close');
+		}
+		else {
+			$('#' + this.dialogId).dialog('open');
+		}
 	}
 	
 	updateLayout(property) {
 		$('#' + this.baseId).empty();
 		this.dialogId = 'dialog' + this.baseId;
-		this.contentId = 'dialogcontent' + this.baseId;
-		
+		this.contentId = 'dialogcontent' + this.baseId;	
 		
 		$('#' + this.baseId).append('<label id="' + this.tmpId + '">Message (' + property.id + ')</label>');
 		$('#' + this.baseId).append('<div id="' + this.dialogId + '"><div id="' + this.contentId + '"></div></div>');
@@ -214,6 +218,13 @@ class JsMessageBox extends JsSubWidget {
 			  buttons: {
 			    "OK": function(){
 			      $(this).dialog('close');
+					$.ajax({
+					   type: "GET", 
+					   url: "http://" + window.location.host + "/rest/runtime/respondMessage?id=" + property.id + "&type=OK",
+					   success: function(msg){
+					   		//me.createWidget(msg.parent, msg);
+					   }
+					});				      
 			    }
 			  },
 			width: 400,
@@ -408,7 +419,7 @@ class JsChartCanvasJs extends JsSubWidget {
 		if (property.currentValue == 'REQUEST_AGAIN') {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/design/getProperty?id=" + me.info.id + '&index=' + me.info.index + '&ext=1001',
+			   url: "http://" + window.location.host + "/rest/runtime/getProperty?id=" + me.info.id + '&index=' + me.info.index + '&ext=1001',
 			   success: function(property){
 			   		if (property == null) {
 			   			return;
@@ -461,7 +472,7 @@ class JsChart extends JsSubWidget {
 		if (property.currentValue == 'REQUEST_AGAIN') {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/design/getProperty?id=" + me.info.id + '&index=' + me.info.id + + '&ext=501',
+			   url: "http://" + window.location.host + "/rest/runtime/getProperty?id=" + me.info.id + '&index=' + me.info.id + + '&ext=501',
 			   success: function(property){
 			   		if (property.currentValue != null) {
 						me.updateChart(property);

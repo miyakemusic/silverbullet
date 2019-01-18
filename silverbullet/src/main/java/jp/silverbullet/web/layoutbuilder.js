@@ -203,7 +203,7 @@ class LayoutBuilder {
 			function(id, index, value) {
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/design/setValue?id="+id + "&index=" + index + "&value=" + value,
+				   url: "http://" + window.location.host + "/rest/runtime/setValue?id="+id + "&index=" + index + "&value=" + value,
 				   success: function(msg){
 						me.debugCallback(msg.debugLog);
 						if (msg.result == 'Rejected') {
