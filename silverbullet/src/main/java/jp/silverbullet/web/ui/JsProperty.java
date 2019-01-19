@@ -54,6 +54,9 @@ public class JsProperty {
 					e.printStackTrace();
 				} catch (IOException e) {
 					e.printStackTrace();
+				} catch (NumberFormatException e) {
+					e.printStackTrace();
+					System.out.println(property.getId());
 				}
 			}
 		}

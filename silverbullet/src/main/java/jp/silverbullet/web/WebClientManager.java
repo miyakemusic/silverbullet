@@ -118,9 +118,7 @@ public class WebClientManager {
 			}
 
 			@Override
-			public void onUpdate(Object regName, byte[] image) {
-				// TODO Auto-generated method stub
-				
+			public void onUpdate(Object regName, byte[] image) {				
 			}
 
 			@Override
@@ -148,7 +146,6 @@ public class WebClientManager {
 					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("TEST", "TestFinished"));
 					WebSocketBroadcaster.getInstance().sendMessage(str);
 				} catch (JsonProcessingException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				
@@ -159,15 +156,11 @@ public class WebClientManager {
 			}
 
 			@Override
-			public void onAdd(String string) {
-				// TODO Auto-generated method stub
-				
+			public void onAdd(String string) {				
 			}
 
 			@Override
-			public void onUpdate() {
-				// TODO Auto-generated method stub
-				
+			public void onUpdate() {				
 			}
 		});
 	}

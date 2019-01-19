@@ -13,4 +13,6 @@ public interface RegisterAccessor {
 	void addListener(RegisterAccessorListener listener);
 
 	byte[] readRegister(Object regName);
+
+	void write(Object regName, Object bitName, int value);
 }

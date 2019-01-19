@@ -1,5 +1,6 @@
 package jp.silverbullet.register2;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class RuntimeRegisterHolder {
@@ -56,6 +57,11 @@ public class RuntimeRegisterHolder {
 		@Override
 		public byte[] readRegister(Object regName) {
 			return registerAccessor.readRegister(regName);
+		}
+
+		@Override
+		public void write(Object regName, Object bitName, int value) {
+			write(regName, Arrays.asList(new BitValue(bitName, value)));
 		}
 	
 	};

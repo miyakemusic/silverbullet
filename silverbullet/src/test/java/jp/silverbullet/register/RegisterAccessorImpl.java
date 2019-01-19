@@ -57,4 +57,9 @@ public class RegisterAccessorImpl implements RegisterAccessor {
 		return cleared;
 	}
 
+	@Override
+	public void write(Object regName, Object bitName, int value) {
+		this.written = true;
+	}
+
 }

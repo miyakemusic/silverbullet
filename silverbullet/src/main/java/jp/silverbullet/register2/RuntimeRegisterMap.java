@@ -1,5 +1,6 @@
 package jp.silverbullet.register2;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -62,8 +63,10 @@ public class RuntimeRegisterMap implements RegisterAccessor, RegisterAccessorLis
 	}
 
 	private void storeValue(Object regName, Object bitName, int value) {
-		this.registerValue.set(regName.toString(), bitName.toString(), value);
-		this.listeners.forEach(listener -> listener.onUpdate(regName, bitName, value));
+		if (this.registerValue.get(regName.toString(), bitName.toString()) != value) {
+			this.registerValue.set(regName.toString(), bitName.toString(), value);
+			this.listeners.forEach(listener -> listener.onUpdate(regName, bitName, value));
+		}
 	}
 
 	@Override
@@ -146,6 +149,11 @@ public class RuntimeRegisterMap implements RegisterAccessor, RegisterAccessorLis
 
 	public RegisterController getRegisterController() {
 		return (RegisterController)this.devices.get(DeviceType.CONTROLLER);
+	}
+
+	@Override
+	public void write(Object regName, Object bitName, int value) {
+		this.write(regName, Arrays.asList(new BitValue(bitName, value)));
 	}
 
 }

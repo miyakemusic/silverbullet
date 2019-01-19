@@ -52,4 +52,10 @@ public class RegisterController implements RegisterAccessor {
 	public void triggerInterrupt() {
 		listeners.forEach(listener -> listener.onInterrupt());
 	}
+
+	@Override
+	public void write(Object regName, Object bitName, int value) {
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -17,9 +17,15 @@ public 	class RuntimeRegister<T> {
 	}
 
 	public long read(T bit) {
-		return accessor.readRegister(this.getRegName(), bit.toString());
+		return accessor.readRegister(this.getRegName(), bit);
 	}
 
+	public long readAndReset(T bit) {
+		long ret = this.read(bit);
+		this.accessor.write(this.getRegName(), bit, 0x00);
+		return ret;
+	}
+	
 	public void write() {
 		accessor.write(this.getRegName(), cache);
 		cache.clear();

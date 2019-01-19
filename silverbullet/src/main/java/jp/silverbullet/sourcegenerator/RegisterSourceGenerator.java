@@ -15,12 +15,10 @@ import jp.silverbullet.register2.RegisterSpecHolder;
 public class RegisterSourceGenerator {
 
 	private RegisterSpecHolder holder;
-//	private String packageName;
 	private String className;
 
 	public RegisterSourceGenerator(RegisterSpecHolder holder) {
 		this.holder = holder;
-//		this.packageName = packageName;
 		this.className = "UserRegister";
 	}
 

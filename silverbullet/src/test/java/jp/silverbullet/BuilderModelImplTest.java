@@ -62,6 +62,11 @@ public class BuilderModelImplTest {
 			public byte[] readRegister(Object regName) {
 				return null;
 			}
+
+			@Override
+			public void write(Object regName, Object bitName, int value) {
+				written = regName;
+			}
 			
 		});
 		builder.getSequencer().addUserSequencer(new UserSequencer() {
@@ -154,6 +159,8 @@ public class BuilderModelImplTest {
 		public byte[] readRegister(Object regName) {
 			return null;
 		}
+		@Override
+		public void write(Object regName, Object bitName, int value) {}
 	};
 	class Sim2 implements RegisterAccessor {
 		@Override
@@ -173,6 +180,8 @@ public class BuilderModelImplTest {
 		public byte[] readRegister(Object regName) {
 			return null;
 		}
+		@Override
+		public void write(Object regName, Object bitName, int value) {}
 	};
 	@Test
 	public void testSimulator() {

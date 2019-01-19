@@ -91,7 +91,9 @@ class DependencyClass2 {
 				
 		$.ajax({
 		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/dependencySpec2/getIds",
+//		   url: "http://" + window.location.host + "/rest/dependencySpec2/getIds",
+		   url: "http://" + window.location.host + "/rest/id2/ids",
+
 		   success: function(msg) {
 		   		for (var i = 0; i < msg.length; i++) {
 					var id = msg[i];

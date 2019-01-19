@@ -2,6 +2,7 @@ package jp.silverbullet.web;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -91,5 +92,11 @@ public class IdResource2 {
 	public List<String> getTypeNames() {
 		return StaticInstances.getInstance().getBuilderModel().getPropertiesHolder2().getTypes();
 	}
-	
+
+	@GET
+	@Path("/ids")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public Set<String> getIds() {
+		return StaticInstances.getInstance().getBuilderModel().getPropertiesHolder2().getAllIds(PropertyType2.NotSpecified);
+	}
 }
