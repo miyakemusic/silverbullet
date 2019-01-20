@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import jp.silverbullet.BuilderModelImpl.RegisterTypeEnum;
 import jp.silverbullet.dependency2.ChangedItemValue;
+import jp.silverbullet.dependency2.DependencySpec;
 import jp.silverbullet.dependency2.RequestRejectedException;
 import jp.silverbullet.property2.PropertyFactory;
 import jp.silverbullet.property2.PropertyHolder2;
@@ -38,6 +39,11 @@ public class BuilderModelImplTest {
 				option("ID_MODE_A", "A", "").option("ID_MODE_B", "B", "").defaultId("ID_MODE_A"));
 		builder.getPropertiesHolder2().addProperty(factory.create("ID_START", PropertyType2.List).
 				option("ID_START_OFF", "OFF", "").option("ID_START_ON", "ON", "").defaultId("ID_START_OFF"));
+		builder.getPropertiesHolder2().addProperty(factory.create("ID_PRODUCT", PropertyType2.List).
+				option("ID_PRODUCT_A", "A", "").option("ID_PRODUCT_B", "B", "").defaultId("ID_PRODUCT_A"));
+		builder.getPropertiesHolder2().addProperty(factory.create("ID_PRODUCT2", PropertyType2.List).
+				option("ID_PRODUCT2_A", "A", "").option("ID_PRODUCT2_B", "B", "").defaultId("ID_PRODUCT2_A"));
+
 		
 		builder.getRuntimRegisterMap().addDevice(DeviceType.HARDWARE, new RegisterAccessor() {
 			@Override
@@ -84,7 +90,13 @@ public class BuilderModelImplTest {
 		UiLayout layout = builder.getUiLayoutHolder().createNewFile("newUi.ui");
 		builder.getUiLayoutHolder().switchFile("newUi.ui");
 		layout.addWidget(layout.root.getUniqueText(), Arrays.asList("ID_MODE"));
-		builder.getDependencySpecHolder2().newSpec("ID_START").addValue("ID_START_ON", "$ID_MODE==%ID_MODE_B");
+		builder.getDependencySpecHolder2().newSpec("ID_START").
+			addValue("ID_START_ON", "$ID_MODE==%ID_MODE_B");
+		builder.getDependencySpecHolder2().newSpec("ID_PRODUCT").
+			addOptionEnabled("ID_PRODUCT_A", DependencySpec.True, "$ID_PRODUCT==%ID_PRODUCT_A", "$ID_PRODUCT==%ID_PRODUCT_B");
+		builder.getDependencySpecHolder2().newSpec("ID_PRODUCT2").
+			addOptionEnabled("ID_PRODUCT2_A", DependencySpec.True, "$ID_PRODUCT2==%ID_PRODUCT2_A", "$ID_PRODUCT2==%ID_PRODUCT2_B");
+
 		try {
 			builder.getSequencer().requestChange("ID_MODE", "ID_MODE_B");
 		} catch (RequestRejectedException e) {
@@ -120,13 +132,57 @@ public class BuilderModelImplTest {
 		}
 		assertEquals(true, hardware.isWritten());
 		
+		// Test ID edited
+		assertEquals("$ID_MODE==%ID_MODE_B", builder.getDependencySpecHolder2().getSpec("ID_START").getExpression(DependencySpec.Value).get(0).getTrigger());
+
+		builder.getTestRecorder().addPropertyCommand("ID_MODE");
+		builder.getTestRecorder().addPropertyCommand("ID_PRODUCT");
+		builder.getTestRecorder().addPropertyCommand("ID_PRODUCT2");
+		
+		builder.getPropertiesHolder2().addProperty(factory.create("ID_MODE", PropertyType2.List).
+				option("ID_MODE_A", "A", "").option("ID_MODE_B", "B", "").defaultId("ID_MODE_A"));
 		builder.changeId("ID_MODE", "ID_NEWMODE");
+				
 		assertEquals("ID_NEWMODE", builder.getRuntimePropertyStore().get("ID_NEWMODE").getId());
-		assertEquals("ID_NEWMODE", builder.getDependencySpecHolder2().getSpec("ID_NEWMODE").getId());
+		assertEquals("ID_NEWMODE_A", builder.getRuntimePropertyStore().get("ID_NEWMODE").getOptionIds().get(0));
+		assertEquals("ID_NEWMODE_B", builder.getRuntimePropertyStore().get("ID_NEWMODE").getOptionIds().get(1));
+
 		assertEquals("ID_NEWMODE", builder.getUiLayoutHolder().getCurrentUi().getRoot().getChildren().get(0).getId());
+		
+		
+		// lil bit complex condition
+		{
+			DependencySpec spec = builder.getDependencySpecHolder2().getSpec("ID_PRODUCT2");
+			assertEquals("ID_PRODUCT2", spec.getId());
+			assertEquals("$ID_PRODUCT2==%ID_PRODUCT2_A", spec.getExpression("ID_PRODUCT2_A").get(0).getTrigger());
+			assertEquals("$ID_PRODUCT2==%ID_PRODUCT2_B", spec.getExpression("ID_PRODUCT2_A").get(0).getCondition());
+
+			assertEquals("ID_PRODUCT", builder.getTestRecorder().getScript(1).getTarget());
+			assertEquals("ID_PRODUCT_A", builder.getTestRecorder().getScript(1).getValue());
+			assertEquals("ID_PRODUCT2", builder.getTestRecorder().getScript(2).getTarget());
+			assertEquals("ID_PRODUCT2_A", builder.getTestRecorder().getScript(2).getValue());
+		}
+		builder.changeId("ID_PRODUCT", "ID_NEWPRODUCT");
+		{
+			DependencySpec spec = builder.getDependencySpecHolder2().getSpec("ID_NEWPRODUCT");
+			assertEquals("ID_NEWPRODUCT", spec.getId());
+			assertEquals("$ID_NEWPRODUCT==%ID_NEWPRODUCT_A", spec.getExpression("ID_NEWPRODUCT_A").get(0).getTrigger());
+			assertEquals("$ID_NEWPRODUCT==%ID_NEWPRODUCT_B", spec.getExpression("ID_NEWPRODUCT_A").get(0).getCondition());
+		}
+		{ // dont affect this condition
+			DependencySpec spec = builder.getDependencySpecHolder2().getSpec("ID_PRODUCT2");
+			assertEquals("ID_PRODUCT2", spec.getId());
+			assertEquals("$ID_PRODUCT2==%ID_PRODUCT2_A", spec.getExpression("ID_PRODUCT2_A").get(0).getTrigger());
+			assertEquals("$ID_PRODUCT2==%ID_PRODUCT2_B", spec.getExpression("ID_PRODUCT2_A").get(0).getCondition());
+		}
+		assertEquals("ID_NEWMODE", builder.getTestRecorder().getScript(0).getTarget());
+		assertEquals("ID_NEWMODE_B", builder.getTestRecorder().getScript(0).getValue());
+		assertEquals("ID_NEWPRODUCT", builder.getTestRecorder().getScript(1).getTarget());
+		assertEquals("ID_NEWPRODUCT_A", builder.getTestRecorder().getScript(1).getValue());
+		assertEquals("ID_PRODUCT2", builder.getTestRecorder().getScript(2).getTarget());
+		assertEquals("ID_PRODUCT2_A", builder.getTestRecorder().getScript(2).getValue());
 	}
-
-
+	
 	@Test
 	public void testRespondMessage() throws Exception {
 		BuilderModelImpl builder = new BuilderModelImpl();

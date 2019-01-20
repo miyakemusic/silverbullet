@@ -1,5 +1,7 @@
 package jp.silverbullet.dependency2;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Expression implements Cloneable {
@@ -18,7 +20,7 @@ public class Expression implements Cloneable {
 	}
 
 	public boolean qualifies(String id) {
-		return IdCollector.collectIds(this.trigger).contains(id);
+		return IdUtility.collectIds(this.trigger).contains(id);
 	}
 
 	public String getTrigger() {
@@ -73,5 +75,12 @@ public class Expression implements Cloneable {
 		}
 		return null;
 	}
+
+	public void changeId(String prevId, String newId) {
+		this.condition = IdUtility.replaceId(this.condition, prevId, newId);
+		this.trigger = IdUtility.replaceId(this.trigger, prevId, newId);
+		this.value =IdUtility.replaceId(this.value, prevId, newId);	
+	}
+
 	
 }

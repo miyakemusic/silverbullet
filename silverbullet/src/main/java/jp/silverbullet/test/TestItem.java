@@ -2,6 +2,8 @@ package jp.silverbullet.test;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jp.silverbullet.dependency2.IdUtility;
+
 public class TestItem {
 
 	public static final String TYPE_PROPERTY = "PROPERTY";
@@ -82,6 +84,23 @@ public class TestItem {
 	@Override
 	public String toString() {
 		return this.type + "." + this.target + "." + this.expected + "." + this.value;
+	}
+	public void changeId(String prevId, String newId) {
+		this.value = replaceOption(this.value, prevId, newId);//IdChanger.replaceId(this.value, prevId, newId);
+		this.expected = replaceOption(this.expected, prevId, newId);
+		this.target = replaceId(this.target, prevId, newId);
+	}
+	private String replaceId(String target2, String prevId, String newId) {
+		if (target2.equals(prevId)) {
+			return newId;
+		}
+		return target2;
+	}
+	private String replaceOption(String text, String prevId, String newId) {
+		if (IdUtility.isValidOption(prevId, text)) {
+			return text.replace(prevId, newId);
+		}
+		return text;
 	}
 
 }

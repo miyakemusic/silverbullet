@@ -120,8 +120,19 @@ public class DependencySpecHolder {
 	}
 
 	public void changeId(String prevId, String newId) {
-		// TODO Auto-generated method stub
+		// change id
+		if (this.specs.keySet().contains(prevId)) {
+			DependencySpec spec = this.specs.get(prevId);
+			this.specs.remove(prevId);
+			spec.setId(newId);
+			this.specs.put(newId, spec);
+		}
 		
+		// change trigger/conditions
+		for (String id : this.specs.keySet()) {
+			DependencySpec spec = this.specs.get(id);
+			spec.changeId(prevId, newId);
+		}
 	}
 
 	public DependencySpec newSpec(String id) {

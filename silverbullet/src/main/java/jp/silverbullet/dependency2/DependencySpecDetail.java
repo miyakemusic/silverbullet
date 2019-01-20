@@ -64,6 +64,10 @@ public class DependencySpecDetail {
 			this.expressions.getExpressions(toTargetElement).add(exp.clone());
 		}
 	}
+
+	public void changeId(String prevId, String newId) {
+		this.expressions.changeId(prevId, newId);	
+	}
 	
 
 }

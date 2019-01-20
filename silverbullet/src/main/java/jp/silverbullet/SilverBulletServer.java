@@ -1,6 +1,5 @@
 package jp.silverbullet;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import jp.silverbullet.register2.RegisterAccessor;
@@ -11,11 +10,10 @@ import jp.silverbullet.web.WebClientManager;
 
 public abstract class SilverBulletServer {
 
-	private BuilderServer webServer;
 	public void start(String port) {
 		String filename = getDefaultFilename();
 		
-		StaticInstances.getInstance().createInstances(getInstanceCount());
+		StaticInstances.getInstance().createInstances(getInstanceCount(), Thread.currentThread().getId());
 		StaticInstances.getInstance().load(filename);
 
 		startWebServer(Integer.valueOf(port));
@@ -27,11 +25,15 @@ public abstract class SilverBulletServer {
 	protected abstract String getBaseFolderAndPackage();
 	protected abstract RegisterAccessor getHardwareAccessor(BuilderModelImpl model);
 	protected abstract List<UserSequencer> getUserSequencers(BuilderModelImpl model);
-	protected abstract int getInstanceCount();
+
+	protected int getInstanceCount() {
+		// currently only one instance is supported
+		return 1;
+	}
 	
 	protected void startWebServer(Integer port) {
 		new WebClientManager();
-		webServer = new BuilderServer(port, new BuilderServerListener() {
+		new BuilderServer(port, new BuilderServerListener() {
 			@Override
 			public void onStarted() {
 				StaticInstances.getInstance().getBuilderModels().forEach(builderModel -> {

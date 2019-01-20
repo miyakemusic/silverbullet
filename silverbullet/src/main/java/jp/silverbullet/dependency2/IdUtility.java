@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class IdCollector {
+public class IdUtility {
 
 	public static final String ID_SPLIT_CHARS = "[\\<>\\[\\]+/\\-=\\s();\\|!]";
 
@@ -53,5 +53,27 @@ public class IdCollector {
 			
 		});
 		return list;
+	}
+	public static String replaceId(String expression, String prevId, String newId) {
+		for (String option : IdUtility.collectSelectionIds(expression)) {
+			if (isValidOption(prevId, option)) {
+				expression = expression.replace(prevId, newId);
+			}
+		}
+		if (IdUtility.collectIds(expression).contains(prevId)) {
+			expression = expression.replace(prevId, newId);
+		}
+		return expression;
+	}
+	
+	public static boolean isValidOption(String id, String optionId) {
+		String[] array_opt = optionId.split("_");
+		String[] array_id = id.split("_");
+		for (int i = 0; i < array_id.length; i++) {
+			if (!array_id[i].equals(array_opt[i])) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

@@ -294,6 +294,7 @@ public class BuilderModelImpl {
 		this.propertiesHolder2.get(prevId).setId(newId);
 		this.dependencySpecHolder2.changeId(prevId, newId);
 		this.uiLayoutHolder.changeId(prevId, newId);
+		this.testRecorder.changeId(prevId, newId);
 	}
 
 	
@@ -406,5 +407,5 @@ public class BuilderModelImpl {
 			e.printStackTrace();
 		}
 	}
-	
+
 }

@@ -56,7 +56,7 @@ public class DependencySpecAnalyzer {
 		List<Expression> expressions = spec.getExpression(targetElement);
 		Set<String> ids = new HashSet<>();
 		for (Expression expression : expressions) {
-			ids.addAll(IdCollector.collectIds(expression.getTrigger()));
+			ids.addAll(IdUtility.collectIds(expression.getTrigger()));
 		}
 		
 		dependencyNode.addParents(targetElement, ids);

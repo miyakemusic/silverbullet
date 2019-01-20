@@ -28,11 +28,6 @@ public class StaticInstances {
 		return builderModels.get(index);
 	}
 
-	private StaticInstances() {
-//		builderModel = new BuilderModelImpl();
-	}
-
-
 	public void save() {
 		createTmpFolderIfNotExists();
 		getBuilderModel(0).save(StaticInstances.TMP_FOLDER);
@@ -71,9 +66,10 @@ public class StaticInstances {
 			exportFile(folder, packageName);
 	}
 
-	public void createInstances(int instanceCount) {
+	public void createInstances(int instanceCount, long mainThreadId) {
 		for (int i = 0; i < instanceCount; i++) {
-			this.builderModels.add(new BuilderModelImpl());
+			BuilderModelImpl builderModel = new BuilderModelImpl();
+			this.builderModels.add(builderModel);
 		}
 	}
 

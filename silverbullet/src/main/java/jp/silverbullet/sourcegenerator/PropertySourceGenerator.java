@@ -37,7 +37,10 @@ public class PropertySourceGenerator {
 		lines.add("}");
 		try {
 			String path2 = baseFolder + "/" + packageName.replace(".", "/");
-			Files.write(Paths.get(path2 + "/ID.java"), lines, StandardCharsets.UTF_8);
+			if (!Files.exists(Paths.get(path2))) {
+				Files.createDirectories(Paths.get(path2));
+			}
+ 			Files.write(Paths.get(path2 + "/ID.java"), lines, StandardCharsets.UTF_8);
 			
 			Files.write(Paths.get(path2 + "/UserEasyAccess.java"), generateSimple(packageName), StandardCharsets.UTF_8);
 		} catch (IOException e) {
@@ -64,42 +67,12 @@ public class PropertySourceGenerator {
 			boolean array = prop.getSize() > 1;
 			if (prop.isNumericProperty() && prop.getDecimals() > 0) {
 				source.addAll(this.createSource(prop, "Double"));
-//				source.add("    public void set" + getMethodName(prop.getId()) + "(double value) throws RequestRejectedException {");
-//				source.add("        model.requestChange(ID." + prop.getId() + ", String.valueOf(value));");
-//				source.add("    }");
-//				source.add("    public double get" + getMethodName(prop.getId()) + "() {");
-//				source.add("        return Double.valueOf(model.getProperty(ID." + prop.getId() + ").getCurrentValue());");
-//				source.add("    }");
-//				if (array) {
-//					source.add("    public void set" + getMethodName(prop.getId()) + "(double value, int index) throws RequestRejectedException {");
-//					source.add("        model.requestChange(ID." + prop.getId() + ", index, String.valueOf(value));");
-//					source.add("    }");
-//	
-//				}
 			}
 			else if (prop.isNumericProperty() && prop.getDecimals() == 0) {
 				source.addAll(this.createSource(prop, "Long"));
-//				source.add("    public void set" + getMethodName(prop.getId()) + "(long value) throws RequestRejectedException {");
-//				source.add("        model.requestChange(ID." + prop.getId() + ", String.valueOf(value));");
-//				source.add("    }");
-//				source.add("    public long get" + getMethodName(prop.getId()) + "() {");
-//				source.add("        return Long.valueOf(model.getProperty(ID." + prop.getId() + ").getCurrentValue());");
-//				source.add("    }");
-//				if (array) {
-//					source.add("    public void set" + getMethodName(prop.getId()) + "(long value, int index) throws RequestRejectedException {");
-//					source.add("        model.requestChange(ID." + prop.getId() + ", index, String.valueOf(value));");
-//					source.add("    }");
-//
-//				}
 			}
 			else if (prop.isText() || prop.isTable()) {
 				source.addAll(this.createSource(prop, "String"));
-//				source.add("    public void set" + getMethodName(prop.getId()) + "(String value" + ") throws RequestRejectedException {");
-//				source.add("        model.requestChange(ID." + prop.getId() + ", value);");
-//				source.add("    }");
-//				source.add("    public String get" + getMethodName(prop.getId()) + "() {");
-//				source.add("        return model.getProperty(ID." + prop.getId() + ").getCurrentValue();");
-//				source.add("    }");	
 			}
 			else if (prop.isList()) {
 				String methodName = this.getMethodName(prop.getId());
@@ -124,9 +97,6 @@ public class PropertySourceGenerator {
 			}
 			else if (prop.isBoolean()) {
 				source.addAll(this.createSource(prop, "Boolean"));
-//				source.add("    public void set" + getMethodName(prop.getId()) + "(boolean value" + ") throws RequestRejectedException {");
-//				source.add("        model.requestChange(ID." + prop.getId() + ", value);");
-//				source.add("    }");
 			}
 		}
 		source.add("}");

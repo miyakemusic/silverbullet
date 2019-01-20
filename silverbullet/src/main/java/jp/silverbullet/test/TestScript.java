@@ -88,5 +88,10 @@ public class TestScript {
 			}
 		};
 	}
+	public void changeId(String prevId, String newId) {
+		for (TestItem testItem : this.script) {
+			testItem.changeId(prevId, newId);
+		}
+	}
 	
 }

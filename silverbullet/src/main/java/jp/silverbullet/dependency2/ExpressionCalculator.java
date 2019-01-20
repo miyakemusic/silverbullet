@@ -13,7 +13,7 @@ public abstract class ExpressionCalculator {
 	abstract protected RuntimeProperty getProperty(String id);
 	
 	private ScriptEngine scriptEngine = new ScriptEngineManager().getEngineByName("JavaScript");
-	private IdCollector idCollector = new IdCollector();
+	private IdUtility idCollector = new IdUtility();
 	
 	public boolean isSatisfied(String expression) {
 		expression = replaceWithRealValue(expression);

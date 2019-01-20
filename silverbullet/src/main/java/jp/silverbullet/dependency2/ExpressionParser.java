@@ -12,8 +12,8 @@ public class ExpressionParser {
 			elseCondition = true;
 			return;
 		}
-		id = IdCollector.collectIds(expression).get(0);
-		value = IdCollector.collectSelectionIds(expression).get(0);
+		id = IdUtility.collectIds(expression).get(0);
+		value = IdUtility.collectSelectionIds(expression).get(0);
 		
 		if (expression.contains("==")) {
 			equal = true;

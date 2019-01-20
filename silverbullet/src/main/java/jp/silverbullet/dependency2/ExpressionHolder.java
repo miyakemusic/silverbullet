@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import jp.silverbullet.property2.RuntimeProperty;
+
 public class ExpressionHolder {
 	private Map<String, List<Expression>> expressions = new HashMap<>();
 	
@@ -114,9 +116,9 @@ public class ExpressionHolder {
 		Set<String> ret = new HashSet<>();
 		for (String value : this.expressions.keySet()) {
 			for (Expression expression : this.expressions.get(value)) {
-				ret.addAll(IdCollector.collectIds(expression.getTrigger()));
+				ret.addAll(IdUtility.collectIds(expression.getTrigger()));
 				if (expression.isValueCalculationEnabled()) {
-					ret.addAll(IdCollector.collectIds(expression.getValue()));
+					ret.addAll(IdUtility.collectIds(expression.getValue()));
 				}
 			}
 		}
@@ -153,6 +155,29 @@ public class ExpressionHolder {
 		
 		this.sort(list);
 	}
+
+	public void changeId(String prevId, String newId) {
+		
+		for (String targetElement : this.expressions.keySet()) {
+			if (targetElement.startsWith(DependencySpec.OptionEnable)) {
+				String id = targetElement.replace(DependencySpec.OptionEnable + RuntimeProperty.INDEXSIGN,"");
+				if (IdUtility.isValidOption(prevId, id)) {
+					String value = id.replace(prevId, "");
+					List<Expression> expression = this.expressions.get(targetElement);
+					this.expressions.put(DependencySpec.OptionEnable + RuntimeProperty.INDEXSIGN + newId + value, expression);
+					this.expressions.remove(targetElement);
+				}
+			}
+		}
+		
+		for (List<Expression> expression : this.expressions.values()) {
+			for (Expression exp : expression) {
+				exp.changeId(prevId, newId);
+			}
+		}
+	}
+
+
 
 
 }

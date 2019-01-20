@@ -422,4 +422,8 @@ public class TestRecorder implements SequencerListener, RegisterAccessorListener
 		return this.result.getResult().get(serial);
 	}
 
+	public void changeId(String prevId, String newId) {
+		this.script.changeId(prevId, newId);
+	}
+
 }

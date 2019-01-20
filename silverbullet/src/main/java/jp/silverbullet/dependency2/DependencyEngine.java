@@ -238,7 +238,7 @@ public abstract class DependencyEngine {
 	}
 
 	private String applyIndex(String string, int index) {
-		for (String id : IdCollector.sortByLength(IdCollector.collectIds(string))) {
+		for (String id : IdUtility.sortByLength(IdUtility.collectIds(string))) {
 			string = string.replace("$" + id, "$" + RuntimeProperty.createIdText(id, index));
 		}
 		return string;

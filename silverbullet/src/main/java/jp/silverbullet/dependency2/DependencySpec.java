@@ -61,7 +61,7 @@ public class DependencySpec {
 	}
 		
 	public void addCalculation(String calculation, String condition) {
-		List<String> ids = IdCollector.collectIds(calculation);
+		List<String> ids = IdUtility.collectIds(calculation);
 		for (String id : ids) {
 			this.dependencySpecDetail.addValueCalculation(DependencySpec.Value, calculation, "$" + id + "==" + "$" + id, condition);
 		}		
@@ -152,6 +152,14 @@ public class DependencySpec {
 
 	public void copySpec(String fromTargetElement, String toTargetElement) {
 		this.dependencySpecDetail.copySpec(this.convertTargetElement(fromTargetElement), this.convertTargetElement(toTargetElement));
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public void changeId(String prevId, String newId) {
+		this.dependencySpecDetail.changeId(prevId, newId);
 	}
 
 }

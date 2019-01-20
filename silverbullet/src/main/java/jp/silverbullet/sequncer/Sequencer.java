@@ -1,9 +1,12 @@
 package jp.silverbullet.sequncer;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import javax.swing.SwingUtilities;
 
 import jp.silverbullet.dependency2.CommitListener;
 import jp.silverbullet.dependency2.DependencyEngine;
@@ -16,18 +19,25 @@ import jp.silverbullet.register2.RegisterAccessor;
 
 public abstract class Sequencer {
 	abstract protected RuntimePropertyStore getPropertiesStore();
-//	abstract protected HandlerPropertyHolder getHandlerPropertyHolder();
 	abstract protected DependencyEngine getDependency();
-//	abstract protected String getUserApplicationPath();
 	abstract protected EasyAccessInterface getEasyAccessInterface();
 	abstract protected RegisterAccessor getRegisterAccessor();
-	
-//	private List<AbstractSvHandler> handlers = new ArrayList<>();
 	private Set<SequencerListener> listeners = new HashSet<SequencerListener>();
 	private List<UserSequencer> userSequencers = new ArrayList<>();
-	
-//	private LinkedHashMap<String, List<ChangedItemValue>> history = new LinkedHashMap<>();
 	private List<String> debugDepLog;
+
+	private SvHandlerModel model = new SvHandlerModel() {
+		@Override
+		public RegisterAccessor getRegisterAccessor() {
+			return Sequencer.this.getRegisterAccessor();
+		}
+
+		@Override
+		public EasyAccessInterface getEasyAccessInterface() {
+			return easyAccessInterface;
+		}
+
+	};
 
 	private EasyAccessInterface easyAccessInterface = new EasyAccessInterface() {
 		@Override
@@ -52,11 +62,7 @@ public abstract class Sequencer {
 		}
 		
 	};
-		
-	public Sequencer() {
-		Thread.currentThread().getId();
-	}
-	
+			
 	public void requestChange(String id, String value) throws RequestRejectedException {
 		requestChange(id, 0, value);
 	}
@@ -70,54 +76,58 @@ public abstract class Sequencer {
 		});
 	}
 	
+	RequestRejectedException exception = null;
 	public void requestChange(String id, Integer index, String value, CommitListener commitListener)
 			throws RequestRejectedException {
-		fireRequestChangeByUser(id, value);
-		
-		// resolves dependencies
-		
-		DependencyEngine engine = getDependency();
-		engine.setCommitListener(commitListener);
-		engine.requestChange(new Id(id, index), value);
-		debugDepLog = engine.getDebugLog();
-		
-		List<String> changedIds = engine.getChangedIds();
-
-//		Set<HandlerProperty> toRunHandlers = new LinkedHashSet<>();
-//		for (HandlerProperty handler : getHandlerPropertyHolder().getHandlers()) {
-//			for (String changed : changedIds) {
-//				if (changed.contains(RuntimeProperty.INDEXSIGN)) {
-//					changed = changed.split(RuntimeProperty.INDEXSIGN)[0];
-//				}
-//				if (handler.getIds().contains(changed)) {
-//					toRunHandlers.add(handler);
-//					break;
-//				}
-//			}
+//		
+//		if (!isMainThread(Thread.currentThread().getId())) {
+//			System.out.println("Not main thread");
 //		}
-		
-		SvHandlerModel model = new SvHandlerModel() {
-			@Override
-			public RegisterAccessor getRegisterAccessor() {
-				return Sequencer.this.getRegisterAccessor();
+		exception = null;
+		try {
+			SwingUtilities.invokeAndWait(new Runnable() {
+				@Override
+				public void run() {
+					fireRequestChangeByUser(id, value);
+					
+					// resolves dependencies
+					
+					DependencyEngine engine = getDependency();
+					engine.setCommitListener(commitListener);
+					try {
+						engine.requestChange(new Id(id, index), value);
+					} catch (RequestRejectedException e1) {
+						exception = e1;
+						e1.printStackTrace();
+					}
+					debugDepLog = engine.getDebugLog();
+					
+					List<String> changedIds = engine.getChangedIds();
+						
+					for (UserSequencer us : userSequencers) {
+						if (matches(us.targetIds(), changedIds)) {
+							try {
+								us.handle(model, getDependency().getChagedItems());
+							} catch (RequestRejectedException e) {
+								exception = e;
+								e.printStackTrace();
+							}
+						}
+					}		
+				}
+			});
+			
+			if (exception != null) {
+				throw exception;
 			}
-
-			@Override
-			public EasyAccessInterface getEasyAccessInterface() {
-				return easyAccessInterface;
-			}
-
-		};
-		
-		for (UserSequencer us : this.userSequencers) {
-			if (matches(us.targetIds(), changedIds)) {
-				us.handle(model, getDependency().getChagedItems());
-			}
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-//		for (HandlerProperty handler : toRunHandlers) {
-//			new CommonSvHandler(model, handler).execute(getDependency().getChagedItems());
-//		}
-		
+
 	}
 
 	private boolean matches(List<String> targetIds, List<String> changedIds) {
