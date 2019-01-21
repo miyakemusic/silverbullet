@@ -9,6 +9,8 @@ import javax.xml.bind.JAXBException;
 import jp.silverbullet.dependency2.DependencySpecRebuilder;
 import jp.silverbullet.dependency2.IdValue;
 import jp.silverbullet.dependency2.RequestRejectedException;
+import jp.silverbullet.dependency2.CommitListener.Reply;
+import jp.silverbullet.dependency2.CommitListener;
 import jp.silverbullet.dependency2.DependencyEngine;
 import jp.silverbullet.dependency2.DependencySpecHolder;
 import jp.silverbullet.property2.PropertyHolder2;
@@ -25,6 +27,7 @@ import jp.silverbullet.sequncer.EasyAccessInterface;
 import jp.silverbullet.sequncer.Sequencer;
 import jp.silverbullet.test.TestRecorder;
 import jp.silverbullet.test.TestRecorderInterface;
+import jp.silverbullet.web.ValueSetResult;
 import jp.silverbullet.web.ui.PropertyGetter;
 import jp.silverbullet.web.ui.UiLayout;
 import jp.silverbullet.web.ui.UiLayoutHolder;
@@ -151,35 +154,11 @@ public class BuilderModelImpl {
 		
 //		this.setRegisterType(RegisterTypeEnum.Hardware);
 	}
-//
-//	public RuntimeProperty getProperty(String id) {
-//		return store.get(id);
-//	}
-
-//	public List<String> getAllTypes() {
-//		return propertiesHolder2.getTypes();
-//	}
-//
-//	public List<RuntimeProperty> getAllProperties() {
-//		return store.getAllProperties();
-//	}
 	
 	public RuntimePropertyStore getRuntimePropertyStore() {
 		return store;
 	}
-
-//	public List<RuntimeProperty> getAllProperties(PropertyType2 type) {
-//		return store.getAllProperties(type);
-//	}
-
-//	public List<String> getSelectedIds() {
-//		return selectedId;
-//	}
-
-//	public List<String> getIds(PropertyType2 type) {
-//		return store.getIds(type);
-//	}
-		
+	
 	public void load(String folder) {
 
 		propertiesHolder2.load(folder + "/" + ID_DEF_JSON);
@@ -193,8 +172,6 @@ public class BuilderModelImpl {
 		uiLayoutHolder.load(folder);
 	
 		registerSpecHolder.load(folder);// = load(RegisterSpecHolder.class, folder);
-
-//		createDependencyEngine(dependencySpecHolder2);
 	}
 
 	public void createDependencyEngine() {
@@ -406,6 +383,29 @@ public class BuilderModelImpl {
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public ValueSetResult requestChange(String id, Integer index, String value) {
+		ValueSetResult ret = new ValueSetResult();
+		
+		try {
+			sequencer.requestChange(id, index, value, new CommitListener() {
+				@Override
+				public Reply confirm(String message) {
+					return Reply.Accept;
+				}
+			});
+			getUiLayoutHolder().getCurrentUi().doAutoDynamicPanel();
+
+			ret.result = "Accepted";
+		} catch (RequestRejectedException e) {
+			ret.message = e.getMessage();
+			ret.result = "Rejected";
+		} finally {
+			ret.debugLog = sequencer.getDebugDepLog();		
+		}
+
+		return ret;
 	}
 
 }

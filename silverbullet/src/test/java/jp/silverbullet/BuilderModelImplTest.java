@@ -23,6 +23,7 @@ import jp.silverbullet.register2.RegisterAccessorListener;
 import jp.silverbullet.register2.RuntimeRegisterMap.DeviceType;
 import jp.silverbullet.sequncer.SvHandlerModel;
 import jp.silverbullet.sequncer.UserSequencer;
+import jp.silverbullet.web.ValueSetResult;
 import jp.silverbullet.web.ui.UiLayout;
 
 public class BuilderModelImplTest {
@@ -181,6 +182,13 @@ public class BuilderModelImplTest {
 		assertEquals("ID_NEWPRODUCT_A", builder.getTestRecorder().getScript(1).getValue());
 		assertEquals("ID_PRODUCT2", builder.getTestRecorder().getScript(2).getTarget());
 		assertEquals("ID_PRODUCT2_A", builder.getTestRecorder().getScript(2).getValue());
+		
+		// test from web server
+		builder.getRuntimePropertyStore().get("ID_START").setCurrentValue("ID_START_OFF");
+		ValueSetResult result = builder.requestChange("ID_NEWMODE", 0, "ID_NEWMODE_B");
+		assertEquals("ID_NEWMODE#0:Value:ID_NEWMODE_B", result.debugLog.get(0));
+		assertEquals("ID_START#0:Value:ID_START_ON", result.debugLog.get(1));
+		
 	}
 	
 	@Test

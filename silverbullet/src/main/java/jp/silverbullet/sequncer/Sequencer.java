@@ -83,50 +83,32 @@ public abstract class Sequencer {
 //		if (!isMainThread(Thread.currentThread().getId())) {
 //			System.out.println("Not main thread");
 //		}
-		exception = null;
+		fireRequestChangeByUser(id, value);
+		
+		// resolves dependencies
+		
+		DependencyEngine engine = getDependency();
+		engine.setCommitListener(commitListener);
 		try {
-			SwingUtilities.invokeAndWait(new Runnable() {
-				@Override
-				public void run() {
-					fireRequestChangeByUser(id, value);
-					
-					// resolves dependencies
-					
-					DependencyEngine engine = getDependency();
-					engine.setCommitListener(commitListener);
-					try {
-						engine.requestChange(new Id(id, index), value);
-					} catch (RequestRejectedException e1) {
-						exception = e1;
-						e1.printStackTrace();
-					}
-					debugDepLog = engine.getDebugLog();
-					
-					List<String> changedIds = engine.getChangedIds();
-						
-					for (UserSequencer us : userSequencers) {
-						if (matches(us.targetIds(), changedIds)) {
-							try {
-								us.handle(model, getDependency().getChagedItems());
-							} catch (RequestRejectedException e) {
-								exception = e;
-								e.printStackTrace();
-							}
-						}
-					}		
-				}
-			});
-			
-			if (exception != null) {
-				throw exception;
-			}
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			engine.requestChange(new Id(id, index), value);
+		} catch (RequestRejectedException e1) {
+			exception = e1;
+			e1.printStackTrace();
 		}
+		debugDepLog = engine.getDebugLog();
+		
+		List<String> changedIds = engine.getChangedIds();
+			
+		for (UserSequencer us : userSequencers) {
+			if (matches(us.targetIds(), changedIds)) {
+				try {
+					us.handle(model, getDependency().getChagedItems());
+				} catch (RequestRejectedException e) {
+					exception = e;
+					e.printStackTrace();
+				}
+			}
+		}	
 
 	}
 
