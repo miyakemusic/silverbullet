@@ -308,16 +308,18 @@ public abstract class DependencyEngine {
 		int limit = Math.max(listIds.size() - currentIndex, currentIndex);
 		for (int width = 1; width < limit; width++) {
 			int index = currentIndex + width;
-			//if (canSelect(index, listIds, property.getListMask())) {
-			if (!property.isOptionDisabled(index)) {
-				property.setCurrentValue(listIds.get(index));
-				return;
+			if (index < listIds.size()) {
+				if (!property.isOptionDisabled(index)) {
+					property.setCurrentValue(listIds.get(index));
+					return;
+				}
 			}
 			index = currentIndex - width;
-			//if (canSelect(index, listIds, property.getListMask())) {
-			if (!property.isOptionDisabled(index)) {
-				property.setCurrentValue(listIds.get(index));
-				return;
+			if (index >= 0) {
+				if (!property.isOptionDisabled(index)) {
+					property.setCurrentValue(listIds.get(index));
+					return;
+				}
 			}
 		}
 	}

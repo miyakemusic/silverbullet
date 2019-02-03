@@ -742,4 +742,74 @@ public class DependencySpecTest {
 			e.printStackTrace();
 		}
 	}
+	
+	@Test
+	public void test() {
+		PropertyStoreForTest store = new PropertyStoreForTest();
+		store.addListProperty("ID_DIST", Arrays.asList("ID_DIST_1", "ID_DIST_2", "ID_DIST_3", "ID_DIST_4", "ID_DIST_5", "ID_DIST_6"), "ID_DIST_1");
+		store.addListProperty("ID_PULSE", Arrays.asList("ID_PULSE_1", "ID_PULSE_2", "ID_PULSE_3", "ID_PULSE_4", "ID_PULSE_5", "ID_PULSE_6"), "ID_PULSE_1");
+		DependencySpecHolder specHolder = new DependencySpecHolder();
+		specHolder.newSpec("ID_PULSE")
+			.addOptionEnabled("ID_PULSE_1", DependencySpec.True, "$ID_DIST==%ID_DIST_1")
+			.addOptionEnabled("ID_PULSE_1", DependencySpec.False, DependencySpec.Else)
+			.addOptionEnabled("ID_PULSE_2", DependencySpec.True, "$ID_DIST==%ID_DIST_1")
+			.addOptionEnabled("ID_PULSE_2", DependencySpec.True, "$ID_DIST==%ID_DIST_2")
+			.addOptionEnabled("ID_PULSE_2", DependencySpec.False, DependencySpec.Else)
+			.addOptionEnabled("ID_PULSE_3", DependencySpec.True, "$ID_DIST==%ID_DIST_1")
+			.addOptionEnabled("ID_PULSE_3", DependencySpec.True, "$ID_DIST==%ID_DIST_2")
+			.addOptionEnabled("ID_PULSE_3", DependencySpec.True, "$ID_DIST==%ID_DIST_3")
+			.addOptionEnabled("ID_PULSE_3", DependencySpec.False, DependencySpec.Else)	
+			.addOptionEnabled("ID_PULSE_4", DependencySpec.True, "$ID_DIST==%ID_DIST_2")
+			.addOptionEnabled("ID_PULSE_4", DependencySpec.True, "$ID_DIST==%ID_DIST_3")
+			.addOptionEnabled("ID_PULSE_4", DependencySpec.True, "$ID_DIST==%ID_DIST_4")
+			.addOptionEnabled("ID_PULSE_4", DependencySpec.False, DependencySpec.Else)	
+			.addOptionEnabled("ID_PULSE_5", DependencySpec.True, "$ID_DIST==%ID_DIST_3")
+			.addOptionEnabled("ID_PULSE_5", DependencySpec.True, "$ID_DIST==%ID_DIST_4")
+			.addOptionEnabled("ID_PULSE_5", DependencySpec.True, "$ID_DIST==%ID_DIST_5")
+			.addOptionEnabled("ID_PULSE_5", DependencySpec.False, DependencySpec.Else)
+			.addOptionEnabled("ID_PULSE_6", DependencySpec.True, "$ID_DIST==%ID_DIST_4")
+			.addOptionEnabled("ID_PULSE_6", DependencySpec.True, "$ID_DIST==%ID_DIST_5")
+			.addOptionEnabled("ID_PULSE_6", DependencySpec.True, "$ID_DIST==%ID_DIST_6")
+			.addOptionEnabled("ID_PULSE_6", DependencySpec.False, DependencySpec.Else);		
+		DependencyEngine engine = createDependencyEngine(store, specHolder);
+		
+		try {
+			engine.requestChange("ID_DIST", "ID_DIST_1");
+			assertEquals("ID_PULSE_1", store.getProperty("ID_PULSE").getCurrentValue());
+			
+			engine.requestChange("ID_DIST", "ID_DIST_2");
+			assertEquals("ID_PULSE_2", store.getProperty("ID_PULSE").getCurrentValue());
+			
+			engine.requestChange("ID_DIST", "ID_DIST_3");
+			assertEquals("ID_PULSE_3", store.getProperty("ID_PULSE").getCurrentValue());
+			
+			engine.requestChange("ID_DIST", "ID_DIST_4");
+			assertEquals("ID_PULSE_4", store.getProperty("ID_PULSE").getCurrentValue());
+			
+			engine.requestChange("ID_DIST", "ID_DIST_5");
+			assertEquals("ID_PULSE_5", store.getProperty("ID_PULSE").getCurrentValue());
+			
+			engine.requestChange("ID_DIST", "ID_DIST_6");
+			assertEquals("ID_PULSE_6", store.getProperty("ID_PULSE").getCurrentValue());
+			
+			engine.requestChange("ID_DIST", "ID_DIST_5");
+			assertEquals("ID_PULSE_6", store.getProperty("ID_PULSE").getCurrentValue());
+			
+			engine.requestChange("ID_DIST", "ID_DIST_4");
+			assertEquals("ID_PULSE_6", store.getProperty("ID_PULSE").getCurrentValue());
+
+			engine.requestChange("ID_DIST", "ID_DIST_3");
+			assertEquals("ID_PULSE_5", store.getProperty("ID_PULSE").getCurrentValue());
+
+			engine.requestChange("ID_DIST", "ID_DIST_2");
+			assertEquals("ID_PULSE_4", store.getProperty("ID_PULSE").getCurrentValue());
+
+			engine.requestChange("ID_DIST", "ID_DIST_1");
+			assertEquals("ID_PULSE_3", store.getProperty("ID_PULSE").getCurrentValue());
+
+		} catch (RequestRejectedException e) {
+			e.printStackTrace();
+		}
+	}
+	
 }

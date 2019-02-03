@@ -29,7 +29,7 @@ public class JsPropertyTest {
 		holder.addProperty(factory.create("ID_CHART", PropertyType2.Chart));
 		
 		{
-			JsProperty prop = new JsProperty(store.get("ID_LIST"), null);
+			JsProperty prop = JsPropertyConverter.convert(store.get("ID_LIST"), null);
 			assertEquals("ID_LIST", prop.getId());
 			assertEquals("ID_LIST_A", prop.getCurrentSelectionId());
 			assertEquals("list", prop.getTitle());
@@ -43,7 +43,7 @@ public class JsPropertyTest {
 		}
 		
 		{
-			JsProperty prop = new JsProperty(store.get("ID_NUMERIC"), null);
+			JsProperty prop = JsPropertyConverter.convert(store.get("ID_NUMERIC"), null);
 			assertEquals("ID_NUMERIC", prop.getId());
 			assertEquals("123.00", prop.getCurrentValue());
 			assertEquals("number", prop.getTitle());
@@ -57,9 +57,9 @@ public class JsPropertyTest {
 			content.setYmin("0");
 			content.setY(Arrays.asList("1", "2", "3", "4", "5").toArray(new String[0]));
 			store.get("ID_CHART").setCurrentValue(new ObjectMapper().writeValueAsString(content));
-			JsProperty prop = new JsProperty(store.get("ID_CHART"), null);
+			JsProperty prop = JsPropertyConverter.convert(store.get("ID_CHART"), null);
 			assertEquals("ID_CHART", prop.getId());
-			prop = new JsProperty(store.get("ID_CHART"), "2");
+			prop = JsPropertyConverter.convert(store.get("ID_CHART"), "2");
 			
 			assertEquals("ID_CHART", prop.getId());
 		}

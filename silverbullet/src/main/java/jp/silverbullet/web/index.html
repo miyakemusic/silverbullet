@@ -28,7 +28,6 @@
 <script type="text/javascript" src="registerspec.js"></script>
 <script type="text/javascript" src="registermap.js"></script>
 <script type="text/javascript" src="registerclass.js"></script>
-<script type="text/javascript" src="dependencyclass.js"></script>
 <script type="text/javascript" src="debugclass.js"></script>
 <script type="text/javascript" src="mywebsocket.js"></script>
 
@@ -43,8 +42,6 @@ $(function() {
 		$('#tab').tabs();
 		
 		var idEditor = new IdEditorClass('tab_id');
-//		idEditor.update();
-//		new DependencyClass('tab_dependency');
 		new DesignerClass('tab_designer');
 		new RegisterClass('tab_register');
 		new ControllerClass('tab_control');
@@ -88,7 +85,6 @@ $(function() {
 </script>
 <link rel="stylesheet" media="screen" href="lib/handsontable.full.css">
 <link rel="stylesheet" media="screen" href="lib/jquery.dataTables.min.css">
-<!-- <link rel="stylesheet" media="screen" href="lib/style.min.css"> -->
 
 <link rel="stylesheet" type="text/css" href="lib/jquery-ui.css">
 <link rel="stylesheet" type="text/css" href="mycss.css">
@@ -105,16 +101,14 @@ $(function() {
 <div id="tab">
   <ul>
   	<li><a href="#tab_id">ID</a></li>
-<!--  	<li><a href="#tab_dependency">Dependency</a></li> -->
   	<li><a href="#tab_designer">Designer</a></li>
   	<li><a href="#tab_register">Register</a></li>
+  	<li><a href="#tab_dependency2">Dependency</a></li>
   	<li><a href="#tab_control">Control</a></li>
   	<li><a href="#tab_debug">Debug</a></li>
   	<li><a href="#tab_test">Test</a></li>
-  	<li><a href="#tab_dependency2">Dependency2</a></li>
   </ul>
   <div id="tab_id"></div>
-<!--  <div id="tab_dependency"></div> -->
   <div id="tab_designer"></div>
   <div id="tab_register"></div>
   <div id="tab_control"></div>

@@ -12,6 +12,7 @@ import jp.silverbullet.StaticInstances;
 import jp.silverbullet.property2.PropertyType2;
 import jp.silverbullet.property2.RuntimeProperty;
 import jp.silverbullet.web.ui.JsProperty;
+import jp.silverbullet.web.ui.JsPropertyConverter;
 
 @Path("/runtime")
 public class RuntimeResource {
@@ -20,7 +21,7 @@ public class RuntimeResource {
 	@Produces(MediaType.APPLICATION_JSON) 
 	public JsProperty getProperty(@QueryParam("id") String id, @QueryParam("index") Integer index, @QueryParam("ext") String ext) {
 		RuntimeProperty property = StaticInstances.getInstance().getBuilderModel().getRuntimePropertyStore().get(RuntimeProperty.createIdText(id,index));
-		return new JsProperty(property, ext);
+		return JsPropertyConverter.convert(property, ext);
 	}
 
 	@GET
@@ -35,7 +36,7 @@ public class RuntimeResource {
 	@Path("/getProperties")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<JsProperty> getProperties() {
-		return JsProperty.convert(StaticInstances.getInstance().getBuilderModel().getRuntimePropertyStore().getAllProperties(PropertyType2.NotSpecified));
+		return JsPropertyConverter.convert(StaticInstances.getInstance().getBuilderModel().getRuntimePropertyStore().getAllProperties(PropertyType2.NotSpecified));
 	}
 	
 	@GET

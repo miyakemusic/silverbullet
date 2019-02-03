@@ -683,8 +683,9 @@ class JsDialogButton extends JsSubWidget {
 	updateLayout(info) {
 		$('#' + this.baseId).empty();
 		var root = info.custom["target_gui_id"];
-		$('#' + this.baseId).append('<Button id="' + this.buttonId + '">' + info.custom['caption'] + '</Button>');
-		$('#' + this.buttonId).button();
+		$('#' + this.baseId).append('<div>' + info.custom['caption'] + '</div>');
+//		$('#' + this.baseId).append('<Button id="' + this.buttonId + '">' + info.custom['caption'] + '</Button>');
+//		$('#' + this.buttonId).button();
 		$('#' + this.baseId).append('<div id="' + this.dialogId + '"><div id="' + this.contentId + '"></div></div>');
 							
 		$('#' + this.dialogId).dialog({
@@ -706,7 +707,7 @@ class JsDialogButton extends JsSubWidget {
 		});	
 		
 		var me = this;
-		$('#' + this.buttonId).click(function() {
+		$('#' + this.baseId).click(function() {
 			var layout = new LayoutBuilder(me.contentId, root);
 			$('#' + me.dialogId).dialog('open');
 		});

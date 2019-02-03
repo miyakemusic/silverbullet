@@ -29,13 +29,13 @@ class ControllerClass {
 			});
 		}
 		
-		$.ajax({
-			type: "GET", 
-			url: "http://" + window.location.host + "/rest/controller/getSpecs",
-				success: function(msg) {
-					myTable.appendRows(msg);
-				}
-		});
+//		$.ajax({
+//			type: "GET", 
+//			url: "http://" + window.location.host + "/rest/controller/getSpecs",
+//				success: function(msg) {
+//					myTable.appendRows(msg);
+//				}
+//		});
 		
 		function removeRow(row) {
 			$.ajax({
