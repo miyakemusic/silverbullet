@@ -4,26 +4,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jp.silverbullet.web.ui.part2.UiBuilder.Layout;
-import jp.silverbullet.web.ui.part2.UiBuilder.ProprtyElement;
+import jp.silverbullet.web.ui.part2.UiBuilder.ProprtyField;
 
 public class Pane extends WidgetBase {
 
 	public Layout layout = Layout.VERTICAL;
 	public List<WidgetBase> widgets = new ArrayList<>();
 	public String caption;
-	public ProprtyElement field;
+	public ProprtyField field;
 
 	public Pane(Layout layout) {
-		super(WidgetType.Pane, "", ProprtyElement.NONE);
+		super(WidgetType.Pane, "", ProprtyField.NONE);
 		this.layout  = layout;
 	}
 
-	public Pane(String caption, ProprtyElement field, Layout layout2) {
+	public Pane(String caption, ProprtyField field, Layout layout2) {
 		this.caption = caption;
 		this.field = field;
 	}
 
-	public ComboBox createComboBox(String id, ProprtyElement field) {
+	public ComboBox createComboBox(String id, ProprtyField field) {
 		ComboBox widget = new ComboBox(id, field);
 		this.widgets.add(widget);
 		applyLayout(widget);
@@ -37,14 +37,14 @@ public class Pane extends WidgetBase {
 		return pane;
 	}
 
-	public StaticText createStaticText(String id, ProprtyElement field) {
-		StaticText text = new StaticText(id, field);
+	public Label createLabel(String id, ProprtyField field) {
+		Label text = new Label(id, field);
 		this.widgets.add(text);
 		applyLayout(text);
 		return text;
 	}
 
-	public TextField createTextField(String id, ProprtyElement field) {
+	public TextField createTextField(String id, ProprtyField field) {
 		TextField textField = new TextField(id, field);
 		this.widgets.add(textField);
 		applyLayout(textField);
@@ -65,8 +65,8 @@ public class Pane extends WidgetBase {
 		return checkBox;
 	}
 
-	public ToggleButton createToggleButton(String id) {
-		ToggleButton toggleButton = new ToggleButton(id);
+	public ToggleButton createToggleButton(String id, String elementId) {
+		ToggleButton toggleButton = new ToggleButton(id, elementId);
 		this.widgets.add(toggleButton);
 		applyLayout(toggleButton);
 		return toggleButton;
@@ -83,6 +83,17 @@ public class Pane extends WidgetBase {
 			
 		}
 		
+	}
+
+	public WidgetBase createToggleButton(String id) {
+		return createToggleButton(id, "");
+	}
+
+	public StaticText createStaticText(String text) {
+		StaticText staticText = new StaticText(text);
+		this.widgets.add(staticText);
+		applyLayout(staticText);
+		return staticText;
 	}
 
 }

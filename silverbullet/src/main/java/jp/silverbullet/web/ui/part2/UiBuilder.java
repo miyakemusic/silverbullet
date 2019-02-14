@@ -6,7 +6,7 @@ import java.util.List;
 public class UiBuilder {
 	public List<Pane> panes = new ArrayList<>();
 	
-	public enum ProprtyElement {
+	public enum ProprtyField {
 		VALUE, TITLE, UNIT, STATICTEXT, NONE
 	}
 

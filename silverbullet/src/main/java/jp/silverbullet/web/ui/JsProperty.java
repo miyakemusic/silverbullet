@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jp.silverbullet.property2.ChartContent;
 import jp.silverbullet.property2.ListDetailElement;
+import jp.silverbullet.property2.PropertyType2;
 import jp.silverbullet.property2.RuntimeProperty;
 
 public class JsProperty {
@@ -20,7 +21,9 @@ public class JsProperty {
 	private String currentValue;
 	private boolean enabled;
 	private String currentSelectionId;
-		
+	private PropertyType2 type;
+	private List<String> disabledOption = new ArrayList<>();
+	
 	public boolean isEnabled() {
 		return enabled;
 	}
@@ -62,6 +65,18 @@ public class JsProperty {
 	}
 	public void setCurrentSelectionId(String currentSelectionId) {
 		this.currentSelectionId = currentSelectionId;
+	}
+	public void setType(PropertyType2 type) {
+		this.type = type;
+	}
+	public PropertyType2 getType() {
+		return type;
+	}
+	public void addDisabledOption(String eid) {
+		this.disabledOption.add(eid);
+	}
+	public List<String> getDisabledOption() {
+		return disabledOption;
 	}
 	
 }

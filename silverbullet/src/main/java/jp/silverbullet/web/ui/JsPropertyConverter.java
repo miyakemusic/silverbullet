@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jp.silverbullet.property2.ChartContent;
+import jp.silverbullet.property2.ListDetailElement;
 import jp.silverbullet.property2.RuntimeProperty;
 
 public class JsPropertyConverter {
@@ -18,8 +19,15 @@ public class JsPropertyConverter {
 		ret.setId(property.getId());
 		ret.setTitle(property.getTitle());
 		ret.setUnit(property.getUnit());
-		ret.setElements(property.getAvailableListDetail());
+		ret.setElements(property.getDefOptions());
+		for (String eid : property.getListMask().keySet()) {
+			if (property.getListMask().get(eid)) {
+				ret.addDisabledOption(eid);	
+			}
+		}
+
 		ret.setEnabled(property.isEnabled());
+		ret.setType(property.getType());
 		
 		if (property.isChartProperty()) {
 			if (ext == null || ext.isEmpty()) {

@@ -1,6 +1,7 @@
 package jp.silverbullet.property2;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -95,6 +96,11 @@ public class RuntimeProperty implements Cloneable {
 	@JsonIgnore
 	public String getMax() {
 		return formatNumeric(this.property.getMax());
+	}
+	
+	@JsonIgnore
+	public List<ListDetailElement> getDefOptions() {
+		return new ArrayList<ListDetailElement>(this.property.getOptions().values());
 	}
 	
 	public void setCurrentValue(String val) {
