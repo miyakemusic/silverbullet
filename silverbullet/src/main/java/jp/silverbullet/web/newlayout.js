@@ -24,18 +24,18 @@ class Widget {
 }
 
 class Pane extends Widget {
-	constructor(widget, parent, divid, callback) {
+	constructor(widget, parent, divid, buildSub) {
 		super(widget, parent, divid);
 		
 		$('#' + parent).append('<div class="design" id="' + divid + '"></div>');
 		for (var w of widget.widgets) {
-			callback(w, divid);
+			buildSub(w, divid);
 		}
 	}
 }
 
 class TabPane extends Widget {
-	constructor(widget, parent, divid, callback) {
+	constructor(widget, parent, divid, buildSub, addWidget) {
 		super(widget, parent, divid);
 
 		var content = '';
@@ -55,11 +55,31 @@ class TabPane extends Widget {
 		$('#' + divid).tabs();
 		
 		for (var i = 0; i < widget.panes.length; i++) {
-			var w = widget.panes[i];
-			for (var w2 of w.widgets) {
-				callback(w2, divid + 'tabno' + i);
+			var child = widget.panes[i];
+			addWidget(child.id, new Tab(child, divid));
+			for (var w2 of child.widgets) {
+				buildSub(w2, divid + 'tabno' + i);
 			}
 		}	
+	}
+}
+
+class Tab {
+	constructor(widget, tabPane) {
+		this.widget = widget;
+		this.tabPane = tabPane;
+	}
+	
+	onUpdateValue(property) {
+		for (var o of property.elements) {
+			if (o.id == this.widget.subId) {
+				$('#' + this.tabPane + ' ul:first li:eq(' + this.widget.tabIndex + ') a').text(o.title);
+			}
+		}
+		
+		if (property.currentSelectionId == this.widget.subId) {
+			$('#' + this.tabPane).tabs("option", "active", this.widget.tabIndex);
+		}
 	}
 }
 
@@ -141,7 +161,7 @@ class ToggleButton extends Widget {
 		
 		this.labelId = divid + 'label';
 		$('#' + parent).append('<input type="checkbox" id="' + divid + '"><label id="' + this.labelId + '" for="' + divid + '"></label>');
-		$('#' + divid).button();
+		var button = $('#' + divid).button();
 		
 		var me = this;
 		
@@ -149,9 +169,7 @@ class ToggleButton extends Widget {
 			var value = '';
 			
 			if (me.isList()) {
-				//if ($(this).prop('checked')) {
-					value = me.widget.subId;
-				//}
+				value = me.widget.subId;
 			}
 			else {
 				if ($(this).prop('checked')) {
@@ -174,6 +192,7 @@ class ToggleButton extends Widget {
 					$('#' + this.labelId).html(e.title);
 				}
 			}
+			$('#' + this.divid).button('option', 'disabled', property.disabledOption.includes(this.widget.subId));
 			$('#' + this.divid).prop('checked', this.widget.subId == property.currentSelectionId).button('refresh');
 		}
 		else {
@@ -201,8 +220,10 @@ class ComboBox extends Widget {
 	onUpdateValue(property) {
 		$('#' + this.divid).empty();
 		for (var e of property.elements) {
-			var option = $('<option>').val(e.id).text(e.title);
-			$('#' + this.divid).append(option);		
+			if (!property.disabledOption.includes(e.id)) {
+				var option = $('<option>').val(e.id).text(e.title);
+				$('#' + this.divid).append(option);		
+			}
 		}
 		$('#' + this.divid).val(property.currentSelectionId);
 	}
@@ -263,7 +284,7 @@ class NewLayout {
 		function retrieveProperty(id, index, callback) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/runtime/getProperty?id=" + id.replace('$', '') + "&index=" + index,
+			   url: "http://" + window.location.host + "/rest/runtime/getProperty?id="  +  id + "&index=" + index,
 			   success: function(property){
 			   		callback(property);
 			   }
@@ -280,7 +301,7 @@ class NewLayout {
 		function setValue(id, index, value) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/runtime/setValue?id=" + id.replace('$', '') + "&index=" + index + "&value=" + value,
+			   url: "http://" + window.location.host + "/rest/runtime/setValue?id=" + id + "&index=" + index + "&value=" + value,
 			   success: function(property){
 			   }
 			});			
@@ -313,7 +334,7 @@ class NewLayout {
 				wrappedWidget = new Pane(widget, parentDiv, divid, buildSub);
 			}		
 			else if (widget.type == 'TabPane') {
-				wrappedWidget = new TabPane(widget, parentDiv, divid, buildSub);
+				wrappedWidget = new TabPane(widget, parentDiv, divid, buildSub, addWidget);
 			}
 			else if (widget.type == 'CheckBox') {	
 				wrappedWidget = new CheckBox(widget, parentDiv, divid);
@@ -333,6 +354,7 @@ class NewLayout {
 			else if (widget.type == 'StaticText') {	
 				wrappedWidget = new StaticText(widget, parentDiv, divid);
 			}
+			
 			wrappedWidget.accessor(
 				function(id, index, value) {
 					setValue(id, index, value);
@@ -349,7 +371,7 @@ class NewLayout {
 				$('#' + divid).width(widget.width);
 			}
 			
-			var id = widget.id.replace('$', '');
+			var id = widget.id;
 			addWidget(id, wrappedWidget);
 			
 		}

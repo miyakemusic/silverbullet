@@ -683,14 +683,7 @@ class JsDialogButton extends JsSubWidget {
 	updateLayout(info) {
 		$('#' + this.baseId).empty();
 		var root = info.custom["target_gui_id"];
-<<<<<<< HEAD
-		$('#' + this.baseId).append('<div>' + info.custom['caption'] + '</div>');
-//		$('#' + this.baseId).append('<Button id="' + this.buttonId + '">' + info.custom['caption'] + '</Button>');
-//		$('#' + this.buttonId).button();
-		$('#' + this.baseId).append('<div id="' + this.dialogId + '"><div id="' + this.contentId + '"></div></div>');
-=======
-//		$('#' + this.baseId).append('<Button id="' + this.buttonId + '">' + info.custom['caption'] + '</Button>');
-//		$('#' + this.buttonId).button();
+
 		var html = '<div id="' + this.buttonId + '" class="fbTitle">' + info.custom['caption'] + '</div>';
 
 		var me = this;
@@ -698,7 +691,6 @@ class JsDialogButton extends JsSubWidget {
 		$('#' + this.baseId).append(html);
 
 		$('#' + me.baseId).append('<div id="' + me.dialogId + '"><div id="' + me.contentId + '"></div></div>');
->>>>>>> branch 'master' of https://github.com/miyakemusic/silverbullet
 							
 		$('#' + this.dialogId).dialog({
 			  autoOpen: false,
@@ -717,14 +709,9 @@ class JsDialogButton extends JsSubWidget {
 			width: 400,
 			height: 300
 		});	
-<<<<<<< HEAD
 		
 		var me = this;
 		$('#' + this.baseId).click(function() {
-=======
-
-		$('#' + this.buttonId).click(function() {
->>>>>>> branch 'master' of https://github.com/miyakemusic/silverbullet
 			var layout = new LayoutBuilder(me.contentId, root);
 			$('#' + me.dialogId).dialog('open');
 		});

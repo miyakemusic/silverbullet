@@ -20,6 +20,10 @@ public class WidgetBase {
 	
 	public WidgetBase() {}
 	
+	public WidgetBase(WidgetType type) {
+		this.type = type;
+	}
+	
 	public WidgetBase(WidgetType type, String id) {
 		this.type = type;
 		this.id = id;

@@ -3,6 +3,7 @@ package jp.silverbullet.web.ui.part2;
 import java.util.ArrayList;
 import java.util.List;
 
+import jp.silverbullet.property2.PropertyHolder2;
 import jp.silverbullet.web.ui.part2.UiBuilder.Layout;
 import jp.silverbullet.web.ui.part2.UiBuilder.ProprtyField;
 
@@ -21,10 +22,16 @@ public class Pane extends WidgetBase {
 	public Pane(String caption, ProprtyField field, Layout layout2) {
 		this.caption = caption;
 		this.field = field;
+		this.layout = layout2;
 	}
 
-	public ComboBox createComboBox(String id, ProprtyField field) {
-		ComboBox widget = new ComboBox(id, field);
+	public Pane(WidgetType type, Layout layout2) {
+		super(type);
+		this.layout = layout2;
+	}
+
+	public ComboBox createComboBox(String id) {
+		ComboBox widget = new ComboBox(id, UiBuilder.ProprtyField.VALUE);
 		this.widgets.add(widget);
 		applyLayout(widget);
 		return widget;
@@ -51,7 +58,7 @@ public class Pane extends WidgetBase {
 		return textField;
 	}
 
-	public TabPane createTab() {
+	public TabPane createTabPane() {
 		TabPane tabPane = new TabPane();
 		this.widgets.add(tabPane);
 		applyLayout(tabPane);

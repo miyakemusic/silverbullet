@@ -15,7 +15,7 @@ class UiBuilderTest {
 	void test() {
 		UiBuilder builder = new UiBuilder();
 		Pane pane = builder.createPane(UiBuilder.Layout.VERTICAL);
-		pane.createComboBox("$ID_APPLICATION", UiBuilder.ProprtyField.VALUE).size(20, 400);
+		pane.createComboBox("$ID_APPLICATION").size(20, 400);
 		
 		{
 			Pane subPane = pane.createPane(Layout.VERTICAL);
@@ -34,10 +34,10 @@ class UiBuilderTest {
 		}
 		
 		{
-			TabPane tabPane = pane.createTab();
-			Pane paneA = tabPane.createPane("$ID_APPLICATION.ID_APPLICATION_AAA", UiBuilder.ProprtyField.TITLE, UiBuilder.Layout.VERTICAL);
-			Pane paneB = tabPane.createPane("$ID_RESULT", UiBuilder.ProprtyField.TITLE, UiBuilder.Layout.VERTICAL);
-			Pane paneOtdr = tabPane.createPane("Other", UiBuilder.ProprtyField.STATICTEXT, UiBuilder.Layout.VERTICAL);
+			TabPane tabPane = pane.createTabPane();
+//			Pane paneA = tabPane.createPane("$ID_APPLICATION.ID_APPLICATION_AAA", UiBuilder.ProprtyField.TITLE, UiBuilder.Layout.VERTICAL);
+//			Pane paneB = tabPane.createPane("$ID_RESULT", UiBuilder.ProprtyField.TITLE, UiBuilder.Layout.VERTICAL);
+//			Pane paneOtdr = tabPane.createPane("Other", UiBuilder.ProprtyField.STATICTEXT, UiBuilder.Layout.VERTICAL);
 			
 		}
 		

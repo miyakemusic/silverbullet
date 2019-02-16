@@ -20,9 +20,9 @@ public class JsPropertyConverter {
 		ret.setTitle(property.getTitle());
 		ret.setUnit(property.getUnit());
 		ret.setElements(property.getDefOptions());
-		for (String eid : property.getListMask().keySet()) {
-			if (property.getListMask().get(eid)) {
-				ret.addDisabledOption(eid);	
+		for (ListDetailElement eid : property.getDefOptions()) {
+			if (property.isOptionDisabled(eid.getId())) {
+				ret.addDisabledOption(eid.getId());	
 			}
 		}
 
