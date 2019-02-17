@@ -22,29 +22,38 @@ public class NewGuiResource {
 	public UiBuilder getDesign() {
 		UiBuilder builder = new UiBuilder();
 		Pane pane = builder.createPane(UiBuilder.Layout.VERTICAL);
-		WidgetGeneratorHelper helper = new WidgetGeneratorHelper(StaticInstances.getInstance().getBuilderModel().getPropertiesHolder2());
+		pane.size(1000, 1000);
 
+		WidgetGeneratorHelper helper = new WidgetGeneratorHelper(StaticInstances.getInstance().getBuilderModel().getPropertiesHolder2());
 		
-		Pane pane1 = pane.createPane(Layout.HORIZONTAL);
+		Pane paneRoot = pane.createPane(Layout.HORIZONTAL);
+		helper.generateToggleButton("ID_APPLICATION", paneRoot).size(100, 40);
+		
+		Pane pane1 = pane.createPane(Layout.HORIZONTAL).condition("ID_APPLICATION", "ID_APPLICATION_OTDR");
 		pane1.createLabel("ID_APPLICATION", UiBuilder.ProprtyField.TITLE).size(100, 20);
 		pane1.createComboBox("ID_APPLICATION").size(200, 20);
 		pane1.createComboBox("ID_APPLICATION").size(200, 20);
-		helper.generateToggleButton("ID_APPLICATION", pane1).size(100, 40);
+		pane1.createButton("ID_APPLICATION").size(200, 60);
+		Pane panepp = pane.createPane(Layout.HORIZONTAL);
+
+		
+		pane1.createButton("ID_OTDR_TESTCONTROL");
+		pane1.createComboBox("ID_OTDR_TESTCONTROL");
 		{
-			Pane subPane = pane.createPane(Layout.VERTICAL);
-			subPane.createLabel("ID_TEST_MODE", UiBuilder.ProprtyField.TITLE).size(100, 20);
-			subPane.createTextField("ID_TEST_MODE", UiBuilder.ProprtyField.VALUE).size(100, 20);
-			subPane.createLabel("ID_TEST_MODE", UiBuilder.ProprtyField.UNIT).size(20, 20);
-			subPane.createTextField("ID_AVERAGETIME", UiBuilder.ProprtyField.VALUE).size(100, 20);
-			subPane.createTextField("ID_AVERAGETIME", UiBuilder.ProprtyField.VALUE).size(100, 20);
+			Pane subPane = pane.createPane(Layout.VERTICAL).condition("ID_APPLICATION", "ID_APPLICATION_SQA");
+			subPane.createLabel("ID_TEST_MODE", UiBuilder.ProprtyField.TITLE).size(100, 40);
+			subPane.createTextField("ID_TEST_MODE", UiBuilder.ProprtyField.VALUE).size(100, 40);
+			subPane.createLabel("ID_TEST_MODE", UiBuilder.ProprtyField.UNIT).size(20, 40);
+			subPane.createTextField("ID_AVERAGETIME", UiBuilder.ProprtyField.VALUE).size(100, 40);
+			subPane.createTextField("ID_AVERAGETIME", UiBuilder.ProprtyField.VALUE).size(100, 40);
 
 		}
 		{
 			Pane subPane = pane.createPane(Layout.HORIZONTAL);
-			subPane.createToggleButton("ID_APPLICATION", "ID_APPLICATION_OTDR").size(100, 20);
-			subPane.createToggleButton("ID_APPLICATION", "ID_APPLICATION_SQA").size(100, 20);
-			subPane.createComboBox("ID_PULSEWIDTH").size(100, 20);
-			subPane.createComboBox("ID_DISTANCERANGE").size(50, 40);
+			subPane.createToggleButton("ID_APPLICATION", "ID_APPLICATION_OTDR").size(200, 40);
+			subPane.createToggleButton("ID_APPLICATION", "ID_APPLICATION_SQA").size(200, 40);
+			subPane.createComboBox("ID_PULSEWIDTH").size(100, 40);
+			subPane.createComboBox("ID_DISTANCERANGE").size(100, 40);
 			
 			Pane pulsePane = pane.createPane(Layout.HORIZONTAL);
 			pulsePane.createToggleButton("ID_PULSEWIDTH", "ID_PULSEWIDTH_1NS");
@@ -56,7 +65,7 @@ public class NewGuiResource {
 			
 			Pane distPane = pane.createPane(Layout.HORIZONTAL);
 			distPane.createToggleButton("ID_DISTANCERANGE", "ID_DISTANCERANGE_1KM");
-			distPane.createToggleButton("ID_DISTANCERANGE", "ID_DISTANCERANGE_10KM").size(200, 20);
+			distPane.createToggleButton("ID_DISTANCERANGE", "ID_DISTANCERANGE_10KM");
 			distPane.createToggleButton("ID_DISTANCERANGE", "ID_DISTANCERANGE_20KM");
 			distPane.createToggleButton("ID_DISTANCERANGE", "ID_DISTANCERANGE_50KM");
 			distPane.createToggleButton("ID_DISTANCERANGE", "ID_DISTANCERANGE_100KM");
@@ -66,13 +75,14 @@ public class NewGuiResource {
 		{
 			Pane subPane = pane.createPane(Layout.ABSOLUTE);
 			subPane.createCheckBox("ID_OPTION_001").size(200, 20).position(10, 10);
-			subPane.createCheckBox("ID_OPTION_001").size(100, 20).position(10, 10);
-			subPane.createToggleButton("ID_OPTION_001").size(100, 20).position(10, 10);
+			subPane.createCheckBox("ID_OPTION_001").size(300, 20).position(10, 10);
+			subPane.createToggleButton("ID_OPTION_001").size(100, 50).position(10, 10);
+			subPane.createButton("ID_OPTION_001").size(100, 50).position(10, 10);
 			
 			Pane subSubPane = subPane.createPane(Layout.HORIZONTAL);
 			subSubPane.createLabel("ID_OPTION_001", UiBuilder.ProprtyField.TITLE);
 			subSubPane.createStaticText(":");
-			subSubPane.createLabel("ID_OPTION_001", UiBuilder.ProprtyField.VALUE).size(100, 20).position(10, 10);
+			subSubPane.createLabel("ID_OPTION_001", UiBuilder.ProprtyField.VALUE).size(100, 40).position(10, 10);
 		}
 		
 		{
@@ -84,15 +94,15 @@ public class NewGuiResource {
 			Tab paneB = tabPane.createTab(UiBuilder.Layout.VERTICAL).id("ID_APPLICATION", "ID_APPLICATION_OTDR");
 			
 			Pane PaneBB = paneB.createPane(Layout.HORIZONTAL);
-			PaneBB.createLabel("ID_APPLICATION", UiBuilder.ProprtyField.TITLE).size(400, 20);
+			PaneBB.createLabel("ID_APPLICATION", UiBuilder.ProprtyField.TITLE).size(400, 40);
 			
 			PaneBB.createComboBox("ID_APPLICATION");
 			Tab paneOtdr = tabPane.createTab(UiBuilder.Layout.VERTICAL).title("Other");
 			
-			Pane distPane = paneOtdr.createPane(Layout.VERTICAL);
-			
-			helper.generateToggleButton("ID_DISTANCERANGE", distPane).size(200, 40);
-			
+			Pane distPane = paneOtdr.createPane(Layout.HORIZONTAL);
+			helper.generateToggleButton("ID_DISTANCERANGE", distPane).size(100, 40);
+			Pane pulsePane = paneOtdr.createPane(Layout.HORIZONTAL);
+			helper.generateToggleButton("ID_PULSEWIDTH", pulsePane).size(100, 40);			
 		}
 		
 		return builder;

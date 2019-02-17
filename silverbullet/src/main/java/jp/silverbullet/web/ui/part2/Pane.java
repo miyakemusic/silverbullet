@@ -11,8 +11,8 @@ public class Pane extends WidgetBase {
 
 	public Layout layout = Layout.VERTICAL;
 	public List<WidgetBase> widgets = new ArrayList<>();
-	public String caption;
-	public ProprtyField field;
+	public String caption = "";
+	public ProprtyField field = ProprtyField.NONE;
 
 	public Pane(Layout layout) {
 		super(WidgetType.Pane, "", ProprtyField.NONE);
@@ -81,7 +81,7 @@ public class Pane extends WidgetBase {
 
 	private void applyLayout(WidgetBase widget) {
 		if (this.layout.compareTo(Layout.HORIZONTAL) == 0) {
-			widget.css("display", "inline");
+			widget.css("display", "inline-block");
 		}
 		else if (this.layout.compareTo(Layout.VERTICAL) == 0) {
 			widget.css("display", "block");
@@ -101,6 +101,19 @@ public class Pane extends WidgetBase {
 		this.widgets.add(staticText);
 		applyLayout(staticText);
 		return staticText;
+	}
+
+	public WidgetBase createButton(String id) {
+		Button button = new Button(id);
+		this.widgets.add(button);
+		applyLayout(button);
+		return button;
+	}
+
+	public Pane condition(String id, String subId) {
+		this.id = id;
+		this.subId = subId;
+		return this;
 	}
 
 }

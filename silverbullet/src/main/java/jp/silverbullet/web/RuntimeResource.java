@@ -21,6 +21,9 @@ public class RuntimeResource {
 	@Produces(MediaType.APPLICATION_JSON) 
 	public JsProperty getProperty(@QueryParam("id") String id, @QueryParam("index") Integer index, @QueryParam("ext") String ext) {
 		RuntimeProperty property = StaticInstances.getInstance().getBuilderModel().getRuntimePropertyStore().get(RuntimeProperty.createIdText(id,index));
+		if (property == null) {
+			System.out.println();
+		}
 		return JsPropertyConverter.convert(property, ext);
 	}
 

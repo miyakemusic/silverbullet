@@ -13,9 +13,9 @@ public class WidgetBase {
 	public WidgetType type;
 	public int x = -1;
 	public int y = -1;
-	public String id;
-	public String subId;
-	public ProprtyField field;
+	public String id = "";
+	public String subId = "";
+	public ProprtyField field = ProprtyField.NONE;
 	public List<KeyValue> css = new ArrayList<>();
 	
 	public WidgetBase() {}

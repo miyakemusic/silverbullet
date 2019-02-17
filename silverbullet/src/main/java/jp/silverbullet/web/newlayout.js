@@ -32,6 +32,18 @@ class Pane extends Widget {
 			buildSub(w, divid);
 		}
 	}
+	
+	onUpdateValue(property) {
+		if (this.widget.id != '') {
+			if (this.widget.subId == property.currentSelectionId) {
+				this.prevDisplay = $('#' + this.divid).css('display');
+				$('#' + this.divid).css('display', 'none');
+			}
+			else if (this.prevDisplay != ''){
+				$('#' + this.divid).css('display', this.prevDisplay);
+			}
+		}
+	}
 }
 
 class TabPane extends Widget {
@@ -45,7 +57,7 @@ class TabPane extends Widget {
 		for (var i = 0; i < widget.panes.length; i++) {
 			var w = widget.panes[i];
 			var href = divid + 'tabno' + i;
-			html += '<li><a href="#' + href + '"><span>' + w.caption + '</span></a></li>';
+			html += '<li><a href="#' + href + '"><span>' + w.title + '</span></a></li>';
 			
 			content += '<div id="' + href + '"></div>';
 		}
@@ -71,14 +83,16 @@ class Tab {
 	}
 	
 	onUpdateValue(property) {
-		for (var o of property.elements) {
-			if (o.id == this.widget.subId) {
-				$('#' + this.tabPane + ' ul:first li:eq(' + this.widget.tabIndex + ') a').text(o.title);
+			
+		if (this.widget.id != '') {
+			for (var o of property.elements) {
+				if (o.id == this.widget.subId) {
+					$('#' + this.tabPane + ' ul:first li:eq(' + this.widget.tabIndex + ') a').text(o.title);
+				}
 			}
-		}
-		
-		if (property.currentSelectionId == this.widget.subId) {
-			$('#' + this.tabPane).tabs("option", "active", this.widget.tabIndex);
+			if (property.currentSelectionId == this.widget.subId) {
+				$('#' + this.tabPane).tabs("option", "active", this.widget.tabIndex);
+			}
 		}
 	}
 }
@@ -91,6 +105,60 @@ class StaticText extends Widget {
 	}
 	
 	onUpdateValue(property) {
+	}
+}
+
+class Button extends Widget {
+	constructor(widget, parent, divid) {
+		super(widget, parent, divid);
+		
+		this.titleId = divid + 'title';
+		this.valueId = divid + 'value';
+
+		$('#' + parent).append('<div id="' + divid + '" class="mybutton"><div id="' + this.titleId + '"></div><div id="' + this.valueId + '" class="buttonvalue"></div></div>');
+
+		var me = this;
+
+		$('#' + this.divid).click(function() {
+			if (me.property.elements.length > 0) {
+				var list = [];
+				for (var e of me.property.elements) {
+					if (!me.property.disabledOption.includes(me.property.currentValue)) {
+						list.push(e.id);
+					}
+				}
+				
+				var index = list.indexOf(me.property.currentSelectionId);
+				var val;
+				index++;
+				if (index >= list.length) {
+					index = 0;
+				}
+				
+				me.setter(me.widget.id, 0, list[index]);
+			}
+		});		
+	}
+	
+	onUpdateValue(property) {
+		this.property = property;
+		$('#' + this.titleId).html(property.title);
+		$('#' + this.valueId).html(property.currentValue);
+		
+		var me = this;
+		if (property.type == 'Boolean') {
+			if (property.currentValue == 'true') {
+				$('#' + this.divid).removeClass('mybutton');
+				$('#' + this.divid).addClass('mybutton checked');
+			}
+			else {
+				$('#' + this.divid).removeClass('mybutton checked');
+				$('#' + this.divid).addClass('mybutton');
+			}
+		}
+		else {
+	
+		}
 	}
 }
 
@@ -123,10 +191,6 @@ class TextField extends Widget {
 	constructor(widget, parent, divid) {
 		super(widget, parent, divid);
 		$('#' + this.parent).append('<input type="text" id="' + this.divid + '">');
-	}
-	
-	onUpdateValue(property) {
-		$('#' + this.divid).val(property.currentValue);
 		
 		var me = this;
 		$('#' + this.divid).keydown(function(event) {
@@ -134,6 +198,11 @@ class TextField extends Widget {
 				me.setter(me.widget.id, 0, $('#' + me.divid).val());
 			}
 		});
+	}
+	
+	onUpdateValue(property) {
+		$('#' + this.divid).val(property.currentValue);
+		this.property = property;
 	}
 }
 
@@ -153,6 +222,76 @@ class CheckBox extends Widget {
 		$('#' + this.divid + 'check').prop('checked', property.currentValue == 'true');
 		$('#' + this.divid + 'label').text(property.title);
 	}
+}
+
+class ToggleButton2 extends Widget {
+	constructor(widget, parent, divid) {
+		super(widget, parent, divid);
+		
+		this.labelId = divid + 'label';
+		$('#' + parent).append('<div id="' + divid + '"><label id="' + this.labelId + '"></label></div>');
+		
+		var me = this;
+		
+		$('#' + divid).click(function() {
+			if ($('#' + divid).hasClass('disabled')) {
+				return;
+			}
+			var value = '';
+			
+			if (me.isList()) {
+				value = me.widget.subId;
+			}
+			else {
+				if ($(this).hasClass('mybutton checked')) {
+					value = 'false';
+				}
+				else {
+					value = 'true';
+				}			
+			}
+			if (value != '') {
+				me.setter(me.widget.id, 0, value);
+			}
+		});	
+
+	}
+	onUpdateValue(property) {
+		if (this.isList()) {
+			for (var e of property.elements) {
+				if (e.id == this.widget.subId) {
+					$('#' + this.labelId).html(e.title);
+				}
+			}
+			//$('#' + this.divid).button('option', 'disabled', property.disabledOption.includes(this.widget.subId));
+			//$('#' + this.divid).prop('checked', this.widget.subId == property.currentSelectionId).button('refresh');
+			
+			$('#' + this.divid).removeClass();
+			if (property.disabledOption.includes(this.widget.subId)) {
+				$('#' + this.divid).addClass('mybutton disabled');
+			}
+			else if (this.widget.subId == property.currentSelectionId) {
+				$('#' + this.divid).addClass('mybutton checked');
+			}
+			else {
+				$('#' + this.divid).addClass('mybutton');
+			}
+		}
+		else {
+			$('#' + this.labelId).html(property.title);
+			$('#' + this.divid).removeClass();
+			if (property.currentValue == 'true') {		
+				$('#' + this.divid).addClass('mybutton checked');
+			}
+			else {
+				$('#' + this.divid).addClass('mybutton');
+			}
+		}
+	}
+	
+	isList() {
+		return this.widget.subId != '';
+	}	
 }
 
 class ToggleButton extends Widget {
@@ -343,7 +482,7 @@ class NewLayout {
 				wrappedWidget = new TextField(widget, parentDiv, divid);
 			}	
 			else if (widget.type == 'ToggleButton') {
-				wrappedWidget = new ToggleButton(widget, parentDiv, divid);				
+				wrappedWidget = new ToggleButton2(widget, parentDiv, divid);				
 			}	
 			else if (widget.type == 'ComboBox') {	
 				wrappedWidget = new ComboBox(widget, parentDiv, divid);
@@ -354,7 +493,10 @@ class NewLayout {
 			else if (widget.type == 'StaticText') {	
 				wrappedWidget = new StaticText(widget, parentDiv, divid);
 			}
-			
+			else if (widget.type == 'Button') {	
+				wrappedWidget = new Button(widget, parentDiv, divid);
+			}
+						
 			wrappedWidget.accessor(
 				function(id, index, value) {
 					setValue(id, index, value);
@@ -370,7 +512,9 @@ class NewLayout {
 			if (widget.width != -1) {
 				$('#' + divid).width(widget.width);
 			}
-			
+			if (widget.height != -1) {
+				$('#' + divid).height(widget.height);
+			}
 			var id = widget.id;
 			addWidget(id, wrappedWidget);
 			
