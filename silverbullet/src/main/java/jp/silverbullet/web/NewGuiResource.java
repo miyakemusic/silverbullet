@@ -13,6 +13,7 @@ import jp.silverbullet.web.ui.part2.TabPane;
 import jp.silverbullet.web.ui.part2.UiBuilder;
 import jp.silverbullet.web.ui.part2.WidgetGeneratorHelper;
 import jp.silverbullet.web.ui.part2.UiBuilder.Layout;
+import jp.silverbullet.web.ui.part2.UiBuilder.PropertyField;
 
 @Path("/newGui")
 public class NewGuiResource {
@@ -20,6 +21,52 @@ public class NewGuiResource {
 	@Path("/getDesign")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public UiBuilder getDesign() {
+		return createDesign2();
+	}
+
+	private UiBuilder createDesign2() {
+		UiBuilder builder = new UiBuilder();
+		Pane pane = builder.createPane(UiBuilder.Layout.VERTICAL);
+		pane.size(1000, 1000);
+		WidgetGeneratorHelper helper = new WidgetGeneratorHelper(StaticInstances.getInstance().getBuilderModel().getPropertiesHolder2());
+		
+		Pane applicationPane = pane.createPane(Layout.HORIZONTAL);
+		helper.generateToggleButton("ID_APPLICATION", applicationPane).size(100, 40).css("background-color", "lightgray");
+		applicationPane.createLabel("ID_APPLICATION", PropertyField.VALUE);
+		
+		//// OTDR
+		Pane otdrPane = pane.createPane(Layout.VERTICAL).condition("ID_APPLICATION", "ID_APPLICATION_OTDR");
+		otdrPane.size(1000, 800).css("border-width", "1px").css("background-color", "lightgray");
+		
+		Pane distPane = otdrPane.createPane(Layout.HORIZONTAL);
+		otdrPane.css("padding", "5");
+		distPane.createLabel("ID_DISTANCERANGE", PropertyField.TITLE).size(150, 30).css("font-size", "16px").css("font-weight", "bold");
+		distPane.createStaticText(":");
+		helper.generateToggleButton("ID_DISTANCERANGE", distPane).size(80, 30);
+		
+		Pane pulsePane = otdrPane.createPane(Layout.HORIZONTAL);
+		pulsePane.css(otdrPane.css);
+		pulsePane.createLabel("ID_PULSEWIDTH", PropertyField.TITLE).size(150, 30);
+		pulsePane.createStaticText(":");
+		helper.generateToggleButton("ID_PULSEWIDTH", pulsePane).size(80, 30);
+		
+		Pane otdrSetupPane = otdrPane.createPane(Layout.HORIZONTAL);
+		otdrPane.createButton("ID_OTDR_TESTCONTROL").size(100, 60);
+		
+		
+		otdrPane.createChart("ID_TRACE").size(800, 400);
+		
+		//// SQA
+		Pane sqaPane = pane.createPane(Layout.VERTICAL).condition("ID_APPLICATION", "ID_APPLICATION_SQA");
+		sqaPane.css(otdrPane.css);
+		sqaPane.createCheckBox("ID_OPTION_001").size(300, 20).position(10, 10);
+		sqaPane.createToggleButton("ID_OPTION_001").size(100, 50).position(10, 10);
+		sqaPane.createButton("ID_OPTION_001").size(100, 50).position(10, 10);
+		
+		return builder;
+	}
+	
+	private UiBuilder createDesign() {
 		UiBuilder builder = new UiBuilder();
 		Pane pane = builder.createPane(UiBuilder.Layout.VERTICAL);
 		pane.size(1000, 1000);
@@ -30,7 +77,7 @@ public class NewGuiResource {
 		helper.generateToggleButton("ID_APPLICATION", paneRoot).size(100, 40);
 		
 		Pane pane1 = pane.createPane(Layout.HORIZONTAL).condition("ID_APPLICATION", "ID_APPLICATION_OTDR");
-		pane1.createLabel("ID_APPLICATION", UiBuilder.ProprtyField.TITLE).size(100, 20);
+		pane1.createLabel("ID_APPLICATION", UiBuilder.PropertyField.TITLE).size(100, 20);
 		pane1.createComboBox("ID_APPLICATION").size(200, 20);
 		pane1.createComboBox("ID_APPLICATION").size(200, 20);
 		pane1.createButton("ID_APPLICATION").size(200, 60);
@@ -41,11 +88,11 @@ public class NewGuiResource {
 		pane1.createComboBox("ID_OTDR_TESTCONTROL");
 		{
 			Pane subPane = pane.createPane(Layout.VERTICAL).condition("ID_APPLICATION", "ID_APPLICATION_SQA");
-			subPane.createLabel("ID_TEST_MODE", UiBuilder.ProprtyField.TITLE).size(100, 40);
-			subPane.createTextField("ID_TEST_MODE", UiBuilder.ProprtyField.VALUE).size(100, 40);
-			subPane.createLabel("ID_TEST_MODE", UiBuilder.ProprtyField.UNIT).size(20, 40);
-			subPane.createTextField("ID_AVERAGETIME", UiBuilder.ProprtyField.VALUE).size(100, 40);
-			subPane.createTextField("ID_AVERAGETIME", UiBuilder.ProprtyField.VALUE).size(100, 40);
+			subPane.createLabel("ID_TEST_MODE", UiBuilder.PropertyField.TITLE).size(100, 40);
+			subPane.createTextField("ID_TEST_MODE", UiBuilder.PropertyField.VALUE).size(100, 40);
+			subPane.createLabel("ID_TEST_MODE", UiBuilder.PropertyField.UNIT).size(20, 40);
+			subPane.createTextField("ID_AVERAGETIME", UiBuilder.PropertyField.VALUE).size(100, 40);
+			subPane.createTextField("ID_AVERAGETIME", UiBuilder.PropertyField.VALUE).size(100, 40);
 
 		}
 		{
@@ -80,9 +127,9 @@ public class NewGuiResource {
 			subPane.createButton("ID_OPTION_001").size(100, 50).position(10, 10);
 			
 			Pane subSubPane = subPane.createPane(Layout.HORIZONTAL);
-			subSubPane.createLabel("ID_OPTION_001", UiBuilder.ProprtyField.TITLE);
+			subSubPane.createLabel("ID_OPTION_001", UiBuilder.PropertyField.TITLE);
 			subSubPane.createStaticText(":");
-			subSubPane.createLabel("ID_OPTION_001", UiBuilder.ProprtyField.VALUE).size(100, 40).position(10, 10);
+			subSubPane.createLabel("ID_OPTION_001", UiBuilder.PropertyField.VALUE).size(100, 40).position(10, 10);
 		}
 		
 		{
@@ -94,7 +141,7 @@ public class NewGuiResource {
 			Tab paneB = tabPane.createTab(UiBuilder.Layout.VERTICAL).id("ID_APPLICATION", "ID_APPLICATION_OTDR");
 			
 			Pane PaneBB = paneB.createPane(Layout.HORIZONTAL);
-			PaneBB.createLabel("ID_APPLICATION", UiBuilder.ProprtyField.TITLE).size(400, 40);
+			PaneBB.createLabel("ID_APPLICATION", UiBuilder.PropertyField.TITLE).size(400, 40);
 			
 			PaneBB.createComboBox("ID_APPLICATION");
 			Tab paneOtdr = tabPane.createTab(UiBuilder.Layout.VERTICAL).title("Other");

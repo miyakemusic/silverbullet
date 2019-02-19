@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jp.silverbullet.web.ui.part2.UiBuilder.Layout;
-import jp.silverbullet.web.ui.part2.UiBuilder.ProprtyField;
+import jp.silverbullet.web.ui.part2.UiBuilder.PropertyField;
 
 public class TabPane extends WidgetBase {
 	public List<Tab> panes = new ArrayList<>();
 	
 	public TabPane() {
-		super(WidgetType.TabPane, "", ProprtyField.NONE);
+		super(WidgetType.TabPane, "", PropertyField.NONE);
 	}
 	
 //	public TabPane(String id) {

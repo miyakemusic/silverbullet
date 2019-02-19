@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jp.silverbullet.web.KeyValue;
-import jp.silverbullet.web.ui.part2.UiBuilder.ProprtyField;
+import jp.silverbullet.web.ui.part2.UiBuilder.PropertyField;
 
 public class WidgetBase {
 
@@ -15,7 +15,7 @@ public class WidgetBase {
 	public int y = -1;
 	public String id = "";
 	public String subId = "";
-	public ProprtyField field = ProprtyField.NONE;
+	public PropertyField field = PropertyField.NONE;
 	public List<KeyValue> css = new ArrayList<>();
 	
 	public WidgetBase() {}
@@ -29,13 +29,13 @@ public class WidgetBase {
 		this.id = id;
 	}
 	
-	public WidgetBase(WidgetType type, String id, ProprtyField field) {
+	public WidgetBase(WidgetType type, String id, PropertyField field) {
 		this.type = type;
 		this.id = id;
 		this.field = field;
 	}
 
-	public WidgetBase(WidgetType type, String id, String subId, ProprtyField field) {
+	public WidgetBase(WidgetType type, String id, String subId, PropertyField field) {
 		this.type = type;
 		this.id = id;
 		this.subId = subId;
@@ -53,7 +53,8 @@ public class WidgetBase {
 		this.y = y;
 		return this;
 	}
-	public void css(String property, String value) {
+	public WidgetBase css(String property, String value) {
 		this.css.add(new KeyValue(property, value));
+		return this;
 	}
 }

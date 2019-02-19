@@ -27,7 +27,7 @@ class Pane extends Widget {
 	constructor(widget, parent, divid, buildSub) {
 		super(widget, parent, divid);
 		
-		$('#' + parent).append('<div class="design" id="' + divid + '"></div>');
+		$('#' + parent).append('<div id="' + divid + '"></div>');
 		for (var w of widget.widgets) {
 			buildSub(w, divid);
 		}
@@ -36,11 +36,11 @@ class Pane extends Widget {
 	onUpdateValue(property) {
 		if (this.widget.id != '') {
 			if (this.widget.subId == property.currentSelectionId) {
-				this.prevDisplay = $('#' + this.divid).css('display');
-				$('#' + this.divid).css('display', 'none');
+				$('#' + this.divid).css('display', this.prevDisplay);
 			}
 			else if (this.prevDisplay != ''){
-				$('#' + this.divid).css('display', this.prevDisplay);
+				this.prevDisplay = $('#' + this.divid).css('display');
+				$('#' + this.divid).css('display', 'none');				
 			}
 		}
 	}
@@ -368,6 +368,51 @@ class ComboBox extends Widget {
 	}
 }
 
+class Chart extends Widget {
+	constructor(widget, parent, divid) {
+		super(widget, parent, divid);
+
+		$('#' + parent).append('<div id="' + divid + '"></div>');
+		var me = this;
+		this.chart = new CanvasJS.Chart(divid, { 
+			title: {
+				text: ""
+			},
+			data: [
+			{
+				type: "line",
+				dataPoints: null
+			}
+			]
+		});
+		this.chart.render();	
+	}
+	
+	onUpdateValue(property) {
+		var me = this;
+		var index = 0;
+		if (property.currentValue == 'REQUEST_AGAIN') {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/runtime/getProperty?id=" + me.widget.id + '&index=' + index + '&ext=1001',
+			   success: function(property){
+			   		if (property == null) {
+			   			return;
+			   		}
+					var trace = JSON.parse(property.currentValue);
+					if (trace == null)return;
+					var list = [];
+					for (var i = 0; i < trace.y.length; i++) {
+						list.push({y: parseFloat(trace.y[i])});
+					}	
+					me.chart.options.data[0].dataPoints = list;
+					me.chart.render();   
+			   }
+			});
+		}	
+	}
+}
+
 class NewLayout {
 	constructor(div) {
 		var propertyMap = new Map();
@@ -496,7 +541,10 @@ class NewLayout {
 			else if (widget.type == 'Button') {	
 				wrappedWidget = new Button(widget, parentDiv, divid);
 			}
-						
+			else if (widget.type == 'Chart') {	
+				wrappedWidget = new Chart(widget, parentDiv, divid);
+			}
+							
 			wrappedWidget.accessor(
 				function(id, index, value) {
 					setValue(id, index, value);

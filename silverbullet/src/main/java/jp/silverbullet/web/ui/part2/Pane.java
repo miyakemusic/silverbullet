@@ -4,22 +4,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jp.silverbullet.property2.PropertyHolder2;
+import jp.silverbullet.web.KeyValue;
 import jp.silverbullet.web.ui.part2.UiBuilder.Layout;
-import jp.silverbullet.web.ui.part2.UiBuilder.ProprtyField;
+import jp.silverbullet.web.ui.part2.UiBuilder.PropertyField;
 
 public class Pane extends WidgetBase {
 
 	public Layout layout = Layout.VERTICAL;
 	public List<WidgetBase> widgets = new ArrayList<>();
 	public String caption = "";
-	public ProprtyField field = ProprtyField.NONE;
+	public PropertyField field = PropertyField.NONE;
+	public int padding = -1;
 
 	public Pane(Layout layout) {
-		super(WidgetType.Pane, "", ProprtyField.NONE);
+		super(WidgetType.Pane, "", PropertyField.NONE);
 		this.layout  = layout;
 	}
 
-	public Pane(String caption, ProprtyField field, Layout layout2) {
+	public Pane(String caption, PropertyField field, Layout layout2) {
 		this.caption = caption;
 		this.field = field;
 		this.layout = layout2;
@@ -31,7 +33,7 @@ public class Pane extends WidgetBase {
 	}
 
 	public ComboBox createComboBox(String id) {
-		ComboBox widget = new ComboBox(id, UiBuilder.ProprtyField.VALUE);
+		ComboBox widget = new ComboBox(id, UiBuilder.PropertyField.VALUE);
 		this.widgets.add(widget);
 		applyLayout(widget);
 		return widget;
@@ -44,14 +46,14 @@ public class Pane extends WidgetBase {
 		return pane;
 	}
 
-	public Label createLabel(String id, ProprtyField field) {
+	public Label createLabel(String id, PropertyField field) {
 		Label text = new Label(id, field);
 		this.widgets.add(text);
 		applyLayout(text);
 		return text;
 	}
 
-	public TextField createTextField(String id, ProprtyField field) {
+	public TextField createTextField(String id, PropertyField field) {
 		TextField textField = new TextField(id, field);
 		this.widgets.add(textField);
 		applyLayout(textField);
@@ -114,6 +116,19 @@ public class Pane extends WidgetBase {
 		this.id = id;
 		this.subId = subId;
 		return this;
+	}
+
+	public void css(List<KeyValue> css2) {
+		for (KeyValue c : css2) {
+			this.css.add(c);
+		}
+	}
+
+	public Chart createChart(String id) {
+		Chart chart = new Chart(id);
+		this.widgets.add(chart);
+		applyLayout(chart);
+		return chart;
 	}
 
 }

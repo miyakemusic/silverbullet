@@ -9,7 +9,7 @@ public class UiBuilder {
 	public List<Pane> panes = new ArrayList<>();
 	private PropertyHolder2 propertiesHolder;
 	
-	public enum ProprtyField {
+	public enum PropertyField {
 		VALUE, TITLE, UNIT, STATICTEXT, NONE
 	}
 

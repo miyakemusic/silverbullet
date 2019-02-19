@@ -42,5 +42,13 @@ class WidgetHolder extends WidgetBase {
 		}
 		return this;
 	}
+
+	@Override
+	public WidgetBase css(String property, String value) {
+		for (WidgetBase widget : this.widgets) {
+			widget.css(property, value);
+		}
+		return this;
+	}
 	
 }

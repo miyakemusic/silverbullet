@@ -1,10 +1,10 @@
 package jp.silverbullet.web.ui.part2;
 
-import jp.silverbullet.web.ui.part2.UiBuilder.ProprtyField;
+import jp.silverbullet.web.ui.part2.UiBuilder.PropertyField;
 
 public class ComboBox extends WidgetBase {
 
-	public ComboBox(String id, ProprtyField field) {
+	public ComboBox(String id, PropertyField field) {
 		super(WidgetType.ComboBox, id, field);
 	}
 
