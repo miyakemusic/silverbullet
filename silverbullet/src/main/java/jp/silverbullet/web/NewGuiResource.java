@@ -51,10 +51,13 @@ public class NewGuiResource {
 		helper.generateToggleButton("ID_PULSEWIDTH", pulsePane).size(80, 30);
 		
 		Pane otdrSetupPane = otdrPane.createPane(Layout.HORIZONTAL);
-		otdrPane.createButton("ID_OTDR_TESTCONTROL").size(100, 60);
+		helper.generateToggleButton("ID_COLLECMODE", otdrSetupPane).css("margin", "5");
+		otdrSetupPane.createButton("ID_OTDR_TESTCONTROL").size(100, 60);
+		otdrSetupPane.createButton("ID_COLLECMODE").size(130, 60);
+		otdrSetupPane.createComboBox("ID_COLLECMODE").css("font-size", "29px");
 		
-		
-		otdrPane.createChart("ID_TRACE").size(800, 400);
+		otdrPane.createChart("ID_TRACE").size(600, 300);
+		otdrPane.createTable("ID_TABLE").size(600, 200);
 		
 		//// SQA
 		Pane sqaPane = pane.createPane(Layout.VERTICAL).condition("ID_APPLICATION", "ID_APPLICATION_SQA");

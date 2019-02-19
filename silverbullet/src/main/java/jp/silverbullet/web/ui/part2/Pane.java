@@ -131,4 +131,11 @@ public class Pane extends WidgetBase {
 		return chart;
 	}
 
+	public Table createTable(String id) {
+		Table table = new Table(id);
+		this.widgets.add(table);
+		applyLayout(table);
+		return table;
+	}
+
 }

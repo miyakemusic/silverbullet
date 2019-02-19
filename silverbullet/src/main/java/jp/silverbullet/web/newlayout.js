@@ -121,21 +121,8 @@ class Button extends Widget {
 
 		$('#' + this.divid).click(function() {
 			if (me.property.elements.length > 0) {
-				var list = [];
-				for (var e of me.property.elements) {
-					if (!me.property.disabledOption.includes(me.property.currentValue)) {
-						list.push(e.id);
-					}
-				}
-				
-				var index = list.indexOf(me.property.currentSelectionId);
-				var val;
-				index++;
-				if (index >= list.length) {
-					index = 0;
-				}
-				
-				me.setter(me.widget.id, 0, list[index]);
+				var next = me.nextItem(me.property);				
+				me.setter(me.widget.id, 0, next.id);
 			}
 		});		
 	}
@@ -143,22 +130,42 @@ class Button extends Widget {
 	onUpdateValue(property) {
 		this.property = property;
 		$('#' + this.titleId).html(property.title);
-		$('#' + this.valueId).html(property.currentValue);
-		
+				
 		var me = this;
 		if (property.type == 'Boolean') {
 			if (property.currentValue == 'true') {
 				$('#' + this.divid).removeClass('mybutton');
 				$('#' + this.divid).addClass('mybutton checked');
+				$('#' + this.valueId).html("OFF");
 			}
 			else {
 				$('#' + this.divid).removeClass('mybutton checked');
 				$('#' + this.divid).addClass('mybutton');
+				$('#' + this.valueId).html("ON");
 			}
+			
 		}
 		else {
-	
+			$('#' + this.valueId).html(this.nextItem(property).title);
 		}
+	}
+	
+	nextItem(property) {
+		var list = [];
+		for (var e of property.elements) {
+			if (!property.disabledOption.includes(property.currentValue)) {
+				list.push(e.id);
+			}
+		}
+		
+		var index = list.indexOf(property.currentSelectionId);
+		var val;
+		index++;
+		if (index >= list.length) {
+			index = 0;
+		}
+		
+		return property.elements[index];
 	}
 }
 
@@ -263,8 +270,6 @@ class ToggleButton2 extends Widget {
 					$('#' + this.labelId).html(e.title);
 				}
 			}
-			//$('#' + this.divid).button('option', 'disabled', property.disabledOption.includes(this.widget.subId));
-			//$('#' + this.divid).prop('checked', this.widget.subId == property.currentSelectionId).button('refresh');
 			
 			$('#' + this.divid).removeClass();
 			if (property.disabledOption.includes(this.widget.subId)) {
@@ -413,6 +418,61 @@ class Chart extends Widget {
 	}
 }
 
+class Table extends Widget {
+	constructor(widget, parent, divid) {
+		super(widget, parent, divid);
+
+		this.headers = [];
+		
+//		this.tableid = 'table' + this.divid;
+		$('#' + this.parent).append('<div id="' + this.divid + '"></div>');
+
+		var headers = ['COL#1', 'COL#2', 'COL#3', 'COL#4'];
+		this.createTable(headers);
+	}
+	
+	onUpdateValue(property) {
+		if (property.currentValue == '') {
+			return;
+		}
+		var table = JSON.parse(property.currentValue);
+		
+		if (this.headers.length != table.headers.length) {
+			this.createTable(table.headers);
+		}
+		this.headers = table.headers;
+	
+		var me = this;
+				
+		this.hot.updateSettings({
+		    height: $('#' + me.divid).height()
+		});	
+
+		this.hot.loadData(table.data);
+		
+	}
+		
+	resize() {
+		var me = this;
+
+		this.hot.updateSettings({
+		    height: $('#' + me.divid).height()
+		});		
+	}
+			
+	createTable(headers) {
+//		var height = $('#' + this.divid).prop('height');
+		$('#' + this.divid).handsontable({
+		  manualColumnResize: true,
+		  colHeaders: headers,
+		  rowHeaders: true,
+		});	
+	
+		this.hot = $('#' + this.divid).handsontable('getInstance');	
+	}
+}
+
+
 class NewLayout {
 	constructor(div) {
 		var propertyMap = new Map();
@@ -544,7 +604,10 @@ class NewLayout {
 			else if (widget.type == 'Chart') {	
 				wrappedWidget = new Chart(widget, parentDiv, divid);
 			}
-							
+			else if (widget.type == 'Table') {	
+				wrappedWidget = new Table(widget, parentDiv, divid);
+			}					
+					
 			wrappedWidget.accessor(
 				function(id, index, value) {
 					setValue(id, index, value);
