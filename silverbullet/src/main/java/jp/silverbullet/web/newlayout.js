@@ -27,7 +27,15 @@ class Pane extends Widget {
 	constructor(widget, parent, divid, buildSub) {
 		super(widget, parent, divid);
 		
-		$('#' + parent).append('<div id="' + divid + '"></div>');
+		this.legendId = divid + 'legend';
+		if (widget.id != '' && widget.subId == '') {
+			$('#' + parent).append('<fieldset id="' + divid + '"><legend id="' + this.legendId + '"></legend></fieldset>');
+		}
+		else {
+			$('#' + parent).append('<div id="' + divid + '"></div>');
+		}
+		
+
 		for (var w of widget.widgets) {
 			buildSub(w, divid);
 		}
@@ -35,12 +43,17 @@ class Pane extends Widget {
 	
 	onUpdateValue(property) {
 		if (this.widget.id != '') {
-			if (this.widget.subId == property.currentSelectionId) {
-				$('#' + this.divid).css('display', this.prevDisplay);
+			if (this.widget.subId != '') {
+				if (this.widget.subId == property.currentSelectionId) {
+					$('#' + this.divid).css('display', this.prevDisplay);
+				}
+				else if (this.prevDisplay != ''){
+					this.prevDisplay = $('#' + this.divid).css('display');
+					$('#' + this.divid).css('display', 'none');				
+				}
 			}
-			else if (this.prevDisplay != ''){
-				this.prevDisplay = $('#' + this.divid).css('display');
-				$('#' + this.divid).css('display', 'none');				
+			else {
+				$('#' + this.legendId).html(property.title);
 			}
 		}
 	}
@@ -115,7 +128,7 @@ class Button extends Widget {
 		this.titleId = divid + 'title';
 		this.valueId = divid + 'value';
 
-		$('#' + parent).append('<div id="' + divid + '" class="mybutton"><div id="' + this.titleId + '"></div><div id="' + this.valueId + '" class="buttonvalue"></div></div>');
+		$('#' + parent).append('<div id="' + divid + '" class="mybutton canpush"><div id="' + this.titleId + '"></div><div id="' + this.valueId + '" class="buttonvalue"></div></div>');
 
 		var me = this;
 

@@ -42,19 +42,30 @@ public class NewGuiResource {
 		otdrPane.css("padding", "5");
 		distPane.createLabel("ID_DISTANCERANGE", PropertyField.TITLE).size(150, 30).css("font-size", "16px").css("font-weight", "bold");
 		distPane.createStaticText(":");
+		distPane.css("border-width", "1px").css("border-color", "black").css("border-style", "solid");
 		helper.generateToggleButton("ID_DISTANCERANGE", distPane).size(80, 30);
 		
 		Pane pulsePane = otdrPane.createPane(Layout.HORIZONTAL);
-		pulsePane.css(otdrPane.css);
+		pulsePane.css(distPane.css);
 		pulsePane.createLabel("ID_PULSEWIDTH", PropertyField.TITLE).size(150, 30);
 		pulsePane.createStaticText(":");
 		helper.generateToggleButton("ID_PULSEWIDTH", pulsePane).size(80, 30);
 		
 		Pane otdrSetupPane = otdrPane.createPane(Layout.HORIZONTAL);
-		helper.generateToggleButton("ID_COLLECMODE", otdrSetupPane).css("margin", "5");
+		Pane collectionPane = otdrSetupPane.createPane(Layout.HORIZONTAL).title("ID_COLLECMODE", PropertyField.TITLE);
+		helper.generateToggleButton("ID_COLLECMODE", collectionPane).css("margin", "5");
 		otdrSetupPane.createButton("ID_OTDR_TESTCONTROL").size(100, 60);
 		otdrSetupPane.createButton("ID_COLLECMODE").size(130, 60);
 		otdrSetupPane.createComboBox("ID_COLLECMODE").css("font-size", "29px");
+		
+		Pane averagePane = otdrSetupPane.createPane(Layout.HORIZONTAL);
+		averagePane.size(250, 35);
+		averagePane.css(distPane.css);
+		averagePane.css("font-size", "20px");
+		averagePane.createLabel("ID_AVERAGETIME", PropertyField.TITLE);
+		averagePane.createStaticText(":");
+		averagePane.createTextField("ID_AVERAGETIME", PropertyField.VALUE).size(50, 24);
+		averagePane.createLabel("ID_AVERAGE_RESULT", PropertyField.VALUE);
 		
 		otdrPane.createChart("ID_TRACE").size(600, 300);
 		otdrPane.createTable("ID_TABLE").size(600, 200);

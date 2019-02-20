@@ -15,6 +15,7 @@ public class Pane extends WidgetBase {
 	public String caption = "";
 	public PropertyField field = PropertyField.NONE;
 	public int padding = -1;
+	public PropertyField titldField = null;//PropertyField.STATICTEXT;
 
 	public Pane(Layout layout) {
 		super(WidgetType.Pane, "", PropertyField.NONE);
@@ -136,6 +137,12 @@ public class Pane extends WidgetBase {
 		this.widgets.add(table);
 		applyLayout(table);
 		return table;
+	}
+
+	public Pane title(String id, PropertyField field) {
+		this.id = id;
+		this.titldField = field;
+		return this;
 	}
 
 }
