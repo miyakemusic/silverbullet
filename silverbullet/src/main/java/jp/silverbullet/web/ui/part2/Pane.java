@@ -145,4 +145,11 @@ public class Pane extends WidgetBase {
 		return this;
 	}
 
+	public Image createImage(String id) {
+		Image image = new Image(id);
+		this.widgets.add(image);
+		applyLayout(image);
+		return image;
+	}
+
 }

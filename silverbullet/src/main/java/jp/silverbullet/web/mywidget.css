@@ -36,8 +36,17 @@
                 inset 2px 2px 3px rgba(0, 0, 0, .6);
 }
 
-.buttonvalue {
+.buttonValue {
 	color: blue;
 	font-weight: bold;
+	padding: 1px 1px 1px 1px;
+	margin:  0px 0px 0px 0px;
+	height: 50%;
 }
+
+.buttonTitle {
+	color: black;
+	padding: 1px 1px 1px 1px;
+	margin:  0px 0px 0px 0px;
+	height:50%;
 }

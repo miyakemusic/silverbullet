@@ -10,28 +10,30 @@ import java.util.List;
 import java.util.Set;
 
 import jp.silverbullet.dependency2.RequestRejectedException;
+import jp.silverbullet.property2.PropertyDef2;
+import jp.silverbullet.property2.PropertyHolder2;
 import jp.silverbullet.property2.RuntimeProperty;
 import jp.silverbullet.sequncer.EasyAccessInterface;
 
 public class PropertySourceGenerator {
 
-	private List<RuntimeProperty> properties;
+	private PropertyHolder2 properties;
 	private Set<String> exists = new HashSet<String>();
-	public PropertySourceGenerator(List<RuntimeProperty> properties) {
-		this.properties = properties;
+	public PropertySourceGenerator(PropertyHolder2 propertyHolder2) {
+		this.properties = propertyHolder2;
 	}
 
 	public void generate(String baseFolder, String packageName){
 		List<String> lines = new ArrayList<String>();
 		lines.add("package " + packageName + ";");
 		lines.add("public class ID {");
-		for (RuntimeProperty prop : properties) {
+		for (PropertyDef2 prop : properties.getProperties()) {
 			if (prop.getIndex() > 0) { // This is tentative code
 				continue;
 			}
 			lines.add(createLine(prop.getId()));
 			if (prop.isList()) {
-				prop.getListIds().forEach(optionId -> lines.add(createLine(optionId)));
+				prop.getOptionIds().forEach(optionId -> lines.add(createLine(optionId)));
 			}
 		}
 		lines.add("}");
@@ -60,15 +62,15 @@ public class PropertySourceGenerator {
 		source.add("    public UserEasyAccess(EasyAccessInterface model2) {");
 		source.add("        this.model = model2;");
 		source.add("    }");
-		for (RuntimeProperty prop : properties) {
+		for (PropertyDef2 prop : properties.getProperties()) {
 			if (prop.getIndex() > 0) { // This is tentative code
 				continue;
 			}
-			boolean array = prop.getSize() > 1;
-			if (prop.isNumericProperty() && prop.getDecimals() > 0) {
+			boolean array = prop.getArraySize() > 1;
+			if (prop.isNumeric() && prop.getDecimals() > 0) {
 				source.addAll(this.createSource(prop, "Double"));
 			}
-			else if (prop.isNumericProperty() && prop.getDecimals() == 0) {
+			else if (prop.isNumeric() && prop.getDecimals() == 0) {
 				source.addAll(this.createSource(prop, "Long"));
 			}
 			else if (prop.isText() || prop.isTable()) {
@@ -104,9 +106,9 @@ public class PropertySourceGenerator {
 		return source;
 	}
 	
-	private List<String> createSource(RuntimeProperty prop, String type) {
+	private List<String> createSource(PropertyDef2 prop, String type) {
 		List<String> source = new ArrayList<>();
-		boolean array = prop.getSize() > 1;
+		boolean array = prop.getArraySize() > 1;
 		source.add("    public void set" + getMethodName(prop.getId()) + "(" + type + " value) throws RequestRejectedException {");
 		source.add("        model.requestChange(ID." + prop.getId() + ", String.valueOf(value));");
 		source.add("    }");

@@ -451,5 +451,17 @@ public class PropertyDef2 implements Cloneable {
 		
 	}
 
+	public boolean isText() {
+		return this.getType().equals(PropertyType2.Text);
+	}
+
+	public boolean isTable() {
+		return this.getType().equals(PropertyType2.Table);
+	}
+
+	public boolean isBoolean() {
+		return this.getType().equals(PropertyType2.Boolean);
+	}
+
 	
 }

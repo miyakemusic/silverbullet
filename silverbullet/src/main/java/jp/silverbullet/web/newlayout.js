@@ -110,6 +110,24 @@ class Tab {
 	}
 }
 
+class SbImage extends Widget {
+	constructor(widget, parent, divid) {
+		super(widget, parent, divid);
+		
+		$('#' + parent).append('<canvas id="' + divid + '"></canvas>');
+	}
+	
+	onUpdateValue(property) {
+		var canvas = $("#" + this.divid);
+		var ctx = canvas[0].getContext('2d');
+		var image = new Image();
+		image.onload = function() {
+		  ctx.drawImage(image, 0, 0);
+		}
+		image.src = property.currentValue;
+	}
+}
+
 class StaticText extends Widget {
 	constructor(widget, parent, divid) {
 		super(widget, parent, divid);
@@ -128,8 +146,8 @@ class Button extends Widget {
 		this.titleId = divid + 'title';
 		this.valueId = divid + 'value';
 
-		$('#' + parent).append('<div id="' + divid + '" class="mybutton canpush"><div id="' + this.titleId + '"></div><div id="' + this.valueId + '" class="buttonvalue"></div></div>');
-
+		$('#' + parent).append('<div id="' + divid + '" class="mybutton canpush"><label id="' + this.titleId + '" class="buttonTitle"></label><br><label id="' + this.valueId + '" class="buttonValue"></label></div>');
+//		$('#' + divid).css('line-height', '20px');
 		var me = this;
 
 		$('#' + this.divid).click(function() {
@@ -233,8 +251,8 @@ class CheckBox extends Widget {
 		var me = this;
 		
 		$('#' + this.parent).append('<div id="' + this.divid + '"><input type="checkbox" id="' + this.divid + 'check"><label id="' + this.divid + 'label"></label></div>');
-		$('#' + this.divid + 'check').click(function() {
-			me.setter(me.widget.id, 0, $(this).prop('checked'));
+		$('#' + this.divid).click(function() {
+			me.setter(me.widget.id, 0, $('#' + me.divid + 'check').prop('checked'));
 		});			
 	}
 	
@@ -620,7 +638,10 @@ class NewLayout {
 			else if (widget.type == 'Table') {	
 				wrappedWidget = new Table(widget, parentDiv, divid);
 			}					
-					
+			else if (widget.type == 'Image') {	
+				wrappedWidget = new SbImage(widget, parentDiv, divid);
+			}
+								
 			wrappedWidget.accessor(
 				function(id, index, value) {
 					setValue(id, index, value);
