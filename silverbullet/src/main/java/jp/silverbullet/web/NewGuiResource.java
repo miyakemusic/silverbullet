@@ -73,12 +73,15 @@ public class NewGuiResource {
 		//// SQA
 		Pane sqaPane = pane.createPane(Layout.VERTICAL).condition("ID_APPLICATION", "ID_APPLICATION_SQA");
 		sqaPane.css(otdrPane.css);
-		Pane optionPane = sqaPane.createPane(Layout.HORIZONTAL);
-		optionPane.createCheckBox("ID_OPTION_001").size(300, 20).position(10, 10);
-		optionPane.createToggleButton("ID_OPTION_001").size(100, 50).position(10, 10).css("line-height", "25px");;
-		optionPane.createButton("ID_OPTION_001").size(100, 50).position(10, 10).css("line-height", "25px");;
+//		Pane optionPane = sqaPane.createPane(Layout.HORIZONTAL);
+//		optionPane.createCheckBox("ID_OPTION_001").size(300, 20).position(10, 10);
+//		optionPane.createToggleButton("ID_OPTION_001").size(100, 50).position(10, 10).css("line-height", "25px");;
+//		optionPane.createButton("ID_OPTION_001").size(100, 50).position(10, 10).css("line-height", "25px");;
 		sqaPane.createButton("ID_OSC_TESTCONTROL").size(100, 50).css("line-height", "25px");
-		sqaPane.createImage("ID_OSC_EYEDIAGRAM").size(600, 500);
+		Pane triggerPane = sqaPane.createPane(Layout.VERTICAL).title("ID_OSC_TRIGGER", PropertyField.TITLE);
+		triggerPane.createTextField("ID_OSC_TRIGGER", PropertyField.VALUE);
+		triggerPane.createSlider("ID_OSC_TRIGGER");//.size(500, 30);
+		sqaPane.createImage("ID_OSC_EYEDIAGRAM").size(1000, 600);
 		return builder;
 	}
 	

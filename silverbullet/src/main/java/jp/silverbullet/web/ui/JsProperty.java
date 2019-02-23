@@ -23,6 +23,8 @@ public class JsProperty {
 	private String currentSelectionId;
 	private PropertyType2 type;
 	private List<String> disabledOption = new ArrayList<>();
+	private String min;
+	private String max;
 	
 	public boolean isEnabled() {
 		return enabled;
@@ -77,6 +79,18 @@ public class JsProperty {
 	}
 	public List<String> getDisabledOption() {
 		return disabledOption;
+	}
+	public void setMin(String min) {
+		this.min = min;
+	}
+	public void setMax(String max) {
+		this.max = max;
+	}
+	public String getMin() {
+		return min;
+	}
+	public String getMax() {
+		return max;
 	}
 	
 }

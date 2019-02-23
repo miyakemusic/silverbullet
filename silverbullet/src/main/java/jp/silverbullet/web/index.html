@@ -9,6 +9,7 @@
 <script type="text/javascript" src="lib/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="lib/jquery.ui-contextmenu.min.js"></script>
 <!-- <script type="text/javascript" src="lib/jstree.min.js"></script> -->
+<script type="text/javascript" src="lib/fancyknob.js"></script>
 
 <script type="text/javascript" src="commondialogs.js"></script>
 <script type="text/javascript" src="jsmytable.js"></script>
@@ -20,6 +21,7 @@
 <script type="text/javascript" src="designer.js"></script>
 <script type="text/javascript" src="controllerclass.js"></script>
 <script type="text/javascript" src="propertydebug.js"></script>
+<script type="text/javascript" src="newlayout.js"></script> 
 
 <script type="text/javascript" src="uitree.js"></script>
 <script type="text/javascript" src="test.js"></script>
@@ -48,6 +50,7 @@ $(function() {
 		new DebugClass('tab_debug');
 		new TestClass('tab_test');
 		new DependencyClass2('tab_dependency2');
+		new NewLayout('tab_newgui');
 		$('#save').click(function() {
 			$.ajax({
 			   type: "GET", 
@@ -86,7 +89,9 @@ $(function() {
 <link rel="stylesheet" media="screen" href="lib/handsontable.full.css">
 <link rel="stylesheet" media="screen" href="lib/jquery.dataTables.min.css">
 
+<link rel="stylesheet" type="text/css" href="mywidget.css">
 <link rel="stylesheet" type="text/css" href="lib/jquery-ui.css">
+<link rel="stylesheet" type="text/css" href="lib/fancyknob.css">
 <link rel="stylesheet" type="text/css" href="mycss.css">
 <link rel="stylesheet" type="text/css" href="table.css">
 
@@ -107,6 +112,7 @@ $(function() {
   	<li><a href="#tab_control">Control</a></li>
   	<li><a href="#tab_debug">Debug</a></li>
   	<li><a href="#tab_test">Test</a></li>
+  	<li><a href="#tab_newgui">GUI</a></li>
   </ul>
   <div id="tab_id"></div>
   <div id="tab_designer"></div>
@@ -115,6 +121,7 @@ $(function() {
   <div id="tab_debug"></div>
   <div id="tab_test"></div>
   <div id="tab_dependency2"></div>
+  <div id="tab_newgui"></div>
 </div>
 
 </body>

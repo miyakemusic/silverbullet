@@ -152,4 +152,11 @@ public class Pane extends WidgetBase {
 		return image;
 	}
 
+	public Slider createSlider(String id) {
+		Slider slider = new Slider(id);
+		this.widgets.add(slider);
+		applyLayout(slider);
+		return slider;
+	}
+
 }

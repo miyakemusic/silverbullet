@@ -176,6 +176,7 @@ public class PropertyDef2 implements Cloneable {
 		return this.defaultValue;
 	}
 
+	@JsonIgnore
 	public PropertyDef2 min(double min) {
 		double prev = this.max;
 		this.min = min;
@@ -189,6 +190,7 @@ public class PropertyDef2 implements Cloneable {
 		}
 	}
 
+	@JsonIgnore
 	public PropertyDef2 max(double max) {
 		double prev = this.max;
 		this.max = max;
@@ -203,6 +205,7 @@ public class PropertyDef2 implements Cloneable {
 		return this;
 	}
 
+	@JsonIgnore
 	public PropertyDef2 decimals(int i) {
 		int prev = this.decimals;
 		this.decimals= i;
@@ -238,6 +241,7 @@ public class PropertyDef2 implements Cloneable {
 		return type;
 	}
 
+	@JsonIgnore
 	public PropertyDef2 defaultValue(double d) {
 		String prev = this.defaultValue;
 		this.defaultValue = String.valueOf(d);
@@ -265,6 +269,7 @@ public class PropertyDef2 implements Cloneable {
 		this.decimals(decimals);
 	}
 
+	@JsonIgnore
 	public PropertyDef2 maxLength(int length) {
 		int prev = this.maxLength;
 		this.maxLength = length;
@@ -300,6 +305,7 @@ public class PropertyDef2 implements Cloneable {
 		this.arraySize(arraySize);
 	}
 
+	@JsonIgnore
 	public PropertyDef2 arraySize(int arraySize2) {
 		int prev = this.arraySize;
 		this.arraySize = arraySize2;
@@ -361,6 +367,7 @@ public class PropertyDef2 implements Cloneable {
 		this.persistent(persistent);
 	}
 
+	@JsonIgnore
 	public PropertyDef2 persistent(Boolean persistent) {
 		Boolean prev = this.persistent;
 		this.persistent = persistent;
@@ -405,6 +412,7 @@ public class PropertyDef2 implements Cloneable {
 		return options;
 	}
 
+	@JsonIgnore
 	public PropertyDef2 title(String string) {
 		String prev = this.title;
 		this.title = string;
@@ -451,14 +459,17 @@ public class PropertyDef2 implements Cloneable {
 		
 	}
 
+	@JsonIgnore
 	public boolean isText() {
 		return this.getType().equals(PropertyType2.Text);
 	}
 
+	@JsonIgnore
 	public boolean isTable() {
 		return this.getType().equals(PropertyType2.Table);
 	}
 
+	@JsonIgnore
 	public boolean isBoolean() {
 		return this.getType().equals(PropertyType2.Boolean);
 	}

@@ -110,21 +110,74 @@ class Tab {
 	}
 }
 
+class Slider extends Widget {
+	constructor(widget, parent, divid) {
+		super(widget, parent, divid);
+		
+		this.customId = divid + 'custom';
+		
+		$('#' + parent).append('<div id="' + divid + '"><div id="' + this.customId + '" class="ui-slider-handle"></div></div>');
+
+		this.prevMin = -100;
+		this.prevMax = 100;
+		
+		var me = this;
+	    this.handle = $( "#" + this.customId);
+	    $( "#" + divid ).slider({
+	    	value: 0,
+	    	min: me.prevMin,
+	    	max: me.prevMax,
+	      create: function() {
+	        me.handle.text( $( this ).slider( "value" ) );
+	      },
+	      slide: function( event, ui ) {
+	        //me.handle.text( ui.value );
+	        me.setter(me.widget.id, 0, ui.value);
+	      }
+	    });
+	}
+	
+	onUpdateValue(property) {
+		
+		var range = false;
+		if (this.prevMin != property.min) {
+			$('#' + this.divid).slider("option", "min", property.min);
+			range = true;
+		}
+		if (this.prevMax != property.max) {
+			$('#' + this.divid).slider("option", "max", property.max);
+			range = true;
+		}
+		$('#' + this.divid).slider("option", "value", property.currentValue);
+		
+		this.handle.text($('#' + this.divid).slider('value'));
+		
+		if (range) {
+			$("input[type='range']").slider( "refresh" );
+		}
+				
+		this.prevMin = property.min;
+		this.prevMax = property.max;
+	}
+}
+
 class SbImage extends Widget {
 	constructor(widget, parent, divid) {
 		super(widget, parent, divid);
 		
-		$('#' + parent).append('<canvas id="' + divid + '"></canvas>');
+		$('#' + parent).append('<canvas id="' + divid + '" width="600" height="400"></canvas>');
+		
+		var canvas = $("#" + this.divid);
+		var ctx = canvas[0].getContext('2d');
+		this.image = new Image();
+		var me = this;
+		this.image.onload = function() {
+		  ctx.drawImage(me.image, 0, 0, 400, 300);
+		}
 	}
 	
 	onUpdateValue(property) {
-		var canvas = $("#" + this.divid);
-		var ctx = canvas[0].getContext('2d');
-		var image = new Image();
-		image.onload = function() {
-		  ctx.drawImage(image, 0, 0);
-		}
-		image.src = property.currentValue;
+		this.image.src = property.currentValue;
 	}
 }
 
@@ -641,7 +694,10 @@ class NewLayout {
 			else if (widget.type == 'Image') {	
 				wrappedWidget = new SbImage(widget, parentDiv, divid);
 			}
-								
+			else if (widget.type == 'Slider') {	
+				wrappedWidget = new Slider(widget, parentDiv, divid);
+			}
+											
 			wrappedWidget.accessor(
 				function(id, index, value) {
 					setValue(id, index, value);
