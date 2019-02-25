@@ -101,12 +101,28 @@ public abstract class Sequencer {
 			
 		for (UserSequencer us : userSequencers) {
 			if (matches(us.targetIds(), changedIds)) {
-				try {
-					us.handle(model, getDependency().getChagedItems());
-				} catch (RequestRejectedException e) {
-					exception = e;
-					e.printStackTrace();
+				if (us.isAsync()) {
+					new Thread() {
+						@Override
+						public void run() {
+							try {
+								us.handle(model, getDependency().getChagedItems());
+							} catch (RequestRejectedException e) {
+								exception = e;
+								e.printStackTrace();
+							}
+						}
+					}.start();
 				}
+				else {
+					try {
+						us.handle(model, getDependency().getChagedItems());
+					} catch (RequestRejectedException e) {
+						exception = e;
+						e.printStackTrace();
+					}				
+				}
+
 			}
 		}	
 

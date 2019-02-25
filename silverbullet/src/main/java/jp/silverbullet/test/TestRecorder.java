@@ -199,6 +199,7 @@ public class TestRecorder implements SequencerListener, RegisterAccessorListener
 		}
 	}
 
+	private Object sync = new Object();
 	public void playBack() {
 		this.result = new TestResult(this.script);
 		fireTestStart();
@@ -212,6 +213,7 @@ public class TestRecorder implements SequencerListener, RegisterAccessorListener
 							handle(item);
 						}
 					});
+//					handle(item);
 					try {
 						Thread.sleep(100);
 					} catch (InterruptedException e) {
@@ -226,6 +228,7 @@ public class TestRecorder implements SequencerListener, RegisterAccessorListener
 					}
 
 				});
+//				fireTestFinished();
 			}
 			
 		}.start();
@@ -308,7 +311,6 @@ public class TestRecorder implements SequencerListener, RegisterAccessorListener
 		try {
 			testRecorderInterface.requestChange(item.getTarget(), item.getValue());
 		} catch (RequestRejectedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -424,6 +426,10 @@ public class TestRecorder implements SequencerListener, RegisterAccessorListener
 
 	public void changeId(String prevId, String newId) {
 		this.script.changeId(prevId, newId);
+	}
+
+	public void addCommand(String type, String target, String value, String serial) {
+		this.script.add(new TestItem(type, target, value), Long.valueOf(serial));
 	}
 
 }

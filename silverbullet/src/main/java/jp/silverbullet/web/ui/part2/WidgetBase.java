@@ -8,8 +8,8 @@ import jp.silverbullet.web.ui.part2.UiBuilder.PropertyField;
 
 public class WidgetBase {
 
-	public int width = -1;
-	public int height = -1;
+//	public int width = -1;
+//	public int height = -1;
 	public WidgetType type;
 	public int x = -1;
 	public int y = -1;
@@ -42,11 +42,11 @@ public class WidgetBase {
 		this.field = field;
 	}
 	
-	public WidgetBase size(int width, int heigth) {
-		this.width = width;
-		this.height = heigth;
-		return this;
-	}
+//	public WidgetBase size(int width, int heigth) {
+//		this.width = width;
+//		this.height = heigth;
+//		return this;
+//	}
 	
 	public WidgetBase position(int x, int y) {
 		this.x = x;

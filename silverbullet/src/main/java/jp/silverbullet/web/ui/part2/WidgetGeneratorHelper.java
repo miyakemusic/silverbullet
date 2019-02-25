@@ -5,6 +5,8 @@ import java.util.List;
 
 import jp.silverbullet.property2.PropertyDef2;
 import jp.silverbullet.property2.PropertyHolder2;
+import jp.silverbullet.web.ui.part2.UiBuilder.Layout;
+import jp.silverbullet.web.ui.part2.UiBuilder.PropertyField;
 
 public class WidgetGeneratorHelper {
 
@@ -25,6 +27,28 @@ public class WidgetGeneratorHelper {
 		return widgetHolder;
 	}
 
+	public void generateTitledSetting(String id, Pane pane) {
+		Pane subPane = pane.createPane(Layout.HORIZONTAL);
+		subPane.css("border-width", "1px").css("border-color", "lightgray").css("border-style", "solid").css("padding", "5px");
+		subPane.createLabel(id, PropertyField.TITLE);
+		subPane.createStaticText(":");
+		PropertyDef2 prop = this.propertiesHolder.get(id);
+		
+		if (prop.isList()) {
+			subPane.createComboBox(id);
+		}
+		else if (prop.isNumeric()) {
+			subPane.createTextField(id, PropertyField.VALUE);
+			subPane.createLabel(id, PropertyField.UNIT);
+		}
+		else if (prop.isBoolean()) {
+			subPane.createButton(id);
+		}
+		else {
+			subPane.createLabel(id, PropertyField.VALUE);
+		}
+	}
+
 }
 
 
@@ -33,14 +57,6 @@ class WidgetHolder extends WidgetBase {
 	
 	public void add(WidgetBase widget) {
 		this.widgets.add(widget);
-	}
-
-	@Override
-	public WidgetBase size(int width, int heigth) {
-		for (WidgetBase widget : this.widgets) {
-			widget.size(width, heigth);
-		}
-		return this;
 	}
 
 	@Override

@@ -159,4 +159,9 @@ public class Pane extends WidgetBase {
 		return slider;
 	}
 
+	public Pane title(String text) {
+		this.caption = text;
+		return this;
+	}
+
 }

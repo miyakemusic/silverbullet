@@ -300,7 +300,7 @@ class TestClass {
 						editRow();
 						break;
 					case "addWait":
-						addCommand('CONTROL', 'WAIT', '100');
+						addCommand('CONTROL', 'WAIT', '1000');
 						break;
 					case "moveUp":
 						move('up');

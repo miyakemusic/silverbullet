@@ -23,19 +23,60 @@ class Widget {
 	}
 }
 
+class EditableWidget extends Widget {
+	constructor(widget, parent, divid, buildSub) {
+		super(widget, parent, divid);
+		
+		var labelId = divid + "_label";
+		var containerId = divid + "_container";
+		
+		$('#' + parent).append('<div id="' + divid + '"></div>');
+		$('#' + divid).append('<div id="' + containerId + '"></div>');
+		$('#' + divid).append('<div id="' + labelId + '">' + widget.type + "." + widget.id + '</div>');
+		
+//		$('#' + containerId).css({"position":"absolute"});
+//		$('#' + labelId).css({"position":"absolute"});
+		$('#' + divid).css({"position":"relative", "border-width":"1", "border-style":"solid", "border-color":"black", "word-wrap":"break-word"});	
+		
+		$('#' + divid).draggable({
+			start : function (event , ui){
+			} ,
+			drag : function (event , ui) {
+			} ,
+			stop : function (event , ui){
+			} 
+		});
+		$('#' + divid).resizable({
+	      stop: function( event, ui ) {
+	      }
+	    });    
+	    					
+		if (widget.widgets != null) {
+			for (var w of widget.widgets) {
+				buildSub(w, containerId);
+			}
+		}
+	}
+	
+	onUpdateValue(property) {
+	}
+}
+
 class Pane extends Widget {
 	constructor(widget, parent, divid, buildSub) {
 		super(widget, parent, divid);
 		
 		this.legendId = divid + 'legend';
-		if (widget.id != '' && widget.subId == '') {
+		if (widget.caption != '') {
+			$('#' + parent).append('<fieldset id="' + divid + '"><legend>' + widget.caption + '</legend></fieldset>');
+		}
+		else if (widget.id != '' && widget.subId == '') {
 			$('#' + parent).append('<fieldset id="' + divid + '"><legend id="' + this.legendId + '"></legend></fieldset>');
 		}
 		else {
 			$('#' + parent).append('<div id="' + divid + '"></div>');
 		}
 		
-
 		for (var w of widget.widgets) {
 			buildSub(w, divid);
 		}
@@ -45,10 +86,9 @@ class Pane extends Widget {
 		if (this.widget.id != '') {
 			if (this.widget.subId != '') {
 				if (this.widget.subId == property.currentSelectionId) {
-					$('#' + this.divid).css('display', this.prevDisplay);
+					$('#' + this.divid).css('display', 'inline-block');
 				}
 				else if (this.prevDisplay != ''){
-					this.prevDisplay = $('#' + this.divid).css('display');
 					$('#' + this.divid).css('display', 'none');				
 				}
 			}
@@ -165,18 +205,28 @@ class SbImage extends Widget {
 	constructor(widget, parent, divid) {
 		super(widget, parent, divid);
 		
-		$('#' + parent).append('<canvas id="' + divid + '" width="600" height="400"></canvas>');
+		this.canvasId = divid + "canvas";
+		$('#' + parent).append('<div id="' + divid + '" width="100%" height="100%"><canvas id="' + this.canvasId + '"></canvas></div>');
 		
-		var canvas = $("#" + this.divid);
-		var ctx = canvas[0].getContext('2d');
+		this.canvas = $("#" + this.canvasId)[0];
+		var ctx = this.canvas.getContext('2d');
 		this.image = new Image();
 		var me = this;
 		this.image.onload = function() {
-		  ctx.drawImage(me.image, 0, 0, 400, 300);
+		  ctx.drawImage(me.image, 0, 0);
 		}
 	}
 	
 	onUpdateValue(property) {
+//		var canvas = $('#' + this.canvasId)[0];
+		var wrapper = $('#' + this.divid)[0];
+		
+		var canvasWidth = this.canvas.width;
+		var divWidth = $('#' + this.divid).width();
+		if (this.canvas.width != $('#' + this.divid).width()) {
+			$('#' + this.canvasId).attr('width', $('#' + this.divid).width());
+			$('#' + this.canvasId).attr('height', $('#' + this.divid).height());
+		}
 		this.image.src = property.currentValue;
 	}
 }
@@ -559,6 +609,15 @@ class Table extends Widget {
 
 class NewLayout {
 	constructor(div) {
+		var editId = div + "_edit";
+		$('#' + div).append('<input type="checkbox" id="' + editId + '"><label>Edit</label>');
+		$('#' + editId).click(function() {
+			retreiveDesign();
+		});
+		
+		var mainDiv = div + "_mainDiv";
+		$('#' + div).append('<div id="' + mainDiv + '"></div>');
+		
 		var propertyMap = new Map();
 		var widgetMap = new Map();
 		
@@ -588,11 +647,12 @@ class NewLayout {
 		}
 		
 		function retreiveDesign() {
+			$('#' + mainDiv).empty();
 			$.ajax({
 			   type: "GET", 
 			   url: "http://" + window.location.host + "/rest/newGui/getDesign",
 			   success: function(design){
-			   		build(design, div);
+			   		build(design, mainDiv);
 			   }
 			});	
 		}
@@ -710,14 +770,24 @@ class NewLayout {
 			for (var css of widget.css) {
 				$('#' + divid).css(css.key, css.value);
 			}
-			if (widget.width != -1) {
-				$('#' + divid).width(widget.width);
-			}
-			if (widget.height != -1) {
-				$('#' + divid).height(widget.height);
-			}
+
 			var id = widget.id;
 			addWidget(id, wrappedWidget);
+			
+			if ($('#' + editId).prop('checked')) {
+				$('#' + divid).draggable({
+					start : function (event , ui){
+					} ,
+					drag : function (event , ui) {
+					} ,
+					stop : function (event , ui){
+					} 
+				});
+				$('#' + divid).resizable({
+			      stop: function( event, ui ) {
+			      }
+			    }); 
+		    }
 			
 		}
 		

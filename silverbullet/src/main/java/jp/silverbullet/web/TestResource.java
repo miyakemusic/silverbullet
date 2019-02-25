@@ -88,6 +88,14 @@ public class TestResource {
 	}
 	
 	@GET
+	@Path("/addCommand")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public String addCommand(@QueryParam("type") final String type, @QueryParam("target") final String target, @QueryParam("value") final String value, @QueryParam("serial") final String serial) {
+		StaticInstances.getInstance().getBuilderModel().getTestRecorder().addCommand(type, target, value, serial);
+		return "OK";
+	}
+	
+	@GET
 	@Path("/moveUp")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public String moveUp(@QueryParam("serial") final long serial) {

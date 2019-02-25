@@ -99,7 +99,7 @@ public class RegisterResource2 {
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_PLAIN)
 	public String setBlockData(String data, @QueryParam("regName") final String regName) {
-		byte[] b = Base64.decode(data.replace("data:application/octet-stream;base64,", ""));
+		byte[] b = Base64.decode(data.split(",")[1]);//data.replace("data:application/octet-stream;base64,", ""));
 		StaticInstances.getInstance().getBuilderModel().getRuntimRegisterMap().getRegisterController().updateValue(regName, b);
 		return "OK";
 	}
