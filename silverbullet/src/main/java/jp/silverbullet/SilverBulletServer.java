@@ -7,6 +7,7 @@ import jp.silverbullet.sequncer.UserSequencer;
 import jp.silverbullet.web.BuilderServer;
 import jp.silverbullet.web.BuilderServerListener;
 import jp.silverbullet.web.WebClientManager;
+import jp.silverbullet.web.ui.part2.UiBuilder;
 
 public abstract class SilverBulletServer {
 
@@ -25,7 +26,8 @@ public abstract class SilverBulletServer {
 	protected abstract String getBaseFolderAndPackage();
 	protected abstract RegisterAccessor getHardwareAccessor(BuilderModelImpl model);
 	protected abstract List<UserSequencer> getUserSequencers(BuilderModelImpl model);
-
+	protected abstract UiBuilder getUi();
+	
 	protected int getInstanceCount() {
 		// currently only one instance is supported
 		return 1;
@@ -44,6 +46,7 @@ public abstract class SilverBulletServer {
 					getUserSequencers(builderModel).forEach(sequencer -> {
 						builderModel.getSequencer().addUserSequencer(sequencer);
 					});	
+					builderModel.setUiBuilder(getUi());
 				});				
 			}
 		});

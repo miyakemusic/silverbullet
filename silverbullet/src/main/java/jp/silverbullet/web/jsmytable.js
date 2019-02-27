@@ -63,7 +63,6 @@ class JsMyTable {
 	}
 	
 	appendRow(row, data) {
-	
 		function getRow(s) {
 			var tmp = s.split('_');
 			return tmp[tmp.length - 2];
@@ -149,9 +148,6 @@ class JsMyTable {
 					$('#' + editId).hide();
 				});	
 			}
-//			$('#' + me.tableId + ' > tbody tr:last').append('<td>' + label + edit + custom + '</td>');
-			
-
 		});		
 			
 		var removeId = this.div + '_R' + row;

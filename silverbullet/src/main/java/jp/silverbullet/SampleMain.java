@@ -4,6 +4,7 @@ import java.util.List;
 
 import jp.silverbullet.register2.RegisterAccessor;
 import jp.silverbullet.sequncer.UserSequencer;
+import jp.silverbullet.web.ui.part2.UiBuilder;
 
 public class SampleMain extends SilverBulletServer {
 
@@ -51,6 +52,12 @@ public class SampleMain extends SilverBulletServer {
 	protected int getInstanceCount() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	@Override
+	protected UiBuilder getUi() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

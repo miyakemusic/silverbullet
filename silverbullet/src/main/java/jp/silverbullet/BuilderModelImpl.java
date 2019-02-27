@@ -31,6 +31,7 @@ import jp.silverbullet.web.ValueSetResult;
 import jp.silverbullet.web.ui.PropertyGetter;
 import jp.silverbullet.web.ui.UiLayout;
 import jp.silverbullet.web.ui.UiLayoutHolder;
+import jp.silverbullet.web.ui.part2.UiBuilder;
 
 public class BuilderModelImpl {
 
@@ -120,6 +121,7 @@ public class BuilderModelImpl {
 	private List<RegisterAccessor> simulators;
 	private String sourceInfo;
 	private RegisterAccessor hardwareAccessor;
+	private UiBuilder uiBuilder;
 
 	public enum RegisterTypeEnum {
 		Simulator,
@@ -406,6 +408,14 @@ public class BuilderModelImpl {
 		}
 
 		return ret;
+	}
+
+	public void setUiBuilder(UiBuilder ui) {
+		this.uiBuilder = ui;
+	}
+
+	public UiBuilder getUiBuilder() {
+		return uiBuilder;
 	}
 
 }

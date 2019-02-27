@@ -22,6 +22,7 @@
 <script type="text/javascript" src="controllerclass.js"></script>
 <script type="text/javascript" src="propertydebug.js"></script>
 <script type="text/javascript" src="newlayout.js"></script> 
+<script type="text/javascript" src="dependencydesign.js"></script> 
 
 <script type="text/javascript" src="uitree.js"></script>
 <script type="text/javascript" src="test.js"></script>
@@ -51,6 +52,7 @@ $(function() {
 		new TestClass('tab_test');
 		new DependencyClass2('tab_dependency2');
 		new NewLayout('tab_newgui');
+		new DependencyDesign('tab_dependencydesign');
 		$('#save').click(function() {
 			$.ajax({
 			   type: "GET", 
@@ -113,6 +115,7 @@ $(function() {
   	<li><a href="#tab_debug">Debug</a></li>
   	<li><a href="#tab_test">Test</a></li>
   	<li><a href="#tab_newgui">GUI</a></li>
+  	<li><a href="#tab_dependencydesign">Dependency Design</a></li>
   </ul>
   <div id="tab_id"></div>
   <div id="tab_designer"></div>
@@ -122,6 +125,7 @@ $(function() {
   <div id="tab_test"></div>
   <div id="tab_dependency2"></div>
   <div id="tab_newgui"></div>
+  <div id="tab_dependencydesign"></div>
 </div>
 
 </body>
