@@ -177,6 +177,10 @@ public class ExpressionHolder {
 		}
 	}
 
+	public void clear() {
+		this.expressions.clear();
+	}
+
 
 
 

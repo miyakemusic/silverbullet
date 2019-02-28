@@ -162,4 +162,8 @@ public class DependencySpec {
 		this.dependencySpecDetail.changeId(prevId, newId);
 	}
 
+	public void clear() {
+		this.dependencySpecDetail.clear();
+	}
+
 }

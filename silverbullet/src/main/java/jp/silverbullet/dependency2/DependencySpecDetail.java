@@ -68,6 +68,10 @@ public class DependencySpecDetail {
 	public void changeId(String prevId, String newId) {
 		this.expressions.changeId(prevId, newId);	
 	}
+
+	public void clear() {
+		this.expressions.clear();
+	}
 	
 
 }
