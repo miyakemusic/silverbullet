@@ -21,6 +21,7 @@ public class DependencyDesignResource {
 	@Path("/changeSpec")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public String changeSpec(@QueryParam("row") final int row, @QueryParam("col") final int col, @QueryParam("checked") final boolean checked) {
+		
 		return "OK";
 	}
 }
