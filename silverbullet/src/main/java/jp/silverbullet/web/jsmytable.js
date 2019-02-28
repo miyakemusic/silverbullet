@@ -1,7 +1,51 @@
+class EditableText {
+	constructor(div, value, changed) {
+		var labelId = 'label_' + div;
+		var editId = 'edit_' + div;
+		
+		$('#' + div).append('<label id="' + labelId + '"></label>');
+		$('#' + div).append('<input type="text" id="' + editId + '">');
+		
+		$('#' + editId).hide();
+		
+		$('#' + labelId).text(value);
+		$('#' + editId).val(value);
+		
+		$('#' + labelId).show();
+		$('#' + editId).hide();
+		
+		$('#' + labelId).click(function() {
+			$('#' + labelId).hide();
+			$('#' + editId).show();			
+		});
+		$('#' + editId).keydown(function(event) {
+			if (event.altKey) {
+				if (event.which == 13) {
+					$('#' + editId).val($('#' + editId).val() + '\n');
+				}
+			} 
+			else if (event.which == 13) { // Enter
+				$('#' + labelId).show();
+				$('#' + editId).hide();
+				$('#' + labelId).text($('#' + editId).val().replace('\n','<br>'));
+				changed($('#' + editId).val());
+			}
+			else if (event.which == 27) { // Cancel
+				$('#' + labelId).show();
+				$('#' + editId).hide();
+			}
+		});	
+		$('#' + editId).focusout(function() {
+			$('#' + labelId).show();
+			$('#' + editId).hide();
+		});	
+	}
+}
+
 class JsMyTable {
 	constructor(div, colDef) {
 		if (colDef == null) {
-			colDef = function(col, arg) {
+			colDef = function(col, row, arg) {
 				return "";
 			}
 		}
@@ -28,6 +72,14 @@ class JsMyTable {
 		this.selectListener = selectListener;
 	}
 	
+	set checkListener(checkListener) {
+		this._checkListener = checkListener;
+	}
+
+	get checkListener() {
+		return this._checkListener;
+	}
+	
 	clear() {
 		$('#' + this.tableId + ' > thead').empty();
 		$('#' + this.tableId + ' > tbody').empty();
@@ -49,7 +101,7 @@ class JsMyTable {
 		return this._listenerChange;
 	}
 	
-	appendRows(rows) {
+	appendRows(rows, canRemove) {
 		var me = this;
 		$('#' + me.tableId + ' > thead').append('<tr></tr>');
 		$.each(rows[0], function(k, v) {
@@ -58,11 +110,11 @@ class JsMyTable {
 		
 	   	for (var row = 0; row < rows.length; row++) {
 	   		var spec = rows[row];
-	   		this.appendRow(row, spec);
+	   		this.appendRow(row, spec, canRemove);
 	   	}	
 	}
 	
-	appendRow(row, data) {
+	appendRow(row, data, canRemove) {
 		function getRow(s) {
 			var tmp = s.split('_');
 			return tmp[tmp.length - 2];
@@ -81,15 +133,15 @@ class JsMyTable {
 			}
 			
 			var tdId = me.div + '_' + row + '_' + k;
-			var labelId = 'label_' + tdId; //me.div + '_L' + row + '_' + k;
-			var editId = 'edit_' + tdId; //me.div + '_E' + row + '_' + k;
+			var labelId = 'label_' + tdId;
+			var editId = 'edit_' + tdId;
 			
 			$('#' + me.tableId + ' > tbody tr:last').append('<td id="' + tdId + '"></td>');
 			
-			var type = me.colDef(k, 'type');
+			var type = me.colDef(k, row, 'type');
 			if (type == 'button') {
 				var buttonId = 'button_' + tdId;
-				$('#' + tdId).append('<button id="' + buttonId + '">' + me.colDef(k, 'name') + '</button>');
+				$('#' + tdId).append('<button id="' + buttonId + '">' + me.colDef(k, row, 'name') + '</button>');
 				$('#' + buttonId).text(v);
 				
 				$('#' + buttonId).click(function() {
@@ -101,7 +153,7 @@ class JsMyTable {
 			else if (type == 'select') {
 				var listId = 'list_' + tdId;
 				$('#' + tdId).append('<select id="' + listId + '"></select>');
-				var options = me.colDef(k, 'options');
+				var options = me.colDef(k, row, 'options');
 				for (var i = 0; i < options.length; i++) {
 					$('#' + listId).append($('<option>').html(options[i]).val(options[i]));
 				}
@@ -112,6 +164,22 @@ class JsMyTable {
 					}
 				});
 
+			}
+			else if (type == 'check') {
+				var checkId = 'check_' + tdId;
+				var checkNameId = 'checkName_' + tdId;
+				$('#' + tdId).append('<input type="checkbox" id="' + checkId + '"><span id="' + checkNameId + '"></span>');
+				
+				var checked = me.colDef(k, row, 'checked');
+				$('#' + checkId).prop('checked', checked);
+				new EditableText(checkNameId, me.colDef(k, row, 'name'), function(value) {
+					me.listenerChange(row, k, value);
+				});
+				$('#' + checkId).click(function() {
+					if (me.checkListener != null) {
+						me.checkListener(k, row, $(this).prop('checked'));
+					}
+				});
 			}
 			else {
 				$('#' + tdId).append('<label id="' + labelId + '"></label>');
@@ -150,11 +218,13 @@ class JsMyTable {
 			}
 		});		
 			
-		var removeId = this.div + '_R' + row;
-		$('#' + me.tableId + ' > tbody tr:last').append('<td><button id="' + removeId + '">Remove</button></td>');	
-		$('#' + removeId).click(function() {
-			me.listenerRemove(row);
-		});
+		if (canRemove != null && canRemove == true) {
+			var removeId = this.div + '_R' + row;
+			$('#' + me.tableId + ' > tbody tr:last').append('<td><button id="' + removeId + '">Remove</button></td>');	
+			$('#' + removeId).click(function() {
+				me.listenerRemove(row);
+			});
+		}
 	}
 	
 }

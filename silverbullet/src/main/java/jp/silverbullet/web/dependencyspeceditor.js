@@ -130,7 +130,7 @@ class DependencySpecEditor {
 		
 	createTable(elementName, data) {
 		var me = this;
-		var boleanFunction = function(col, arg) {
+		var boleanFunction = function(col, row, arg) {
 			if (arg == 'type') {
 				if (col == 'Value') {
 					return 'select';
@@ -146,7 +146,7 @@ class DependencySpecEditor {
 			}
 			return '';
 		}
-		var textFunction = function(col, arg) {
+		var textFunction = function(col, row, arg) {
 			if (arg == 'type') {
 				return 'button';
 			}

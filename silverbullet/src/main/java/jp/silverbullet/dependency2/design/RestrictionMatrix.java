@@ -9,7 +9,7 @@ public class RestrictionMatrix {
 
 	public List<String> rowTitle;
 	public List<String> colTitle;
-	public String[][] value;
+	public RestrictionMatrixElement[][] value;
 
 	public RestrictionMatrix() {
 		PropertyDef2 dist = StaticInstances.getInstance().getBuilderModel().getPropertiesHolder2().get("ID_DISTANCERANGE");
@@ -17,7 +17,14 @@ public class RestrictionMatrix {
 		
 		this.rowTitle = dist.getOptionIds();
 		this.colTitle = pulse.getOptionIds();
-		this.value = new String[rowTitle.size()][colTitle.size()];
+		this.value = new RestrictionMatrixElement[rowTitle.size()][colTitle.size()];
 		
+		for (int r = 0; r < this.colTitle.size(); r++) {
+			for (int c = 0; c < this.rowTitle.size(); c++) {
+				this.value[r][c] = new RestrictionMatrixElement();
+			}
+		}
+		this.value[0][1] = new RestrictionMatrixElement(true, "ID_APPLICATION=ID_APPLICATION_OTDR");
+		this.value[0][5] = new RestrictionMatrixElement(true, "ID_APPLICATION=ID_APPLICATION_OTDR");
 	}
 }
