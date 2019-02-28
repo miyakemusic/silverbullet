@@ -14,14 +14,14 @@ public class DependencyDesignResource {
 	@Path("/getSpec")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public RestrictionMatrix getSpec() {
-		return new RestrictionMatrix();
+		return RestrictionMatrix.getInstance();
 	}
 	
 	@GET
 	@Path("/changeSpec")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public String changeSpec(@QueryParam("row") final int row, @QueryParam("col") final int col, @QueryParam("checked") final boolean checked) {
-		
+		RestrictionMatrix.getInstance().updateEnabled(row, col, checked);
 		return "OK";
 	}
 }

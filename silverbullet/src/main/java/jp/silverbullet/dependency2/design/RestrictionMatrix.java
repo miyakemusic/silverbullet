@@ -11,7 +11,16 @@ public class RestrictionMatrix {
 	public List<String> colTitle;
 	public RestrictionMatrixElement[][] value;
 
-	public RestrictionMatrix() {
+	private static RestrictionMatrix instance;
+	
+	public static RestrictionMatrix getInstance() {
+		if (instance == null) {
+			instance = new RestrictionMatrix();
+		}
+		return instance;
+	}
+	
+	private RestrictionMatrix() {
 		PropertyDef2 dist = StaticInstances.getInstance().getBuilderModel().getPropertiesHolder2().get("ID_DISTANCERANGE");
 		PropertyDef2 pulse = StaticInstances.getInstance().getBuilderModel().getPropertiesHolder2().get("ID_PULSEWIDTH");
 		
@@ -26,5 +35,9 @@ public class RestrictionMatrix {
 		}
 		this.value[0][1] = new RestrictionMatrixElement(true, "ID_APPLICATION=ID_APPLICATION_OTDR");
 		this.value[0][5] = new RestrictionMatrixElement(true, "ID_APPLICATION=ID_APPLICATION_OTDR");
+	}
+
+	public void updateEnabled(int row, int col, boolean checked) {
+		this.value[row][col].enabled = checked;
 	}
 }
