@@ -18,10 +18,57 @@ public class DependencyDesignResource {
 	}
 	
 	@GET
+	@Path("/getTrigger")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String getTrigger() {
+		return RestrictionMatrix.getInstance().getTrigger();
+	}
+	
+	@GET
+	@Path("/getTarget")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String getTarget() {
+		return RestrictionMatrix.getInstance().getTarget();
+	}
+	
+	@GET
 	@Path("/changeSpec")
-	@Produces(MediaType.APPLICATION_JSON) 
+	@Produces(MediaType.TEXT_PLAIN) 
 	public String changeSpec(@QueryParam("row") final int row, @QueryParam("col") final int col, @QueryParam("checked") final boolean checked) {
 		RestrictionMatrix.getInstance().updateEnabled(row, col, checked);
+		return "OK";
+	}
+	
+	@GET
+	@Path("/setCombination")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String setCombination(@QueryParam("trigger") final String trigger, @QueryParam("target") final String target) {
+		RestrictionMatrix.getInstance().setCombination(trigger, target);
+		return "OK";
+	}
+	
+	@GET
+	@Path("/build")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String build() {
+		RestrictionMatrix.getInstance().build();
+		return "OK";
+	}
+	
+	@GET
+	@Path("/switch")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String switchTriggerTarget() {
+		RestrictionMatrix.getInstance().switchTriggerTarget();
+		return "OK";
+	}
+	
+	
+	@GET
+	@Path("/alwaysTrue")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String alwaysTrue() {
+		RestrictionMatrix.getInstance().alwaysTrue();
 		return "OK";
 	}
 }

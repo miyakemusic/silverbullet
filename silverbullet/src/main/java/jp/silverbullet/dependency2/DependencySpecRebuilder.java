@@ -9,40 +9,47 @@ import jp.silverbullet.web.ui.PropertyGetter;
 public class DependencySpecRebuilder {
 
 	private DependencySpecHolder newHolder = new DependencySpecHolder();
+	private DependencySpecHolder depHolder;
+	private PropertyGetter getter;
 	
 	public DependencySpecRebuilder(DependencySpecHolder depHolder, PropertyGetter store) {
-
+		this.depHolder = depHolder;
+		this.getter = store;
 		for (String id : depHolder.getSpecs().keySet()) {
-			DependencySpec spec = depHolder.getSpecs().get(id);
-			Map<String, List<Expression>> expressionHolder = spec.getDependencySpecDetail().getExpressions().getExpressions();
-			for (String targetElement : expressionHolder.keySet()) {
-				List<Expression> expressions = expressionHolder.get(targetElement);
-				
-				if (targetElement.startsWith(DependencySpec.OptionEnable + "#") ) {
-					String option = targetElement.replace(DependencySpec.OptionEnable + "#", "");
+			handleOneSpec(id);
+		}
+	}
 
-					List<String> trueCondition = new ArrayList<>();
-					List<String> falseCondition = new ArrayList<>();
-					for (Expression expression : expressions) {
-						ExpressionParser parser = new ExpressionParser(expression.getTrigger());
-						if (isPriority(id, parser.getId(), depHolder)) {
-							if (expression.getValue().equals(DependencySpec.True)) {
-								trueCondition.add(expression.getTrigger());
-							}
-							else if (expression.getValue().equals(DependencySpec.False)) {
-								falseCondition.add(expression.getTrigger());
-							}
+	public void handleOneSpec(String id) {
+		DependencySpec spec = depHolder.getSpecs().get(id);
+		Map<String, List<Expression>> expressionHolder = spec.getDependencySpecDetail().getExpressions().getExpressions();
+		for (String targetElement : expressionHolder.keySet()) {
+			List<Expression> expressions = expressionHolder.get(targetElement);
+			
+			if (targetElement.startsWith(DependencySpec.OptionEnable + "#") ) {
+				String option = targetElement.replace(DependencySpec.OptionEnable + "#", "");
+
+				List<String> trueCondition = new ArrayList<>();
+				List<String> falseCondition = new ArrayList<>();
+				for (Expression expression : expressions) {
+					ExpressionParser parser = new ExpressionParser(expression.getTrigger());
+					if (isPriority(id, parser.getId(), depHolder)) {
+						if (expression.getValue().equals(DependencySpec.True)) {
+							trueCondition.add(expression.getTrigger());
 						}
-						else {
-							newHolder.getSpec(id).getExpression(targetElement).add(expression);
+						else if (expression.getValue().equals(DependencySpec.False)) {
+							falseCondition.add(expression.getTrigger());
 						}
 					}
-					
-					addCondition(id, option, trueCondition, falseCondition, store, depHolder);
+					else {
+						newHolder.getSpec(id).getExpression(targetElement).add(expression);
+					}
 				}
-				else {
-					newHolder.getSpec(id).getExpression(targetElement).addAll(expressions);
-				}
+				
+				addCondition(id, option, trueCondition, falseCondition, getter, depHolder);
+			}
+			else {
+				newHolder.getSpec(id).getExpression(targetElement).addAll(expressions);
 			}
 		}
 	}

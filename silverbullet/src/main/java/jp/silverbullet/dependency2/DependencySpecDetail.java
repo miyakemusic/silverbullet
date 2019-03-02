@@ -72,6 +72,10 @@ public class DependencySpecDetail {
 	public void clear() {
 		this.expressions.clear();
 	}
+
+	public void clear(String targetElement, String triggerId) {
+		this.expressions.clear(targetElement, triggerId);
+	}
 	
 
 }

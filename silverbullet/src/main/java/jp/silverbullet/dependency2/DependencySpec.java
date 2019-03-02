@@ -166,4 +166,8 @@ public class DependencySpec {
 		this.dependencySpecDetail.clear();
 	}
 
+	public void clear(String targetElement, String triggerId) {
+		this.dependencySpecDetail.clear(targetElement, triggerId);
+	}
+
 }

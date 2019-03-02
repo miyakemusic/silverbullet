@@ -3,6 +3,7 @@ package jp.silverbullet.dependency2;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -179,6 +180,34 @@ public class ExpressionHolder {
 
 	public void clear() {
 		this.expressions.clear();
+	}
+
+	public void clear(String targetElement, String triggerId) {
+		for(Iterator<Map.Entry<String, List<Expression>>> it = this.expressions.entrySet().iterator(); it.hasNext(); ) {
+		    Map.Entry<String, List<Expression>> entry = it.next();
+		    if(entry.getKey().startsWith(targetElement)) {
+		    	Iterator<Expression> it2 = entry.getValue().iterator();
+		    	while(it2.hasNext()) {
+		    		if (it2.next().getTrigger().contains(triggerId)) {
+		    			it2.remove();
+		    		}
+		    	}
+		    	
+		    	// if only ELSE remains, remove all else
+		    	boolean onlyElse = true;
+		    	while(it2.hasNext()) {
+		    		if (!it2.next().getTrigger().equals(DependencySpec.Else)) {
+		    			onlyElse = true;
+		    			break;
+		    		}
+		    	}
+		    	
+		    	if (entry.getValue().size() == 0 || onlyElse) {
+		    		it.remove();
+		    	}
+		        
+		    }
+		}
 	}
 
 
