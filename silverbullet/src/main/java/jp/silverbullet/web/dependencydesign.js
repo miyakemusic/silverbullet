@@ -22,9 +22,39 @@ class DependencyDesign {
 		}
 		
 		var triggerId = div + "_trigger";
+		var addTriggerId = div + "_addTrigger";
 		var targetId = div + "_target";
-		$('#' + div).append('<div>Trigger ID:<select id="' + triggerId + '"></select></div>');
-		$('#' + div).append('<div>Target ID:<select id="' + targetId + '"></select></div>');
+		var addTargetId = div + "_addTarget";
+		
+		var addedTriggers = div + "_addedTriggers";
+		var addedTargets = div + "_addedTargets";
+		
+		$('#' + div).append('<fieldset><legend>Trigger</legend><div>ID:<select id="' + triggerId + '"></select><button id="' + addTriggerId + '">Add</button><div>Remove:<span id="' + addedTriggers + '"></span></div></div></fieldset>');
+		$('#' + div).append('<fieldset><legend>Target</legend><div>ID:<select id="' + targetId + '"></select><button id="' + addTargetId + '">Add</button><div>Remove:<span id="' + addedTargets + '"></span></div></div></fieldset>');
+		
+		$('#' + addTriggerId).click(function() {
+			addId($('#' + triggerId).val(), "trigger");
+		});
+		$('#' + addTargetId).click(function() {
+			addId($('#' + targetId).val(), "target");
+		});		
+		
+		function addId(id, type) {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/dependencyDesign/addId?id=" + id + "&type=" + type,
+			   success: function(msg) {
+			   	initOptions();
+			   	initTable();
+			   }
+			});		
+		}
+		
+		var updateId = div + "_update";
+		$('#' + div).append('<button id="' + updateId + '">Update</button>');
+		$('#' + updateId).click(function() {
+			initTable();
+		});
 		
 		var switchId = div + "_switch";
 		$('#' + div).append('<button id="' + switchId + '">Switch</button>');
@@ -71,29 +101,57 @@ class DependencyDesign {
 					$('#' + targetId).append($('<option>').text(id).val(id));
 				}
 				$('#' + triggerId).change(function() {
-					setCombination();
+					//setCombination();
 				});
 				$('#' + targetId).change(function() {
-					setCombination();
+					//setCombination();
 				});
 				
 				initOptions();
 		   }
 		});	
-	
+			
 		function initOptions() {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/dependencyDesign/getTarget",
+			   url: "http://" + window.location.host + "/rest/dependencyDesign/getTargets",
 			   success: function(msg){
-				$('#' + targetId).val(msg);
+				//$('#' + targetId).val(msg);
+				$('#' + addedTargets).empty();
+				for (var o of msg) {
+					var removeButton = div + "_removeTarget_" + o;
+					$('#' + addedTargets).append('<button id="' + removeButton + '">' + o + '</button>');
+					$('#' + removeButton).click(function() {
+						removeId($('#' + removeButton).text(), 'target');
+					});
+				}
+				
 			   }
 			});	
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/dependencyDesign/getTrigger",
+			   url: "http://" + window.location.host + "/rest/dependencyDesign/getTriggers",
 			   success: function(msg){
-				$('#' + triggerId).val(msg);
+				//$('#' + triggerId).val(msg);
+				$('#' + addedTriggers).empty();
+				for (var o of msg) {
+					var removeButton = div + "_removeTrigger_" + o;
+					$('#' + addedTriggers).append('<button id="' + removeButton + '">' + o + '</button>');
+					$('#' + removeButton).click(function() {
+						removeId($('#' + removeButton).text(), 'trigger');
+					});
+				}
+			   }
+			});	
+		}
+		
+		function removeId(id, type) {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/dependencyDesign/removeId?id=" + id + "&type=" + type,
+			   success: function(msg){
+			   	initOptions();
+				initTable();
 			   }
 			});	
 		}

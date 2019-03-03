@@ -1,5 +1,7 @@
 package jp.silverbullet.web;
 
+import java.util.List;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -18,17 +20,17 @@ public class DependencyDesignResource {
 	}
 	
 	@GET
-	@Path("/getTrigger")
-	@Produces(MediaType.TEXT_PLAIN) 
-	public String getTrigger() {
-		return RestrictionMatrix.getInstance().getTrigger();
+	@Path("/getTriggers")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public List<String> getTrigger() {
+		return RestrictionMatrix.getInstance().getTriggers();
 	}
 	
 	@GET
-	@Path("/getTarget")
-	@Produces(MediaType.TEXT_PLAIN) 
-	public String getTarget() {
-		return RestrictionMatrix.getInstance().getTarget();
+	@Path("/getTargets")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public List<String> getTarget() {
+		return RestrictionMatrix.getInstance().getTargets();
 	}
 	
 	@GET
@@ -69,6 +71,22 @@ public class DependencyDesignResource {
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String alwaysTrue() {
 		RestrictionMatrix.getInstance().alwaysTrue();
+		return "OK";
+	}
+	
+	@GET
+	@Path("/addId")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String addId(@QueryParam("id") final String id, @QueryParam("type") final String type) {
+		RestrictionMatrix.getInstance().add(id, type);
+		return "OK";
+	}
+	
+	@GET
+	@Path("/removeId")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String removeId(@QueryParam("id") final String id, @QueryParam("type") final String type) {
+		RestrictionMatrix.getInstance().remove(id, type);
 		return "OK";
 	}
 }

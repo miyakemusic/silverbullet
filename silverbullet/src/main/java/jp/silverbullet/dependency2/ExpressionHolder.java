@@ -19,8 +19,10 @@ public class ExpressionHolder {
 		if (!expressions.keySet().contains(targetElement)) {
 			expressions.put(targetElement, new ArrayList<Expression>());
 		}
-		expressions.get(targetElement).add(expression);	
-		sort(expressions.get(targetElement));
+		if (!expressions.get(targetElement).contains(expression)) {
+			expressions.get(targetElement).add(expression);	
+			sort(expressions.get(targetElement));
+		}
 	}
 
 	private void sort(List<Expression> list) {
