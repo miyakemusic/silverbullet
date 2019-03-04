@@ -56,6 +56,19 @@ class DependencyDesign {
 			initTable();
 		});
 		
+		var showAllId = div + "_showAll";
+		$('#' + div).append('<button id="' + showAllId + '">Show All</button>');
+		$('#' + showAllId).click(function() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/dependencyDesign/showAll",
+			   success: function(msg) {
+			   	initOptions();
+			   	initTable();
+			   }
+			});
+		});	
+		
 		var switchId = div + "_switch";
 		$('#' + div).append('<button id="' + switchId + '">Switch</button>');
 		$('#' + switchId).click(function() {
@@ -122,7 +135,7 @@ class DependencyDesign {
 					var removeButton = div + "_removeTarget_" + o;
 					$('#' + addedTargets).append('<button id="' + removeButton + '">' + o + '</button>');
 					$('#' + removeButton).click(function() {
-						removeId($('#' + removeButton).text(), 'target');
+						removeId($(this).text(), 'target');
 					});
 				}
 				
@@ -138,7 +151,7 @@ class DependencyDesign {
 					var removeButton = div + "_removeTrigger_" + o;
 					$('#' + addedTriggers).append('<button id="' + removeButton + '">' + o + '</button>');
 					$('#' + removeButton).click(function() {
-						removeId($('#' + removeButton).text(), 'trigger');
+						removeId($(this).text(), 'trigger');
 					});
 				}
 			   }
@@ -217,6 +230,34 @@ class DependencyDesign {
 					table.appendRow(col, s);
 				}
 			}
+		}
+		
+		var idPriority = div + "_priority";
+		$('#' + div).append('<div id="' + idPriority + '"></div>');
+		initPriority();
+		var priorityData;
+		function initPriority() {
+			$('#' + idPriority).empty();
+			var priorityTable = new JsMyTable(idPriority);
+
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/dependencyDesign/getPriorities",
+			   success: function(msg){
+				priorityTable.appendRows(msg);
+				priorityData = msg;
+			   }
+			});		
+			
+			priorityTable.listenerChange = function(k, row, text) {
+				$.ajax({
+				   type: "GET", 
+				   url: "http://" + window.location.host + "/rest/dependencyDesign/setPriority?id=" + priorityData[k].key +"&value=" + text,
+				   success: function(msg){
+
+				   }
+				});				
+			};	
 		}
 	}
 	

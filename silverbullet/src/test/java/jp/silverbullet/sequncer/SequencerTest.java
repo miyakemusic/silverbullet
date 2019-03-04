@@ -40,6 +40,12 @@ public class SequencerTest {
 		public Map<String, List<ChangedItemValue>> getChanged() {
 			return changed;
 		}
+
+		@Override
+		public boolean isAsync() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 		
 	};
 	

@@ -1,7 +1,12 @@
 package jp.silverbullet.dependency2.design;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import jp.silverbullet.JsonPersistent;
 import jp.silverbullet.StaticInstances;
 import jp.silverbullet.dependency2.DependencySpec;
@@ -12,6 +17,7 @@ import jp.silverbullet.property2.PropertyDef2;
 import jp.silverbullet.property2.PropertyHolder2;
 import jp.silverbullet.property2.RuntimeProperty;
 import jp.silverbullet.property2.RuntimePropertyStore;
+import jp.silverbullet.web.KeyValue;
 import jp.silverbullet.web.ui.PropertyGetter;
 
 public class RestrictionMatrix {
@@ -38,10 +44,10 @@ public class RestrictionMatrix {
 	public List<String> rowTitle = new ArrayList<>();
 	public List<String> colTitle = new ArrayList<>();
 	public RestrictionMatrixElement[][] value;
-	private List<String> triggers = new ArrayList<>();
-	private List<String> targets = new ArrayList<>();
-	private RestrictionData stored = new RestrictionData();
+	private Set<String> triggers = new HashSet<>();
+	private Set<String> targets = new HashSet<>();
 	private RestrictionData2 data2 = new RestrictionData2();
+	private Map<String, Integer> priority = new HashMap<>();
 	
 	private static RestrictionMatrix instance;
 	
@@ -106,8 +112,6 @@ public class RestrictionMatrix {
 	}
 
 	public void updateEnabled(int row, int col, boolean checked) {
-//		this.value[row][col].enabled = checked;
-		
 		this.data2.set(this.colTitle.get(row), this.rowTitle.get(col), checked);
 		initValue();
 	}
@@ -129,6 +133,14 @@ public class RestrictionMatrix {
 			for (String target :this.targets) {
 				List<String> targetOptions = this.getPropertyHolder().get(target).getOptionIds();
 				
+				int priority =  this.getPriority(target) - this.getPriority(trigger);
+				
+				
+				if (priority < 0) {
+					List<String> tmp = targetOptions;
+					targetOptions = triggerOptions;
+					triggerOptions = tmp;
+				}
 				for (String targetOption : targetOptions) {
 					boolean touched = false;
 					for (String triggerOption : triggerOptions) {
@@ -142,76 +154,58 @@ public class RestrictionMatrix {
 						getDependencySpecHolder().getSpec(target).addOptionEnabled(targetOption, DependencySpec.False, 
 								DependencySpec.Else);		
 					}
-					else {
-					//	getDependencySpecHolder().getSpec(target).addOptionEnabled(targetOption, DependencySpec.False, 
-					//			"$" + trigger +"==" + "$" + trigger);				
-					}
 				}
+				
+//				if (priority > 0) {
+//					for (String targetOption : targetOptions) {
+//						boolean touched = false;
+//						for (String triggerOption : triggerOptions) {
+//							if (data2.getList(targetOption).contains(triggerOption)) {
+//								getDependencySpecHolder().getSpec(target).addOptionEnabled(targetOption, DependencySpec.True, 
+//										"$" + trigger + "==%" + triggerOption);
+//								touched = true;
+//							}
+//						}
+//						if (touched) {
+//							getDependencySpecHolder().getSpec(target).addOptionEnabled(targetOption, DependencySpec.False, 
+//									DependencySpec.Else);		
+//						}
+//					}
+//				}
+//				else if (priority < 0) {
+//					for (String triggerOption : triggerOptions) {
+//						boolean touched = false;
+//						for (String targetOption : targetOptions) {
+//							if (data2.getList(triggerOption).contains(targetOption)) {
+//								getDependencySpecHolder().getSpec(trigger).addOptionEnabled(triggerOption, DependencySpec.True, 
+//										"$" + target + "==%" + targetOption);
+//								touched = true;
+//							}
+//						}
+//						if (touched) {
+//							getDependencySpecHolder().getSpec(trigger).addOptionEnabled(triggerOption, DependencySpec.False, 
+//									DependencySpec.Else);		
+//						}
+//					}					
+//				}
+//				else {
+//					
+//				}
 			}
 		}
-		
-		
-		//////////
-//		String currentMainTriggerId = getMainId(this.rowTitle.get(0));
-//		boolean triggerIdChanged = false;
-//		for (int r = 0; r < this.colTitle.size(); r++) {
-//			String target = this.colTitle.get(r);
-//			String targetMainId = getMainId(target);
-//			boolean touched = false;
-//			for (int c = 0; c < this.rowTitle.size(); c++) {
-//				String trigger = this.rowTitle.get(c);
-//				String triggerMainId = getMainId(trigger);
-//				
-//				if (!currentMainTriggerId.equals(triggerMainId)) {
-//					currentMainTriggerId = triggerMainId;
-//					triggerIdChanged = true;
-//				}
-//				if (this.value[r][c].enabled) {
-//					touched = true;
-//					getDependencySpecHolder().getSpec(targetMainId).addOptionEnabled(target, DependencySpec.True, 
-//							"$" + triggerMainId + "==%" + trigger);
-//				}
-//				
-//				if (triggerIdChanged) {
-//					if (touched) {
-//						getDependencySpecHolder().getSpec(targetMainId).addOptionEnabled(target, DependencySpec.False, 
-//								DependencySpec.Else);		
-//					}
-//					else {
-//						getDependencySpecHolder().getSpec(targetMainId).addOptionEnabled(target, DependencySpec.False, 
-//								"$" + triggerMainId +"==" + "$" + triggerMainId);				
-//					}
-//					triggerIdChanged = false;
-//				}
-//			}
-//
-//		}
 		save();
 	}
 
-
-	public void setCombination(String trigger, String target) {
-//		this.stored.put(this.trigger + ";" + this.target, this.value);
-//		if (this.stored.containsKey(this.target + ";" + this.trigger)) {
-//			this.stored.remove(this.target + ";" + this.trigger);
-//		}
-//		this.trigger = trigger;
-//		this.target = target;
-		
-		this.initValue();
-	}
-
-	public List<String> getTriggers() {
+	public Set<String> getTriggers() {
 		return this.triggers;
 	}
 
-	public List<String> getTargets() {
+	public Set<String> getTargets() {
 		return this.targets;
 	}
 
 	public void switchTriggerTarget() {
-	//	setCombination(this.target, this.trigger);
-		List<String> tmp = this.targets;
+		Set<String> tmp = this.targets;
 		this.targets = this.triggers;
 		this.triggers = tmp;
 		this.initValue();
@@ -265,7 +259,7 @@ public class RestrictionMatrix {
 		this.initValue();
 	}
 
-	public void remove(String id, String type) {
+	public void hide(String id, String type) {
 		if (type.equals("trigger")) {
 			this.triggers.remove(id);
 		}
@@ -275,4 +269,46 @@ public class RestrictionMatrix {
 		this.initValue();
 	}
 
+	private Set<String> getUsedIds() {
+		Set<String> ret = new HashSet<>();
+		for (String option : data2.getAllData().keySet()) {
+			for (PropertyDef2 prop : this.getPropertyHolder().getProperties()) {
+				if (prop.getOptionIds().contains(option)) {
+					ret.add(prop.getId());
+					break;
+				}
+			}
+		}		
+		return ret;
+	}
+	public void showAll() {
+		this.data2.clean();
+		this.targets.clear();
+		this.triggers.clear();
+		this.triggers.addAll(getUsedIds());
+		this.targets.addAll(getUsedIds());
+		
+		this.initValue();
+	}
+
+	public int getPriority(String id) {
+		if (this.priority.containsKey(id)) {
+			return this.priority.get(id);
+		}
+		else {
+			return 0;
+		}
+	}
+	
+	public void setPriority(String id, int value) {
+		this.priority.put(id, value);
+	}
+
+	public List<KeyValue> getPriorities() {
+		List<KeyValue> ret = new ArrayList<>();
+		for (String id : this.getUsedIds()) {
+			ret.add(new KeyValue(id, String.valueOf(this.getPriority(id))));
+		}
+		return ret;
+	}
 }

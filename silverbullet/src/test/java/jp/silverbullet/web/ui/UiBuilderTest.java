@@ -8,6 +8,7 @@ import jp.silverbullet.web.ui.part2.Pane;
 import jp.silverbullet.web.ui.part2.TabPane;
 import jp.silverbullet.web.ui.part2.UiBuilder;
 import jp.silverbullet.web.ui.part2.UiBuilder.Layout;
+import jp.silverbullet.web.ui.part2.UiBuilder.PropertyField;
 
 class UiBuilderTest {
 
@@ -15,18 +16,18 @@ class UiBuilderTest {
 	void test() {
 		UiBuilder builder = new UiBuilder();
 		Pane pane = builder.createPane(UiBuilder.Layout.VERTICAL);
-		pane.createComboBox("$ID_APPLICATION").size(20, 400);
+		pane.createComboBox("$ID_APPLICATION").css("width", "20").css("height", "400");
 		
 		{
 			Pane subPane = pane.createPane(Layout.VERTICAL);
-			subPane.createLabel("$ID_TESTMODE", UiBuilder.ProprtyField.TITLE).size(20, 400);
-			subPane.createTextField("$ID_TESTMODE", UiBuilder.ProprtyField.VALUE).size(20, 400);
-			subPane.createLabel("$ID_TESTMODE", UiBuilder.ProprtyField.UNIT).size(20, 20);
+			subPane.createLabel("$ID_TESTMODE", PropertyField.TITLE).css("width", "20").css("height", "400");
+			subPane.createTextField("$ID_TESTMODE", PropertyField.VALUE).css("width", "20").css("height", "400");
+			subPane.createLabel("$ID_TESTMODE", PropertyField.UNIT).css("width", "20").css("height", "400");
 		}
 		{
 			Pane subPane = pane.createPane(Layout.HORIZONTAL);
-			subPane.createToggleButton("$ID_APPLICATION", "ID_APPLICATION_AAA").size(20, 400);
-			subPane.createToggleButton("$ID_APPLICATION", "ID_APPLICATION_BBB").size(20, 400);
+			subPane.createToggleButton("$ID_APPLICATION", "ID_APPLICATION_AAA").css("width", "20").css("height", "400");
+			subPane.createToggleButton("$ID_APPLICATION", "ID_APPLICATION_BBB").css("width", "20").css("height", "400");
 		}
 		{
 			Pane subPane = pane.createPane(Layout.ABSOLUTE);

@@ -87,6 +87,11 @@ public class BuilderModelImplTest {
 			public List<String> targetIds() {
 				return Arrays.asList("ID_START");
 			}
+
+			@Override
+			public boolean isAsync() {
+				return false;
+			}
 		});
 		UiLayout layout = builder.getUiLayoutHolder().createNewFile("newUi.ui");
 		builder.getUiLayoutHolder().switchFile("newUi.ui");

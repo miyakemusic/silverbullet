@@ -2,8 +2,10 @@ package jp.silverbullet.dependency2.design;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 public class RestrictionData2 {
 	private Map<String, List<String>> allData = new HashMap<>();
@@ -35,5 +37,14 @@ public class RestrictionData2 {
 			return this.allData.get(id);
 		}
 		return new ArrayList<String>();
+	}
+
+	public void clean() {
+		Iterator<Entry<String, List<String>>> it = this.allData.entrySet().iterator();
+		while(it.hasNext()) {
+			if (it.next().getValue().size() == 0) {
+				it.remove();
+			}
+		}
 	}
 }

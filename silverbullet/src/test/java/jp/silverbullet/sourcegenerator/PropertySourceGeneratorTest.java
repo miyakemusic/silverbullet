@@ -33,7 +33,7 @@ public class PropertySourceGeneratorTest {
 		holder.addProperty(factory.createChart("ID_CHART"));
 		holder.addProperty(factory.createTable("ID_TABLE"));
 		
-		PropertySourceGenerator generator = new PropertySourceGenerator(store.getAllProperties());
+		PropertySourceGenerator generator = new PropertySourceGenerator(holder);
 		generator.generate(".", "mypackage");
 		
 		List<String> ids = Files.readAllLines(Paths.get("./mypackage/ID.java"));

@@ -1,6 +1,8 @@
 package jp.silverbullet.web;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -22,14 +24,14 @@ public class DependencyDesignResource {
 	@GET
 	@Path("/getTriggers")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public List<String> getTrigger() {
+	public Set<String> getTrigger() {
 		return RestrictionMatrix.getInstance().getTriggers();
 	}
 	
 	@GET
 	@Path("/getTargets")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public List<String> getTarget() {
+	public Set<String> getTarget() {
 		return RestrictionMatrix.getInstance().getTargets();
 	}
 	
@@ -45,7 +47,7 @@ public class DependencyDesignResource {
 	@Path("/setCombination")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setCombination(@QueryParam("trigger") final String trigger, @QueryParam("target") final String target) {
-		RestrictionMatrix.getInstance().setCombination(trigger, target);
+		//RestrictionMatrix.getInstance().setCombination(trigger, target);
 		return "OK";
 	}
 	
@@ -86,7 +88,30 @@ public class DependencyDesignResource {
 	@Path("/removeId")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String removeId(@QueryParam("id") final String id, @QueryParam("type") final String type) {
-		RestrictionMatrix.getInstance().remove(id, type);
+		RestrictionMatrix.getInstance().hide(id, type);
+		return "OK";
+	}
+	
+	@GET
+	@Path("/showAll")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String showAll() {
+		RestrictionMatrix.getInstance().showAll();
+		return "OK";
+	}
+	
+	@GET
+	@Path("/getPriorities")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public List<KeyValue> getPriorities() {
+		return RestrictionMatrix.getInstance().getPriorities();
+	}
+	
+	@GET
+	@Path("/setPriority")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String setPriority(@QueryParam("id") final String id, @QueryParam("value") final Integer value) {
+		RestrictionMatrix.getInstance().setPriority(id, value);
 		return "OK";
 	}
 }
