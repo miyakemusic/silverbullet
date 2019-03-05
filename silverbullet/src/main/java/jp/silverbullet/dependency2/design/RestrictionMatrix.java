@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.util.concurrent.ListeningExecutorService;
+
 import jp.silverbullet.JsonPersistent;
 import jp.silverbullet.StaticInstances;
 import jp.silverbullet.dependency2.DependencySpec;
@@ -48,6 +50,9 @@ public class RestrictionMatrix {
 	private Set<String> targets = new HashSet<>();
 	private RestrictionData2 data2 = new RestrictionData2();
 	private Map<String, Integer> priority = new HashMap<>();
+	private DependencySpecHolder holder;
+	private DependencySpecRebuilder rebuilder;
+	private Set<RestrictionMatrixListener> listenres = new HashSet<>();
 	
 	private static RestrictionMatrix instance;
 	
@@ -59,6 +64,20 @@ public class RestrictionMatrix {
 	}
 	
 	private RestrictionMatrix() {
+		
+		holder = getDependencySpecHolder();
+		rebuilder = new DependencySpecRebuilder(holder, new PropertyGetter() {
+			@Override
+			public RuntimeProperty getProperty(String id) {
+				return getRuntimePropertyStore().get(id);
+			}
+
+			@Override
+			public RuntimeProperty getProperty(String id, int index) {
+				return getRuntimePropertyStore().get(id, index);
+			}
+		
+		});
 		this.triggers.add("ID_DISTANCERANGE");
 		this.targets.add("ID_PULSEWIDTH");
 		this.load();
@@ -114,33 +133,55 @@ public class RestrictionMatrix {
 	public void updateEnabled(int row, int col, boolean checked) {
 		this.data2.set(this.colTitle.get(row), this.rowTitle.get(col), checked);
 		initValue();
+		fireUpdateMatrix();
 	}
 	
-	public void build() {		
+	private void fireUpdateMatrix() {
+		for (RestrictionMatrixListener listener : this.listenres) {
+			listener.onMatrixChanged(this.value);
+		}
+	}
+
+//	private Set<String> calculated = new HashSet<>();	
+	public void build() {	
+//		calculated.clear();
 		resetMask();
 
 		DependencySpecHolder holder = getDependencySpecHolder();
 		
-		for (String target : this.targets) {
-			holder.getSpec(target).clear(DependencySpec.OptionEnable, target);
-		}
-		for (String trigger : this.triggers) {
-			holder.getSpec(trigger).clear(DependencySpec.OptionEnable, trigger);
+		Set<String> usedId = this.getUsedIds();
+		// This is tentative code
+		for (String trigger : usedId) {
+			for (String target : usedId) {
+				if (trigger.equals(target)) {
+					continue;
+				}
+				holder.getSpec(target).clear(DependencySpec.OptionEnable, trigger);
+			}		
 		}
 		
-		for (String trigger : this.triggers) {
+		for (String trigger : usedId) {
 			List<String> triggerOptions = this.getPropertyHolder().get(trigger).getOptionIds();
-			for (String target :this.targets) {
+			for (String target : usedId) {
+				if (trigger.contains(target)) {
+					continue;
+				}
+
 				List<String> targetOptions = this.getPropertyHolder().get(target).getOptionIds();
 				
 				int priority =  this.getPriority(target) - this.getPriority(trigger);
 				
-				
-				if (priority < 0) {
+				if (priority > 0) {
 					List<String> tmp = targetOptions;
 					targetOptions = triggerOptions;
 					triggerOptions = tmp;
+					
+					String tmp2 = target;
+					target = trigger;
+					trigger = tmp2;
 				}
+				//holder.getSpec(target).clear(DependencySpec.OptionEnable, target);
+				
 				for (String targetOption : targetOptions) {
 					boolean touched = false;
 					for (String triggerOption : triggerOptions) {
@@ -155,42 +196,10 @@ public class RestrictionMatrix {
 								DependencySpec.Else);		
 					}
 				}
-				
-//				if (priority > 0) {
-//					for (String targetOption : targetOptions) {
-//						boolean touched = false;
-//						for (String triggerOption : triggerOptions) {
-//							if (data2.getList(targetOption).contains(triggerOption)) {
-//								getDependencySpecHolder().getSpec(target).addOptionEnabled(targetOption, DependencySpec.True, 
-//										"$" + trigger + "==%" + triggerOption);
-//								touched = true;
-//							}
-//						}
-//						if (touched) {
-//							getDependencySpecHolder().getSpec(target).addOptionEnabled(targetOption, DependencySpec.False, 
-//									DependencySpec.Else);		
-//						}
-//					}
-//				}
-//				else if (priority < 0) {
-//					for (String triggerOption : triggerOptions) {
-//						boolean touched = false;
-//						for (String targetOption : targetOptions) {
-//							if (data2.getList(triggerOption).contains(targetOption)) {
-//								getDependencySpecHolder().getSpec(trigger).addOptionEnabled(triggerOption, DependencySpec.True, 
-//										"$" + target + "==%" + targetOption);
-//								touched = true;
-//							}
-//						}
-//						if (touched) {
-//							getDependencySpecHolder().getSpec(trigger).addOptionEnabled(triggerOption, DependencySpec.False, 
-//									DependencySpec.Else);		
-//						}
-//					}					
-//				}
-//				else {
-//					
-//				}
+				if (priority == 0) {
+					//holder.getSpec(trigger).clear(DependencySpec.OptionEnable, trigger);
+					setBiDirectional(trigger, target);
+				}
 			}
 		}
 		save();
@@ -214,35 +223,25 @@ public class RestrictionMatrix {
 	public void alwaysTrue() {
 		resetMask();
 		
-		DependencySpecHolder holder = getDependencySpecHolder();
-		DependencySpecRebuilder rebuilder = new DependencySpecRebuilder(holder, new PropertyGetter() {
-			@Override
-			public RuntimeProperty getProperty(String id) {
-				return getRuntimePropertyStore().get(id);
-			}
-
-			@Override
-			public RuntimeProperty getProperty(String id, int index) {
-				return getRuntimePropertyStore().get(id, index);
-			}
-		
-		});
-		
 		for (String trigger : triggers) {
 			for (String target : targets) {
-				rebuilder.handleOneSpec(target);
-				
-				holder.getSpec(target).clear(DependencySpec.OptionEnable, trigger);
-				holder.getSpec(target).clear(DependencySpec.Value, trigger);
-				List<Expression> newTargetSpecs = rebuilder.getNewHolder().getSpec(target).getExpression(DependencySpec.Value);
-				holder.getSpec(target).getExpression(DependencySpec.Value).addAll(newTargetSpecs);
-				
-				holder.getSpec(trigger).clear(DependencySpec.Value, target);
-				List<Expression> newTriggerSpecs = rebuilder.getNewHolder().getSpec(trigger).getExpression(DependencySpec.Value);
-				holder.getSpec(trigger).getExpression(DependencySpec.Value).addAll(newTriggerSpecs);
+				setBiDirectional(trigger, target);
 			}
 		}
 		save();
+	}
+
+	private void setBiDirectional(String trigger, String target) {
+		rebuilder.handleOneSpec(target);
+		
+		holder.getSpec(target).clear(DependencySpec.OptionEnable, trigger);
+		holder.getSpec(target).clear(DependencySpec.Value, trigger);
+		List<Expression> newTargetSpecs = rebuilder.getNewHolder().getSpec(target).getExpression(DependencySpec.Value);
+		holder.getSpec(target).getExpression(DependencySpec.Value).addAll(newTargetSpecs);
+		
+		holder.getSpec(trigger).clear(DependencySpec.Value, target);
+		List<Expression> newTriggerSpecs = rebuilder.getNewHolder().getSpec(trigger).getExpression(DependencySpec.Value);
+		holder.getSpec(trigger).getExpression(DependencySpec.Value).addAll(newTriggerSpecs);
 	}
 
 	public void add(String id, String type) {
@@ -310,5 +309,9 @@ public class RestrictionMatrix {
 			ret.add(new KeyValue(id, String.valueOf(this.getPriority(id))));
 		}
 		return ret;
+	}
+
+	public void addListener(RestrictionMatrixListener restrictionMatrixListener) {
+		this.listenres.add(restrictionMatrixListener);
 	}
 }

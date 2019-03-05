@@ -18,8 +18,16 @@ class DependencyDesign {
 				var index = me.current.colTitle.indexOf(row);
 				return me.current.value[index][k-1].condition;
 			}
-			
 		}
+		
+			new MyWebSocket(function(msg) {				
+				//var obj = JSON.parse(msg);			
+				//var regName = obj.name;
+				if (msg == 'MatrixChanged') {
+					updateTable();
+				}
+			}
+			, 'DEPDESIGN');
 		
 		var triggerId = div + "_trigger";
 		var addTriggerId = div + "_addTrigger";
@@ -184,10 +192,25 @@ class DependencyDesign {
 		var idMain = div + "_main";
 		$('#' + div).append('<div id="' + idMain + '"></div>');
 		
+		function updateTable() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/dependencyDesign/getSpec",
+			   success: function(msg){
+					replaceTable(msg);
+			   }
+			});		
+			
+			function replaceTable(msg) {
+				me.current = msg;
+				me.table.updateData();
+			}
+		}
+		
 		function initTable() {
 			$('#' + idMain).empty();
-			var table = new JsMyTable(idMain, colDef);
-			table.checkListener = function(k, row, checked) {
+			me.table = new JsMyTable(idMain, colDef);
+			me.table.checkListener = function(k, row, checked) {
 				var rowIndex = me.current.colTitle.indexOf(row);
 				var colIndex = k - 1;
 				$.ajax({
@@ -198,7 +221,7 @@ class DependencyDesign {
 				   }
 				});				
 			};
-			table.listenerChange = function(k, row, text) {
+			me.table.listenerChange = function(k, row, text) {
 			};
 			
 			$.ajax({
@@ -215,7 +238,7 @@ class DependencyDesign {
 				for (var row of msg.rowTitle) {
 					titleRow.push(row);
 				}
-				table.appendRow('title', titleRow);
+				me.table.appendRow('title', titleRow);
 				
 				me.current = msg;
 				
@@ -227,7 +250,7 @@ class DependencyDesign {
 						var v = msg.value[r][i];
 						s.push(v.condition);
 					}
-					table.appendRow(col, s);
+					me.table.appendRow(col, s);
 				}
 			}
 		}

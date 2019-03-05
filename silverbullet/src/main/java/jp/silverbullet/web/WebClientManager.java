@@ -14,6 +14,9 @@ import jp.silverbullet.StaticInstances;
 import jp.silverbullet.dependency2.ChangedItemValue;
 import jp.silverbullet.dependency2.DependencyListener;
 import jp.silverbullet.dependency2.Id;
+import jp.silverbullet.dependency2.design.RestrictionMatrix;
+import jp.silverbullet.dependency2.design.RestrictionMatrixElement;
+import jp.silverbullet.dependency2.design.RestrictionMatrixListener;
 import jp.silverbullet.property2.PropertDefHolderListener;
 import jp.silverbullet.register2.BitUpdates;
 import jp.silverbullet.register2.RegisterAccessorListener;
@@ -161,6 +164,18 @@ public class WebClientManager {
 
 			@Override
 			public void onUpdate() {				
+			}
+		});
+		
+		RestrictionMatrix.getInstance().addListener(new RestrictionMatrixListener() {
+			@Override
+			public void onMatrixChanged(RestrictionMatrixElement[][] value) {
+				try {
+					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("DEPDESIGN", "MatrixChanged"));
+					WebSocketBroadcaster.getInstance().sendMessage(str);
+				} catch (JsonProcessingException e) {
+					e.printStackTrace();
+				}
 			}
 		});
 	}

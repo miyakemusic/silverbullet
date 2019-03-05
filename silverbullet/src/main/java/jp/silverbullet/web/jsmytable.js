@@ -56,6 +56,8 @@ class JsMyTable {
 		$('#' + this.tableId).addClass('smalltable');
 		$('#' + this.tableId).css("table-layout","fixed");	
 		this.listenerRemove = function() {};
+		
+		this.allChecks = [];
 	}
 	
 	setColWidth(width) {
@@ -133,8 +135,6 @@ class JsMyTable {
 			}
 			
 			var tdId = me.div + '_' + row + '_' + k;
-			var labelId = 'label_' + tdId;
-			var editId = 'edit_' + tdId;
 			
 			$('#' + me.tableId + ' > tbody tr:last').append('<td id="' + tdId + '"></td>');
 			
@@ -168,6 +168,13 @@ class JsMyTable {
 			else if (type == 'check') {
 				var checkId = 'check_' + tdId;
 				var checkNameId = 'checkName_' + tdId;
+				
+				var obj = new Object();
+				obj.k = k;
+				obj.row = row;
+				obj.id = checkId;
+				me.allChecks.push(obj);
+				
 				$('#' + tdId).append('<input type="checkbox" id="' + checkId + '"><span id="' + checkNameId + '"></span>');
 				
 				var checked = me.colDef(k, row, 'checked');
@@ -182,39 +189,9 @@ class JsMyTable {
 				});
 			}
 			else {
-				$('#' + tdId).append('<label id="' + labelId + '"></label>');
-				$('#' + tdId).append('<input type="text" id="' + editId + '"></input>');
-				$('#' + labelId).text(v);
-				$('#' + editId).val(v);
-				
-				$('#' + labelId).show();
-				$('#' + editId).hide();
-				
-				$('#' + labelId).click(function() {
-					$('#' + labelId).hide();
-					$('#' + editId).show();			
+				new EditableText(tdId, v, function(value) {
+					me.listenerChange(row, k, value);
 				});
-				$('#' + editId).keydown(function(event) {
-					if (event.altKey) {
-						if (event.which == 13) {
-							$('#' + editId).val($('#' + editId).val() + '\n');
-						}
-					} 
-					else if (event.which == 13) { // Enter
-						$('#' + labelId).show();
-						$('#' + editId).hide();
-						$('#' + labelId).text($('#' + editId).val().replace('\n','<br>'));
-						me.listenerChange(row, k, $('#' + editId).val());
-					}
-					else if (event.which == 27) { // Cancel
-						$('#' + labelId).show();
-						$('#' + editId).hide();
-					}
-				});	
-				$('#' + editId).focusout(function() {
-					$('#' + labelId).show();
-					$('#' + editId).hide();
-				});	
 			}
 		});		
 			
@@ -227,4 +204,9 @@ class JsMyTable {
 		}
 	}
 	
+	updateData() {
+		for (var checkbox of this.allChecks) {
+			$('#' + checkbox.id).prop('checked', this.colDef(checkbox.k, checkbox.row, 'checked'));
+		}
+	}
 }

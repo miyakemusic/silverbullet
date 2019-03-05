@@ -19,6 +19,7 @@ public class RestrictionData2 {
 			this.get(trigger).remove(target);
 			this.get(target).remove(trigger);
 		}
+		
 	}
 
 	private List<String> get(String id) {
