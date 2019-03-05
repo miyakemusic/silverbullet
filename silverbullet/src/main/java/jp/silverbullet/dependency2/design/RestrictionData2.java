@@ -16,10 +16,17 @@ public class RestrictionData2 {
 			this.get(target).add(trigger);
 		}
 		else {
-			this.get(trigger).remove(target);
-			this.get(target).remove(trigger);
+			remove(trigger, target);
+			remove(target, trigger);
 		}
 		
+	}
+
+	private void remove(String trigger, String target) {
+		this.get(trigger).remove(target);
+		if (this.get(trigger).size() == 0) {
+			this.allData.remove(trigger);
+		}
 	}
 
 	private List<String> get(String id) {
@@ -47,5 +54,10 @@ public class RestrictionData2 {
 				it.remove();
 			}
 		}
+	}
+
+	public void setCondition(String option1, String option2, String condition) {
+		// TODO Auto-generated method stub
+		
 	}
 }

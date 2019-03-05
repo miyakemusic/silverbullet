@@ -53,6 +53,7 @@ public class RestrictionMatrix {
 	private DependencySpecHolder holder;
 	private DependencySpecRebuilder rebuilder;
 	private Set<RestrictionMatrixListener> listenres = new HashSet<>();
+	private Map<String, String> idMap = new HashMap<>();
 	
 	private static RestrictionMatrix instance;
 	
@@ -92,9 +93,11 @@ public class RestrictionMatrix {
 	private void load() {
 		JsonPersistent json = new JsonPersistent();
 		this.data2 = json.loadJson(RestrictionData2.class, "restriction.json");
+		this.collectId();
 	}
 	
 	private void initValue() {
+		collectId();
 		this.value = createMatrix();
 	}
 	
@@ -131,7 +134,25 @@ public class RestrictionMatrix {
 	}
 
 	public void updateEnabled(int row, int col, boolean checked) {
-		this.data2.set(this.colTitle.get(row), this.rowTitle.get(col), checked);
+		String option1 = this.colTitle.get(row);
+		String option2 = this.rowTitle.get(col);
+		this.data2.set(option1, option2, checked);
+		
+		String id1 = getMainId(option1);
+		String id2 = getMainId(option2);
+		
+		List<String> list = this.data2.getList(option1);
+		for (int i = 0; i < list.size(); i++) {
+			String text = "";
+			for (int j = 0; j < list.size(); j++) {
+				if (i == j) {
+					continue;
+				}
+				
+				text += list.get(j) + ", ";
+			}
+			this.data2.setCondition(option1, list.get(i), text);
+		}
 		initValue();
 		fireUpdateMatrix();
 	}
@@ -246,14 +267,10 @@ public class RestrictionMatrix {
 
 	public void add(String id, String type) {
 		if (type.equals("trigger")) {
-			if (!this.triggers.contains(id)) {
-				this.triggers.add(id);
-			}
+			this.triggers.add(id);
 		}
 		else if (type.equals("target")) {
-			if (!this.targets.contains(id)) {
-				this.targets.add(id);
-			}
+			this.targets.add(id);
 		}
 		this.initValue();
 	}
@@ -268,18 +285,25 @@ public class RestrictionMatrix {
 		this.initValue();
 	}
 
-	private Set<String> getUsedIds() {
-		Set<String> ret = new HashSet<>();
+	private String getMainId(String option) {
+		return idMap.get(option);
+	}
+	
+	private void collectId() {
+		this.idMap.clear();
 		for (String option : data2.getAllData().keySet()) {
 			for (PropertyDef2 prop : this.getPropertyHolder().getProperties()) {
 				if (prop.getOptionIds().contains(option)) {
-					ret.add(prop.getId());
-					break;
+					idMap.put(option, prop.getId());
 				}
 			}
 		}		
-		return ret;
 	}
+
+	private Set<String> getUsedIds() {
+		return new HashSet<String>(idMap.values());
+	}
+	
 	public void showAll() {
 		this.data2.clean();
 		this.targets.clear();
