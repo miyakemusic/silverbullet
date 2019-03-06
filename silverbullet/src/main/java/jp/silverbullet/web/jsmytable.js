@@ -178,6 +178,7 @@ class JsMyTable {
 				$('#' + tdId).append('<input type="checkbox" id="' + checkId + '"><span id="' + checkNameId + '"></span>');
 				
 				var checked = me.colDef(k, row, 'checked');
+	
 				$('#' + checkId).prop('checked', checked);
 				new EditableText(checkNameId, me.colDef(k, row, 'name'), function(value) {
 					me.listenerChange(row, k, value);

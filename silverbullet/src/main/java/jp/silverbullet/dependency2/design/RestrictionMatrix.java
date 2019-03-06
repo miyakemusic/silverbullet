@@ -49,7 +49,6 @@ public class RestrictionMatrix {
 	private Set<String> triggers = new HashSet<>();
 	private Set<String> targets = new HashSet<>();
 	private RestrictionData2 data2 = new RestrictionData2();
-	private Map<String, Integer> priority = new HashMap<>();
 	private DependencySpecHolder holder;
 	private DependencySpecRebuilder rebuilder;
 	private Set<RestrictionMatrixListener> listenres = new HashSet<>();
@@ -123,7 +122,7 @@ public class RestrictionMatrix {
 			for (int c = 0; c < this.rowTitle.size(); c++) {
 				String triggerId = this.rowTitle.get(c);
 				if (data2.getList(targetId).contains(triggerId)) {
-					ret[r][c] = new RestrictionMatrixElement(true, "");
+					ret[r][c] = new RestrictionMatrixElement(true, data2.getCondition(triggerId, targetId));
 				}
 				else {
 					ret[r][c] = new RestrictionMatrixElement();
@@ -141,18 +140,23 @@ public class RestrictionMatrix {
 		String id1 = getMainId(option1);
 		String id2 = getMainId(option2);
 		
-		List<String> list = this.data2.getList(option1);
+		List<String> list = new ArrayList<String>(this.data2.getList(option1));
+		if (list.size() <= 1) {
+			return;
+		}
+		
+		
 		for (int i = 0; i < list.size(); i++) {
 			String text = "";
 			for (int j = 0; j < list.size(); j++) {
 				if (i == j) {
 					continue;
 				}
-				
-				text += list.get(j) + ", ";
+				text += list.get(j) + ";";
 			}
 			this.data2.setCondition(option1, list.get(i), text);
 		}
+		
 		initValue();
 		fireUpdateMatrix();
 	}
@@ -163,9 +167,7 @@ public class RestrictionMatrix {
 		}
 	}
 
-//	private Set<String> calculated = new HashSet<>();	
 	public void build() {	
-//		calculated.clear();
 		resetMask();
 
 		DependencySpecHolder holder = getDependencySpecHolder();
@@ -315,16 +317,11 @@ public class RestrictionMatrix {
 	}
 
 	public int getPriority(String id) {
-		if (this.priority.containsKey(id)) {
-			return this.priority.get(id);
-		}
-		else {
-			return 0;
-		}
+		return this.data2.getPriority(id);
 	}
 	
 	public void setPriority(String id, int value) {
-		this.priority.put(id, value);
+		this.data2.setPriority(id, value);
 	}
 
 	public List<KeyValue> getPriorities() {
