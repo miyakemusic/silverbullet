@@ -92,5 +92,9 @@ public class RestrictionData2 {
 		this.priority.put(id, value);
 	}
 
+	public boolean contains(String option1, String option2) {
+		return this.allData.get(option1).contains(option2);
+	}
+
 	
 }

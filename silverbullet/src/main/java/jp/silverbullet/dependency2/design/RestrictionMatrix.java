@@ -78,8 +78,8 @@ public class RestrictionMatrix {
 			}
 		
 		});
-		this.triggers.add("ID_DISTANCERANGE");
-		this.targets.add("ID_PULSEWIDTH");
+//		this.triggers.add("ID_DISTANCERANGE");
+//		this.targets.add("ID_PULSEWIDTH");
 		this.load();
 		initValue();
 	}
@@ -129,6 +129,7 @@ public class RestrictionMatrix {
 				}
 			}
 		}
+		calculateCondition(new ArrayList<String>(this.idMap.keySet()));
 		return ret;
 	}
 
@@ -136,29 +137,48 @@ public class RestrictionMatrix {
 		String option1 = this.colTitle.get(row);
 		String option2 = this.rowTitle.get(col);
 		this.data2.set(option1, option2, checked);
-		
-		String id1 = getMainId(option1);
-		String id2 = getMainId(option2);
-		
+
 		List<String> list = new ArrayList<String>(this.data2.getList(option1));
 		if (list.size() <= 1) {
 			return;
-		}
+		}	
 		
-		
-		for (int i = 0; i < list.size(); i++) {
-			String text = "";
-			for (int j = 0; j < list.size(); j++) {
-				if (i == j) {
-					continue;
-				}
-				text += list.get(j) + ";";
-			}
-			this.data2.setCondition(option1, list.get(i), text);
-		}
+		calculateCondition(list);
 		
 		initValue();
 		fireUpdateMatrix();
+	}
+
+	private void calculateCondition(List<String> list) {
+		for (int row = 0; row < list.size(); row++) {
+			String option1 = list.get(row);
+			
+			String mainId1 = this.getMainId(option1);
+			for (int col = 0; col < list.size(); col++) {
+				String text = "";
+				String option2 = list.get(col);
+				String mainId2 = this.getMainId(option2);
+
+				if (!this.data2.getList(option1).contains(option2)) {
+					continue;
+				}
+				if (mainId1.equals(mainId2)) {
+					continue;
+				}
+				for (int k = 0; k < list.size(); k++) {
+					String option3 = list.get(k);
+
+					if (k == col) {
+						continue;
+					}
+					if (getMainId(option3).equals(mainId1) || getMainId(option3).equals(mainId2))  {
+						continue;
+					}
+					text += "($" + getMainId(option3) + "==%" +  option3 + ")||";
+				}
+//				this.data2.setCondition(option1, option2, text.substring(0, text.length()-2));
+			}	
+		}
 	}
 	
 	private void fireUpdateMatrix() {
@@ -186,7 +206,7 @@ public class RestrictionMatrix {
 		for (String trigger : usedId) {
 			List<String> triggerOptions = this.getPropertyHolder().get(trigger).getOptionIds();
 			for (String target : usedId) {
-				if (trigger.contains(target)) {
+				if (trigger.equals(target)) {
 					continue;
 				}
 
@@ -194,38 +214,70 @@ public class RestrictionMatrix {
 				
 				int priority =  this.getPriority(target) - this.getPriority(trigger);
 				
+				List<String> targetOptions2 = null;
+				List<String> triggerOptions2 = null;
+				String target2;
+				String trigger2;
 				if (priority > 0) {
-					List<String> tmp = targetOptions;
-					targetOptions = triggerOptions;
-					triggerOptions = tmp;
-					
-					String tmp2 = target;
-					target = trigger;
-					trigger = tmp2;
+					targetOptions2 = triggerOptions;
+					triggerOptions2 = targetOptions;
+					target2 = trigger;
+					trigger2 = target;
 				}
-				//holder.getSpec(target).clear(DependencySpec.OptionEnable, target);
-				
-				for (String targetOption : targetOptions) {
+				else {
+					targetOptions2 = targetOptions;
+					triggerOptions2 = triggerOptions;
+					target2 = target;
+					trigger2 = trigger;					
+				}
+				for (String targetOption2 : targetOptions2) {
 					boolean touched = false;
-					for (String triggerOption : triggerOptions) {
-						if (data2.getList(targetOption).contains(triggerOption)) {
-							getDependencySpecHolder().getSpec(target).addOptionEnabled(targetOption, DependencySpec.True, 
-									"$" + trigger + "==%" + triggerOption);
+					for (String triggerOption2 : triggerOptions2) {
+						if (data2.getList(targetOption2).contains(triggerOption2)) {
+							String condition = createCondition(targetOption2, triggerOption2, new ArrayList<String>(data2.getAllData().keySet()));
+							getDependencySpecHolder().getSpec(target2).addOptionEnabled(targetOption2, DependencySpec.True, 
+									"$" + trigger2 + "==%" + triggerOption2, condition);
 							touched = true;
 						}
 					}
 					if (touched) {
-						getDependencySpecHolder().getSpec(target).addOptionEnabled(targetOption, DependencySpec.False, 
+						getDependencySpecHolder().getSpec(target2).addOptionEnabled(targetOption2, DependencySpec.False, 
 								DependencySpec.Else);		
 					}
 				}
 				if (priority == 0) {
-					//holder.getSpec(trigger).clear(DependencySpec.OptionEnable, trigger);
-					setBiDirectional(trigger, target);
+					setBiDirectional(trigger2, target2);
 				}
 			}
 		}
 		save();
+	}
+
+	private String createCondition(String targetOption, String triggerOption, List<String> triggerOptions) {
+		String triggerMainId = this.getMainId(triggerOption);
+		String targetMainId = this.getMainId(targetOption);
+		String ret = "";
+	
+		if (triggerMainId.equals(targetMainId)) {
+			return "";
+		}
+		for (String option : triggerOptions) {
+			String id = this.getMainId(option);
+			
+			if (!this.data2.contains(targetOption, option)) {
+				continue;
+			}
+			if (id.equals(triggerMainId)/* || id.equals(targetMainId)*/) {
+				continue;
+			}
+			if (this.getPriority(id) > this.getPriority(triggerMainId)) {
+				ret += "($" + id + "==%" + option + ")||";
+			}
+		}
+		if (ret.isEmpty()) {
+			return "";
+		}
+		return ret.substring(0, ret.length()-2);
 	}
 
 	public Set<String> getTriggers() {
