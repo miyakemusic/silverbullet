@@ -170,4 +170,10 @@ public class DependencySpec {
 		this.dependencySpecDetail.clear(targetElement, triggerId);
 	}
 
+	public void addSpecs(String targetElement, List<Expression> specs) {
+		for (Expression exp : specs) {
+			this.dependencySpecDetail.add(targetElement, exp.getValue(), exp.getTrigger(), exp.getCondition());
+		}
+	}
+
 }

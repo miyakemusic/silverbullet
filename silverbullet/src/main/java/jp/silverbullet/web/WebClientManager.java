@@ -167,7 +167,7 @@ public class WebClientManager {
 			}
 		});
 		
-		RestrictionMatrix.getInstance().addListener(new RestrictionMatrixListener() {
+		StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().addListener(new RestrictionMatrixListener() {
 			@Override
 			public void onMatrixChanged(RestrictionMatrixElement[][] value) {
 				try {

@@ -428,7 +428,7 @@ public class RegisterSpecHolderTest {
 			@Override
 			public void run() {
 				try {
-					Thread.sleep(100);
+					Thread.sleep(110);
 				} catch (InterruptedException e) {
 				}
 				simulator.triggerInterrupt();

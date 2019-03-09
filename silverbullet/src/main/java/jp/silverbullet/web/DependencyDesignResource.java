@@ -10,6 +10,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import jp.silverbullet.StaticInstances;
 import jp.silverbullet.dependency2.design.RestrictionMatrix;
 
 @Path("/dependencyDesign")
@@ -18,28 +19,28 @@ public class DependencyDesignResource {
 	@Path("/getSpec")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public RestrictionMatrix getSpec() {
-		return RestrictionMatrix.getInstance();
+		return StaticInstances.getInstance().getBuilderModel().getDependencyDesigner();
 	}
 	
 	@GET
 	@Path("/getTriggers")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public Set<String> getTrigger() {
-		return RestrictionMatrix.getInstance().getTriggers();
+		return StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().getTriggers();
 	}
 	
 	@GET
 	@Path("/getTargets")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public Set<String> getTarget() {
-		return RestrictionMatrix.getInstance().getTargets();
+		return StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().getTargets();
 	}
 	
 	@GET
 	@Path("/changeSpec")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String changeSpec(@QueryParam("row") final int row, @QueryParam("col") final int col, @QueryParam("checked") final boolean checked) {
-		RestrictionMatrix.getInstance().updateEnabled(row, col, checked);
+		StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().updateEnabled(row, col, checked);
 		return "OK";
 	}
 	
@@ -47,7 +48,7 @@ public class DependencyDesignResource {
 	@Path("/setCombination")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setCombination(@QueryParam("trigger") final String trigger, @QueryParam("target") final String target) {
-		//RestrictionMatrix.getInstance().setCombination(trigger, target);
+		//StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().setCombination(trigger, target);
 		return "OK";
 	}
 	
@@ -55,7 +56,7 @@ public class DependencyDesignResource {
 	@Path("/build")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String build() {
-		RestrictionMatrix.getInstance().build();
+		StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().build();
 		return "OK";
 	}
 	
@@ -63,7 +64,7 @@ public class DependencyDesignResource {
 	@Path("/switch")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String switchTriggerTarget() {
-		RestrictionMatrix.getInstance().switchTriggerTarget();
+		StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().switchTriggerTarget();
 		return "OK";
 	}
 	
@@ -72,7 +73,7 @@ public class DependencyDesignResource {
 	@Path("/alwaysTrue")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String alwaysTrue() {
-		RestrictionMatrix.getInstance().alwaysTrue();
+		StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().alwaysTrue();
 		return "OK";
 	}
 	
@@ -80,15 +81,27 @@ public class DependencyDesignResource {
 	@Path("/addId")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String addId(@QueryParam("id") final String id, @QueryParam("type") final String type) {
-		RestrictionMatrix.getInstance().add(id, type);
+		RestrictionMatrix.AxisType axisType = convertAxisType(type);	
+		StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().add(id, axisType);
 		return "OK";
+	}
+
+	private RestrictionMatrix.AxisType convertAxisType(final String type) {
+		RestrictionMatrix.AxisType axisType = null;
+		if (type.equals("trigger")) {
+			axisType = RestrictionMatrix.AxisType.COLUMN;
+		}
+		else if (type.equals("target")) {
+			axisType = RestrictionMatrix.AxisType.ROW;
+		}
+		return axisType;
 	}
 	
 	@GET
 	@Path("/removeId")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String removeId(@QueryParam("id") final String id, @QueryParam("type") final String type) {
-		RestrictionMatrix.getInstance().hide(id, type);
+		StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().hide(id, convertAxisType(type));
 		return "OK";
 	}
 	
@@ -96,7 +109,7 @@ public class DependencyDesignResource {
 	@Path("/showAll")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String showAll() {
-		RestrictionMatrix.getInstance().showAll();
+		StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().showAll();
 		return "OK";
 	}
 	
@@ -104,14 +117,14 @@ public class DependencyDesignResource {
 	@Path("/getPriorities")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<KeyValue> getPriorities() {
-		return RestrictionMatrix.getInstance().getPriorities();
+		return StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().getPriorities();
 	}
 	
 	@GET
 	@Path("/setPriority")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setPriority(@QueryParam("id") final String id, @QueryParam("value") final Integer value) {
-		RestrictionMatrix.getInstance().setPriority(id, value);
+		StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().setPriority(id, value);
 		return "OK";
 	}
 }

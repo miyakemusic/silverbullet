@@ -7,92 +7,65 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.util.concurrent.ListeningExecutorService;
-
 import jp.silverbullet.JsonPersistent;
-import jp.silverbullet.StaticInstances;
 import jp.silverbullet.dependency2.DependencySpec;
 import jp.silverbullet.dependency2.DependencySpecHolder;
 import jp.silverbullet.dependency2.DependencySpecRebuilder;
 import jp.silverbullet.dependency2.Expression;
 import jp.silverbullet.property2.PropertyDef2;
-import jp.silverbullet.property2.PropertyHolder2;
 import jp.silverbullet.property2.RuntimeProperty;
-import jp.silverbullet.property2.RuntimePropertyStore;
 import jp.silverbullet.web.KeyValue;
 import jp.silverbullet.web.ui.PropertyGetter;
 
-public class RestrictionMatrix {
-	private PropertyHolder2 getPropertyHolder() {
-		// Bad design!! don't use Singleton!! do DI later!!
-		return StaticInstances.getInstance().getBuilderModel().getPropertiesHolder2();
-	}
-	
-	private RuntimePropertyStore getRuntimePropertyStore() {
-		// Bad design!! don't use Singleton!! do DI later!!
-		return StaticInstances.getInstance().getBuilderModel().getRuntimePropertyStore();
-	}
-	
-	private DependencySpecHolder getDependencySpecHolder() {
-		// Bad design!! don't use Singleton!! do DI later!!
-		return StaticInstances.getInstance().getBuilderModel().getDependencySpecHolder2();
-	}
+public abstract class RestrictionMatrix {
 
-	private void resetMask() {
-		// Bad design!! don't use Singleton!! do DI later!!
-		StaticInstances.getInstance().getBuilderModel().getRuntimePropertyStore().resetMask();
-	}
+//	abstract protected RuntimePropertyStore getRuntimePropertyStore();
+	
+	abstract protected DependencySpecHolder getDependencySpecHolder() ;
 
+	abstract protected void resetMask();
+
+	public enum AxisType {
+		ROW,
+		COLUMN
+	}
 	public List<String> rowTitle = new ArrayList<>();
 	public List<String> colTitle = new ArrayList<>();
 	public RestrictionMatrixElement[][] value;
 	private Set<String> triggers = new HashSet<>();
 	private Set<String> targets = new HashSet<>();
 	private RestrictionData2 data2 = new RestrictionData2();
-	private DependencySpecHolder holder;
-	private DependencySpecRebuilder rebuilder;
+//	private DependencySpecHolder holder;
+//	private DependencySpecRebuilder rebuilder;
 	private Set<RestrictionMatrixListener> listenres = new HashSet<>();
 	private Map<String, String> idMap = new HashMap<>();
 	
-	private static RestrictionMatrix instance;
+//	private static RestrictionMatrix instance;
+//	
+//	public static RestrictionMatrix getInstance() {
+//		if (instance == null) {
+//			instance = new RestrictionMatrix();
+//		}
+//		return instance;
+//	}
 	
-	public static RestrictionMatrix getInstance() {
-		if (instance == null) {
-			instance = new RestrictionMatrix();
-		}
-		return instance;
-	}
-	
-	private RestrictionMatrix() {
-		
-		holder = getDependencySpecHolder();
-		rebuilder = new DependencySpecRebuilder(holder, new PropertyGetter() {
-			@Override
-			public RuntimeProperty getProperty(String id) {
-				return getRuntimePropertyStore().get(id);
-			}
-
-			@Override
-			public RuntimeProperty getProperty(String id, int index) {
-				return getRuntimePropertyStore().get(id, index);
-			}
-		
-		});
-//		this.triggers.add("ID_DISTANCERANGE");
-//		this.targets.add("ID_PULSEWIDTH");
-		this.load();
+	public RestrictionMatrix() {
 		initValue();
 	}
+
+	protected abstract RuntimeProperty getRuntimeProperty(String id, int index);
+
+	protected abstract RuntimeProperty getRuntimeProperty(String id);
 
 	private void save() {
 		JsonPersistent json = new JsonPersistent();
 		json.saveJson(this.data2, "restriction.json");
 	}
 	
-	private void load() {
+	public void load() {
 		JsonPersistent json = new JsonPersistent();
 		this.data2 = json.loadJson(RestrictionData2.class, "restriction.json");
-		this.collectId();
+		initValue();
 	}
 	
 	private void initValue() {
@@ -101,18 +74,17 @@ public class RestrictionMatrix {
 	}
 	
 	private RestrictionMatrixElement[][] createMatrix() {
-		PropertyHolder2 propHolder = getPropertyHolder();
 		
 		this.rowTitle.clear();
 		this.colTitle.clear();
 		
 		for (String trigger : triggers) {
-			PropertyDef2 triggerProp = propHolder.get(trigger);
+			PropertyDef2 triggerProp = getPropertyDef(trigger);
 			this.rowTitle.addAll(triggerProp.getOptionIds());
 		}
 		
 		for (String target :targets) {
-			PropertyDef2 targetProp = propHolder.get(target);
+			PropertyDef2 targetProp = getPropertyDef(target);
 			this.colTitle.addAll(targetProp.getOptionIds());
 		}
 		
@@ -132,6 +104,8 @@ public class RestrictionMatrix {
 		calculateCondition(new ArrayList<String>(this.idMap.keySet()));
 		return ret;
 	}
+
+	protected abstract PropertyDef2 getPropertyDef(String trigger);
 
 	public void updateEnabled(int row, int col, boolean checked) {
 		String option1 = this.colTitle.get(row);
@@ -204,13 +178,13 @@ public class RestrictionMatrix {
 		}
 		
 		for (String trigger : usedId) {
-			List<String> triggerOptions = this.getPropertyHolder().get(trigger).getOptionIds();
+			List<String> triggerOptions = this.getPropertyDef(trigger).getOptionIds();
 			for (String target : usedId) {
 				if (trigger.equals(target)) {
 					continue;
 				}
 
-				List<String> targetOptions = this.getPropertyHolder().get(target).getOptionIds();
+				List<String> targetOptions = this.getPropertyDef(target).getOptionIds();
 				
 				int priority =  this.getPriority(target) - this.getPriority(trigger);
 				
@@ -307,33 +281,48 @@ public class RestrictionMatrix {
 	}
 
 	private void setBiDirectional(String trigger, String target) {
+		DependencySpecRebuilder rebuilder = new DependencySpecRebuilder(this.getDependencySpecHolder(), new PropertyGetter() {
+			@Override
+			public RuntimeProperty getProperty(String id) {
+				return getRuntimeProperty(id);
+			}
+
+			@Override
+			public RuntimeProperty getProperty(String id, int index) {
+				return getRuntimeProperty(id, index);
+			}
+		});
+		
 		rebuilder.handleOneSpec(target);
 		
+		DependencySpecHolder holder = this.getDependencySpecHolder();
 		holder.getSpec(target).clear(DependencySpec.OptionEnable, trigger);
 		holder.getSpec(target).clear(DependencySpec.Value, trigger);
 		List<Expression> newTargetSpecs = rebuilder.getNewHolder().getSpec(target).getExpression(DependencySpec.Value);
-		holder.getSpec(target).getExpression(DependencySpec.Value).addAll(newTargetSpecs);
+//		holder.getSpec(target).getExpression(DependencySpec.Value).addAll(newTargetSpecs);
+		holder.getSpec(target).addSpecs(DependencySpec.Value, newTargetSpecs);
 		
 		holder.getSpec(trigger).clear(DependencySpec.Value, target);
 		List<Expression> newTriggerSpecs = rebuilder.getNewHolder().getSpec(trigger).getExpression(DependencySpec.Value);
-		holder.getSpec(trigger).getExpression(DependencySpec.Value).addAll(newTriggerSpecs);
+//		holder.getSpec(trigger).getExpression(DependencySpec.Value).addAll(newTriggerSpecs);
+		holder.getSpec(trigger).addSpecs(DependencySpec.Value, newTriggerSpecs);
 	}
 
-	public void add(String id, String type) {
-		if (type.equals("trigger")) {
+	public void add(String id, AxisType type) {
+		if (type.equals(AxisType.COLUMN)) {
 			this.triggers.add(id);
 		}
-		else if (type.equals("target")) {
+		else if (type.equals(AxisType.ROW)) {
 			this.targets.add(id);
 		}
 		this.initValue();
 	}
 
-	public void hide(String id, String type) {
-		if (type.equals("trigger")) {
+	public void hide(String id, AxisType type) {
+		if (type.equals(AxisType.COLUMN)) {
 			this.triggers.remove(id);
 		}
-		else if (type.equals("target")) {
+		else if (type.equals(AxisType.ROW)) {
 			this.targets.remove(id);
 		}
 		this.initValue();
@@ -346,13 +335,15 @@ public class RestrictionMatrix {
 	private void collectId() {
 		this.idMap.clear();
 		for (String option : data2.getAllData().keySet()) {
-			for (PropertyDef2 prop : this.getPropertyHolder().getProperties()) {
+			for (PropertyDef2 prop : this.getAllPropertieDefs()) {
 				if (prop.getOptionIds().contains(option)) {
 					idMap.put(option, prop.getId());
 				}
 			}
 		}		
 	}
+
+	protected abstract List<PropertyDef2> getAllPropertieDefs();
 
 	private Set<String> getUsedIds() {
 		return new HashSet<String>(idMap.values());

@@ -3,16 +3,19 @@ package jp.silverbullet;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.JAXBException;
 
 import jp.silverbullet.dependency2.DependencySpecRebuilder;
 import jp.silverbullet.dependency2.IdValue;
 import jp.silverbullet.dependency2.RequestRejectedException;
+import jp.silverbullet.dependency2.design.RestrictionMatrix;
 import jp.silverbullet.dependency2.CommitListener.Reply;
 import jp.silverbullet.dependency2.CommitListener;
 import jp.silverbullet.dependency2.DependencyEngine;
 import jp.silverbullet.dependency2.DependencySpecHolder;
+import jp.silverbullet.property2.PropertyDef2;
 import jp.silverbullet.property2.PropertyHolder2;
 import jp.silverbullet.property2.PropertyType2;
 import jp.silverbullet.property2.RuntimeProperty;
@@ -51,6 +54,39 @@ public class BuilderModelImpl {
 	private RegisterController registerController = new RegisterController();
 	private RuntimeRegisterMap runtimeRegisterMap = new RuntimeRegisterMap();
 	private RegisterAccessor currentRegisterAccessor = runtimeRegisterMap;
+	private RestrictionMatrix restrictionMatrix = new RestrictionMatrix() {
+
+		@Override
+		protected DependencySpecHolder getDependencySpecHolder() {
+			return dependencySpecHolder2;
+		}
+
+		@Override
+		protected void resetMask() {
+			store.resetMask();
+		}
+
+		@Override
+		protected RuntimeProperty getRuntimeProperty(String id, int index) {
+			return store.get(id, index);
+		}
+
+		@Override
+		protected RuntimeProperty getRuntimeProperty(String id) {
+			return store.get(id);
+		}
+
+		@Override
+		protected PropertyDef2 getPropertyDef(String id) {
+			return propertiesHolder2.get(id);
+		}
+
+		@Override
+		protected List<PropertyDef2> getAllPropertieDefs() {
+			return new ArrayList<PropertyDef2>(propertiesHolder2.getProperties());
+		}
+		
+	};
 	
 	private UiLayoutHolder uiLayoutHolder = new UiLayoutHolder(new PropertyGetter() {
 		public RuntimeProperty getProperty(String id) {
@@ -154,6 +190,7 @@ public class BuilderModelImpl {
 		this.uiLayoutHolder.createDefault();
 		createDependencyEngine();
 		
+		restrictionMatrix.load();
 //		this.setRegisterType(RegisterTypeEnum.Hardware);
 	}
 	
@@ -416,6 +453,10 @@ public class BuilderModelImpl {
 
 	public UiBuilder getUiBuilder() {
 		return uiBuilder;
+	}
+
+	public RestrictionMatrix getDependencyDesigner() {
+		return this.restrictionMatrix;
 	}
 
 }

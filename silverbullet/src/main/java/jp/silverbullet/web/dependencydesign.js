@@ -61,7 +61,8 @@ class DependencyDesign {
 		var updateId = div + "_update";
 		$('#' + div).append('<button id="' + updateId + '">Update</button>');
 		$('#' + updateId).click(function() {
-			initTable();
+		   	initTable();
+		   	initPriority();
 		});
 		
 		var showAllId = div + "_showAll";
@@ -73,6 +74,7 @@ class DependencyDesign {
 			   success: function(msg) {
 			   	initOptions();
 			   	initTable();
+			   	initPriority();
 			   }
 			});
 		});	
@@ -86,6 +88,7 @@ class DependencyDesign {
 			   success: function(msg) {
 			   	initOptions();
 			   	initTable();
+			   	initPriority();
 			   }
 			});
 		});
@@ -101,16 +104,16 @@ class DependencyDesign {
 			});
 		});
 		
-		var alwaysTrueId = div + "_alwaysTrue";
-		$('#' + div).append('<button id="' + alwaysTrueId + '">Build (Always True)</button>');
-		$('#' + alwaysTrueId).click(function() {
-			$.ajax({
-			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/dependencyDesign/alwaysTrue",
-			   success: function(msg) {
-			   }
-			});
-		});
+//		var alwaysTrueId = div + "_alwaysTrue";
+//		$('#' + div).append('<button id="' + alwaysTrueId + '">Build (Always True)</button>');
+//		$('#' + alwaysTrueId).click(function() {
+//			$.ajax({
+//			   type: "GET", 
+//			   url: "http://" + window.location.host + "/rest/dependencyDesign/alwaysTrue",
+//			   success: function(msg) {
+//			   }
+//			});
+//		});
 		
 		$.ajax({
 		   type: "GET", 
