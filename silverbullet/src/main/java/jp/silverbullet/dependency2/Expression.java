@@ -85,7 +85,7 @@ public class Expression implements Cloneable {
 	@Override
 	public boolean equals(Object obj2) {
 		Expression obj = (Expression)obj2;
-		return this.condition.equals(this.condition) && this.trigger.equals(obj.trigger) && this.value.equals(obj.value) &&
+		return this.condition.equals(obj.condition) && this.trigger.equals(obj.trigger) && this.value.equals(obj.value) &&
 				(this.valueCalculationEnabled == obj.valueCalculationEnabled);
 	}
 

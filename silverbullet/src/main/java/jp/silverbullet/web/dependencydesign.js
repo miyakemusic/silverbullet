@@ -11,11 +11,11 @@ class DependencyDesign {
 				}
 			}
 			else if (type == 'checked') {
-				var index = me.current.colTitle.indexOf(row);
+				var index = me.current.yTitle.indexOf(row);
 				return me.current.value[index][k-1].enabled;
 			}
 			else if (type == 'name') {
-				var index = me.current.colTitle.indexOf(row);
+				var index = me.current.yTitle.indexOf(row);
 				return me.current.value[index][k-1].condition;
 			}
 		}
@@ -214,7 +214,7 @@ class DependencyDesign {
 			$('#' + idMain).empty();
 			me.table = new JsMyTable(idMain, colDef);
 			me.table.checkListener = function(k, row, checked) {
-				var rowIndex = me.current.colTitle.indexOf(row);
+				var rowIndex = me.current.yTitle.indexOf(row);
 				var colIndex = k - 1;
 				$.ajax({
 				   type: "GET", 
@@ -238,18 +238,18 @@ class DependencyDesign {
 			function updateList(msg) {
 				var titleRow = [];
 				titleRow.push('');
-				for (var row of msg.rowTitle) {
+				for (var row of msg.xTitle) {
 					titleRow.push(row);
 				}
 				me.table.appendRow('title', titleRow);
 				
 				me.current = msg;
 				
-				for (var r = 0; r < msg.colTitle.length; r++){
-					var col = msg.colTitle[r];
+				for (var r = 0; r < msg.yTitle.length; r++){
+					var col = msg.yTitle[r];
 					var s = [];
 					s.push(col);
-					for (var i = 0; i < msg.rowTitle.length; i++) {
+					for (var i = 0; i < msg.xTitle.length; i++) {
 						var v = msg.value[r][i];
 						s.push(v.condition);
 					}

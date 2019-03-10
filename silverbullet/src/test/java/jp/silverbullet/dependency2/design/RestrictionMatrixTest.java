@@ -2,6 +2,7 @@ package jp.silverbullet.dependency2.design;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,8 @@ public class RestrictionMatrixTest {
 				.option("ID_TRIGGER_C", "C", "").option("ID_TRIGGER_D", "D", ""));
 		holder.addProperty(factory.createNumeric("ID_TARGET").option("ID_TARGET_A", "A", "").option("ID_TARGET_B", "B", "")
 				.option("ID_TARGET_C", "C", "").option("ID_TARGET_D", "D", ""));
-
+		holder.addProperty(factory.createNumeric("ID_DUMMY").option("ID_DUMMY_A", "A", "").option("ID_DUMMY_B", "B", ""));
+		holder.addProperty(factory.createNumeric("ID_DUMMY2").option("ID_DUMMY2_A", "A", "").option("ID_DUMMY2_B", "B", ""));
 		DependencySpecHolder depSpecHolder = new DependencySpecHolder();
 		
 		RestrictionMatrix matrix = new RestrictionMatrix() {
@@ -66,48 +68,78 @@ public class RestrictionMatrixTest {
 			
 		};
 		
-		matrix.add("ID_TRIGGER", AxisType.COLUMN);
-		matrix.add("ID_TARGET", AxisType.ROW);
-
-		matrix.updateEnabled(0, 0, true);
-		matrix.updateEnabled(1, 0, true);
-		matrix.updateEnabled(1, 1, true);
-		matrix.updateEnabled(2, 1, true);
-		matrix.updateEnabled(2, 2, true);
-		matrix.updateEnabled(3, 2, true);
-		matrix.updateEnabled(3, 3, true);
+		matrix.add("ID_TRIGGER", AxisType.X);
+		matrix.add("ID_DUMMY", AxisType.X);
+		matrix.add("ID_DUMMY2", AxisType.X);
+		matrix.add("ID_TARGET", AxisType.Y);
+		matrix.add("ID_DUMMY", AxisType.Y);
+		matrix.add("ID_DUMMY2", AxisType.Y);
+		/*
+		|       |Trigger A|Trigger B|Trigger C|Trigger D|
+		Target A|    x    |         |         |         |
+		Target B|    x    |    x    |         |         |
+		Target C|         |    x    |    x    |         |
+		Target D|         |         |    x    |    x    |
+		 */
+		matrix.updateEnabled(matrix.yTitle.indexOf("ID_TARGET_A"), matrix.xTitle.indexOf("ID_TRIGGER_A"), true);
+		matrix.updateEnabled(matrix.yTitle.indexOf("ID_TARGET_B"), matrix.xTitle.indexOf("ID_TRIGGER_A"), true);
+		matrix.updateEnabled(matrix.yTitle.indexOf("ID_TARGET_B"), matrix.xTitle.indexOf("ID_TRIGGER_B"), true);
+		matrix.updateEnabled(matrix.yTitle.indexOf("ID_TARGET_C"), matrix.xTitle.indexOf("ID_TRIGGER_B"), true);
+		matrix.updateEnabled(matrix.yTitle.indexOf("ID_TARGET_C"), matrix.xTitle.indexOf("ID_TRIGGER_C"), true);
+		matrix.updateEnabled(matrix.yTitle.indexOf("ID_TARGET_D"), matrix.xTitle.indexOf("ID_TRIGGER_C"), true);
+		matrix.updateEnabled(matrix.yTitle.indexOf("ID_TARGET_D"), matrix.xTitle.indexOf("ID_TRIGGER_D"), true);
 		
-		// In case, Trigger is strong
+		matrix.updateEnabled(matrix.yTitle.indexOf("ID_DUMMY_A"), matrix.xTitle.indexOf("ID_DUMMY2_A"), true);
+		
+		
+		// In case, TRIGGER is stronger than TARGET
 		matrix.setPriority("ID_TRIGGER", 10); 
 		matrix.setPriority("ID_TARGET", 0);
 		matrix.build();
 	
 		DependencySpec spec = depSpecHolder.getSpec("ID_TARGET");
-		assertEquals(2, spec.getExpression("ID_TARGET_A").size());
-		assertEquals("$ID_TRIGGER==%ID_TRIGGER_A", spec.getExpression("ID_TARGET_A").get(0).getTrigger());
-		assertEquals("", spec.getExpression("ID_TARGET_A").get(0).getCondition());
-		assertEquals(DependencySpec.Else, spec.getExpression("ID_TARGET_A").get(1).getTrigger());
+		assertEquals(0, depSpecHolder.getSpec("ID_TRIGGER").getDependencySpecDetail().getExpressions().getExpressions().size());
+//		assertEquals(0, spec.getExpression(DependencySpec.Enable).size());
+		{
+			assertEquals(2, spec.getExpression("ID_TARGET_A").size());
+			List<Expression> expected = Arrays.asList(
+					new Expression(DependencySpec.True, "$ID_TRIGGER==%ID_TRIGGER_A", ""),
+					new Expression(DependencySpec.False, DependencySpec.Else, ""));
+	
+			testSpec(spec, expected, "ID_TARGET_A");
+		}
 		
-		assertEquals(3, spec.getExpression("ID_TARGET_B").size());
-		assertEquals("$ID_TRIGGER==%ID_TRIGGER_A", spec.getExpression("ID_TARGET_B").get(0).getTrigger());
-		assertEquals("", spec.getExpression("ID_TARGET_B").get(0).getCondition());
-		assertEquals("$ID_TRIGGER==%ID_TRIGGER_B", spec.getExpression("ID_TARGET_B").get(1).getTrigger());
-		assertEquals("", spec.getExpression("ID_TARGET_B").get(1).getCondition());
-		assertEquals(DependencySpec.Else, spec.getExpression("ID_TARGET_B").get(2).getTrigger());
 		
-		assertEquals(3, spec.getExpression("ID_TARGET_C").size());
-		assertEquals("$ID_TRIGGER==%ID_TRIGGER_B", spec.getExpression("ID_TARGET_C").get(0).getTrigger());
-		assertEquals("", spec.getExpression("ID_TARGET_C").get(0).getCondition());
-		assertEquals("$ID_TRIGGER==%ID_TRIGGER_C", spec.getExpression("ID_TARGET_C").get(1).getTrigger());
-		assertEquals("", spec.getExpression("ID_TARGET_C").get(1).getCondition());
-		assertEquals(DependencySpec.Else, spec.getExpression("ID_TARGET_C").get(2).getTrigger());
+		{				
+			assertEquals(3, spec.getExpression("ID_TARGET_B").size());
+			List<Expression> expected = Arrays.asList(
+					new Expression(DependencySpec.True, "$ID_TRIGGER==%ID_TRIGGER_A", ""),
+					new Expression(DependencySpec.True, "$ID_TRIGGER==%ID_TRIGGER_B", ""),
+					new Expression(DependencySpec.False, DependencySpec.Else, ""));
+	
+			testSpec(spec, expected, "ID_TARGET_B");
+		}
+			
 		
-		assertEquals(3, spec.getExpression("ID_TARGET_D").size());
-		assertEquals("$ID_TRIGGER==%ID_TRIGGER_C", spec.getExpression("ID_TARGET_D").get(0).getTrigger());
-		assertEquals("", spec.getExpression("ID_TARGET_D").get(0).getCondition());
-		assertEquals("$ID_TRIGGER==%ID_TRIGGER_D", spec.getExpression("ID_TARGET_D").get(1).getTrigger());
-		assertEquals("", spec.getExpression("ID_TARGET_D").get(1).getCondition());
-		assertEquals(DependencySpec.Else, spec.getExpression("ID_TARGET_D").get(2).getTrigger());
+		{
+			assertEquals(3, spec.getExpression("ID_TARGET_C").size());
+			List<Expression> expected = Arrays.asList(
+					new Expression(DependencySpec.True, "$ID_TRIGGER==%ID_TRIGGER_B", ""),
+					new Expression(DependencySpec.True, "$ID_TRIGGER==%ID_TRIGGER_C", ""),
+					new Expression(DependencySpec.False, DependencySpec.Else, ""));
+	
+			testSpec(spec, expected, "ID_TARGET_C");
+		}
+		
+		{
+			assertEquals(3, spec.getExpression("ID_TARGET_D").size());
+			List<Expression> expected = Arrays.asList(
+					new Expression(DependencySpec.True, "$ID_TRIGGER==%ID_TRIGGER_C", ""),
+					new Expression(DependencySpec.True, "$ID_TRIGGER==%ID_TRIGGER_D", ""),
+					new Expression(DependencySpec.False, DependencySpec.Else, ""));
+	
+			testSpec(spec, expected, "ID_TARGET_D");			
+		}
 		
 		assertEquals(0, depSpecHolder.getSpec("ID_TRIGGER").getDependencySpecDetail().getExpressions().getExpressions().size());
 		
@@ -116,35 +148,41 @@ public class RestrictionMatrixTest {
 		matrix.setPriority("ID_TARGET", 20);
 		matrix.build();
 		
-		spec = depSpecHolder.getSpec("ID_TRIGGER");
-		assertEquals(3, spec.getExpression("ID_TRIGGER_A").size());
-		assertEquals("$ID_TARGET==%ID_TARGET_A", spec.getExpression("ID_TRIGGER_A").get(0).getTrigger());
-		assertEquals("", spec.getExpression("ID_TRIGGER_A").get(0).getCondition());
-		assertEquals("$ID_TARGET==%ID_TARGET_B", spec.getExpression("ID_TRIGGER_A").get(1).getTrigger());
-		assertEquals("", spec.getExpression("ID_TRIGGER_A").get(1).getCondition());
-		assertEquals(DependencySpec.Else, spec.getExpression("ID_TRIGGER_A").get(2).getTrigger());
-		
-		assertEquals(3, spec.getExpression("ID_TRIGGER_B").size());
-		assertEquals("$ID_TARGET==%ID_TARGET_B", spec.getExpression("ID_TRIGGER_B").get(0).getTrigger());
-		assertEquals("", spec.getExpression("ID_TRIGGER_B").get(0).getCondition());
-		assertEquals("$ID_TARGET==%ID_TARGET_C", spec.getExpression("ID_TRIGGER_B").get(1).getTrigger());
-		assertEquals("", spec.getExpression("ID_TRIGGER_B").get(1).getCondition());
-		assertEquals(DependencySpec.Else, spec.getExpression("ID_TRIGGER_B").get(2).getTrigger());
-		
-		assertEquals(3, spec.getExpression("ID_TRIGGER_C").size());
-		assertEquals("$ID_TARGET==%ID_TARGET_C", spec.getExpression("ID_TRIGGER_C").get(0).getTrigger());
-		assertEquals("", spec.getExpression("ID_TRIGGER_C").get(0).getCondition());
-		assertEquals("$ID_TARGET==%ID_TARGET_D", spec.getExpression("ID_TRIGGER_C").get(1).getTrigger());
-		assertEquals("", spec.getExpression("ID_TRIGGER_C").get(1).getCondition());
-		assertEquals(DependencySpec.Else, spec.getExpression("ID_TRIGGER_C").get(2).getTrigger());
-		
-		assertEquals(2, spec.getExpression("ID_TRIGGER_D").size());
-		assertEquals("$ID_TARGET==%ID_TARGET_D", spec.getExpression("ID_TRIGGER_D").get(0).getTrigger());
-		assertEquals("", spec.getExpression("ID_TRIGGER_D").get(0).getCondition());
-		assertEquals(DependencySpec.Else, spec.getExpression("ID_TRIGGER_D").get(1).getTrigger());
-		
 		assertEquals(0, depSpecHolder.getSpec("ID_TARGET").getDependencySpecDetail().getExpressions().getExpressions().size());
-	
+		spec = depSpecHolder.getSpec("ID_TRIGGER");
+		{
+			assertEquals(3, spec.getExpression("ID_TRIGGER_A").size());
+			List<Expression> expected = Arrays.asList(
+					new Expression(DependencySpec.True, "$ID_TARGET==%ID_TARGET_A", ""),
+					new Expression(DependencySpec.True, "$ID_TARGET==%ID_TARGET_B", ""),
+					new Expression(DependencySpec.False, DependencySpec.Else, ""));
+			testSpec(spec, expected, "ID_TRIGGER_A");
+		}
+		{
+			assertEquals(3, spec.getExpression("ID_TRIGGER_B").size());
+			List<Expression> expected = Arrays.asList(
+					new Expression(DependencySpec.True, "$ID_TARGET==%ID_TARGET_B", ""),
+					new Expression(DependencySpec.True, "$ID_TARGET==%ID_TARGET_C", ""),
+					new Expression(DependencySpec.False, DependencySpec.Else, ""));
+			testSpec(spec, expected, "ID_TRIGGER_B");
+		}
+		{
+			assertEquals(3, spec.getExpression("ID_TRIGGER_C").size());
+			List<Expression> expected = Arrays.asList(
+					new Expression(DependencySpec.True, "$ID_TARGET==%ID_TARGET_C", ""),
+					new Expression(DependencySpec.True, "$ID_TARGET==%ID_TARGET_D", ""),
+					new Expression(DependencySpec.False, DependencySpec.Else, ""));
+			testSpec(spec, expected, "ID_TRIGGER_C");			
+		}
+		{
+			assertEquals(2, spec.getExpression("ID_TRIGGER_D").size());
+			List<Expression> expected = Arrays.asList(
+					new Expression(DependencySpec.True, "$ID_TARGET==%ID_TARGET_D", ""),
+					new Expression(DependencySpec.False, DependencySpec.Else, ""));
+			testSpec(spec, expected, "ID_TRIGGER_D");				
+		}
+		
+		assertEquals(0, depSpecHolder.getSpec("ID_TARGET").getDependencySpecDetail().getExpressions().getTriggerIds().size());
 		
 		// In case, Target and Trigger are the same
 		matrix.setPriority("ID_TRIGGER", 10); 
@@ -152,49 +190,103 @@ public class RestrictionMatrixTest {
 		matrix.build();
 		
 		spec = depSpecHolder.getSpec("ID_TRIGGER");
-		assertEquals(7, spec.getExpression(DependencySpec.Value).size());
+		
 		{
-			Expression exp = spec.getExpression(DependencySpec.Value).get(0);
-			assertEquals("ID_TRIGGER_A", exp.getValue());
-			assertEquals("$ID_TARGET==%ID_TARGET_B", exp.getTrigger());
-			assertEquals("($ID_TRIGGER!=%ID_TRIGGER_B)", exp.getCondition());
+			assertEquals(7, spec.getExpression(DependencySpec.Value).size());		
+			assertEquals(0, spec.getExpression(DependencySpec.Enable).size());	
+			assertEquals(0, spec.getExpression(DependencySpec.OptionEnable).size());		
+			List<Expression> expected = Arrays.asList(
+					new Expression("ID_TRIGGER_A", "$ID_TARGET==%ID_TARGET_A", ""),
+					new Expression("ID_TRIGGER_A", "$ID_TARGET==%ID_TARGET_B", "($ID_TRIGGER!=%ID_TRIGGER_B)"),
+					new Expression("ID_TRIGGER_B", "$ID_TARGET==%ID_TARGET_B", "($ID_TRIGGER!=%ID_TRIGGER_A)"),
+					new Expression("ID_TRIGGER_B", "$ID_TARGET==%ID_TARGET_C", "($ID_TRIGGER!=%ID_TRIGGER_C)"),
+					new Expression("ID_TRIGGER_C", "$ID_TARGET==%ID_TARGET_D", "($ID_TRIGGER!=%ID_TRIGGER_D)"),
+					new Expression("ID_TRIGGER_C", "$ID_TARGET==%ID_TARGET_C", "($ID_TRIGGER!=%ID_TRIGGER_B)"),
+					new Expression("ID_TRIGGER_D", "$ID_TARGET==%ID_TARGET_D", "($ID_TRIGGER!=%ID_TRIGGER_C)")
+					);
+			testSpec(spec, expected, DependencySpec.Value);
+		}
+		
+		// Trigger is strong. Mode and Trigger affect Target
+		holder.addProperty(factory.createNumeric("ID_MODE").option("ID_MODE_A", "A", "").option("ID_MODE_B", "B", ""));
+		matrix.add("ID_MODE", AxisType.X);
+		matrix.setPriority("ID_TRIGGER", 10); 
+		matrix.setPriority("ID_TARGET", 0);
+		matrix.setPriority("ID_MODE", 100);
+		
+
+		/*
+		|       |Trigger A|Trigger B|Trigger C|Trigger D| Mode A | Mode B |
+		Target A|    x    |         |         |         |    x   |    x   |
+		Target B|    x    |    x    |         |         |    x   |    x   |
+		Target C|         |    x    |    x    |         |    x   |    x   |
+		Target D|         |         |    x    |    x    |        |    x   |
+		 */
+		matrix.updateEnabled(matrix.yTitle.indexOf("ID_TARGET_A"), matrix.xTitle.indexOf("ID_MODE_A"), true);
+		matrix.updateEnabled(matrix.yTitle.indexOf("ID_TARGET_B"), matrix.xTitle.indexOf("ID_MODE_A"), true);
+		matrix.updateEnabled(matrix.yTitle.indexOf("ID_TARGET_C"), matrix.xTitle.indexOf("ID_MODE_A"), true);
+		
+		matrix.updateEnabled(matrix.yTitle.indexOf("ID_TARGET_A"), matrix.xTitle.indexOf("ID_MODE_B"), true);
+		matrix.updateEnabled(matrix.yTitle.indexOf("ID_TARGET_B"), matrix.xTitle.indexOf("ID_MODE_B"), true);
+		matrix.updateEnabled(matrix.yTitle.indexOf("ID_TARGET_C"), matrix.xTitle.indexOf("ID_MODE_B"), true);
+		matrix.updateEnabled(matrix.yTitle.indexOf("ID_TARGET_D"), matrix.xTitle.indexOf("ID_MODE_B"), true);
+		matrix.build();		
+		
+		spec = depSpecHolder.getSpec("ID_TARGET");
+		{
+			assertEquals(4, spec.getExpression("ID_TARGET_A").size());
+			List<Expression> expected = Arrays.asList(
+					new Expression(DependencySpec.True, "$ID_TRIGGER==%ID_TRIGGER_A", "($ID_MODE==%ID_MODE_A)||($ID_MODE==%ID_MODE_B)"),
+					new Expression(DependencySpec.True, "$ID_MODE==%ID_MODE_A", ""),
+					new Expression(DependencySpec.True, "$ID_MODE==%ID_MODE_B", ""),
+					new Expression(DependencySpec.False, DependencySpec.Else, "")
+
+					);
+			testSpec(spec, expected, "ID_TARGET_A");
 		}
 		{
-			Expression exp = spec.getExpression(DependencySpec.Value).get(1);
-			assertEquals("ID_TRIGGER_B", exp.getValue());
-			assertEquals("$ID_TARGET==%ID_TARGET_B", exp.getTrigger());
-			assertEquals("($ID_TRIGGER!=%ID_TRIGGER_A)", exp.getCondition());
-		}
+			assertEquals(5, spec.getExpression("ID_TARGET_B").size());
+			List<Expression> expected = Arrays.asList(
+					new Expression(DependencySpec.True, "$ID_TRIGGER==%ID_TRIGGER_A", "($ID_MODE==%ID_MODE_A)||($ID_MODE==%ID_MODE_B)"),
+					new Expression(DependencySpec.True, "$ID_TRIGGER==%ID_TRIGGER_B", "($ID_MODE==%ID_MODE_A)||($ID_MODE==%ID_MODE_B)"),
+					new Expression(DependencySpec.True, "$ID_MODE==%ID_MODE_A", ""),
+					new Expression(DependencySpec.True, "$ID_MODE==%ID_MODE_B", ""),
+					new Expression(DependencySpec.False, DependencySpec.Else, "")
+					);
+			testSpec(spec, expected, "ID_TARGET_B");
+		}	
 		{
-			Expression exp = spec.getExpression(DependencySpec.Value).get(2);
-			assertEquals("ID_TRIGGER_A", exp.getValue());
-			assertEquals("$ID_TARGET==%ID_TARGET_A", exp.getTrigger());
-			assertEquals("", exp.getCondition());
-		}
+			assertEquals(5, spec.getExpression("ID_TARGET_C").size());
+			List<Expression> expected = Arrays.asList(
+					new Expression(DependencySpec.True, "$ID_TRIGGER==%ID_TRIGGER_B", "($ID_MODE==%ID_MODE_A)||($ID_MODE==%ID_MODE_B)"),
+					new Expression(DependencySpec.True, "$ID_TRIGGER==%ID_TRIGGER_C", "($ID_MODE==%ID_MODE_A)||($ID_MODE==%ID_MODE_B)"),
+					new Expression(DependencySpec.True, "$ID_MODE==%ID_MODE_A", ""),
+					new Expression(DependencySpec.True, "$ID_MODE==%ID_MODE_B", ""),
+					new Expression(DependencySpec.False, DependencySpec.Else, "")
+					);
+			testSpec(spec, expected, "ID_TARGET_C");
+		}	
 		{
-			Expression exp = spec.getExpression(DependencySpec.Value).get(3);
-			assertEquals("ID_TRIGGER_C", exp.getValue());
-			assertEquals("$ID_TARGET==%ID_TARGET_D", exp.getTrigger());
-			assertEquals("($ID_TRIGGER!=%ID_TRIGGER_D)", exp.getCondition());
+			assertEquals(4, spec.getExpression("ID_TARGET_D").size());
+			List<Expression> expected = Arrays.asList(
+					new Expression(DependencySpec.True, "$ID_TRIGGER==%ID_TRIGGER_C", "($ID_MODE==%ID_MODE_B)"),
+					new Expression(DependencySpec.True, "$ID_TRIGGER==%ID_TRIGGER_D", "($ID_MODE==%ID_MODE_B)"),
+					new Expression(DependencySpec.True, "$ID_MODE==%ID_MODE_B", ""),
+					new Expression(DependencySpec.False, DependencySpec.Else, "")
+					);
+			testSpec(spec, expected, "ID_TARGET_D");
+		}		
+	}
+
+	private void testSpec(DependencySpec spec, List<Expression> expected, String target) {
+		List<Expression> exp2 = new ArrayList<Expression>(expected);
+		Iterator<Expression> it = exp2.iterator();
+		while(it.hasNext()) {
+			if (spec.getExpression(target).contains(it.next())) {
+				it.remove();
+			}
 		}
-		{
-			Expression exp = spec.getExpression(DependencySpec.Value).get(4);
-			assertEquals("ID_TRIGGER_D", exp.getValue());
-			assertEquals("$ID_TARGET==%ID_TARGET_D", exp.getTrigger());
-			assertEquals("($ID_TRIGGER!=%ID_TRIGGER_C)", exp.getCondition());
-		}
-		{
-			Expression exp = spec.getExpression(DependencySpec.Value).get(5);
-			assertEquals("ID_TRIGGER_B", exp.getValue());
-			assertEquals("$ID_TARGET==%ID_TARGET_C", exp.getTrigger());
-			assertEquals("($ID_TRIGGER!=%ID_TRIGGER_C)", exp.getCondition());
-		}
-		{
-			Expression exp = spec.getExpression(DependencySpec.Value).get(6);
-			assertEquals("ID_TRIGGER_C", exp.getValue());
-			assertEquals("$ID_TARGET==%ID_TARGET_C", exp.getTrigger());
-			assertEquals("($ID_TRIGGER!=%ID_TRIGGER_B)", exp.getCondition());
-		}
+		assertEquals(0, exp2.size());
 	}
 
 }

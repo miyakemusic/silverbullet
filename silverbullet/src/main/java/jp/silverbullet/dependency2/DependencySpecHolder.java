@@ -141,6 +141,10 @@ public class DependencySpecHolder {
 		return spec;
 	}
 
+	public void clear() {
+		this.specs.clear();
+	}
+
 //	@JsonIgnore
 //	public DependencyRestriction getDependencyRestriction() {
 //		DependencyRestriction ret = new DependencyRestriction();

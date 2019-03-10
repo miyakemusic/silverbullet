@@ -26,11 +26,11 @@ public abstract class RestrictionMatrix {
 	abstract protected void resetMask();
 
 	public enum AxisType {
-		ROW,
-		COLUMN
+		Y,
+		X
 	}
-	public List<String> rowTitle = new ArrayList<>();
-	public List<String> colTitle = new ArrayList<>();
+	public List<String> xTitle = new ArrayList<>();
+	public List<String> yTitle = new ArrayList<>();
 	public RestrictionMatrixElement[][] value;
 	private Set<String> triggers = new HashSet<>();
 	private Set<String> targets = new HashSet<>();
@@ -75,24 +75,24 @@ public abstract class RestrictionMatrix {
 	
 	private RestrictionMatrixElement[][] createMatrix() {
 		
-		this.rowTitle.clear();
-		this.colTitle.clear();
+		this.xTitle.clear();
+		this.yTitle.clear();
 		
 		for (String trigger : triggers) {
 			PropertyDef2 triggerProp = getPropertyDef(trigger);
-			this.rowTitle.addAll(triggerProp.getOptionIds());
+			this.xTitle.addAll(triggerProp.getOptionIds());
 		}
 		
 		for (String target :targets) {
 			PropertyDef2 targetProp = getPropertyDef(target);
-			this.colTitle.addAll(targetProp.getOptionIds());
+			this.yTitle.addAll(targetProp.getOptionIds());
 		}
 		
-		RestrictionMatrixElement[][] ret = new RestrictionMatrixElement[colTitle.size()][rowTitle.size()];
-		for (int r = 0; r < this.colTitle.size(); r++) {
-			String targetId = this.colTitle.get(r);
-			for (int c = 0; c < this.rowTitle.size(); c++) {
-				String triggerId = this.rowTitle.get(c);
+		RestrictionMatrixElement[][] ret = new RestrictionMatrixElement[yTitle.size()][xTitle.size()];
+		for (int r = 0; r < this.yTitle.size(); r++) {
+			String targetId = this.yTitle.get(r);
+			for (int c = 0; c < this.xTitle.size(); c++) {
+				String triggerId = this.xTitle.get(c);
 				if (data2.getList(targetId).contains(triggerId)) {
 					ret[r][c] = new RestrictionMatrixElement(true, data2.getCondition(triggerId, targetId));
 				}
@@ -108,8 +108,8 @@ public abstract class RestrictionMatrix {
 	protected abstract PropertyDef2 getPropertyDef(String trigger);
 
 	public void updateEnabled(int row, int col, boolean checked) {
-		String option1 = this.colTitle.get(row);
-		String option2 = this.rowTitle.get(col);
+		String option1 = this.yTitle.get(row);
+		String option2 = this.xTitle.get(col);
 		this.data2.set(option1, option2, checked);
 
 		List<String> list = new ArrayList<String>(this.data2.getList(option1));
@@ -165,6 +165,7 @@ public abstract class RestrictionMatrix {
 		resetMask();
 
 		DependencySpecHolder holder = getDependencySpecHolder();
+		holder.clear();
 		
 		Set<String> usedId = this.getUsedIds();
 		// This is tentative code
@@ -204,6 +205,7 @@ public abstract class RestrictionMatrix {
 					target2 = target;
 					trigger2 = trigger;					
 				}
+				boolean enabled = false;
 				for (String targetOption2 : targetOptions2) {
 					boolean touched = false;
 					for (String triggerOption2 : triggerOptions2) {
@@ -212,6 +214,7 @@ public abstract class RestrictionMatrix {
 							getDependencySpecHolder().getSpec(target2).addOptionEnabled(targetOption2, DependencySpec.True, 
 									"$" + trigger2 + "==%" + triggerOption2, condition);
 							touched = true;
+							enabled |= true;
 						}
 					}
 					if (touched) {
@@ -219,7 +222,7 @@ public abstract class RestrictionMatrix {
 								DependencySpec.Else);		
 					}
 				}
-				if (priority == 0) {
+				if (enabled && (priority == 0)) {
 					setBiDirectional(trigger2, target2);
 				}
 			}
@@ -309,20 +312,20 @@ public abstract class RestrictionMatrix {
 	}
 
 	public void add(String id, AxisType type) {
-		if (type.equals(AxisType.COLUMN)) {
+		if (type.equals(AxisType.X)) {
 			this.triggers.add(id);
 		}
-		else if (type.equals(AxisType.ROW)) {
+		else if (type.equals(AxisType.Y)) {
 			this.targets.add(id);
 		}
 		this.initValue();
 	}
 
 	public void hide(String id, AxisType type) {
-		if (type.equals(AxisType.COLUMN)) {
+		if (type.equals(AxisType.X)) {
 			this.triggers.remove(id);
 		}
-		else if (type.equals(AxisType.ROW)) {
+		else if (type.equals(AxisType.Y)) {
 			this.targets.remove(id);
 		}
 		this.initValue();

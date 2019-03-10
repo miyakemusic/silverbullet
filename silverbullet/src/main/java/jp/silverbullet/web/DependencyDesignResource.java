@@ -89,10 +89,10 @@ public class DependencyDesignResource {
 	private RestrictionMatrix.AxisType convertAxisType(final String type) {
 		RestrictionMatrix.AxisType axisType = null;
 		if (type.equals("trigger")) {
-			axisType = RestrictionMatrix.AxisType.COLUMN;
+			axisType = RestrictionMatrix.AxisType.X;
 		}
 		else if (type.equals("target")) {
-			axisType = RestrictionMatrix.AxisType.ROW;
+			axisType = RestrictionMatrix.AxisType.Y;
 		}
 		return axisType;
 	}
