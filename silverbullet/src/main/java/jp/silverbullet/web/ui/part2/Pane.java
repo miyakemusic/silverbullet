@@ -3,11 +3,12 @@ package jp.silverbullet.web.ui.part2;
 import java.util.ArrayList;
 import java.util.List;
 
-import jp.silverbullet.property2.PropertyHolder2;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jp.silverbullet.web.KeyValue;
-import jp.silverbullet.web.ui.part2.UiBuilder.Layout;
 import jp.silverbullet.web.ui.part2.UiBuilder.PropertyField;
 
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class Pane extends WidgetBase {
 
 	public Layout layout = Layout.VERTICAL;
@@ -15,8 +16,9 @@ public class Pane extends WidgetBase {
 	public String caption = "";
 	public PropertyField field = PropertyField.NONE;
 	public int padding = -1;
-	public PropertyField titldField = null;//PropertyField.STATICTEXT;
+	public PropertyField titldField = PropertyField.STATICTEXT;
 
+	public Pane() {}
 	public Pane(Layout layout) {
 		super(WidgetType.Pane, "", PropertyField.NONE);
 		this.layout  = layout;

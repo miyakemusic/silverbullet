@@ -5,7 +5,6 @@ import java.util.List;
 
 import jp.silverbullet.property2.PropertyDef2;
 import jp.silverbullet.property2.PropertyHolder2;
-import jp.silverbullet.web.ui.part2.UiBuilder.Layout;
 import jp.silverbullet.web.ui.part2.UiBuilder.PropertyField;
 
 public class WidgetGeneratorHelper {

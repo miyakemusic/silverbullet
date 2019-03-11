@@ -3,7 +3,6 @@ package jp.silverbullet.web.ui.part2;
 import java.util.ArrayList;
 import java.util.List;
 
-import jp.silverbullet.web.ui.part2.UiBuilder.Layout;
 import jp.silverbullet.web.ui.part2.UiBuilder.PropertyField;
 
 public class TabPane extends WidgetBase {

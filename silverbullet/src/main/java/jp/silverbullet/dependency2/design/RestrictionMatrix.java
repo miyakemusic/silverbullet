@@ -18,9 +18,6 @@ import jp.silverbullet.web.KeyValue;
 import jp.silverbullet.web.ui.PropertyGetter;
 
 public abstract class RestrictionMatrix {
-
-//	abstract protected RuntimePropertyStore getRuntimePropertyStore();
-	
 	abstract protected DependencySpecHolder getDependencySpecHolder() ;
 
 	abstract protected void resetMask();
@@ -35,20 +32,9 @@ public abstract class RestrictionMatrix {
 	private Set<String> triggers = new HashSet<>();
 	private Set<String> targets = new HashSet<>();
 	private RestrictionData2 data2 = new RestrictionData2();
-//	private DependencySpecHolder holder;
-//	private DependencySpecRebuilder rebuilder;
 	private Set<RestrictionMatrixListener> listenres = new HashSet<>();
 	private Map<String, String> idMap = new HashMap<>();
-	
-//	private static RestrictionMatrix instance;
-//	
-//	public static RestrictionMatrix getInstance() {
-//		if (instance == null) {
-//			instance = new RestrictionMatrix();
-//		}
-//		return instance;
-//	}
-	
+		
 	public RestrictionMatrix() {
 		initValue();
 	}
@@ -57,14 +43,18 @@ public abstract class RestrictionMatrix {
 
 	protected abstract RuntimeProperty getRuntimeProperty(String id);
 
+	public void save(String folder) {
+		new JsonPersistent().saveJson(this.data2, folder + "/restriction.json");
+	}
+	
 	private void save() {
 		JsonPersistent json = new JsonPersistent();
 		json.saveJson(this.data2, "restriction.json");
 	}
 	
-	public void load() {
+	public void load(String folder) {
 		JsonPersistent json = new JsonPersistent();
-		this.data2 = json.loadJson(RestrictionData2.class, "restriction.json");
+		this.data2 = json.loadJson(RestrictionData2.class, folder + "/restriction.json");
 		initValue();
 	}
 	
@@ -80,11 +70,13 @@ public abstract class RestrictionMatrix {
 		
 		for (String trigger : triggers) {
 			PropertyDef2 triggerProp = getPropertyDef(trigger);
+			this.xTitle.add(triggerProp.getId());
 			this.xTitle.addAll(triggerProp.getOptionIds());
 		}
 		
 		for (String target :targets) {
 			PropertyDef2 targetProp = getPropertyDef(target);
+			this.yTitle.add(targetProp.getId());
 			this.yTitle.addAll(targetProp.getOptionIds());
 		}
 		
@@ -165,7 +157,7 @@ public abstract class RestrictionMatrix {
 		resetMask();
 
 		DependencySpecHolder holder = getDependencySpecHolder();
-		holder.clear();
+//		holder.clear();
 		
 		Set<String> usedId = this.getUsedIds();
 		// This is tentative code
@@ -174,18 +166,21 @@ public abstract class RestrictionMatrix {
 				if (trigger.equals(target)) {
 					continue;
 				}
-				holder.getSpec(target).clear(DependencySpec.OptionEnable, trigger);
+				//holder.getSpec(target).clear(DependencySpec.OptionEnable, trigger);
+				holder.getSpec(target).clear();
 			}		
 		}
 		
 		for (String trigger : usedId) {
-			List<String> triggerOptions = this.getPropertyDef(trigger).getOptionIds();
+			List<String> triggerOptions = this.getPropertyDef(trigger).getOptionIds(); // option IDs
+			triggerOptions.add(trigger); // main ID
 			for (String target : usedId) {
 				if (trigger.equals(target)) {
 					continue;
 				}
 
-				List<String> targetOptions = this.getPropertyDef(target).getOptionIds();
+				List<String> targetOptions = this.getPropertyDef(target).getOptionIds(); // option IDs
+				targetOptions.add(target); // main ID
 				
 				int priority =  this.getPriority(target) - this.getPriority(trigger);
 				
@@ -207,19 +202,33 @@ public abstract class RestrictionMatrix {
 				}
 				boolean enabled = false;
 				for (String targetOption2 : targetOptions2) {
-					boolean touched = false;
+					boolean optionEnabledTouched = false;
+					boolean enabledTouched = false;
 					for (String triggerOption2 : triggerOptions2) {
 						if (data2.getList(targetOption2).contains(triggerOption2)) {
 							String condition = createCondition(targetOption2, triggerOption2, new ArrayList<String>(data2.getAllData().keySet()));
-							getDependencySpecHolder().getSpec(target2).addOptionEnabled(targetOption2, DependencySpec.True, 
-									"$" + trigger2 + "==%" + triggerOption2, condition);
-							touched = true;
+							
+							String triggerExpression = "$" + trigger2 + "==%" + triggerOption2;
+							if (isMainId(targetOption2, target2)) {
+								getDependencySpecHolder().getSpec(target2).addEnable(DependencySpec.True, triggerExpression, condition);
+								enabledTouched = true;
+							}
+							else {
+								getDependencySpecHolder().getSpec(target2).addOptionEnabled(targetOption2, DependencySpec.True, 
+										triggerExpression, condition);
+								optionEnabledTouched = true;
+							}
+
+							
 							enabled |= true;
 						}
 					}
-					if (touched) {
+					if (optionEnabledTouched) {
 						getDependencySpecHolder().getSpec(target2).addOptionEnabled(targetOption2, DependencySpec.False, 
 								DependencySpec.Else);		
+					}
+					if (enabledTouched) {
+						getDependencySpecHolder().getSpec(target2).addEnable(DependencySpec.False, DependencySpec.Else);
 					}
 				}
 				if (enabled && (priority == 0)) {
@@ -228,6 +237,10 @@ public abstract class RestrictionMatrix {
 			}
 		}
 		save();
+	}
+
+	private boolean isMainId(String optionId, String mainId) {
+		return optionId.equals(mainId);
 	}
 
 	private String createCondition(String targetOption, String triggerOption, List<String> triggerOptions) {
@@ -339,7 +352,7 @@ public abstract class RestrictionMatrix {
 		this.idMap.clear();
 		for (String option : data2.getAllData().keySet()) {
 			for (PropertyDef2 prop : this.getAllPropertieDefs()) {
-				if (prop.getOptionIds().contains(option)) {
+				if (prop.getOptionIds().contains(option) || prop.getId().equals(option)) {
 					idMap.put(option, prop.getId());
 				}
 			}

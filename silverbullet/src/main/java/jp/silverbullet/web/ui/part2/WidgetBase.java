@@ -3,14 +3,14 @@ package jp.silverbullet.web.ui.part2;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jp.silverbullet.web.KeyValue;
 import jp.silverbullet.web.ui.part2.UiBuilder.PropertyField;
 
 public class WidgetBase {
 
-//	public int width = -1;
-//	public int height = -1;
-	public WidgetType type;
+	public WidgetType type = WidgetType.StaticText;
 	public int x = -1;
 	public int y = -1;
 	public String id = "";
@@ -42,19 +42,15 @@ public class WidgetBase {
 		this.field = field;
 	}
 	
-//	public WidgetBase size(int width, int heigth) {
-//		this.width = width;
-//		this.height = heigth;
-//		return this;
-//	}
-	
 	public WidgetBase position(int x, int y) {
 		this.x = x;
 		this.y = y;
 		return this;
 	}
+
 	public WidgetBase css(String property, String value) {
 		this.css.add(new KeyValue(property, value));
 		return this;
 	}
+	
 }

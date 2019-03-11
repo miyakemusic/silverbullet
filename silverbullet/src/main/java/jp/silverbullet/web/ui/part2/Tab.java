@@ -1,12 +1,14 @@
 package jp.silverbullet.web.ui.part2;
 
-import jp.silverbullet.web.ui.part2.UiBuilder.Layout;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class Tab extends Pane {
 
 	public String title;
 	public int tabIndex;
 
+	public Tab() {}
 	public Tab(Layout layout, int tabIndex) {
 		super(WidgetType.Tab, layout);
 		this.tabIndex = tabIndex;

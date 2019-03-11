@@ -11,13 +11,11 @@ import jp.silverbullet.dependency2.DependencySpecRebuilder;
 import jp.silverbullet.dependency2.IdValue;
 import jp.silverbullet.dependency2.RequestRejectedException;
 import jp.silverbullet.dependency2.design.RestrictionMatrix;
-import jp.silverbullet.dependency2.CommitListener.Reply;
 import jp.silverbullet.dependency2.CommitListener;
 import jp.silverbullet.dependency2.DependencyEngine;
 import jp.silverbullet.dependency2.DependencySpecHolder;
 import jp.silverbullet.property2.PropertyDef2;
 import jp.silverbullet.property2.PropertyHolder2;
-import jp.silverbullet.property2.PropertyType2;
 import jp.silverbullet.property2.RuntimeProperty;
 import jp.silverbullet.property2.RuntimePropertyStore;
 import jp.silverbullet.register2.RegisterAccessor;
@@ -42,6 +40,7 @@ public class BuilderModelImpl {
 	private static final String REGISTER_XML = "register.xml";
 	private static final String REGISTERSHORTCUT = "registershortcuts.xml";
 	private static final String DEPENDENCYSPEC3_XML = "dependencyspec3.xml";
+	private static final String UIBUILDER = "uibuilder.json";
 
 //	private List<String> selectedId;
 	private RuntimePropertyStore store;
@@ -190,7 +189,7 @@ public class BuilderModelImpl {
 		this.uiLayoutHolder.createDefault();
 		createDependencyEngine();
 		
-		restrictionMatrix.load();
+//		restrictionMatrix.load();
 //		this.setRegisterType(RegisterTypeEnum.Hardware);
 	}
 	
@@ -211,6 +210,9 @@ public class BuilderModelImpl {
 		uiLayoutHolder.load(folder);
 	
 		registerSpecHolder.load(folder);// = load(RegisterSpecHolder.class, folder);
+		restrictionMatrix.load(folder);
+		
+		this.uiBuilder = this.load(UiBuilder.class, folder + "/" + UIBUILDER);
 	}
 
 	public void createDependencyEngine() {
@@ -263,6 +265,8 @@ public class BuilderModelImpl {
 
 		this.registerSpecHolder.save(folder);
 		this.uiLayoutHolder.save(folder);
+		save(this.uiBuilder, UiBuilder.class, folder + "/" + UIBUILDER);
+		this.restrictionMatrix.save(folder);
 	}
 
 	private void saveJson(Object object, String filename) {

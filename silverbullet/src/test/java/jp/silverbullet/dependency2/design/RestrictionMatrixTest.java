@@ -27,12 +27,12 @@ public class RestrictionMatrixTest {
 		PropertyFactory factory = new PropertyFactory();
 		RuntimePropertyStore store = new RuntimePropertyStore(holder);
 
-		holder.addProperty(factory.createNumeric("ID_TRIGGER").option("ID_TRIGGER_A", "A", "").option("ID_TRIGGER_B", "B", "")
+		holder.addProperty(factory.createList("ID_TRIGGER").option("ID_TRIGGER_A", "A", "").option("ID_TRIGGER_B", "B", "")
 				.option("ID_TRIGGER_C", "C", "").option("ID_TRIGGER_D", "D", ""));
-		holder.addProperty(factory.createNumeric("ID_TARGET").option("ID_TARGET_A", "A", "").option("ID_TARGET_B", "B", "")
+		holder.addProperty(factory.createList("ID_TARGET").option("ID_TARGET_A", "A", "").option("ID_TARGET_B", "B", "")
 				.option("ID_TARGET_C", "C", "").option("ID_TARGET_D", "D", ""));
-		holder.addProperty(factory.createNumeric("ID_DUMMY").option("ID_DUMMY_A", "A", "").option("ID_DUMMY_B", "B", ""));
-		holder.addProperty(factory.createNumeric("ID_DUMMY2").option("ID_DUMMY2_A", "A", "").option("ID_DUMMY2_B", "B", ""));
+		holder.addProperty(factory.createList("ID_DUMMY").option("ID_DUMMY_A", "A", "").option("ID_DUMMY_B", "B", ""));
+		holder.addProperty(factory.createList("ID_DUMMY2").option("ID_DUMMY2_A", "A", "").option("ID_DUMMY2_B", "B", ""));
 		DependencySpecHolder depSpecHolder = new DependencySpecHolder();
 		
 		RestrictionMatrix matrix = new RestrictionMatrix() {
@@ -276,6 +276,28 @@ public class RestrictionMatrixTest {
 					);
 			testSpec(spec, expected, "ID_TARGET_D");
 		}		
+		
+		// Not Options but it's enabled
+		holder.addProperty(factory.createNumeric("ID_NUMERIC").defaultValue(0).unit("Hz").min(-100).max(100));
+		matrix.add("ID_NUMERIC", AxisType.Y);
+		/*
+		 * 
+		|       |Trigger A|Trigger B|Trigger C|Trigger D| 
+		NUMERIC |    x    |         |     x   |         | 
+		
+	 */
+		matrix.updateEnabled(matrix.yTitle.indexOf("ID_NUMERIC"), matrix.xTitle.indexOf("ID_TRIGGER_A"), true);
+		matrix.updateEnabled(matrix.yTitle.indexOf("ID_NUMERIC"), matrix.xTitle.indexOf("ID_TRIGGER_C"), true);
+		matrix.build();
+		spec = depSpecHolder.getSpec("ID_NUMERIC");
+		{
+			List<Expression> expected = Arrays.asList(
+					new Expression(DependencySpec.True, "$ID_TRIGGER==%ID_TRIGGER_A", ""),
+					new Expression(DependencySpec.True, "$ID_TRIGGER==%ID_TRIGGER_C", ""),
+					new Expression(DependencySpec.False, DependencySpec.Else, "")
+					);
+			testSpec(spec, expected, DependencySpec.Enable);	
+		}
 	}
 
 	private void testSpec(DependencySpec spec, List<Expression> expected, String target) {

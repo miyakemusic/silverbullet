@@ -46,7 +46,10 @@ public abstract class SilverBulletServer {
 					getUserSequencers(builderModel).forEach(sequencer -> {
 						builderModel.getSequencer().addUserSequencer(sequencer);
 					});	
-					builderModel.setUiBuilder(getUi());
+					
+					if (getUi() != null) {
+						builderModel.setUiBuilder(getUi());
+					}
 				});				
 			}
 		});

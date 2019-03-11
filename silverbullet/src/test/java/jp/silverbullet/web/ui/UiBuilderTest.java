@@ -4,10 +4,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
+import jp.silverbullet.web.ui.part2.Layout;
 import jp.silverbullet.web.ui.part2.Pane;
 import jp.silverbullet.web.ui.part2.TabPane;
 import jp.silverbullet.web.ui.part2.UiBuilder;
-import jp.silverbullet.web.ui.part2.UiBuilder.Layout;
 import jp.silverbullet.web.ui.part2.UiBuilder.PropertyField;
 
 class UiBuilderTest {
@@ -15,7 +15,7 @@ class UiBuilderTest {
 	@Test
 	void test() {
 		UiBuilder builder = new UiBuilder();
-		Pane pane = builder.createPane(UiBuilder.Layout.VERTICAL);
+		Pane pane = builder.createPane(Layout.VERTICAL);
 		pane.createComboBox("$ID_APPLICATION").css("width", "20").css("height", "400");
 		
 		{

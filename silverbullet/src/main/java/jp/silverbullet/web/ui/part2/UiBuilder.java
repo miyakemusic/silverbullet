@@ -3,18 +3,13 @@ package jp.silverbullet.web.ui.part2;
 import java.util.ArrayList;
 import java.util.List;
 
-import jp.silverbullet.property2.PropertyHolder2;
+import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlRootElement
 public class UiBuilder {
 	public List<Pane> panes = new ArrayList<>();
-	private PropertyHolder2 propertiesHolder;
-	
 	public enum PropertyField {
 		VALUE, TITLE, UNIT, STATICTEXT, NONE
-	}
-
-	public enum Layout {
-		VERTICAL, HORIZONTAL, ABSOLUTE
 	}
 
 	public UiBuilder() {

@@ -344,6 +344,8 @@ class TextField extends Widget {
 	onUpdateValue(property) {
 		$('#' + this.divid).val(property.currentValue);
 		this.property = property;
+		
+		$('#' + this.divid).prop('disabled', !property.enabled);
 	}
 }
 

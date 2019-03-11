@@ -2,8 +2,9 @@ package jp.silverbullet.web.ui.part2;
 
 public class StaticText extends WidgetBase {
 
-	public String text;
+	public String text = "";
 
+	public StaticText() {}
 	public StaticText(String text) {
 		super(WidgetType.StaticText, "");
 		this.text = text;
