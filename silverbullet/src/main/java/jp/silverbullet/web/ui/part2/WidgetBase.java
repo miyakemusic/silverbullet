@@ -17,6 +17,8 @@ public class WidgetBase {
 	public String subId = "";
 	public PropertyField field = PropertyField.NONE;
 	public List<KeyValue> css = new ArrayList<>();
+	public String text;
+	public String widgetId;
 	
 	public WidgetBase() {}
 	
@@ -50,6 +52,21 @@ public class WidgetBase {
 
 	public WidgetBase css(String property, String value) {
 		this.css.add(new KeyValue(property, value));
+		return this;
+	}
+
+	public WidgetBase field(PropertyField value) {
+		this.field = value;
+		return this;
+	}
+
+	public WidgetBase optionId(String optionId) {
+		this.subId = optionId;
+		return this;
+	}
+
+	public WidgetBase text(String text) {
+		this.text = text;
 		return this;
 	}
 	

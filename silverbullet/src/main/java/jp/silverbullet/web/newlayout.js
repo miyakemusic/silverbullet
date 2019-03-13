@@ -34,8 +34,6 @@ class EditableWidget extends Widget {
 		$('#' + divid).append('<div id="' + containerId + '"></div>');
 		$('#' + divid).append('<div id="' + labelId + '">' + widget.type + "." + widget.id + '</div>');
 		
-//		$('#' + containerId).css({"position":"absolute"});
-//		$('#' + labelId).css({"position":"absolute"});
 		$('#' + divid).css({"position":"relative", "border-width":"1", "border-style":"solid", "border-color":"black", "word-wrap":"break-word"});	
 		
 		$('#' + divid).draggable({
@@ -136,7 +134,6 @@ class Tab {
 	}
 	
 	onUpdateValue(property) {
-			
 		if (this.widget.id != '') {
 			for (var o of property.elements) {
 				if (o.id == this.widget.subId) {
@@ -783,14 +780,23 @@ class NewLayout {
 					drag : function (event , ui) {
 					} ,
 					stop : function (event , ui){
+						updatePosition(divid, ui.position.top, ui.position.left);
+						
 					} 
 				});
 				$('#' + divid).resizable({
 			      stop: function( event, ui ) {
+			      	updateSize(divid, ui.size.width, ui.size.height);
 			      }
 			    }); 
 		    }
 			
+		}
+		
+		function updateSize(divid, width, height) {
+		}
+		
+		function updatePosition(divid, top, left) {
 		}
 		
 		function getId() {

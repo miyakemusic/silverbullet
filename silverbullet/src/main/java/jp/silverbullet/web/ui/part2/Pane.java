@@ -35,56 +35,33 @@ public class Pane extends WidgetBase {
 		this.layout = layout2;
 	}
 
-	public ComboBox createComboBox(String id) {
-		ComboBox widget = new ComboBox(id, UiBuilder.PropertyField.VALUE);
-		this.widgets.add(widget);
-		applyLayout(widget);
-		return widget;
+	public WidgetBase createComboBox(String id) {
+		return this.createWidget(WidgetType.ComboBox, id).field(PropertyField.VALUE);
 	}
 
-	public Pane createPane(Layout layout) {
+	public WidgetBase createPane(Layout layout) {
 		Pane pane = new Pane(layout);
-		this.widgets.add(pane);
-		applyLayout(pane);
-		return pane;
+		return this.applyLayout(pane);
 	}
 
-	public Label createLabel(String id, PropertyField field) {
-		Label text = new Label(id, field);
-		this.widgets.add(text);
-		applyLayout(text);
-		return text;
+	public WidgetBase createLabel(String id, PropertyField field) {
+		return createWidget(WidgetType.Label, id).field(field);
 	}
 
-	public TextField createTextField(String id, PropertyField field) {
-		TextField textField = new TextField(id, field);
-		this.widgets.add(textField);
-		applyLayout(textField);
-		return textField;
+	public WidgetBase createTextField(String id, PropertyField field) {
+		return createWidget(WidgetType.TextField, id).field(field);
 	}
 
-	public TabPane createTabPane() {
-		TabPane tabPane = new TabPane();
-		this.widgets.add(tabPane);
-		applyLayout(tabPane);
-		return tabPane;
+	public WidgetBase createCheckBox(String id) {
+		return createWidget(WidgetType.CheckBox, id);
 	}
 
-	public CheckBox createCheckBox(String id) {
-		CheckBox checkBox = new CheckBox(id);
-		this.widgets.add(checkBox);
-		applyLayout(checkBox);
-		return checkBox;
+	public WidgetBase createToggleButton(String id, String optionId) {
+		return this.createWidget(WidgetType.ToggleButton, id).optionId(optionId).field(PropertyField.VALUE);
 	}
 
-	public ToggleButton createToggleButton(String id, String elementId) {
-		ToggleButton toggleButton = new ToggleButton(id, elementId);
-		this.widgets.add(toggleButton);
-		applyLayout(toggleButton);
-		return toggleButton;
-	}
-
-	private void applyLayout(WidgetBase widget) {
+	private WidgetBase applyLayout(WidgetBase widget) {
+		this.widgets.add(widget);
 		if (this.layout.compareTo(Layout.HORIZONTAL) == 0) {
 			widget.css("display", "inline-block");
 		}
@@ -95,24 +72,20 @@ public class Pane extends WidgetBase {
 			
 		}
 		
+		widget.widgetId = createWidgetId();
+		return widget;
 	}
-
+	
 	public WidgetBase createToggleButton(String id) {
 		return createToggleButton(id, "");
 	}
 
-	public StaticText createStaticText(String text) {
-		StaticText staticText = new StaticText(text);
-		this.widgets.add(staticText);
-		applyLayout(staticText);
-		return staticText;
+	public WidgetBase createStaticText(String text) {
+		return createWidget(WidgetType.StaticText, "").text(text);
 	}
 
 	public WidgetBase createButton(String id) {
-		Button button = new Button(id);
-		this.widgets.add(button);
-		applyLayout(button);
-		return button;
+		return createWidget(WidgetType.Button, id);
 	}
 
 	public Pane condition(String id, String subId) {
@@ -127,18 +100,12 @@ public class Pane extends WidgetBase {
 		}
 	}
 
-	public Chart createChart(String id) {
-		Chart chart = new Chart(id);
-		this.widgets.add(chart);
-		applyLayout(chart);
-		return chart;
+	public WidgetBase createChart(String id) {
+		return createWidget(WidgetType.Chart, id);
 	}
 
-	public Table createTable(String id) {
-		Table table = new Table(id);
-		this.widgets.add(table);
-		applyLayout(table);
-		return table;
+	public WidgetBase createTable(String id) {
+		return createWidget(WidgetType.Table, id);
 	}
 
 	public Pane title(String id, PropertyField field) {
@@ -147,23 +114,44 @@ public class Pane extends WidgetBase {
 		return this;
 	}
 
-	public Image createImage(String id) {
-		Image image = new Image(id);
-		this.widgets.add(image);
-		applyLayout(image);
-		return image;
+	public WidgetBase createImage(String id) {
+		return createWidget(WidgetType.Image, id);
 	}
 
-	public Slider createSlider(String id) {
-		Slider slider = new Slider(id);
-		this.widgets.add(slider);
-		applyLayout(slider);
-		return slider;
+	public WidgetBase createSlider(String id) {
+		return createWidget(WidgetType.Slider, id);
 	}
-
+	
+	private WidgetBase createWidget(WidgetType type2, String id) {
+		WidgetBase widget = new WidgetBase(type2, id);
+		return applyLayout(widget);
+	}
+	
 	public Pane title(String text) {
 		this.caption = text;
 		return this;
 	}
 
+
+	private static long widgetIdNumber = 0;
+	private static String createWidgetId() {
+		return "WID" + widgetIdNumber++;
+	}
+	
+	public void applyWidgetId() {
+		this.widgetId = createWidgetId();
+		for (WidgetBase widget : this.widgets) {
+			if (widget instanceof Pane) {
+				Pane subPane = ((Pane)widget);
+				namePane(subPane);
+			}
+		}
+		
+	}
+	private void namePane(Pane pane) {
+		pane.widgetId = createWidgetId();
+		for (WidgetBase widget : pane.widgets) {
+			widget.widgetId = createWidgetId();
+		}
+	}
 }

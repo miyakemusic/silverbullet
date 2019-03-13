@@ -22,5 +22,9 @@ public class UiBuilder {
 		return pane;
 	}
 
-	
+	public void nameAll() {
+		for (Pane pane : panes) {
+			pane.applyWidgetId();
+		}
+	}
 }
