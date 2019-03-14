@@ -17,31 +17,25 @@ public class Pane extends WidgetBase {
 	public PropertyField field = PropertyField.NONE;
 	public int padding = -1;
 	public PropertyField titldField = PropertyField.STATICTEXT;
+	private WidgetIdManager widgetIdManager;
 
 	public Pane() {}
-	public Pane(Layout layout) {
+	public Pane(Layout layout, WidgetIdManager widgetIdManager) {
 		super(WidgetType.Pane, "", PropertyField.NONE);
 		this.layout  = layout;
-	}
-
-	public Pane(String caption, PropertyField field, Layout layout2) {
-		this.caption = caption;
-		this.field = field;
-		this.layout = layout2;
-	}
-
-	public Pane(WidgetType type, Layout layout2) {
-		super(type);
-		this.layout = layout2;
+		
+		this.widgetId = widgetIdManager.createWidgetId(this);
+		this.widgetIdManager = widgetIdManager;
 	}
 
 	public WidgetBase createComboBox(String id) {
 		return this.createWidget(WidgetType.ComboBox, id).field(PropertyField.VALUE);
 	}
 
-	public WidgetBase createPane(Layout layout) {
-		Pane pane = new Pane(layout);
-		return this.applyLayout(pane);
+	public Pane createPane(Layout layout) {
+		Pane pane = new Pane(layout, widgetIdManager);
+		this.applyLayout(pane);
+		return pane;
 	}
 
 	public WidgetBase createLabel(String id, PropertyField field) {
@@ -72,7 +66,7 @@ public class Pane extends WidgetBase {
 			
 		}
 		
-		widget.widgetId = createWidgetId();
+		widget.widgetId = widgetIdManager.createWidgetId(widget);
 		return widget;
 	}
 	
@@ -131,27 +125,26 @@ public class Pane extends WidgetBase {
 		this.caption = text;
 		return this;
 	}
-
-
-	private static long widgetIdNumber = 0;
-	private static String createWidgetId() {
-		return "WID" + widgetIdNumber++;
-	}
 	
-	public void applyWidgetId() {
-		this.widgetId = createWidgetId();
+	public void applyWidgetId(WidgetIdManager widgetIdManager) {
+		this.widgetId = widgetIdManager.createWidgetId(this);
 		for (WidgetBase widget : this.widgets) {
+			widget.widgetId = widgetIdManager.createWidgetId(widget);
 			if (widget instanceof Pane) {
 				Pane subPane = ((Pane)widget);
-				namePane(subPane);
+				namePane(subPane, widgetIdManager);
 			}
 		}
 		
 	}
-	private void namePane(Pane pane) {
-		pane.widgetId = createWidgetId();
+	private void namePane(Pane pane, WidgetIdManager widgetIdManager) {
+//		pane.widgetId = widgetIdManager.createWidgetId(pane);
 		for (WidgetBase widget : pane.widgets) {
-			widget.widgetId = createWidgetId();
+			widget.widgetId = widgetIdManager.createWidgetId(widget);
+			if (widget instanceof Pane) {
+				Pane subPane = ((Pane)widget);
+				namePane(subPane, widgetIdManager);
+			}
 		}
 	}
 }

@@ -713,7 +713,7 @@ class NewLayout {
 		}
 		
 		function buildSub(widget, parentDiv) {
-			var divid = getId();
+			var divid = widget.widgetId;//getId();
 			
 			var wrappedWidget = new Widget(widget, parentDiv, divid);
 
@@ -794,6 +794,12 @@ class NewLayout {
 		}
 		
 		function updateSize(divid, width, height) {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/newGui/setSize?divid=" + divid + "&width=" + width + "&height=" + height,
+			   success: function(ret){
+			   }
+			});	
 		}
 		
 		function updatePosition(divid, top, left) {

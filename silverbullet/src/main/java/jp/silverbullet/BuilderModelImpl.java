@@ -213,6 +213,7 @@ public class BuilderModelImpl {
 		restrictionMatrix.load(folder);
 		
 		this.uiBuilder = this.load(UiBuilder.class, folder + "/" + UIBUILDER);
+		this.uiBuilder.nameAll();
 	}
 
 	public void createDependencyEngine() {

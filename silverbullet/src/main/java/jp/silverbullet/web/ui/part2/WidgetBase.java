@@ -3,6 +3,7 @@ package jp.silverbullet.web.ui.part2;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jp.silverbullet.web.KeyValue;
@@ -18,6 +19,8 @@ public class WidgetBase {
 	public PropertyField field = PropertyField.NONE;
 	public List<KeyValue> css = new ArrayList<>();
 	public String text;
+	
+	@JsonIgnore
 	public String widgetId;
 	
 	public WidgetBase() {}

@@ -7,24 +7,30 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class UiBuilder {
+	private WidgetIdManager widgetIdManager = new WidgetIdManager();
 	public List<Pane> panes = new ArrayList<>();
 	public enum PropertyField {
 		VALUE, TITLE, UNIT, STATICTEXT, NONE
 	}
 
+	
 	public UiBuilder() {
 
 	}
 
 	public Pane createPane(Layout layout) {
-		Pane pane = new Pane(layout);
+		Pane pane = new Pane(layout, widgetIdManager);
 		this.panes.add(pane);
 		return pane;
 	}
 
 	public void nameAll() {
 		for (Pane pane : panes) {
-			pane.applyWidgetId();
+			pane.applyWidgetId(widgetIdManager);
 		}
+	}
+
+	public WidgetBase getWidget(String divid) {
+		return widgetIdManager.get(divid);
 	}
 }
