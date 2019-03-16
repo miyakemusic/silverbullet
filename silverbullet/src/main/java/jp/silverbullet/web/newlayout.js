@@ -23,43 +23,6 @@ class Widget {
 	}
 }
 
-class EditableWidget extends Widget {
-	constructor(widget, parent, divid, buildSub) {
-		super(widget, parent, divid);
-		
-		var labelId = divid + "_label";
-		var containerId = divid + "_container";
-		
-		$('#' + parent).append('<div id="' + divid + '"></div>');
-		$('#' + divid).append('<div id="' + containerId + '"></div>');
-		$('#' + divid).append('<div id="' + labelId + '">' + widget.type + "." + widget.id + '</div>');
-		
-		$('#' + divid).css({"position":"relative", "border-width":"1", "border-style":"solid", "border-color":"black", "word-wrap":"break-word"});	
-		
-		$('#' + divid).draggable({
-			start : function (event , ui){
-			} ,
-			drag : function (event , ui) {
-			} ,
-			stop : function (event , ui){
-			} 
-		});
-		$('#' + divid).resizable({
-	      stop: function( event, ui ) {
-	      }
-	    });    
-	    					
-		if (widget.widgets != null) {
-			for (var w of widget.widgets) {
-				buildSub(w, containerId);
-			}
-		}
-	}
-	
-	onUpdateValue(property) {
-	}
-}
-
 class Pane extends Widget {
 	constructor(widget, parent, divid, buildSub) {
 		super(widget, parent, divid);
@@ -232,7 +195,10 @@ class StaticText extends Widget {
 	constructor(widget, parent, divid) {
 		super(widget, parent, divid);
 		
-		$('#' + parent).append('<label>' + widget.text + '</label>');
+//		$('#' + parent).append('<div id="' + this.divid + '"><label>' + widget.text + '</label></div>');
+		$('#' + parent).append('<div id="' + this.divid + '">' + widget.text + '</div>');
+//		$('#' + this.comboId).css("width", "100%");
+//		$('#' + this.comboId).css("height", "100%");
 	}
 	
 	onUpdateValue(property) {
@@ -247,7 +213,7 @@ class Button extends Widget {
 		this.valueId = divid + 'value';
 
 		$('#' + parent).append('<div id="' + divid + '" class="mybutton canpush"><label id="' + this.titleId + '" class="buttonTitle"></label><br><label id="' + this.valueId + '" class="buttonValue"></label></div>');
-//		$('#' + divid).css('line-height', '20px');
+
 		var me = this;
 
 		$('#' + this.divid).click(function() {
@@ -303,7 +269,7 @@ class Button extends Widget {
 class Label extends Widget {
 	constructor(widget, parent, divid) {
 		super(widget, parent, divid);
-		$('#' + this.parent).append('<label id="' + this.divid + '"></label>');	
+		$('#' + this.parent).append('<div id="' + this.divid + '"></div>');	
 	}
 	
 	onUpdateValue(property) {
@@ -328,21 +294,23 @@ class Label extends Widget {
 class TextField extends Widget {
 	constructor(widget, parent, divid) {
 		super(widget, parent, divid);
-		$('#' + this.parent).append('<input type="text" id="' + this.divid + '">');
-		
+		this.textId = divid + "_textid";
+		$('#' + this.parent).append('<div id="' + this.divid + '"><input type="text" id="' + this.textId + '"></div>');
+		$('#' + this.textId).css("width", "100%");
+		$('#' + this.textId).css("height", "100%");
 		var me = this;
-		$('#' + this.divid).keydown(function(event) {
+		$('#' + this.textId).keydown(function(event) {
 			if (event.which == 13) {
-				me.setter(me.widget.id, 0, $('#' + me.divid).val());
+				me.setter(me.widget.id, 0, $('#' + me.textId).val());
 			}
 		});
 	}
 	
 	onUpdateValue(property) {
-		$('#' + this.divid).val(property.currentValue);
+		$('#' + this.textId).val(property.currentValue);
 		this.property = property;
 		
-		$('#' + this.divid).prop('disabled', !property.enabled);
+		$('#' + this.textId).prop('disabled', !property.enabled);
 	}
 }
 
@@ -364,7 +332,7 @@ class CheckBox extends Widget {
 	}
 }
 
-class ToggleButton2 extends Widget {
+class ToggleButton extends Widget {
 	constructor(widget, parent, divid) {
 		super(widget, parent, divid);
 		
@@ -404,7 +372,7 @@ class ToggleButton2 extends Widget {
 				}
 			}
 			
-			$('#' + this.divid).removeClass();
+			$('#' + this.divid).removeClass('mybutton disabled checked');
 			if (property.disabledOption.includes(this.widget.subId)) {
 				$('#' + this.divid).addClass('mybutton disabled');
 			}
@@ -417,7 +385,7 @@ class ToggleButton2 extends Widget {
 		}
 		else {
 			$('#' + this.labelId).html(property.title);
-			$('#' + this.divid).removeClass();
+			$('#' + this.divid).removeClass('mybutton disabled checked');
 			if (property.currentValue == 'true') {		
 				$('#' + this.divid).addClass('mybutton checked');
 			}
@@ -432,77 +400,29 @@ class ToggleButton2 extends Widget {
 	}	
 }
 
-class ToggleButton extends Widget {
-	constructor(widget, parent, divid) {
-		super(widget, parent, divid);
-		
-		this.labelId = divid + 'label';
-		$('#' + parent).append('<input type="checkbox" id="' + divid + '"><label id="' + this.labelId + '" for="' + divid + '"></label>');
-		var button = $('#' + divid).button();
-		
-		var me = this;
-		
-		$('#' + divid).change(function() {
-			var value = '';
-			
-			if (me.isList()) {
-				value = me.widget.subId;
-			}
-			else {
-				if ($(this).prop('checked')) {
-					value = 'true';
-				}
-				else {
-					value = 'false';
-				}			
-			}
-			if (value != '') {
-				me.setter(me.widget.id, 0, value);
-			}
-		});
-	}
-	
-	onUpdateValue(property) {
-		if (this.isList()) {
-			for (var e of property.elements) {
-				if (e.id == this.widget.subId) {
-					$('#' + this.labelId).html(e.title);
-				}
-			}
-			$('#' + this.divid).button('option', 'disabled', property.disabledOption.includes(this.widget.subId));
-			$('#' + this.divid).prop('checked', this.widget.subId == property.currentSelectionId).button('refresh');
-		}
-		else {
-			$('#' + this.labelId).html(property.title);
-			$('#' + this.divid).prop('checked', property.currentValue == 'true').button('refresh');
-		}
-	}
-	
-	isList() {
-		return this.widget.subId != '';
-	}
-}
 class ComboBox extends Widget {
 	constructor(widget, parent, divid) {
 		super(widget, parent, divid);
 		
-		$('#' + this.parent).append('<select id="' + divid + '"></select>');
-
+		this.comboId = divid + "_combo";
+		$('#' + this.parent).append('<div id="' + divid + '"><select id="' + this.comboId + '"></select></div>');
+		$('#' + this.comboId).css("width", "100%");
+		$('#' + this.comboId).css("height", "100%");
 		var me = this;
-		$('#' + this.divid).change(function() {
+		$('#' + this.comboId).change(function() {
 			me.setter(me.widget.id, 0, $(this).val());
 		});
 	}
 	
 	onUpdateValue(property) {
-		$('#' + this.divid).empty();
+		$('#' + this.comboId).empty();
 		for (var e of property.elements) {
 			if (!property.disabledOption.includes(e.id)) {
 				var option = $('<option>').val(e.id).text(e.title);
-				$('#' + this.divid).append(option);		
+				$('#' + this.comboId).append(option);		
 			}
 		}
-		$('#' + this.divid).val(property.currentSelectionId);
+		$('#' + this.comboId).val(property.currentSelectionId);
 	}
 }
 
@@ -585,16 +505,7 @@ class Table extends Widget {
 		
 	}
 		
-	resize() {
-		var me = this;
-
-		this.hot.updateSettings({
-		    height: $('#' + me.divid).height()
-		});		
-	}
-			
 	createTable(headers) {
-//		var height = $('#' + this.divid).prop('height');
 		$('#' + this.divid).handsontable({
 		  manualColumnResize: true,
 		  colHeaders: headers,
@@ -614,11 +525,14 @@ class NewLayout {
 			retreiveDesign();
 		});
 		
+		this.propertyWindow = new NewLayoutProperty(div);
+		
 		var mainDiv = div + "_mainDiv";
 		$('#' + div).append('<div id="' + mainDiv + '"></div>');
 		
 		var propertyMap = new Map();
 		var widgetMap = new Map();
+		var divMap = new Map();
 		
 		this.divNumber = 0;
 		var me = this;
@@ -638,6 +552,17 @@ class NewLayout {
 			}
 		}, 'VALUES');
 		
+		new MyWebSocket(function(msg) {
+			var type = msg.split(':')[0];
+			var value = msg.split(':')[1];
+			if (type == 'CSS') {
+				var tmp = value.split(',');
+				var divid = tmp[0];
+				var cssKey = tmp[1];
+				var cssValue = tmp[2];
+			}
+		}, 'UIDESIGN');
+			
 		function getWidgetMap(id) {
 			if (widgetMap[id] == null) {
 				return [];
@@ -683,6 +608,8 @@ class NewLayout {
 				widgetMap[id] = [];
 			}
 			widgetMap[id].push(widget);
+			
+			divMap[widget.widget.widgetId] = widget.widget;
 		}
 		
 		function setValue(id, index, value) {
@@ -710,11 +637,29 @@ class NewLayout {
 					}
 				});
 			}
+			if ($('#' + editId).prop('checked')) {
+				me.propertyWindow.show();
+				$('.editable').click(function(e) {
+					$('.editable').removeClass('editableSelected');
+					$(this).addClass('editableSelected');
+					e.stopPropagation();
+					
+					var divid = $(this).prop('id');
+					
+					me.propertyWindow.update(divMap[divid]);
+				});
+			}
+			else {
+				me.propertyWindow.hide();
+			}
 		}
 		
 		function buildSub(widget, parentDiv) {
-			var divid = widget.widgetId;//getId();
+			var divid = widget.widgetId;
 			
+//			var wrapperId = divid + "_wrapper";
+//			$('#' + parentDiv).append('<div id="' + wrapperId + '"></div>');
+//			parentDiv = wrapperId;
 			var wrappedWidget = new Widget(widget, parentDiv, divid);
 
 			if (widget.type == 'Pane') {
@@ -730,7 +675,7 @@ class NewLayout {
 				wrappedWidget = new TextField(widget, parentDiv, divid);
 			}	
 			else if (widget.type == 'ToggleButton') {
-				wrappedWidget = new ToggleButton2(widget, parentDiv, divid);				
+				wrappedWidget = new ToggleButton(widget, parentDiv, divid);				
 			}	
 			else if (widget.type == 'ComboBox') {	
 				wrappedWidget = new ComboBox(widget, parentDiv, divid);
@@ -766,12 +711,16 @@ class NewLayout {
 				}
 			);
 			
-			for (var css of widget.css) {
-				$('#' + divid).css(css.key, css.value);
-			}
-
 			var id = widget.id;
 			addWidget(id, wrappedWidget);
+							
+			for (var css of widget.css) {
+				$('#' + divid).css(css.key, css.value);
+//				$('#' + wrapperId).css(css.key, css.value);
+//				if (css.key == "width" || css.key == "height") {
+//					$('#' + divid).css(css.key, css.value);
+//				}
+			}
 			
 			if ($('#' + editId).prop('checked')) {
 				$('#' + divid).draggable({
@@ -780,17 +729,21 @@ class NewLayout {
 					drag : function (event , ui) {
 					} ,
 					stop : function (event , ui){
-						updatePosition(divid, ui.position.top, ui.position.left);
-						
-					} 
+						updatePosition(divid, ui.position.top, ui.position.left);						
+					},
+					grid: 5, 
 				});
 				$('#' + divid).resizable({
 			      stop: function( event, ui ) {
 			      	updateSize(divid, ui.size.width, ui.size.height);
-			      }
+			      },
+			      grid: 5, 
+//			      alsoResize: "#" + divid,
 			    }); 
+			    
+			    $('#' + divid).addClass('editable');
 		    }
-			
+
 		}
 		
 		function updateSize(divid, width, height) {

@@ -50,3 +50,10 @@
 	margin:  0px 0px 0px 0px;
 	height:50%;
 }
+
+.editable {
+	
+}
+.editableSelected {
+	background-color: rgba(255, 0, 0, 1);
+}

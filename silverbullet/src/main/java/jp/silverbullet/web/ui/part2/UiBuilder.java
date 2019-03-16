@@ -8,7 +8,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class UiBuilder {
 	private WidgetIdManager widgetIdManager = new WidgetIdManager();
+	
 	public List<Pane> panes = new ArrayList<>();
+
+	private UiBuilderListener listener;
 	public enum PropertyField {
 		VALUE, TITLE, UNIT, STATICTEXT, NONE
 	}
@@ -19,7 +22,7 @@ public class UiBuilder {
 	}
 
 	public Pane createPane(Layout layout) {
-		Pane pane = new Pane(layout, widgetIdManager);
+		Pane pane = new Pane(layout, widgetIdManager, listener);
 		this.panes.add(pane);
 		return pane;
 	}
@@ -32,5 +35,9 @@ public class UiBuilder {
 
 	public WidgetBase getWidget(String divid) {
 		return widgetIdManager.get(divid);
+	}
+
+	public void addListener(UiBuilderListener uiBuilderListener) {
+		this.listener = uiBuilderListener;
 	}
 }

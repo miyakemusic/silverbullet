@@ -60,6 +60,10 @@ class JsMyTable {
 		this.allChecks = [];
 	}
 	
+	valueAt(row, col) {
+		return $('#' + this.tableId + ' tr').eq(row + 1).children('td').eq(col).text();
+	}
+	
 	setColWidth(width) {
 		for (var i = 0; i < width.length; i++) {
 			$('#' + this.tableId).append('<colgroup><col style="width:' + width[i] + 'x"></colgroup>');

@@ -20,8 +20,8 @@ public class Pane extends WidgetBase {
 	private WidgetIdManager widgetIdManager;
 
 	public Pane() {}
-	public Pane(Layout layout, WidgetIdManager widgetIdManager) {
-		super(WidgetType.Pane, "", PropertyField.NONE);
+	public Pane(Layout layout, WidgetIdManager widgetIdManager, UiBuilderListener listener) {
+		super(WidgetType.Pane, "", PropertyField.NONE, listener);
 		this.layout  = layout;
 		
 		this.widgetId = widgetIdManager.createWidgetId(this);
@@ -33,7 +33,7 @@ public class Pane extends WidgetBase {
 	}
 
 	public Pane createPane(Layout layout) {
-		Pane pane = new Pane(layout, widgetIdManager);
+		Pane pane = new Pane(layout, widgetIdManager, listener);
 		this.applyLayout(pane);
 		return pane;
 	}
@@ -130,6 +130,7 @@ public class Pane extends WidgetBase {
 		this.widgetId = widgetIdManager.createWidgetId(this);
 		for (WidgetBase widget : this.widgets) {
 			widget.widgetId = widgetIdManager.createWidgetId(widget);
+			widget.listener = listener;
 			if (widget instanceof Pane) {
 				Pane subPane = ((Pane)widget);
 				namePane(subPane, widgetIdManager);
@@ -141,6 +142,7 @@ public class Pane extends WidgetBase {
 //		pane.widgetId = widgetIdManager.createWidgetId(pane);
 		for (WidgetBase widget : pane.widgets) {
 			widget.widgetId = widgetIdManager.createWidgetId(widget);
+			widget.listener = listener;
 			if (widget instanceof Pane) {
 				Pane subPane = ((Pane)widget);
 				namePane(subPane, widgetIdManager);

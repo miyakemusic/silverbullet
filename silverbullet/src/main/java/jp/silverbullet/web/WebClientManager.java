@@ -23,6 +23,7 @@ import jp.silverbullet.register2.RegisterAccessorListener;
 import jp.silverbullet.register2.RegisterUpdates;
 import jp.silverbullet.test.TestRecorderListener;
 import jp.silverbullet.web.ui.UiLayoutListener;
+import jp.silverbullet.web.ui.part2.UiBuilderListener;
 
 public class WebClientManager {
 
@@ -151,7 +152,6 @@ public class WebClientManager {
 				} catch (JsonProcessingException e) {
 					e.printStackTrace();
 				}
-				
 			}
 
 			@Override
@@ -172,6 +172,18 @@ public class WebClientManager {
 			public void onMatrixChanged(RestrictionMatrixElement[][] value) {
 				try {
 					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("DEPDESIGN", "MatrixChanged"));
+					WebSocketBroadcaster.getInstance().sendMessage(str);
+				} catch (JsonProcessingException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		
+		StaticInstances.getInstance().getBuilderModel().getUiBuilder().addListener(new UiBuilderListener() {
+			@Override
+			public void onCssUpdate(String widgetId, String key, String value) {
+				try {
+					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("UIDESIGN", "CSS:" + widgetId + "," + key + "," + value));
 					WebSocketBroadcaster.getInstance().sendMessage(str);
 				} catch (JsonProcessingException e) {
 					e.printStackTrace();

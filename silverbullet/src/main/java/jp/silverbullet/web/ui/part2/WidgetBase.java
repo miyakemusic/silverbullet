@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import jp.silverbullet.web.KeyValue;
 import jp.silverbullet.web.ui.part2.UiBuilder.PropertyField;
 
@@ -23,6 +21,9 @@ public class WidgetBase {
 	@JsonIgnore
 	public String widgetId;
 	
+	@JsonIgnore
+	protected UiBuilderListener listener;
+	
 	public WidgetBase() {}
 	
 	public WidgetBase(WidgetType type) {
@@ -34,10 +35,11 @@ public class WidgetBase {
 		this.id = id;
 	}
 	
-	public WidgetBase(WidgetType type, String id, PropertyField field) {
+	public WidgetBase(WidgetType type, String id, PropertyField field, UiBuilderListener listener) {
 		this.type = type;
 		this.id = id;
 		this.field = field;
+		this.listener = listener;
 	}
 
 	public WidgetBase(WidgetType type, String id, String subId, PropertyField field) {
@@ -53,8 +55,21 @@ public class WidgetBase {
 		return this;
 	}
 
-	public WidgetBase css(String property, String value) {
-		this.css.add(new KeyValue(property, value));
+	public WidgetBase css(String key, String value) {
+		boolean updated = false;
+		for (KeyValue kv : this.css) {
+			if (kv.getKey().equals(key)) {
+				kv.setValue(value);
+				updated = true;
+				break;
+			}
+		}
+		if (!updated) {
+			this.css.add(new KeyValue(key, value));
+		}
+		if (this.listener != null) {
+			this.listener.onCssUpdate(this.widgetId, key, value);
+		}
 		return this;
 	}
 

@@ -27,4 +27,13 @@ public class NewGuiResource {
 		widget.css("width", width).css("height", height);
 		return "OK";
 	}	
+	
+	@GET
+	@Path("/setCss")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String setCss(@QueryParam("divid") final String divid, @QueryParam("key") final String key, @QueryParam("value") final String value) {
+		WidgetBase widget = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getWidget(divid);
+		widget.css(key, value);
+		return "OK";
+	}	
 }
