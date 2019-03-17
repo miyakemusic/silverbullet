@@ -128,25 +128,59 @@ public class Pane extends WidgetBase {
 	
 	public void applyWidgetId(WidgetIdManager widgetIdManager) {
 		this.widgetId = widgetIdManager.createWidgetId(this);
-		for (WidgetBase widget : this.widgets) {
-			widget.widgetId = widgetIdManager.createWidgetId(widget);
-			widget.listener = listener;
-			if (widget instanceof Pane) {
-				Pane subPane = ((Pane)widget);
-				namePane(subPane, widgetIdManager);
+		new WalkThrough() {
+			@Override
+			protected void handle(WidgetBase widget) {
+				widget.widgetId = widgetIdManager.createWidgetId(widget);
 			}
-		}
+		}.walkThrough(this);
+//		for (WidgetBase widget : this.widgets) {
+//			widget.widgetId = widgetIdManager.createWidgetId(widget);
+//			widget.listener = listener;
+//			if (widget instanceof Pane) {
+//				Pane subPane = ((Pane)widget);
+//				namePane(subPane, widgetIdManager);
+//			}
+//		}
 		
 	}
-	private void namePane(Pane pane, WidgetIdManager widgetIdManager) {
-//		pane.widgetId = widgetIdManager.createWidgetId(pane);
-		for (WidgetBase widget : pane.widgets) {
-			widget.widgetId = widgetIdManager.createWidgetId(widget);
-			widget.listener = listener;
-			if (widget instanceof Pane) {
-				Pane subPane = ((Pane)widget);
-				namePane(subPane, widgetIdManager);
+//	private void namePane(Pane pane, WidgetIdManager widgetIdManager) {
+////		pane.widgetId = widgetIdManager.createWidgetId(pane);
+//		for (WidgetBase widget : pane.widgets) {
+//			widget.widgetId = widgetIdManager.createWidgetId(widget);
+//			widget.listener = listener;
+//			if (widget instanceof Pane) {
+//				Pane subPane = ((Pane)widget);
+//				namePane(subPane, widgetIdManager);
+//			}
+//		}
+//	}
+	
+	abstract class WalkThrough {
+		abstract protected void handle(WidgetBase widget);
+		void walkThrough(Pane pane) {
+			handle(pane);
+			for (WidgetBase w : pane.widgets) {
+				
+				if (w instanceof Pane) {
+					walkThrough( (Pane)w );
+				}
+				else {
+					handle(w);
+				}
 			}
 		}
 	}
+
+	public void setListener(UiBuilderListener uiBuilderListener) {
+//		this.listener = uiBuilderListener;
+		new WalkThrough() {
+			@Override
+			protected void handle(WidgetBase widget) {
+				widget.listener = uiBuilderListener;
+			}
+		}.walkThrough(this);
+	}
+
+	
 }

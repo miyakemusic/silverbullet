@@ -5,6 +5,9 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
+
 @XmlRootElement
 public class UiBuilder {
 	private WidgetIdManager widgetIdManager = new WidgetIdManager();
@@ -39,5 +42,13 @@ public class UiBuilder {
 
 	public void addListener(UiBuilderListener uiBuilderListener) {
 		this.listener = uiBuilderListener;
+		for (Pane pane : panes) {
+			pane.setListener(uiBuilderListener);
+		}
+	}
+	
+	@JsonIgnore
+	public UiBuilderListener getListener() {
+		return this.listener;
 	}
 }

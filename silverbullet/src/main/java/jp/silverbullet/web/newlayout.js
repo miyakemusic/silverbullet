@@ -21,6 +21,7 @@ class Widget {
 	getProperty(id, index, callback) {
 		this.getter(id, index, callback);
 	}
+	
 }
 
 class Pane extends Widget {
@@ -560,6 +561,8 @@ class NewLayout {
 				var divid = tmp[0];
 				var cssKey = tmp[1];
 				var cssValue = tmp[2];
+				
+				$('#' + divMap[divid].widgetId).css(cssKey, cssValue);
 			}
 		}, 'UIDESIGN');
 			

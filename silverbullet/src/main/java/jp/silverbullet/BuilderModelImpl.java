@@ -453,6 +453,7 @@ public class BuilderModelImpl {
 	}
 
 	public void setUiBuilder(UiBuilder ui) {
+		ui.addListener(this.uiBuilder.getListener());
 		this.uiBuilder = ui;
 	}
 
