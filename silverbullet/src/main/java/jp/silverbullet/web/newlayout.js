@@ -564,6 +564,7 @@ class NewLayout {
 				
 				$('#' + divMap[divid].widgetId).css(cssKey, cssValue);
 			}
+			
 		}, 'UIDESIGN');
 			
 		function getWidgetMap(id) {
@@ -625,9 +626,9 @@ class NewLayout {
 		}
 		
 		function build(design, div) {
-			for (var pane of design.panes) {
-				buildSub(pane, div);
-			}
+			//for (var pane of design.widgets) {
+				buildSub(design.rootPane, div);
+			//}
 			
 			for (var id in widgetMap) {
 				if (id == '') {

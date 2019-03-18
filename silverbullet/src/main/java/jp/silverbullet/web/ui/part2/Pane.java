@@ -3,58 +3,76 @@ package jp.silverbullet.web.ui.part2;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jp.silverbullet.web.KeyValue;
 import jp.silverbullet.web.ui.part2.UiBuilder.PropertyField;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class Pane extends WidgetBase {
+public class Pane {
 
 	public Layout layout = Layout.VERTICAL;
-	public List<WidgetBase> widgets = new ArrayList<>();
+	public List<Pane> widgets = new ArrayList<>();
 	public String caption = "";
 	public PropertyField field = PropertyField.NONE;
-	public int padding = -1;
 	public PropertyField titldField = PropertyField.STATICTEXT;
+
+	public WidgetType type = WidgetType.StaticText;
+	public String id = "";
+	public String subId = "";
+	public List<KeyValue> css = new ArrayList<>();
+	public String text;
+	
+	@JsonIgnore
+	public String widgetId;
+	
+	private UiBuilderListener listener;
 	private WidgetIdManager widgetIdManager;
 
 	public Pane() {}
-	public Pane(Layout layout, WidgetIdManager widgetIdManager, UiBuilderListener listener) {
-		super(WidgetType.Pane, "", PropertyField.NONE, listener);
-		this.layout  = layout;
-		
-		this.widgetId = widgetIdManager.createWidgetId(this);
+	public Pane(WidgetIdManager widgetIdManager, UiBuilderListener listener) {
 		this.widgetIdManager = widgetIdManager;
+		this.listener = listener;
+		this.widgetId = widgetIdManager.createWidgetId(this);
 	}
 
-	public WidgetBase createComboBox(String id) {
+	public Pane(WidgetIdManager widgetIdManager) {
+		this.widgetIdManager = widgetIdManager;
+		this.widgetId = widgetIdManager.createWidgetId(this);
+	}
+	
+	public Pane createComboBox(String id) {
 		return this.createWidget(WidgetType.ComboBox, id).field(PropertyField.VALUE);
 	}
 
 	public Pane createPane(Layout layout) {
-		Pane pane = new Pane(layout, widgetIdManager, listener);
+		Pane pane = new Pane(widgetIdManager, listener).type(WidgetType.Pane).layout(layout);
 		this.applyLayout(pane);
 		return pane;
 	}
 
-	public WidgetBase createLabel(String id, PropertyField field) {
+	public Pane layout(Layout layout2) {
+		this.layout = layout2;
+		return this;
+	}
+	public Pane createLabel(String id, PropertyField field) {
 		return createWidget(WidgetType.Label, id).field(field);
 	}
 
-	public WidgetBase createTextField(String id, PropertyField field) {
+	public Pane createTextField(String id, PropertyField field) {
 		return createWidget(WidgetType.TextField, id).field(field);
 	}
 
-	public WidgetBase createCheckBox(String id) {
+	public Pane createCheckBox(String id) {
 		return createWidget(WidgetType.CheckBox, id);
 	}
 
-	public WidgetBase createToggleButton(String id, String optionId) {
+	public Pane createToggleButton(String id, String optionId) {
 		return this.createWidget(WidgetType.ToggleButton, id).optionId(optionId).field(PropertyField.VALUE);
 	}
 
-	private WidgetBase applyLayout(WidgetBase widget) {
+	private Pane applyLayout(Pane widget) {
 		this.widgets.add(widget);
 		if (this.layout.compareTo(Layout.HORIZONTAL) == 0) {
 			widget.css("display", "inline-block");
@@ -70,15 +88,15 @@ public class Pane extends WidgetBase {
 		return widget;
 	}
 	
-	public WidgetBase createToggleButton(String id) {
+	public Pane createToggleButton(String id) {
 		return createToggleButton(id, "");
 	}
 
-	public WidgetBase createStaticText(String text) {
+	public Pane createStaticText(String text) {
 		return createWidget(WidgetType.StaticText, "").text(text);
 	}
 
-	public WidgetBase createButton(String id) {
+	public Pane createButton(String id) {
 		return createWidget(WidgetType.Button, id);
 	}
 
@@ -94,11 +112,11 @@ public class Pane extends WidgetBase {
 		}
 	}
 
-	public WidgetBase createChart(String id) {
+	public Pane createChart(String id) {
 		return createWidget(WidgetType.Chart, id);
 	}
 
-	public WidgetBase createTable(String id) {
+	public Pane createTable(String id) {
 		return createWidget(WidgetType.Table, id);
 	}
 
@@ -108,19 +126,27 @@ public class Pane extends WidgetBase {
 		return this;
 	}
 
-	public WidgetBase createImage(String id) {
+	public Pane createImage(String id) {
 		return createWidget(WidgetType.Image, id);
 	}
 
-	public WidgetBase createSlider(String id) {
+	public Pane createSlider(String id) {
 		return createWidget(WidgetType.Slider, id);
 	}
 	
-	private WidgetBase createWidget(WidgetType type2, String id) {
-		WidgetBase widget = new WidgetBase(type2, id);
+	private Pane createWidget(WidgetType type2, String id) {
+		Pane widget = new Pane(this.widgetIdManager, this.listener).type(type2).id(id);
 		return applyLayout(widget);
 	}
 	
+	private Pane id(String id2) {
+		this.id = id2;
+		return this;
+	}
+	public Pane type(WidgetType type2) {
+		this.type = type2;
+		return this;
+	}
 	public Pane title(String text) {
 		this.caption = text;
 		return this;
@@ -130,57 +156,62 @@ public class Pane extends WidgetBase {
 		this.widgetId = widgetIdManager.createWidgetId(this);
 		new WalkThrough() {
 			@Override
-			protected void handle(WidgetBase widget) {
+			protected void handle(Pane widget) {
 				widget.widgetId = widgetIdManager.createWidgetId(widget);
 			}
-		}.walkThrough(this);
-//		for (WidgetBase widget : this.widgets) {
-//			widget.widgetId = widgetIdManager.createWidgetId(widget);
-//			widget.listener = listener;
-//			if (widget instanceof Pane) {
-//				Pane subPane = ((Pane)widget);
-//				namePane(subPane, widgetIdManager);
-//			}
-//		}
-		
+		}.walkThrough(this);		
 	}
-//	private void namePane(Pane pane, WidgetIdManager widgetIdManager) {
-////		pane.widgetId = widgetIdManager.createWidgetId(pane);
-//		for (WidgetBase widget : pane.widgets) {
-//			widget.widgetId = widgetIdManager.createWidgetId(widget);
-//			widget.listener = listener;
-//			if (widget instanceof Pane) {
-//				Pane subPane = ((Pane)widget);
-//				namePane(subPane, widgetIdManager);
-//			}
-//		}
-//	}
+
+
+	public Pane css(String key, String value) {
+		boolean updated = false;
+		for (KeyValue kv : this.css) {
+			if (kv.getKey().equals(key)) {
+				kv.setValue(value);
+				updated = true;
+				break;
+			}
+		}
+		if (!updated) {
+			this.css.add(new KeyValue(key, value));
+		}
+		if (this.listener != null) {
+			this.listener.onCssUpdate(this.widgetId, key, value);
+		}
+		return this;
+	}
+
+	public Pane field(PropertyField value) {
+		this.field = value;
+		return this;
+	}
+
+	public Pane optionId(String optionId) {
+		this.subId = optionId;
+		return this;
+	}
+
+	public Pane text(String text) {
+		this.text = text;
+		return this;
+	}
 	
 	abstract class WalkThrough {
-		abstract protected void handle(WidgetBase widget);
+		abstract protected void handle(Pane widget);
 		void walkThrough(Pane pane) {
 			handle(pane);
-			for (WidgetBase w : pane.widgets) {
-				
-				if (w instanceof Pane) {
-					walkThrough( (Pane)w );
-				}
-				else {
-					handle(w);
-				}
+			for (Pane w : pane.widgets) {
+				walkThrough( w );
 			}
 		}
 	}
 
 	public void setListener(UiBuilderListener uiBuilderListener) {
-//		this.listener = uiBuilderListener;
 		new WalkThrough() {
 			@Override
-			protected void handle(WidgetBase widget) {
+			protected void handle(Pane widget) {
 				widget.listener = uiBuilderListener;
 			}
 		}.walkThrough(this);
 	}
-
-	
 }

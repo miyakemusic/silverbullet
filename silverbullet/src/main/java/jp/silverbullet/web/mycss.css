@@ -29,6 +29,23 @@
 	font-weight:bold;
 }
 
+.middletable {
+	border:1px solid;
+	table-layout:fixed;
+	border-collapse:collapse;
+	width: 100%;
+}
+.middletable td {
+	border:1px solid;
+	font-size:12px;
+	overflow:hidden;
+}
+.middletable th {
+	border:1px solid;
+	font-size:12px;
+	font-weight:bold;
+}
+
 .col1 {
 	width: 40px;
 }

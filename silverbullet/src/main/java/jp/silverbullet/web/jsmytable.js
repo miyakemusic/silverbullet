@@ -43,7 +43,7 @@ class EditableText {
 }
 
 class JsMyTable {
-	constructor(div, colDef) {
+	constructor(div, colDef, className) {
 		if (colDef == null) {
 			colDef = function(col, row, arg) {
 				return "";
@@ -53,7 +53,12 @@ class JsMyTable {
 		this.div = div;
 		this.tableId = div + '_table';
 		$('#' + div).append('<table id="' + this.tableId + '"><thead></thead><tbody></tbody></table>');
-		$('#' + this.tableId).addClass('smalltable');
+		if (className == null) {
+			$('#' + this.tableId).addClass('smalltable');
+		}
+		else {
+			$('#' + this.tableId).addClass(className);
+		}
 		$('#' + this.tableId).css("table-layout","fixed");	
 		this.listenerRemove = function() {};
 		

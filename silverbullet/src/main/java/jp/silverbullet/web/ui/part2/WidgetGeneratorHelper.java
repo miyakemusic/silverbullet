@@ -15,7 +15,7 @@ public class WidgetGeneratorHelper {
 		this.propertiesHolder = propertiesHolder2;
 	}
 
-	public WidgetBase generateToggleButton(String id, Pane pane) {
+	public Pane generateToggleButton(String id, Pane pane) {
 		WidgetHolder widgetHolder = new WidgetHolder();
 		
 		PropertyDef2 prop =  this.propertiesHolder.get(id);
@@ -51,16 +51,16 @@ public class WidgetGeneratorHelper {
 }
 
 
-class WidgetHolder extends WidgetBase {
-	private List<WidgetBase> widgets = new ArrayList<>();
+class WidgetHolder extends Pane {
+	private List<Pane> widgets = new ArrayList<>();
 	
-	public void add(WidgetBase widget) {
+	public void add(Pane widget) {
 		this.widgets.add(widget);
 	}
 
 	@Override
-	public WidgetBase css(String property, String value) {
-		for (WidgetBase widget : this.widgets) {
+	public Pane css(String property, String value) {
+		for (Pane widget : this.widgets) {
 			widget.css(property, value);
 		}
 		return this;

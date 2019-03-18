@@ -66,7 +66,7 @@ class NewLayoutProperty {
 		$('#' + this.typeId).val(widget.type);
 		
 		$('#' + this.cssId).empty();
-		var table = new JsMyTable(this.cssId);
+		var table = new JsMyTable(this.cssId, null, 'middletable');
 		table.appendRows(widget.css);
 		
 		var me = this;

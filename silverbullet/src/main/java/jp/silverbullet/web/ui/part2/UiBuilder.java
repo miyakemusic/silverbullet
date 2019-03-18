@@ -12,8 +12,8 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 public class UiBuilder {
 	private WidgetIdManager widgetIdManager = new WidgetIdManager();
 	
-	public List<Pane> panes = new ArrayList<>();
-
+//	public List<Pane> panes = new ArrayList<>();
+	private Pane pane = null;
 	private UiBuilderListener listener;
 	public enum PropertyField {
 		VALUE, TITLE, UNIT, STATICTEXT, NONE
@@ -21,30 +21,24 @@ public class UiBuilder {
 
 	
 	public UiBuilder() {
-
+		pane = new Pane(widgetIdManager).type(WidgetType.Pane).layout(Layout.VERTICAL);
 	}
 
-	public Pane createPane(Layout layout) {
-		Pane pane = new Pane(layout, widgetIdManager, listener);
-		this.panes.add(pane);
+	public Pane getRootPane() {
 		return pane;
 	}
 
 	public void nameAll() {
-		for (Pane pane : panes) {
-			pane.applyWidgetId(widgetIdManager);
-		}
+		pane.applyWidgetId(widgetIdManager);
 	}
 
-	public WidgetBase getWidget(String divid) {
+	public Pane getWidget(String divid) {
 		return widgetIdManager.get(divid);
 	}
 
 	public void addListener(UiBuilderListener uiBuilderListener) {
 		this.listener = uiBuilderListener;
-		for (Pane pane : panes) {
-			pane.setListener(uiBuilderListener);
-		}
+		pane.setListener(uiBuilderListener);
 	}
 	
 	@JsonIgnore
