@@ -562,11 +562,23 @@ class NewLayout {
 				var cssKey = tmp[1];
 				var cssValue = tmp[2];
 				
+				retreiveWidget(divid);
 				$('#' + divMap[divid].widgetId).css(cssKey, cssValue);
 			}
 			
 		}, 'UIDESIGN');
 			
+		function retreiveWidget(divid) {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/newGui/getWidget?divid=" + divid,
+			   success: function(widget){
+			   		divMap[divid] = widget;
+			   		me.propertyWindow.update(divMap[divid]);
+			   }
+			});	
+		}
+		
 		function getWidgetMap(id) {
 			if (widgetMap[id] == null) {
 				return [];

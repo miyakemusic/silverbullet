@@ -11,9 +11,8 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 @XmlRootElement
 public class UiBuilder {
 	private WidgetIdManager widgetIdManager = new WidgetIdManager();
-	
-//	public List<Pane> panes = new ArrayList<>();
-	private Pane pane = null;
+
+	public Pane pane = null;
 	private UiBuilderListener listener;
 	public enum PropertyField {
 		VALUE, TITLE, UNIT, STATICTEXT, NONE
