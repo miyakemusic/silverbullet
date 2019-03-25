@@ -48,6 +48,17 @@ public class NewGuiResource {
 	}	
 	
 	@GET
+	@Path("/setId")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String setId(@QueryParam("divid") final String divid, @QueryParam("id") final String id, @QueryParam("subId") final String subId) {
+		Pane widget = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getWidget(divid);
+		//widget.id = id;
+		//widget.subId = subId;
+		widget.setId(id, subId);
+		return "OK";
+	}
+	
+	@GET
 	@Path("/getCssKeys")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<String> getCssKeys() {
@@ -55,4 +66,14 @@ public class NewGuiResource {
 				"background-color");
 	}
 
+	@GET
+	@Path("/setWidgetType")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String setWidgetType(@QueryParam("divid") final String divid, @QueryParam("type") final String type) {
+		Pane widget = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getWidget(divid);
+		widget.setType(type);
+		System.out.println(divid + "->" + type);
+		return "OK";
+	}
+	
 }

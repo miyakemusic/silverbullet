@@ -7,7 +7,22 @@ class NewLayoutProperty {
 		$('#' + this.dialogId).append('<div id="' + this.mainDiv + '"></div>');
 		
 		this.titleId = div + "_title";
-		$('#' + this.mainDiv).append('<div><label id="' + this.titleId + '"></label></div>');
+		$('#' + this.mainDiv).append('<div><button id="' + this.titleId + '"></button></div>');
+			
+		var me = this;
+			
+		var idSelector = new IdSelectDialog(this.mainDiv, function(ids, subId) {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/newGui/setId?divid=" + me.widget.widgetId + "&id=" + ids[0] + "&subId=" + subId,
+			   success: function(keys){
+
+			   }
+			});			
+		});
+		$('#' + this.titleId).click(function() {
+			idSelector.showModal();
+		});
 		
 		this.fieldId = div + "_field";
 		$('#' + this.mainDiv).append('<div>Field Type: <select id="' + this.fieldId + '"></div>');
@@ -22,13 +37,11 @@ class NewLayoutProperty {
 		for (var option of type_options) {
 			$('#' + this.typeId).append($('<option>').text(option).val(option));
 		}
-				
+		
 		this.cssKeys = div + "_cssKeys";
 		this.cssAdd = div + "_cssAdd";
-		$('#' + this.mainDiv).append('<div>Add new CSS: <button id="' + this.cssAdd + '">Add</button><select id="' + this.cssKeys + '"></div>');
-//		$('#' + this.mainDiv).append('');
-		
-		var me = this;
+		$('#' + this.mainDiv).append('<fieldset><legend>Add new CSS</legend><button id="' + this.cssAdd + '">Add</button><select id="' + this.cssKeys + '"><input type="text" id="' + this.cssValue + '" value="10px"></fieldset>');
+
 		$.ajax({
 		   type: "GET", 
 		   url: "http://" + window.location.host + "/rest/newGui/getCssKeys",
@@ -56,7 +69,26 @@ class NewLayoutProperty {
 			width: 400,
 			height: 600
 		});	
+			
+		this.table = new JsMyTable(this.cssId, null, 'middletable');
+		this.table.listenerChange = function(row, col, text) {
+			var key = me.table.valueAt(row, 0);
+			me.setCss(me.widget.widgetId, key, text);
+		};
 		
+		$('#' + this.cssAdd).click(function() {
+			me.setCss(me.widget.widgetId, $('#' + me.cssKeys).val(), $('#' + me.cssValue).val());
+		});
+		
+		$('#' + this.typeId).change(function() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/newGui/setWidgetType?divid=" + me.widget.widgetId + "&type=" + 
+			   	$('#' + me.typeId).val(),
+			   success: function(result){
+			   }
+			});			
+		});
 	}
 	
 	update(widget) {
@@ -65,20 +97,13 @@ class NewLayoutProperty {
 		$('#' + this.fieldId).val(widget.field);
 		$('#' + this.typeId).val(widget.type);
 		
-		$('#' + this.cssId).empty();
-		var table = new JsMyTable(this.cssId, null, 'middletable');
-		table.appendRows(widget.css);
+		this.widget = widget;
 		
-		var me = this;
+//		$('#' + this.cssId).empty();
+		this.table.clear();
+		this.table.appendRows(widget.css);
 		
-		table.listenerChange = function(row, col, text) {
-			var key = table.valueAt(row, 0);
-			me.setCss(widget.widgetId, key, text);
-		};
 		
-		$('#' + this.cssAdd).click(function() {
-			me.setCss(widget.widgetId, $('#' + me.cssKeys).val(), "---");
-		});
 	}
 	
 	setCss(divid, key, value) {

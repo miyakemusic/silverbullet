@@ -556,16 +556,21 @@ class NewLayout {
 		new MyWebSocket(function(msg) {
 			var type = msg.split(':')[0];
 			var value = msg.split(':')[1];
-			if (type == 'CSS') {
-				var tmp = value.split(',');
-				var divid = tmp[0];
-				var cssKey = tmp[1];
-				var cssValue = tmp[2];
-				
-				retreiveWidget(divid);
-				$('#' + divMap[divid].widgetId).css(cssKey, cssValue);
-			}
+			var tmp = value.split(',');
+			var divid = tmp[0];
+			var var1 = tmp[1];
+			var var2 = tmp[2];
 			
+			if (type == 'CSS') {
+				retreiveWidget(divid);
+				$('#' + divMap[divid].widgetId).css(var1, var2);
+			}
+			else if (type == 'TYPE') {
+				retreiveDesign();
+			}
+			else if (type == 'ID') {
+				retreiveDesign();
+			}
 		}, 'UIDESIGN');
 			
 		function retreiveWidget(divid) {
@@ -673,9 +678,6 @@ class NewLayout {
 		function buildSub(widget, parentDiv) {
 			var divid = widget.widgetId;
 			
-//			var wrapperId = divid + "_wrapper";
-//			$('#' + parentDiv).append('<div id="' + wrapperId + '"></div>');
-//			parentDiv = wrapperId;
 			var wrappedWidget = new Widget(widget, parentDiv, divid);
 
 			if (widget.type == 'Pane') {

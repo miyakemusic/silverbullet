@@ -15,7 +15,7 @@ class IdSelectDialog {
 			    "OK": function(){
 			    	var ids = [];
 					ids.push(me.idEditor.currentId);
-			    	okClicked(ids);
+			    	okClicked(ids, me.idEditor.selectionId);
 			   		$(this).dialog('close');
 			    	
 			    }

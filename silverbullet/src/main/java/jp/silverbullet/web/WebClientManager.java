@@ -24,6 +24,7 @@ import jp.silverbullet.register2.RegisterUpdates;
 import jp.silverbullet.test.TestRecorderListener;
 import jp.silverbullet.web.ui.UiLayoutListener;
 import jp.silverbullet.web.ui.part2.UiBuilderListener;
+import jp.silverbullet.web.ui.part2.WidgetType;
 
 public class WebClientManager {
 
@@ -184,6 +185,26 @@ public class WebClientManager {
 			public void onCssUpdate(String widgetId, String key, String value) {
 				try {
 					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("UIDESIGN", "CSS:" + widgetId + "," + key + "," + value));
+					WebSocketBroadcaster.getInstance().sendMessage(str);
+				} catch (JsonProcessingException e) {
+					e.printStackTrace();
+				}
+			}
+
+			@Override
+			public void onTypeUpdate(String widgetId, WidgetType type) {
+				try {
+					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("UIDESIGN", "TYPE:" + widgetId + "," + type.toString()));
+					WebSocketBroadcaster.getInstance().sendMessage(str);
+				} catch (JsonProcessingException e) {
+					e.printStackTrace();
+				}
+			}
+
+			@Override
+			public void onIdChange(String id, String subId) {
+				try {
+					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("UIDESIGN", "ID:" + id + "," + id + "," + subId));
 					WebSocketBroadcaster.getInstance().sendMessage(str);
 				} catch (JsonProcessingException e) {
 					e.printStackTrace();

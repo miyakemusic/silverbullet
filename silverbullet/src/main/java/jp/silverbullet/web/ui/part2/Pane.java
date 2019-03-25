@@ -214,4 +214,17 @@ public class Pane {
 			}
 		}.walkThrough(this);
 	}
+	public void setType(String type2) {
+		this.type = WidgetType.valueOf(type2);
+		if (this.listener != null) {
+			this.listener.onTypeUpdate(this.widgetId, this.type);
+		}
+	}
+	public void setId(String id2, String subId2) {
+		this.id = id2;
+		this.subId = subId2;
+		if (this.listener != null) {
+			this.listener.onIdChange(this.id, this.subId);
+		}
+	}
 }

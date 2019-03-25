@@ -65,6 +65,10 @@ class JsMyTable {
 		this.allChecks = [];
 	}
 	
+	clear() {
+		$('#' + this.tableId).empty();
+	}
+	
 	valueAt(row, col) {
 		return $('#' + this.tableId + ' tr').eq(row + 1).children('td').eq(col).text();
 	}
