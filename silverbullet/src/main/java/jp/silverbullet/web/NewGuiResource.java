@@ -11,6 +11,7 @@ import javax.ws.rs.core.MediaType;
 
 import jp.silverbullet.StaticInstances;
 import jp.silverbullet.web.ui.part2.UiBuilder;
+import jp.silverbullet.web.ui.part2.Layout;
 import jp.silverbullet.web.ui.part2.Pane;
 
 @Path("/newGui")
@@ -76,4 +77,12 @@ public class NewGuiResource {
 		return "OK";
 	}
 	
+	@GET
+	@Path("/addWidget")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String addWidget(@QueryParam("divid") final String divid) {
+		Pane widget = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getWidget(divid);
+		widget.createPane(Layout.HORIZONTAL);
+		return "OK";
+	}
 }

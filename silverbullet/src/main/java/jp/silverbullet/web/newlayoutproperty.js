@@ -12,6 +12,9 @@ class NewLayoutProperty {
 		var me = this;
 			
 		var idSelector = new IdSelectDialog(this.mainDiv, function(ids, subId) {
+			if (subId == null) {
+				subId = "";
+			}
 			$.ajax({
 			   type: "GET", 
 			   url: "http://" + window.location.host + "/rest/newGui/setId?divid=" + me.widget.widgetId + "&id=" + ids[0] + "&subId=" + subId,
@@ -89,11 +92,27 @@ class NewLayoutProperty {
 			   }
 			});			
 		});
+		
+		var addWidget = div + "_addWidget";
+		$('#' + this.mainDiv).append('<button id="' + addWidget + '">Add Widget</button>');
+		$('#' + addWidget).click(function() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/newGui/addWidget?divid=" + me.widget.widgetId,
+			   success: function(design){
+		
+			   }
+			});			
+		});
 	}
 	
 	update(widget) {
-
-		$('#' + this.titleId).text(widget.id + "." + widget.subId);
+		var s = widget.id;
+		if (widget.subId != null && widget.subId != '') {
+			s += "." + widget.subId;
+		}
+		
+		$('#' + this.titleId).text(s);
 		$('#' + this.fieldId).val(widget.field);
 		$('#' + this.typeId).val(widget.type);
 		

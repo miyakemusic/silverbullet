@@ -563,7 +563,7 @@ class NewLayout {
 			
 			if (type == 'CSS') {
 				retreiveWidget(divid);
-				$('#' + divMap[divid].widgetId).css(var1, var2);
+				$('#' + divMap.get(divid).widgetId).css(var1, var2);
 			}
 			else if (type == 'TYPE') {
 				retreiveDesign();
@@ -578,20 +578,24 @@ class NewLayout {
 			   type: "GET", 
 			   url: "http://" + window.location.host + "/rest/newGui/getWidget?divid=" + divid,
 			   success: function(widget){
-			   		divMap[divid] = widget;
-			   		me.propertyWindow.update(divMap[divid]);
+			   		divMap.set(divid, widget);
+			   		me.propertyWindow.update(divMap.get(divid));
 			   }
 			});	
 		}
 		
 		function getWidgetMap(id) {
-			if (widgetMap[id] == null) {
+			if (widgetMap.get(id) == null) {
 				return [];
 			}
-			return widgetMap[id];
+			return widgetMap.get(id);
 		}
 		
 		function retreiveDesign() {
+//			propertyMap.clear();
+			widgetMap.clear();
+			divMap.clear();
+			
 			$('#' + mainDiv).empty();
 			$.ajax({
 			   type: "GET", 
@@ -625,12 +629,16 @@ class NewLayout {
 		}
 		
 		function addWidget(id, widget) {
-			if (widgetMap[id] == null) {
-				widgetMap[id] = [];
+			divMap.set(widget.widget.widgetId, widget.widget);
+		
+			if (id == '') {
+				return;
 			}
-			widgetMap[id].push(widget);
 			
-			divMap[widget.widget.widgetId] = widget.widget;
+			if (widgetMap.get(id) == null) {
+				widgetMap.set(id, []);
+			}
+			widgetMap.get(id).push(widget);
 		}
 		
 		function setValue(id, index, value) {
@@ -643,17 +651,15 @@ class NewLayout {
 		}
 		
 		function build(design, div) {
-			//for (var pane of design.widgets) {
-				buildSub(design.rootPane, div);
-			//}
+			buildSub(design.rootPane, div);
 			
-			for (var id in widgetMap) {
+			for (var [id, val] of widgetMap) {
 				if (id == '') {
 					continue;
 				}
 				
 				getProperty(id, 0, function(prop) {
-					for (var w of widgetMap[prop.id]) {
+					for (var w of widgetMap.get(prop.id)) {
 						w.onUpdateValue(prop);
 					}
 				});
@@ -667,7 +673,7 @@ class NewLayout {
 					
 					var divid = $(this).prop('id');
 					
-					me.propertyWindow.update(divMap[divid]);
+					me.propertyWindow.update(divMap.get(divid));
 				});
 			}
 			else {
@@ -734,10 +740,6 @@ class NewLayout {
 							
 			for (var css of widget.css) {
 				$('#' + divid).css(css.key, css.value);
-//				$('#' + wrapperId).css(css.key, css.value);
-//				if (css.key == "width" || css.key == "height") {
-//					$('#' + divid).css(css.key, css.value);
-//				}
 			}
 			
 			if ($('#' + editId).prop('checked')) {
