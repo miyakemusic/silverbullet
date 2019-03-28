@@ -210,6 +210,26 @@ public class WebClientManager {
 					e.printStackTrace();
 				}
 			}
+
+			@Override
+			public void onFieldChange(String id) {
+				try {
+					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("UIDESIGN", "FIELD:" + id + "," + id));
+					WebSocketBroadcaster.getInstance().sendMessage(str);
+				} catch (JsonProcessingException e) {
+					e.printStackTrace();
+				}
+			}
+
+			@Override
+			public void onLayoutChange(String id) {
+				try {
+					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("UIDESIGN", "LAYOUT:" + id + "," + id));
+					WebSocketBroadcaster.getInstance().sendMessage(str);
+				} catch (JsonProcessingException e) {
+					e.printStackTrace();
+				}
+			}
 		});
 	}
 }

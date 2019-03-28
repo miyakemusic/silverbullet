@@ -11,6 +11,7 @@ import javax.ws.rs.core.MediaType;
 
 import jp.silverbullet.StaticInstances;
 import jp.silverbullet.web.ui.part2.UiBuilder;
+import jp.silverbullet.web.ui.part2.UiBuilder.PropertyField;
 import jp.silverbullet.web.ui.part2.Layout;
 import jp.silverbullet.web.ui.part2.Pane;
 
@@ -53,9 +54,25 @@ public class NewGuiResource {
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setId(@QueryParam("divid") final String divid, @QueryParam("id") final String id, @QueryParam("subId") final String subId) {
 		Pane widget = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getWidget(divid);
-		//widget.id = id;
-		//widget.subId = subId;
 		widget.setId(id, subId);
+		return "OK";
+	}
+	
+	@GET
+	@Path("/setField")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String setField(@QueryParam("divid") final String divid, @QueryParam("field") final String field) {
+		Pane widget = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getWidget(divid);
+		widget.field(PropertyField.valueOf(field));
+		return "OK";
+	}
+	
+	@GET
+	@Path("/setLayout")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String setLayout(@QueryParam("divid") final String divid, @QueryParam("layout") final String layout) {
+		Pane widget = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getWidget(divid);
+		widget.layout(Layout.valueOf(layout));
 		return "OK";
 	}
 	
@@ -64,7 +81,7 @@ public class NewGuiResource {
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<String> getCssKeys() {
 		return Arrays.asList("font", "font-weight", "font-size", "border", "border-width", "border-color", "color", 
-				"background-color");
+				"background-color", "padding", "margin", "top", "left", "width", "height");
 	}
 
 	@GET
@@ -82,7 +99,7 @@ public class NewGuiResource {
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String addWidget(@QueryParam("divid") final String divid) {
 		Pane widget = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getWidget(divid);
-		widget.createPane(Layout.HORIZONTAL);
+		widget.createPane(Layout.HORIZONTAL).css("width", "100").css("height", "30");
 		return "OK";
 	}
 }

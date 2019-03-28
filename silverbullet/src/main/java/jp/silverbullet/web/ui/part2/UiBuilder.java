@@ -1,8 +1,5 @@
 package jp.silverbullet.web.ui.part2;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -10,16 +7,16 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 
 @XmlRootElement
 public class UiBuilder {
-	private WidgetIdManager widgetIdManager = new WidgetIdManager();
+	private WidgetIdManager widgetIdManager = null;
 
 	public Pane pane = null;
 	private UiBuilderListener listener;
 	public enum PropertyField {
 		VALUE, TITLE, UNIT, STATICTEXT, NONE
 	}
-
 	
 	public UiBuilder() {
+		widgetIdManager = new WidgetIdManager();
 		pane = new Pane(widgetIdManager).type(WidgetType.Pane).layout(Layout.VERTICAL);
 	}
 
@@ -28,6 +25,9 @@ public class UiBuilder {
 	}
 
 	public void nameAll() {
+		if (this.widgetIdManager == null) {
+			widgetIdManager = new WidgetIdManager();
+		}
 		pane.applyWidgetId(widgetIdManager);
 	}
 

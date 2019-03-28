@@ -270,25 +270,27 @@ class Button extends Widget {
 class Label extends Widget {
 	constructor(widget, parent, divid) {
 		super(widget, parent, divid);
-		$('#' + this.parent).append('<div id="' + this.divid + '"></div>');	
+		
+		this.labelId = divid + "_label";
+		$('#' + this.parent).append('<div id="' + this.divid + '"><label id="' + this.labelId + '"></label></div>');	
 	}
 	
 	onUpdateValue(property) {
 		if (this.widget.field == 'TITLE') {
-			$('#' + this.divid).text(property.title);	
+			$('#' + this.labelId).text(property.title);	
 		}
 		else if (this.widget.field == 'VALUE') {
 			if (property.type == 'Boolean') {
-				$('#' + this.divid).text(property.currentValue == 'true' ? 'ON' : 'OFF');
+				$('#' + this.labelId).text(property.currentValue == 'true' ? 'ON' : 'OFF');
 			}
 			else {
-				$('#' + this.divid).text(property.currentValue);	
+				$('#' + this.labelId).text(property.currentValue);	
 			}
 		}
 		else if (this.widget.field == 'UNIT') {
-			$('#' + this.divid).text(property.unit);	
+			$('#' + this.labelId).text(property.unit);	
 		}
-		$('#' + this.divid).css('display', 'inline-block');
+		$('#' + this.labelId).css('display', 'inline-block');
 	}
 }
 
@@ -308,7 +310,19 @@ class TextField extends Widget {
 	}
 	
 	onUpdateValue(property) {
-		$('#' + this.textId).val(property.currentValue);
+		var str;
+		if (this.widget.field == 'VALUE') {
+			str  = property.currentValue;
+		}
+		else if (this.widget.field == 'TITLE') {
+			str = property.title;
+		}
+		else if (this.widget.field == 'UNIT') {
+			str = property.unit;
+		}
+				
+		$('#' + this.textId).val(str);
+		
 		this.property = property;
 		
 		$('#' + this.textId).prop('disabled', !property.enabled);
@@ -571,6 +585,14 @@ class NewLayout {
 			else if (type == 'ID') {
 				retreiveDesign();
 			}
+			else if (type == 'FIELD') {
+				retreiveDesign();
+			}
+			else if (type == 'LAYOUT') {
+				retreiveDesign();
+			}
+			
+			$('#' + divid).addClass('editableSelected');
 		}, 'UIDESIGN');
 			
 		function retreiveWidget(divid) {
@@ -742,11 +764,17 @@ class NewLayout {
 				$('#' + divid).css(css.key, css.value);
 			}
 			
+			if (widget.layout != 'ABSOLUTE') {
+		//		$('#' + divid).css('top', '');
+		//		$('#' + divid).css('left', '');
+			}
+			
 			if ($('#' + editId).prop('checked')) {
 				$('#' + divid).draggable({
 					start : function (event , ui){
 					} ,
 					drag : function (event , ui) {
+
 					} ,
 					stop : function (event , ui){
 						updatePosition(divid, ui.position.top, ui.position.left);						

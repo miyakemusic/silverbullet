@@ -1,6 +1,7 @@
 package jp.silverbullet.web.ui.part2;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -48,12 +49,18 @@ public class Pane {
 
 	public Pane createPane(Layout layout) {
 		Pane pane = new Pane(widgetIdManager, listener).type(WidgetType.Pane).layout(layout);
-		this.applyLayout(pane);
+		this.addAsChild(pane);
 		return pane;
 	}
 
 	public Pane layout(Layout layout2) {
 		this.layout = layout2;
+		for (Pane p : this.widgets) {
+			this.applyLayout(p);
+		}
+		if (this.listener != null) {
+			this.listener.onLayoutChange(this.id);
+		}
 		return this;
 	}
 	public Pane createLabel(String id, PropertyField field) {
@@ -72,8 +79,15 @@ public class Pane {
 		return this.createWidget(WidgetType.ToggleButton, id).optionId(optionId).field(PropertyField.VALUE);
 	}
 
-	private Pane applyLayout(Pane widget) {
+	private Pane addAsChild(Pane widget) {
 		this.widgets.add(widget);
+		applyLayout(widget);
+		
+		widget.widgetId = widgetIdManager.createWidgetId(widget);
+		return widget;
+	}
+	private void applyLayout(Pane widget) {
+		widget.css("display", "").css("position", "");
 		if (this.layout.compareTo(Layout.HORIZONTAL) == 0) {
 			widget.css("display", "inline-block");
 		}
@@ -81,11 +95,8 @@ public class Pane {
 			widget.css("display", "block");
 		}
 		else if (this.layout.compareTo(Layout.ABSOLUTE) == 0) {
-			
+			widget.css("position", "absolute");//.css("display", "");
 		}
-		
-		widget.widgetId = widgetIdManager.createWidgetId(widget);
-		return widget;
 	}
 	
 	public Pane createToggleButton(String id) {
@@ -136,7 +147,7 @@ public class Pane {
 	
 	private Pane createWidget(WidgetType type2, String id) {
 		Pane widget = new Pane(this.widgetIdManager, this.listener).type(type2).id(id);
-		return applyLayout(widget);
+		return addAsChild(widget);
 	}
 	
 	private Pane id(String id2) {
@@ -153,6 +164,7 @@ public class Pane {
 	}
 	
 	public void applyWidgetId(WidgetIdManager widgetIdManager) {
+		this.widgetIdManager = widgetIdManager;
 		this.widgetId = widgetIdManager.createWidgetId(this);
 		new WalkThrough() {
 			@Override
@@ -165,15 +177,27 @@ public class Pane {
 
 	public Pane css(String key, String value) {
 		boolean updated = false;
-		for (KeyValue kv : this.css) {
-			if (kv.getKey().equals(key)) {
-				kv.setValue(value);
-				updated = true;
-				break;
+		
+		if (value.isEmpty()) {
+			updated = true;
+			Iterator<KeyValue> it = this.css.iterator();
+			while(it.hasNext()) {
+				if (it.next().getKey().equals(key)) {
+					it.remove();
+				}
 			}
 		}
-		if (!updated) {
-			this.css.add(new KeyValue(key, value));
+		else {
+			for (KeyValue kv : this.css) {
+				if (kv.getKey().equals(key)) {
+					kv.setValue(value);
+					updated = true;
+					break;
+				}
+			}
+			if (!updated) {
+				this.css.add(new KeyValue(key, value));
+			}
 		}
 		if (this.listener != null) {
 			this.listener.onCssUpdate(this.widgetId, key, value);
@@ -183,6 +207,9 @@ public class Pane {
 
 	public Pane field(PropertyField value) {
 		this.field = value;
+		if (this.listener != null) {
+			this.listener.onFieldChange(this.id);
+		}
 		return this;
 	}
 

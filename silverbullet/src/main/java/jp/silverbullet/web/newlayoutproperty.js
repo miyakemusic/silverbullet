@@ -58,6 +58,12 @@ class NewLayoutProperty {
 		this.cssId = div + "_css";
 		$('#' + this.mainDiv).append('<div id="' + this.cssId + '"></div>');
 		
+		this.layoutId = div + "_layout";
+		$('#' + this.mainDiv).append('<div>Layout: <select id="' + this.layoutId + '"></div>');
+		$('#' + me.layoutId).append($('<option>').text('HORIZONTAL').val('HORIZONTAL'));
+		$('#' + me.layoutId).append($('<option>').text('VERTICAL').val('VERTICAL'));
+		$('#' + me.layoutId).append($('<option>').text('ABSOLUTE').val('ABSOLUTE'));
+
 		$('#' + this.dialogId).dialog({
 //			  dialogClass: "no-titlebar", 
 			  autoOpen: false,
@@ -93,12 +99,32 @@ class NewLayoutProperty {
 			});			
 		});
 		
+		$('#' + this.fieldId).change(function() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/newGui/setField?divid=" + me.widget.widgetId + "&field=" + 
+			   		$('#' + me.fieldId).val(),
+			   success: function(result){
+			   }
+			});			
+		});
+		
 		var addWidget = div + "_addWidget";
 		$('#' + this.mainDiv).append('<button id="' + addWidget + '">Add Widget</button>');
 		$('#' + addWidget).click(function() {
 			$.ajax({
 			   type: "GET", 
 			   url: "http://" + window.location.host + "/rest/newGui/addWidget?divid=" + me.widget.widgetId,
+			   success: function(design){
+		
+			   }
+			});			
+		});
+		
+		$('#' + this.layoutId).change(function() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/newGui/setLayout?divid=" + me.widget.widgetId + "&layout=" + $('#' + me.layoutId).val(),
 			   success: function(design){
 		
 			   }
@@ -115,6 +141,7 @@ class NewLayoutProperty {
 		$('#' + this.titleId).text(s);
 		$('#' + this.fieldId).val(widget.field);
 		$('#' + this.typeId).val(widget.type);
+		$('#' + this.layoutId).val(widget.layout);
 		
 		this.widget = widget;
 		

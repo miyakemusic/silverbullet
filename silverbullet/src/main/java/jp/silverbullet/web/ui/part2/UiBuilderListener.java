@@ -8,4 +8,8 @@ public interface UiBuilderListener {
 
 	void onIdChange(String id, String subId);
 
+	void onFieldChange(String id);
+
+	void onLayoutChange(String id);
+
 }

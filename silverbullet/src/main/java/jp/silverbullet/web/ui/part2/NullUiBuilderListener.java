@@ -20,4 +20,16 @@ public class NullUiBuilderListener implements UiBuilderListener {
 		
 	}
 
+	@Override
+	public void onFieldChange(String id) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onLayoutChange(String id) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
