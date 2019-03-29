@@ -44,4 +44,8 @@ public class UiBuilder {
 	public UiBuilderListener getListener() {
 		return this.listener;
 	}
+
+	public Pane getParentOf(String divid) {
+		return pane.getParent(divid);
+	}
 }

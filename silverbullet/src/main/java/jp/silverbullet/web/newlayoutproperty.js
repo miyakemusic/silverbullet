@@ -63,6 +63,7 @@ class NewLayoutProperty {
 		$('#' + me.layoutId).append($('<option>').text('HORIZONTAL').val('HORIZONTAL'));
 		$('#' + me.layoutId).append($('<option>').text('VERTICAL').val('VERTICAL'));
 		$('#' + me.layoutId).append($('<option>').text('ABSOLUTE').val('ABSOLUTE'));
+		$('#' + me.layoutId).append($('<option>').text('NONE').val('NONE'));
 
 		$('#' + this.dialogId).dialog({
 //			  dialogClass: "no-titlebar", 

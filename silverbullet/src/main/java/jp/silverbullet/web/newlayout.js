@@ -761,25 +761,20 @@ class NewLayout {
 			addWidget(id, wrappedWidget);
 							
 			for (var css of widget.css) {
-				$('#' + divid).css(css.key, css.value);
-			}
-			
-			if (widget.layout != 'ABSOLUTE') {
-		//		$('#' + divid).css('top', '');
-		//		$('#' + divid).css('left', '');
+				$('#' + divid).css(css.key, css.value);			
 			}
 			
 			if ($('#' + editId).prop('checked')) {
 				$('#' + divid).draggable({
 					start : function (event , ui){
+				
 					} ,
 					drag : function (event , ui) {
-
+			
 					} ,
 					stop : function (event , ui){
 						updatePosition(divid, ui.position.top, ui.position.left);						
 					},
-					grid: 5, 
 				});
 				$('#' + divid).resizable({
 			      stop: function( event, ui ) {
@@ -804,6 +799,12 @@ class NewLayout {
 		}
 		
 		function updatePosition(divid, top, left) {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/newGui/move?divid=" + divid + "&top=" + top + "&left=" + left,
+			   success: function(ret){
+			   }
+			});	
 		}
 		
 		function getId() {

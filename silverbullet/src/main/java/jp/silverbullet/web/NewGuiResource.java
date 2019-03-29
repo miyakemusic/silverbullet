@@ -102,4 +102,37 @@ public class NewGuiResource {
 		widget.createPane(Layout.HORIZONTAL).css("width", "100").css("height", "30");
 		return "OK";
 	}
+	
+	@GET
+	@Path("/move")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String move(@QueryParam("divid") final String divid, @QueryParam("top") final String top, @QueryParam("left") final String left) {
+		Pane widget = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getWidget(divid);
+		Pane parent = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getParentOf(divid);
+		if (parent.layout.equals(Layout.HORIZONTAL)) {
+			int sum = 0;
+			int index = -1;
+			for (int i = 0; i < parent.widgets.size(); i++) {
+				Pane w = parent.widgets.get(i);
+				int width = Integer.valueOf(w.css("width"));
+				
+				if (Integer.valueOf(left) > sum && Integer.valueOf(left) < sum + width) {
+					index = i;
+					break;
+				}
+				sum += width;
+				
+			}
+			
+			if (index >= 0) {
+				parent.widgets.remove(widget);
+				parent.widgets.add(index, widget);
+			}
+		}
+		else if (parent.layout.equals(Layout.VERTICAL)) {
+			
+		}
+		parent.fireLayoutChange();
+		return "OK";
+	}
 }

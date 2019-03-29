@@ -58,10 +58,13 @@ public class Pane {
 		for (Pane p : this.widgets) {
 			this.applyLayout(p);
 		}
+		fireLayoutChange();
+		return this;
+	}
+	public void fireLayoutChange() {
 		if (this.listener != null) {
 			this.listener.onLayoutChange(this.id);
 		}
-		return this;
 	}
 	public Pane createLabel(String id, PropertyField field) {
 		return createWidget(WidgetType.Label, id).field(field);
@@ -88,6 +91,7 @@ public class Pane {
 	}
 	private void applyLayout(Pane widget) {
 		widget.css("display", "").css("position", "");
+
 		if (this.layout.compareTo(Layout.HORIZONTAL) == 0) {
 			widget.css("display", "inline-block");
 		}
@@ -168,10 +172,12 @@ public class Pane {
 		this.widgetId = widgetIdManager.createWidgetId(this);
 		new WalkThrough() {
 			@Override
-			protected void handle(Pane widget) {
+			protected boolean handle(Pane widget, Pane parent) {
 				widget.widgetId = widgetIdManager.createWidgetId(widget);
+				widget.widgetIdManager = widgetIdManager;
+				return true;
 			}
-		}.walkThrough(this);		
+		}.walkThrough(this, null);		
 	}
 
 
@@ -224,11 +230,13 @@ public class Pane {
 	}
 	
 	abstract class WalkThrough {
-		abstract protected void handle(Pane widget);
-		void walkThrough(Pane pane) {
-			handle(pane);
+		abstract protected boolean handle(Pane widget, Pane parent);
+		void walkThrough(Pane pane, Pane parent) {
+			if (!handle(pane, parent)) {
+				return;
+			}
 			for (Pane w : pane.widgets) {
-				walkThrough( w );
+				walkThrough( w, pane);
 			}
 		}
 	}
@@ -236,10 +244,11 @@ public class Pane {
 	public void setListener(UiBuilderListener uiBuilderListener) {
 		new WalkThrough() {
 			@Override
-			protected void handle(Pane widget) {
+			protected boolean handle(Pane widget, Pane parent) {
 				widget.listener = uiBuilderListener;
+				return true;
 			}
-		}.walkThrough(this);
+		}.walkThrough(this, null);
 	}
 	public void setType(String type2) {
 		this.type = WidgetType.valueOf(type2);
@@ -253,5 +262,30 @@ public class Pane {
 		if (this.listener != null) {
 			this.listener.onIdChange(this.id, this.subId);
 		}
+	}
+	@JsonIgnore
+	private Pane parent;
+	public Pane getParent(String divid) {
+		
+		new WalkThrough() {
+			@Override
+			protected boolean handle(Pane widget, Pane parent2) {
+				if (widget.widgetId.equals(divid)) {
+					parent = parent2;
+					return false;
+				}
+				return true;
+			}
+		}.walkThrough(this, null);	
+		return parent;
+	}
+	
+	public String css(String key) {
+		for (KeyValue kv : this.css) {
+			if (kv.getKey().equals(key)) {
+				return kv.getValue();
+			}
+		}
+		return null;
 	}
 }
