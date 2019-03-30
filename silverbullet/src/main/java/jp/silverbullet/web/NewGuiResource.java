@@ -11,6 +11,7 @@ import javax.ws.rs.core.MediaType;
 
 import jp.silverbullet.StaticInstances;
 import jp.silverbullet.web.ui.part2.UiBuilder;
+import jp.silverbullet.web.ui.part2.WidgetType;
 import jp.silverbullet.web.ui.part2.UiBuilder.PropertyField;
 import jp.silverbullet.web.ui.part2.Layout;
 import jp.silverbullet.web.ui.part2.Pane;
@@ -80,7 +81,7 @@ public class NewGuiResource {
 	@Path("/getCssKeys")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<String> getCssKeys() {
-		return Arrays.asList("font", "font-weight", "font-size", "border", "border-width", "border-color", "color", 
+		return Arrays.asList("font", "font-weight", "font-size", "border-style", "border-width", "border-color", "color", 
 				"background-color", "padding", "margin", "top", "left", "width", "height");
 	}
 
@@ -99,7 +100,18 @@ public class NewGuiResource {
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String addWidget(@QueryParam("divid") final String divid) {
 		Pane widget = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getWidget(divid);
-		widget.createPane(Layout.HORIZONTAL).css("width", "100").css("height", "30");
+		widget.createPane(Layout.HORIZONTAL).css("width", "100").css("height", "30");//.css("border-style", "solid");
+		return "OK";
+	}
+
+	@GET
+	@Path("/removeWidget")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String removeWidget(@QueryParam("divid") final String divid) {
+		Pane widget = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getWidget(divid);
+		Pane parent = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getParentOf(divid);
+		parent.removeChild(widget);
+		parent.fireLayoutChange();
 		return "OK";
 	}
 	
@@ -109,6 +121,7 @@ public class NewGuiResource {
 	public String move(@QueryParam("divid") final String divid, @QueryParam("top") final String top, @QueryParam("left") final String left) {
 		Pane widget = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getWidget(divid);
 		Pane parent = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getParentOf(divid);
+		
 		if (parent.layout.equals(Layout.HORIZONTAL)) {
 			int sum = 0;
 			int index = -1;
@@ -116,7 +129,7 @@ public class NewGuiResource {
 				Pane w = parent.widgets.get(i);
 				int width = Integer.valueOf(w.css("width"));
 				
-				if (Integer.valueOf(left) > sum && Integer.valueOf(left) < sum + width) {
+				if ((Double.valueOf(left.replace("px", "")) > sum) && (Double.valueOf(left.replace("px", "")) < (sum + width))) {
 					index = i;
 					break;
 				}
@@ -132,6 +145,30 @@ public class NewGuiResource {
 		else if (parent.layout.equals(Layout.VERTICAL)) {
 			
 		}
+		else if (parent.layout.equals(Layout.ABSOLUTE)) {
+			widget.css("top", top).css("left", left);
+		}		
+//		parent.fireLayoutChange();
+		return "OK";
+	}
+	
+	@GET
+	@Path("/changeParent")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String move(@QueryParam("divid") final String divid, @QueryParam("parent") final String parentId) {
+		Pane widget = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getWidget(divid);
+		Pane parent = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getParentOf(divid);
+		
+		if (!parent.type.equals(WidgetType.Pane)) {
+			return "OK";
+		}
+		
+		Pane newParent = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getWidget(parentId);
+		if (newParent.equals(parent) || !newParent.type.equals(WidgetType.Pane)) {
+			return "OK";
+		}
+		parent.removeChild(widget);
+		newParent.addChild(widget);
 		parent.fireLayoutChange();
 		return "OK";
 	}

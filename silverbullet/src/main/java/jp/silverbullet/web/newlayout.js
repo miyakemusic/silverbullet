@@ -560,7 +560,7 @@ class NewLayout {
 				var index = idindex.split('#')[1];
 				retrieveProperty(id, index, function(property) {
 					propertyMap[property.id] = property;
-					for (var widget of getWidgetMap(property.id)) {
+					for (var widget of getWidget(property.id)) {
 						widget.onUpdateValue(property);
 					}
 				});
@@ -576,44 +576,54 @@ class NewLayout {
 			var var2 = tmp[2];
 			
 			if (type == 'CSS') {
-				retreiveWidget(divid);
-				$('#' + divMap.get(divid).widgetId).css(var1, var2);
+				retreiveWidget(divid, function() {
+					$('#' + divMap.get(divid).widgetId).css(var1, var2);
+					selectEditable(divid);
+				});
+				
 			}
-			else if (type == 'TYPE') {
-				retreiveDesign();
-			}
-			else if (type == 'ID') {
-				retreiveDesign();
-			}
-			else if (type == 'FIELD') {
-				retreiveDesign();
-			}
-			else if (type == 'LAYOUT') {
-				retreiveDesign();
-			}
-			
-			$('#' + divid).addClass('editableSelected');
+			else if (type == 'TYPE' || type == 'ID' || type == 'FIELD'|| type == 'LAYOUT') {
+				retreiveDesign(function() {
+					selectEditable(divid);
+				});
+			}		
+
 		}, 'UIDESIGN');
 			
-		function retreiveWidget(divid) {
+		function retreiveWidget(divid, finished) {
 			$.ajax({
 			   type: "GET", 
 			   url: "http://" + window.location.host + "/rest/newGui/getWidget?divid=" + divid,
 			   success: function(widget){
 			   		divMap.set(divid, widget);
 			   		me.propertyWindow.update(divMap.get(divid));
+			   		if (finished != null) {
+			   			finished();
+			   		}
 			   }
 			});	
 		}
 		
-		function getWidgetMap(id) {
+		function getWidget(id) {
 			if (widgetMap.get(id) == null) {
 				return [];
 			}
 			return widgetMap.get(id);
 		}
 		
-		function retreiveDesign() {
+		function getWidgetByDiv(divid, result) {
+			var ret = divMap.get(divid);
+			if (ret != null) {
+				result(ret);
+			}
+			else {
+				retreiveWidget(divid, function() {
+					result(divMap.get(divid));
+				});
+			}
+		}
+		
+		function retreiveDesign(finished) {
 //			propertyMap.clear();
 			widgetMap.clear();
 			divMap.clear();
@@ -624,6 +634,9 @@ class NewLayout {
 			   url: "http://" + window.location.host + "/rest/newGui/getDesign",
 			   success: function(design){
 			   		build(design, mainDiv);
+			   		if (finished != null) {
+			   			finished();
+			   		}
 			   }
 			});	
 		}
@@ -672,6 +685,14 @@ class NewLayout {
 			});			
 		}
 		
+		function selectEditable(divid) {			
+			getWidgetByDiv(divid, function() {
+				$('.editable').removeClass('editableSelected');
+				$('#' + divid).addClass('editableSelected');
+				me.propertyWindow.update(divMap.get(divid));
+			});
+		}
+		
 		function build(design, div) {
 			buildSub(design.rootPane, div);
 			
@@ -701,6 +722,11 @@ class NewLayout {
 			else {
 				me.propertyWindow.hide();
 			}
+			
+//			$('.separator').mouseover(function(e) {
+//				$('.separator').removeClass('mouseover');
+//				$(this).addClass('mouseover');
+//			});
 		}
 		
 		function buildSub(widget, parentDiv) {
@@ -756,6 +782,9 @@ class NewLayout {
 					getProperty(id, index, callback);
 				}
 			);
+//			if ($('#' + editId).prop('checked')) {
+//				$('#' + parentDiv).append('<span class="separator"></span>');
+//			}
 			
 			var id = widget.id;
 			addWidget(id, wrappedWidget);
@@ -773,7 +802,9 @@ class NewLayout {
 			
 					} ,
 					stop : function (event , ui){
-						updatePosition(divid, ui.position.top, ui.position.left);						
+						//updatePosition(divid, ui.offset.top, ui.offset.left);
+						//updatePosition(divid, event.clientY + "px", event.clientX + "px");
+						updatePosition(divid, $('#' + divid).position().top + "px", $('#' + divid).position().left + "px");						
 					},
 				});
 				$('#' + divid).resizable({
@@ -781,12 +812,27 @@ class NewLayout {
 			      	updateSize(divid, ui.size.width, ui.size.height);
 			      },
 			      grid: 5, 
-//			      alsoResize: "#" + divid,
 			    }); 
-			    
+						
+				$('#' + divid).droppable({
+					greedy: true,
+					drop: function( event, ui ) {
+			           changeParent(ui.draggable[0].id, divid);
+			           event.stopPropagation();
+			        }
+			    });			    
 			    $('#' + divid).addClass('editable');
 		    }
 
+		}
+		
+		function changeParent(divid, parentId) {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/newGui/changeParent?divid=" + divid + "&parent=" + parentId,
+			   success: function(ret){
+			   }
+			});	
 		}
 		
 		function updateSize(divid, width, height) {

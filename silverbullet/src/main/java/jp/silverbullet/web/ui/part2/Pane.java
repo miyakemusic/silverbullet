@@ -63,7 +63,7 @@ public class Pane {
 	}
 	public void fireLayoutChange() {
 		if (this.listener != null) {
-			this.listener.onLayoutChange(this.id);
+			this.listener.onLayoutChange(this.widgetId);
 		}
 	}
 	public Pane createLabel(String id, PropertyField field) {
@@ -86,7 +86,7 @@ public class Pane {
 		this.widgets.add(widget);
 		applyLayout(widget);
 		
-		widget.widgetId = widgetIdManager.createWidgetId(widget);
+//		widget.widgetId = widgetIdManager.createWidgetId(widget);
 		return widget;
 	}
 	private void applyLayout(Pane widget) {
@@ -151,7 +151,8 @@ public class Pane {
 	
 	private Pane createWidget(WidgetType type2, String id) {
 		Pane widget = new Pane(this.widgetIdManager, this.listener).type(type2).id(id);
-		return addAsChild(widget);
+		Pane newWidget = addAsChild(widget);
+		return newWidget;
 	}
 	
 	private Pane id(String id2) {
@@ -236,6 +237,9 @@ public class Pane {
 				return;
 			}
 			for (Pane w : pane.widgets) {
+				if (w == null) {
+					continue;
+				}
 				walkThrough( w, pane);
 			}
 		}
@@ -287,5 +291,13 @@ public class Pane {
 			}
 		}
 		return null;
+	}
+	
+	public void removeChild(Pane widget) {
+		this.widgets.remove(widget);
+	}
+	
+	public void addChild(Pane widget) {
+		this.widgets.add(widget);
 	}
 }

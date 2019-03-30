@@ -17,7 +17,7 @@ public class UiBuilder {
 	
 	public UiBuilder() {
 		widgetIdManager = new WidgetIdManager();
-		pane = new Pane(widgetIdManager).type(WidgetType.Pane).layout(Layout.VERTICAL);
+		pane = new Pane(widgetIdManager).type(WidgetType.Pane).layout(Layout.VERTICAL).css("position", "fixed");
 	}
 
 	public Pane getRootPane() {
@@ -28,7 +28,7 @@ public class UiBuilder {
 		if (this.widgetIdManager == null) {
 			widgetIdManager = new WidgetIdManager();
 		}
-		pane.applyWidgetId(widgetIdManager);
+		this.pane.applyWidgetId(widgetIdManager);
 	}
 
 	public Pane getWidget(String divid) {

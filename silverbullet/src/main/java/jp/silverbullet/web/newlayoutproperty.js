@@ -6,6 +6,9 @@ class NewLayoutProperty {
 	
 		$('#' + this.dialogId).append('<div id="' + this.mainDiv + '"></div>');
 		
+		this.widgetId = div + "_widgetId";
+		$('#' + this.mainDiv).append('Widget ID: <label id="' + this.widgetId + '"></label>');
+		
 		this.titleId = div + "_title";
 		$('#' + this.mainDiv).append('<div><button id="' + this.titleId + '"></button></div>');
 			
@@ -121,7 +124,19 @@ class NewLayoutProperty {
 			   }
 			});			
 		});
+
+		var removeWidget = div + "_removeWidget";
+		$('#' + this.mainDiv).append('<button id="' + removeWidget + '">Remove Widget</button>');
+		$('#' + removeWidget).click(function() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/newGui/removeWidget?divid=" + me.widget.widgetId,
+			   success: function(design){
 		
+			   }
+			});			
+		});
+				
 		$('#' + this.layoutId).change(function() {
 			$.ajax({
 			   type: "GET", 
@@ -134,12 +149,16 @@ class NewLayoutProperty {
 	}
 	
 	update(widget) {
-		var s = widget.id;
-		if (widget.subId != null && widget.subId != '') {
-			s += "." + widget.subId;
+		if (widget.id != null) {
+			var s = widget.id;
+			if (widget.subId != null && widget.subId != '') {
+				s += "." + widget.subId;
+			}
+			
+			$('#' + this.titleId).text(s);
 		}
 		
-		$('#' + this.titleId).text(s);
+		$('#' + this.widgetId).text(widget.widgetId);
 		$('#' + this.fieldId).val(widget.field);
 		$('#' + this.typeId).val(widget.type);
 		$('#' + this.layoutId).val(widget.layout);
