@@ -27,8 +27,8 @@ public class WidgetGeneratorHelper {
 	}
 
 	public void generateTitledSetting(String id, Pane pane) {
-		Pane subPane = pane.createPane(Layout.HORIZONTAL);
-		subPane.css("border-width", "1px").css("border-color", "lightgray").css("border-style", "solid").css("padding", "5px");
+		Pane subPane = pane;//pane.createPane(Layout.HORIZONTAL);
+//		subPane.css("border-width", "1px").css("border-color", "lightgray").css("border-style", "solid").css("padding", "5px");
 		subPane.createLabel(id, PropertyField.TITLE);
 		subPane.createStaticText(":");
 		PropertyDef2 prop = this.propertiesHolder.get(id);

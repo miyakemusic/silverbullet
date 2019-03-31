@@ -11,6 +11,7 @@ import javax.ws.rs.core.MediaType;
 
 import jp.silverbullet.StaticInstances;
 import jp.silverbullet.web.ui.part2.UiBuilder;
+import jp.silverbullet.web.ui.part2.WidgetGeneratorHelper;
 import jp.silverbullet.web.ui.part2.WidgetType;
 import jp.silverbullet.web.ui.part2.UiBuilder.PropertyField;
 import jp.silverbullet.web.ui.part2.Layout;
@@ -38,6 +39,7 @@ public class NewGuiResource {
 	public String setSize(@QueryParam("divid") final String divid, @QueryParam("width") final String width, @QueryParam("height") final String height) {
 		Pane widget = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getWidget(divid);
 		widget.css("width", width).css("height", height);
+		widget.fireLayoutChange();
 		return "OK";
 	}	
 	
@@ -47,6 +49,7 @@ public class NewGuiResource {
 	public String setCss(@QueryParam("divid") final String divid, @QueryParam("key") final String key, @QueryParam("value") final String value) {
 		Pane widget = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getWidget(divid);
 		widget.css(key, value);
+		widget.fireCssChange(divid, key, value);
 		return "OK";
 	}	
 	
@@ -56,6 +59,7 @@ public class NewGuiResource {
 	public String setId(@QueryParam("divid") final String divid, @QueryParam("id") final String id, @QueryParam("subId") final String subId) {
 		Pane widget = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getWidget(divid);
 		widget.setId(id, subId);
+		widget.fireIdChange();
 		return "OK";
 	}
 	
@@ -65,6 +69,7 @@ public class NewGuiResource {
 	public String setField(@QueryParam("divid") final String divid, @QueryParam("field") final String field) {
 		Pane widget = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getWidget(divid);
 		widget.field(PropertyField.valueOf(field));
+		widget.fireFieldChange();
 		return "OK";
 	}
 	
@@ -74,6 +79,7 @@ public class NewGuiResource {
 	public String setLayout(@QueryParam("divid") final String divid, @QueryParam("layout") final String layout) {
 		Pane widget = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getWidget(divid);
 		widget.layout(Layout.valueOf(layout));
+		widget.fireLayoutChange();
 		return "OK";
 	}
 	
@@ -82,7 +88,7 @@ public class NewGuiResource {
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<String> getCssKeys() {
 		return Arrays.asList("font", "font-weight", "font-size", "border-style", "border-width", "border-color", "color", 
-				"background-color", "padding", "margin", "top", "left", "width", "height");
+				"background-color", "background-image", "padding", "margin", "top", "left", "width", "height");
 	}
 
 	@GET
@@ -91,7 +97,9 @@ public class NewGuiResource {
 	public String setWidgetType(@QueryParam("divid") final String divid, @QueryParam("type") final String type) {
 		Pane widget = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getWidget(divid);
 		widget.setType(type);
-		System.out.println(divid + "->" + type);
+		
+		widget.fireTypeChange();
+//		System.out.println(divid + "->" + type);
 		return "OK";
 	}
 	
@@ -101,6 +109,9 @@ public class NewGuiResource {
 	public String addWidget(@QueryParam("divid") final String divid) {
 		Pane widget = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getWidget(divid);
 		widget.createPane(Layout.HORIZONTAL).css("width", "100").css("height", "30");//.css("border-style", "solid");
+		
+		Pane parent = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getParentOf(divid);
+		parent.fireLayoutChange();
 		return "OK";
 	}
 
@@ -148,7 +159,7 @@ public class NewGuiResource {
 		else if (parent.layout.equals(Layout.ABSOLUTE)) {
 			widget.css("top", top).css("left", left);
 		}		
-//		parent.fireLayoutChange();
+		widget.fireLayoutChange();
 		return "OK";
 	}
 	
@@ -170,6 +181,30 @@ public class NewGuiResource {
 		parent.removeChild(widget);
 		newParent.addChild(widget);
 		parent.fireLayoutChange();
+		return "OK";
+	}
+	
+	@GET
+	@Path("/buttonArray")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String buttonArray(@QueryParam("divid") final String divid) {
+		Pane widget = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getWidget(divid);
+		WidgetGeneratorHelper helper = new WidgetGeneratorHelper(StaticInstances.getInstance().getBuilderModel().getPropertiesHolder2());
+		helper.generateToggleButton(widget.id, widget);
+		widget.fireLayoutChange();
+		return "OK";
+	}
+	
+	@GET
+	@Path("/titledInput")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String titledInput(@QueryParam("divid") final String divid) {
+		Pane widget = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getWidget(divid);
+		WidgetGeneratorHelper helper = new WidgetGeneratorHelper(StaticInstances.getInstance().getBuilderModel().getPropertiesHolder2());
+		
+		helper.generateTitledSetting(widget.id, widget);
+		widget.id = "";
+		widget.fireLayoutChange();
 		return "OK";
 	}
 }

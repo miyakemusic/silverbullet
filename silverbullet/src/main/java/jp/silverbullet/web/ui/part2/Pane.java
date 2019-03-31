@@ -206,17 +206,20 @@ public class Pane {
 				this.css.add(new KeyValue(key, value));
 			}
 		}
+//		fireCssUpdate(key, value);
+		return this;
+	}
+	private void fireCssUpdate(String key, String value) {
 		if (this.listener != null) {
 			this.listener.onCssUpdate(this.widgetId, key, value);
 		}
-		return this;
 	}
 
 	public Pane field(PropertyField value) {
 		this.field = value;
-		if (this.listener != null) {
-			this.listener.onFieldChange(this.id);
-		}
+//		if (this.listener != null) {
+//			this.listener.onFieldChange(this.id);
+//		}
 		return this;
 	}
 
@@ -256,16 +259,16 @@ public class Pane {
 	}
 	public void setType(String type2) {
 		this.type = WidgetType.valueOf(type2);
-		if (this.listener != null) {
-			this.listener.onTypeUpdate(this.widgetId, this.type);
-		}
+//		if (this.listener != null) {
+//			this.listener.onTypeUpdate(this.widgetId, this.type);
+//		}
 	}
 	public void setId(String id2, String subId2) {
 		this.id = id2;
 		this.subId = subId2;
-		if (this.listener != null) {
-			this.listener.onIdChange(this.id, this.subId);
-		}
+//		if (this.listener != null) {
+//			this.listener.onIdChange(this.id, this.subId);
+//		}
 	}
 	@JsonIgnore
 	private Pane parent;
@@ -299,5 +302,26 @@ public class Pane {
 	
 	public void addChild(Pane widget) {
 		this.widgets.add(widget);
+	}
+	
+	public void fireTypeChange() {
+		if (this.listener != null) {
+			this.listener.onTypeUpdate(this.widgetId, type);
+		}
+	}
+	public void fireFieldChange() {
+		if (this.listener != null) {
+			this.listener.onFieldChange(this.widgetId);
+		}
+	}
+	public void fireIdChange() {
+		if (this.listener != null) {
+			this.listener.onIdChange(this.id, this.subId);
+		}
+	}
+	public void fireCssChange(String widgetId, String key, String value) {
+		if (this.listener != null) {
+			this.listener.onCssUpdate(widgetId, key, value);
+		}
 	}
 }

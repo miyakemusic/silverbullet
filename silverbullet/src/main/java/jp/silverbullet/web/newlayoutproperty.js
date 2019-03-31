@@ -146,6 +146,30 @@ class NewLayoutProperty {
 			   }
 			});			
 		});
+		
+		var buttonArray = div + "_buttonArray";
+		$('#' + this.mainDiv).append('<button id="' + buttonArray + '">Button Array</button>');
+		$('#' + buttonArray).click(function() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/newGui/buttonArray?divid=" + me.widget.widgetId,
+			   success: function(design){
+		
+			   }
+			});		
+		});
+		
+		var titledValue = div + "_titledValue";
+		$('#' + this.mainDiv).append('<button id="' + titledValue + '">Titled Value</button>');
+		$('#' + titledValue).click(function() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/newGui/titledInput?divid=" + me.widget.widgetId,
+			   success: function(design){
+		
+			   }
+			});		
+		});
 	}
 	
 	update(widget) {
