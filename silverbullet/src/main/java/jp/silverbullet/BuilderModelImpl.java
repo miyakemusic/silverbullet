@@ -156,7 +156,7 @@ public class BuilderModelImpl {
 	private List<RegisterAccessor> simulators;
 	private String sourceInfo;
 	private RegisterAccessor hardwareAccessor;
-	private UiBuilder uiBuilder;
+	private UiBuilder uiBuilder  = new UiBuilder();
 
 	public enum RegisterTypeEnum {
 		Simulator,

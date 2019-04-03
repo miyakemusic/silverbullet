@@ -1,6 +1,8 @@
 package jp.silverbullet.dependency2.design;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -14,7 +16,6 @@ import jp.silverbullet.dependency2.DependencySpecRebuilder;
 import jp.silverbullet.dependency2.Expression;
 import jp.silverbullet.property2.PropertyDef2;
 import jp.silverbullet.property2.RuntimeProperty;
-import jp.silverbullet.web.KeyValue;
 import jp.silverbullet.web.ui.PropertyGetter;
 
 public abstract class RestrictionMatrix {
@@ -381,14 +382,42 @@ public abstract class RestrictionMatrix {
 	
 	public void setPriority(String id, int value) {
 		this.data2.setPriority(id, value);
+		this.build();
 	}
 
-	public List<KeyValue> getPriorities() {
-		List<KeyValue> ret = new ArrayList<>();
+	public List<Integer> getDefinedPriorities() {
+		List<Integer> ret = new ArrayList<>();
+		
 		for (String id : this.getUsedIds()) {
-			ret.add(new KeyValue(id, String.valueOf(this.getPriority(id))));
+			int priority = Integer.valueOf(this.getPriority(id));
+			if (!ret.contains(priority)) {
+				ret.add(priority);
+			}
+		}
+		Collections.sort(ret, Comparator.reverseOrder());
+		
+		return ret;
+	}
+	
+	public Map<Integer, List<String>> getPriorities() {
+		//List<KeyValue> ret = new ArrayList<>();
+		Map<Integer, List<String>> ret = new HashMap<>();
+		
+		for (String id : this.getUsedIds()) {
+			//ret.add(new KeyValue(id, String.valueOf(this.getPriority(id))));
+			int priority = Integer.valueOf(this.getPriority(id));
+			if (!ret.containsKey(priority)) {
+				ret.put(priority, new ArrayList<String>());
+			}
+			ret.get(priority).add(id);
 		}
 		return ret;
+//		Collections.sort(ret, new Comparator<KeyValue>() {
+//			@Override
+//			public int compare(KeyValue arg0, KeyValue arg1) {
+//				return Integer.valueOf(arg1.getValue()) -  Integer.valueOf(arg0.getValue());
+//			}
+//		});
 	}
 
 	public void addListener(RestrictionMatrixListener restrictionMatrixListener) {

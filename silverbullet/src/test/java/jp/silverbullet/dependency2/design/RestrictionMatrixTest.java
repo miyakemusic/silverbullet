@@ -277,6 +277,21 @@ public class RestrictionMatrixTest {
 			testSpec(spec, expected, "ID_TARGET_D");
 		}		
 		
+		// Mode is strongest, Trigget and Target are the same
+		matrix.setPriority("ID_MODE", 100);
+		matrix.setPriority("ID_TRIGGER", 10);
+		matrix.setPriority("ID_TARGET", 10);
+		{
+			assertEquals(4, spec.getExpression("ID_TARGET_D").size());
+			List<Expression> expected = Arrays.asList(
+					new Expression(DependencySpec.True, "$ID_TRIGGER==%ID_TRIGGER_C", "($ID_MODE==%ID_MODE_B)"),
+					new Expression(DependencySpec.True, "$ID_TRIGGER==%ID_TRIGGER_D", "($ID_MODE==%ID_MODE_B)"),
+					new Expression(DependencySpec.True, "$ID_MODE==%ID_MODE_B", ""),
+					new Expression(DependencySpec.False, DependencySpec.Else, "")
+					);
+			testSpec(spec, expected, "ID_TARGET_D");
+		}	
+		
 		// Not Options but it's enabled
 		holder.addProperty(factory.createNumeric("ID_NUMERIC").defaultValue(0).unit("Hz").min(-100).max(100));
 		matrix.add("ID_NUMERIC", AxisType.Y);
@@ -311,4 +326,54 @@ public class RestrictionMatrixTest {
 		assertEquals(0, exp2.size());
 	}
 
+//	@Test
+//	public void testSamePriority() throws Exception {
+//		PropertyHolder2 holder = new PropertyHolder2();
+//		PropertyFactory factory = new PropertyFactory();
+//		RuntimePropertyStore store = new RuntimePropertyStore(holder);
+//		DependencySpecHolder depSpecHolder = new DependencySpecHolder();
+//		
+//		holder.addProperty(factory.createList("ID_MODE").option("ID_MODE_A", "Mode A", "").option("ID_MODE_B", "Mode B", ""));
+//		holder.addProperty(factory.createList("ID_PULSE").option("ID_PULSE_A", "Pulse A", "").option("ID_PULSE_B", "Pulse B", ""));
+//		holder.addProperty(factory.createList("ID_DISTANCE").option("ID_DISTANCE_A", "Distance A", "").option("ID_DISTANCE_B", "Distance B", ""));
+//
+//		RestrictionMatrix matrix = new RestrictionMatrix() {
+//			@Override
+//			protected DependencySpecHolder getDependencySpecHolder() {
+//				return depSpecHolder;
+//			}
+//
+//			@Override
+//			protected void resetMask() {
+//
+//			}
+//
+//			@Override
+//			protected RuntimeProperty getRuntimeProperty(String id, int index) {
+//				return store.get(id, index);
+//			}
+//
+//			@Override
+//			protected RuntimeProperty getRuntimeProperty(String id) {
+//				return store.get(id);
+//			}
+//
+//			@Override
+//			protected PropertyDef2 getPropertyDef(String id) {
+//				return holder.get(id);
+//			}
+//
+//			@Override
+//			protected List<PropertyDef2> getAllPropertieDefs() {
+//				return new ArrayList<PropertyDef2>(holder.getProperties());
+//			}
+//			
+//		};
+//		
+//		matrix.add("ID_DISTANCE", AxisType.X);
+//		matrix.add("ID_PULSE", AxisType.Y);
+//		matrix.setPriority("ID_MODE", 100);
+//		matrix.setPriority("ID_PULSE", 10);
+//		matrix.setPriority("ID_DISTANCE", 10);
+//	}
 }

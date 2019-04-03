@@ -47,6 +47,8 @@ class DependencyDesign {
 			addId($('#' + targetId).val(), "target");
 		});		
 		
+		initTable();
+		
 		function addId(id, type) {
 			$.ajax({
 			   type: "GET", 
@@ -212,7 +214,9 @@ class DependencyDesign {
 		
 		function initTable() {
 			$('#' + idMain).empty();
+			
 			me.table = new JsMyTable(idMain, colDef);
+			new PriorityEditor(idMain);
 			me.table.checkListener = function(k, row, checked) {
 				var rowIndex = me.current.yTitle.indexOf(row);
 				var colIndex = k - 1;
@@ -257,7 +261,7 @@ class DependencyDesign {
 				}
 			}
 		}
-		
+				
 		var idPriority = div + "_priority";
 		$('#' + div).append('<div id="' + idPriority + '"></div>');
 		initPriority();

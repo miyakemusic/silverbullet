@@ -174,12 +174,15 @@ class SbImage extends Widget {
 		this.image = new Image();
 		var me = this;
 		this.image.onload = function() {
-		  ctx.drawImage(me.image, 0, 0);
+			var xScale = me.canvas.clientWidth / me.image.naturalWidth;
+			var yScale = me.canvas.clientHeight / me.image.naturalHeight;
+			
+			ctx.drawImage(me.image, 0, 0, me.image.naturalWidth, me.image.naturalHeight, 
+				0, 0, me.image.naturalWidth * xScale, me.image.naturalHeight * yScale);
 		}
 	}
 	
 	onUpdateValue(property) {
-//		var canvas = $('#' + this.canvasId)[0];
 		var wrapper = $('#' + this.divid)[0];
 		
 		var canvasWidth = this.canvas.width;

@@ -112,11 +112,17 @@ public class DependencyDesignResource {
 		StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().showAll();
 		return "OK";
 	}
+	@GET
+	@Path("/getDefinedPriorities")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public List<Integer> getDefinedPriorities() {
+		return StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().getDefinedPriorities();
+	}
 	
 	@GET
 	@Path("/getPriorities")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public List<KeyValue> getPriorities() {
+	public Map<Integer, List<String>> getPriorities() {
 		return StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().getPriorities();
 	}
 	
@@ -125,6 +131,7 @@ public class DependencyDesignResource {
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setPriority(@QueryParam("id") final String id, @QueryParam("value") final Integer value) {
 		StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().setPriority(id, value);
+//		StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().build();
 		return "OK";
 	}
 }
