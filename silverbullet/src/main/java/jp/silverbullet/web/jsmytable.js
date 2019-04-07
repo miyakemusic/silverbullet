@@ -3,12 +3,14 @@ class EditableText {
 		var labelId = 'label_' + div;
 		var editId = 'edit_' + div;
 		
-		$('#' + div).append('<label id="' + labelId + '"></label>');
-		$('#' + div).append('<input type="text" id="' + editId + '">');
+		$('#' + div).append('<div class="labelElement" id="' + labelId + '"></div>');
+
+		$('#' + div).append('<input class="editElement" type="text" id="' + editId + '">');
 		
 		$('#' + editId).hide();
 		
-		$('#' + labelId).text(value);
+		setLabelValue(value);
+
 		$('#' + editId).val(value);
 		
 		$('#' + labelId).show();
@@ -27,7 +29,8 @@ class EditableText {
 			else if (event.which == 13) { // Enter
 				$('#' + labelId).show();
 				$('#' + editId).hide();
-				$('#' + labelId).text($('#' + editId).val().replace('\n','<br>'));
+				setLabelValue($('#' + editId).val().replace('\n','<br>'));
+				
 				changed($('#' + editId).val());
 			}
 			else if (event.which == 27) { // Cancel
@@ -39,6 +42,15 @@ class EditableText {
 			$('#' + labelId).show();
 			$('#' + editId).hide();
 		});	
+		
+		function setLabelValue(value) {
+//			if (value == '') {
+//				$('#' + labelId).text('<click to edit>');
+//			}
+//			else {
+				$('#' + labelId).text(value);
+//			}
+		}
 	}
 }
 
@@ -193,9 +205,9 @@ class JsMyTable {
 				var checked = me.colDef(k, row, 'checked');
 	
 				$('#' + checkId).prop('checked', checked);
-				new EditableText(checkNameId, me.colDef(k, row, 'name'), function(value) {
-					me.listenerChange(row, k, value);
-				});
+//				new EditableText(checkNameId, me.colDef(k, row, 'name'), function(value) {
+//					me.listenerChange(row, k, value);
+//				});
 				$('#' + checkId).click(function() {
 					if (me.checkListener != null) {
 						me.checkListener(k, row, $(this).prop('checked'));

@@ -16,9 +16,16 @@ import jp.silverbullet.dependency2.design.RestrictionMatrix;
 @Path("/dependencyDesign")
 public class DependencyDesignResource {
 	@GET
-	@Path("/getSpec")
+	@Path("/getEnableSpec")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public RestrictionMatrix getSpec() {
+	public RestrictionMatrix getEnableSpec() {
+		return StaticInstances.getInstance().getBuilderModel().getDependencyDesigner();
+	}
+	
+	@GET
+	@Path("/getValueSpec")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public RestrictionMatrix getValueSpec() {
 		return StaticInstances.getInstance().getBuilderModel().getDependencyDesigner();
 	}
 	
@@ -45,10 +52,10 @@ public class DependencyDesignResource {
 	}
 	
 	@GET
-	@Path("/setCombination")
+	@Path("/changeSpecValue")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String setCombination(@QueryParam("trigger") final String trigger, @QueryParam("target") final String target) {
-		//StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().setCombination(trigger, target);
+	public String changeSpecValue(@QueryParam("row") final int row, @QueryParam("col") final int col, @QueryParam("value") final String value) {
+		StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().updateValue(row, col, value);
 		return "OK";
 	}
 	
@@ -131,7 +138,7 @@ public class DependencyDesignResource {
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setPriority(@QueryParam("id") final String id, @QueryParam("value") final Integer value) {
 		StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().setPriority(id, value);
-//		StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().build();
+		StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().build();
 		return "OK";
 	}
 }

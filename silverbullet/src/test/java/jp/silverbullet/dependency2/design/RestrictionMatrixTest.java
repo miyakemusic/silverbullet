@@ -204,7 +204,7 @@ public class RestrictionMatrixTest {
 					new Expression("ID_TRIGGER_C", "$ID_TARGET==%ID_TARGET_C", "($ID_TRIGGER!=%ID_TRIGGER_B)"),
 					new Expression("ID_TRIGGER_D", "$ID_TARGET==%ID_TARGET_D", "($ID_TRIGGER!=%ID_TRIGGER_C)")
 					);
-			testSpec(spec, expected, DependencySpec.Value);
+//			testSpec(spec, expected, DependencySpec.Value);
 		}
 		
 		// Trigger is strong. Mode and Trigger affect Target

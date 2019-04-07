@@ -3,15 +3,36 @@ package jp.silverbullet.dependency2.design;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class RestrictionData2 {
-	private Map<String, Set<String>> allData = new HashMap<>();
+	private Map<String, Set<String>> enableRelation = new HashMap<>();
 	private Map<String, Integer> priority = new HashMap<>();
 	private Map<String, String> condition = new HashMap<>();
+	private Map<String, Map<String, String>> values = new HashMap<>();
 	
+	public void setValue(String trigger, String target, String value) {
+		if (!this.values.containsKey(target)) {
+			this.values.put(target, new HashMap<String, String>());
+		}
+		this.values.get(target).put(trigger, value);
+	}
+	
+	public String getValue(String triggerId, String targetId) {
+		if (!this.values.containsKey(targetId)) {
+			return "";
+		}
+		String ret = this.values.get(targetId).get(triggerId);
+		if (ret == null) {
+			return "";
+		}
+		return ret;
+	}
 	
 	public void set(String trigger, String target, boolean checked) {
 		if (checked) {
@@ -28,30 +49,34 @@ public class RestrictionData2 {
 	private void remove(String trigger, String target) {
 		this.get(trigger).remove(target);
 		if (this.get(trigger).size() == 0) {
-			this.allData.remove(trigger);
+			this.enableRelation.remove(trigger);
 		}
 	}
 
 	private Set<String> get(String id) {
-		if (!this.allData.containsKey(id)) {
-			this.allData.put(id, new HashSet<String>());
+		if (!this.enableRelation.containsKey(id)) {
+			this.enableRelation.put(id, new HashSet<String>());
 		}
-		return this.allData.get(id);
+		return this.enableRelation.get(id);
 	}
 
-	public Map<String, Set<String>> getAllData() {
-		return allData;
+	public Map<String, Set<String>> getEnableRelation() {
+		return enableRelation;
+	}
+
+	public Map<String, Map<String, String>> getValues() {
+		return values;
 	}
 
 	public Set<String> getList(String id) {
-		if (this.allData.containsKey(id)) {
-			return this.allData.get(id);
+		if (this.enableRelation.containsKey(id)) {
+			return this.enableRelation.get(id);
 		}
 		return new HashSet<String>();
 	}
 
 	public void clean() {
-		Iterator<Entry<String, Set<String>>> it = this.allData.entrySet().iterator();
+		Iterator<Entry<String, Set<String>>> it = this.enableRelation.entrySet().iterator();
 		while(it.hasNext()) {
 			if (it.next().getValue().size() == 0) {
 				it.remove();
@@ -91,8 +116,20 @@ public class RestrictionData2 {
 	}
 
 	public boolean contains(String option1, String option2) {
-		return this.allData.get(option1).contains(option2);
+		Set<String> r = this.enableRelation.get(option1);
+		if (r == null) {
+			return false;
+		}
+		return r.contains(option2);
 	}
 
+	@JsonIgnore
+	public Set<String> getTargetIds() {
+		return this.values.keySet();
+	}
+
+	public Set<String> getTriggerId(String targetId) {
+		return this.values.get(targetId).keySet();
+	}
 	
 }

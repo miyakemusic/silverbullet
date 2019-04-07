@@ -1,7 +1,7 @@
 class DependencyDesign {
 	constructor(div) {
 		var me = this;
-		var colDef = function(k, row, type) {
+		var colDefEnabledTable = function(k, row, type) {
 			if (type == 'type') {
 				if (row != 'title' && k > 0) {
 					return 'check';
@@ -12,15 +12,18 @@ class DependencyDesign {
 			}
 			else if (type == 'checked') {
 				var index = me.current.yTitle.indexOf(row);
-				return me.current.value[index][k-1].enabled;
+				return me.current.enableMatrix[index][k-1].enabled;
 			}
 			else if (type == 'name') {
 				var index = me.current.yTitle.indexOf(row);
-				return me.current.value[index][k-1].condition;
+				return me.current.enableMatrix[index][k-1].condition;
 			}
 		}
 		
-			new MyWebSocket(function(msg) {				
+		var colDefValueTable = function(k, row, type) {
+		}
+		
+		new MyWebSocket(function(msg) {				
 				//var obj = JSON.parse(msg);			
 				//var regName = obj.name;
 				if (msg == 'MatrixChanged') {
@@ -46,9 +49,7 @@ class DependencyDesign {
 		$('#' + addTargetId).click(function() {
 			addId($('#' + targetId).val(), "target");
 		});		
-		
-		initTable();
-		
+				
 		function addId(id, type) {
 			$.ajax({
 			   type: "GET", 
@@ -105,17 +106,6 @@ class DependencyDesign {
 			   }
 			});
 		});
-		
-//		var alwaysTrueId = div + "_alwaysTrue";
-//		$('#' + div).append('<button id="' + alwaysTrueId + '">Build (Always True)</button>');
-//		$('#' + alwaysTrueId).click(function() {
-//			$.ajax({
-//			   type: "GET", 
-//			   url: "http://" + window.location.host + "/rest/dependencyDesign/alwaysTrue",
-//			   success: function(msg) {
-//			   }
-//			});
-//		});
 		
 		$.ajax({
 		   type: "GET", 
@@ -197,6 +187,14 @@ class DependencyDesign {
 		var idMain = div + "_main";
 		$('#' + div).append('<div id="' + idMain + '"></div>');
 		
+		var idEnabledTableDiv = idMain + "_enabledTable";
+		$('#' + idMain).append('<div id="' + idEnabledTableDiv + '">enabled table</div>');
+		var idValueTableDiv = idMain + "_valueTable";
+		$('#' + idMain).append('<div id="' + idValueTableDiv + '">value table</div>');
+		
+		new PriorityEditor(idMain);
+		initTable();
+		
 		function updateTable() {
 			$.ajax({
 			   type: "GET", 
@@ -208,16 +206,17 @@ class DependencyDesign {
 			
 			function replaceTable(msg) {
 				me.current = msg;
-				me.table.updateData();
+				me.enabledTable.updateData();
 			}
 		}
 		
 		function initTable() {
-			$('#' + idMain).empty();
+			$('#' + idEnabledTableDiv).empty();
+			$('#' + idValueTableDiv).empty();
 			
-			me.table = new JsMyTable(idMain, colDef);
-			new PriorityEditor(idMain);
-			me.table.checkListener = function(k, row, checked) {
+			me.enabledTable = new JsMyTable(idEnabledTableDiv, colDefEnabledTable);
+			
+			me.enabledTable.checkListener = function(k, row, checked) {
 				var rowIndex = me.current.yTitle.indexOf(row);
 				var colIndex = k - 1;
 				$.ajax({
@@ -228,24 +227,39 @@ class DependencyDesign {
 				   }
 				});				
 			};
-			me.table.listenerChange = function(k, row, text) {
+			
+			me.valueTable = new JsMyTable(idValueTableDiv, colDefValueTable);
+			
+			me.valueTable.listenerChange = function(row, k, value) {
+				var rowIndex = me.current.yTitle.indexOf(row);
+				var colIndex = k - 1;
+				$.ajax({
+				   type: "GET", 
+				   url: "http://" + window.location.host + "/rest/dependencyDesign/changeSpecValue?row=" + rowIndex + "&col=" + colIndex + "&value=" + value,
+				   success: function(msg){
+					
+				   }
+				});					
 			};
 			
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/dependencyDesign/getSpec",
+			   url: "http://" + window.location.host + "/rest/dependencyDesign/getEnableSpec",
 			   success: function(msg){
-					updateList(msg);
+					updateEnableList(msg);
 			   }
 			});	
-			
-			function updateList(msg) {
-				var titleRow = [];
-				titleRow.push('');
+						
+			function updateEnableList(msg) {
+				var titleRowEnabled = ['Enabled'];
+				var titleRowValue = ['Value'];
+				
 				for (var row of msg.xTitle) {
-					titleRow.push(row);
+					titleRowEnabled.push(row);
+					titleRowValue.push(row);
 				}
-				me.table.appendRow('title', titleRow);
+				me.enabledTable.appendRow('title', titleRowEnabled);
+				me.valueTable.appendRow('title', titleRowValue);
 				
 				me.current = msg;
 				
@@ -254,12 +268,25 @@ class DependencyDesign {
 					var s = [];
 					s.push(col);
 					for (var i = 0; i < msg.xTitle.length; i++) {
-						var v = msg.value[r][i];
+						var v = msg.enableMatrix[r][i];
 						s.push(v.condition);
 					}
-					me.table.appendRow(col, s);
+					me.enabledTable.appendRow(col, s);				
+				}
+				
+				for (var r = 0; r < msg.yValueTitle.length; r++){
+					var col = msg.yValueTitle[r];
+					
+					var val = [];
+					val.push(col);
+					for (var i = 0; i < msg.xTitle.length; i++) {
+						var v = msg.valueMatrix[r][i];
+						val.push(v);
+					}
+					me.valueTable.appendRow(col, val);	
 				}
 			}
+
 		}
 				
 		var idPriority = div + "_priority";

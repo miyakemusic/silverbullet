@@ -1,0 +1,8 @@
+.labelElement {
+	width: 100%;
+	min-height:10px;
+	display:inline-block;
+}
+.editElement {
+	width: 100%;
+}
