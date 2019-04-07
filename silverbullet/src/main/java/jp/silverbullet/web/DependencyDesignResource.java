@@ -76,13 +76,13 @@ public class DependencyDesignResource {
 	}
 	
 	
-	@GET
-	@Path("/alwaysTrue")
-	@Produces(MediaType.TEXT_PLAIN) 
-	public String alwaysTrue() {
-		StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().alwaysTrue();
-		return "OK";
-	}
+//	@GET
+//	@Path("/alwaysTrue")
+//	@Produces(MediaType.TEXT_PLAIN) 
+//	public String alwaysTrue() {
+//		StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().alwaysTrue();
+//		return "OK";
+//	}
 	
 	@GET
 	@Path("/addId")

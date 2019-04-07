@@ -4,6 +4,10 @@ class PriorityEditor {
 		var mainId = divid + "_main";
 		$('#' + divid).append('<div class="priorityArea" id="' + mainId + '"></div>');
 		
+		this.onUpdate = function() {
+			buildNew();
+		};
+		
 		buildNew();
 		
 		function buildNew() {
@@ -33,6 +37,10 @@ class PriorityEditor {
 			var rowName = "";
 			var emptyName = msg[0].value;
 			$('#' + mainId).append('<div class="priorityLabel">High Priority</div>');
+			
+			emptyName = "row_" + parseInt(Number(priorities[0]) + 10);
+			$('#' + mainId).append('<div id="' + emptyName + '" class="priorityEmpty">' + emptyName.split('_')[1] + '</div>');
+			
 			for (var i = 0; i < priorities.length; i++) {
 				var priority = priorities[i];
 				rowName = "row_" + priority;
@@ -76,5 +84,9 @@ class PriorityEditor {
 				});	
 			}
 		}
+	}
+	
+	update() {
+		this.onUpdate();
 	}
 }

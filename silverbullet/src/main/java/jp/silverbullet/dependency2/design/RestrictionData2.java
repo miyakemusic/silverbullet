@@ -124,12 +124,31 @@ public class RestrictionData2 {
 	}
 
 	@JsonIgnore
-	public Set<String> getTargetIds() {
+	public Set<String> getValueTargetIds() {
 		return this.values.keySet();
 	}
 
-	public Set<String> getTriggerId(String targetId) {
+	public Set<String> getValueTriggerId(String targetId) {
 		return this.values.get(targetId).keySet();
+	}
+
+	@JsonIgnore
+	public  Set<String> getValueTriggerIds() {
+		Set<String> ret = new HashSet<>();
+		this.values.values().forEach(a -> ret.addAll(a.keySet()));
+		return ret;
+	}
+
+	public Set<String> getValueTargetId(String triggerId) {
+		Set<String> ret = new HashSet<>();
+		for (String targetId : this.values.keySet()) {
+			for (String triggerOption : this.values.get(targetId).keySet()) {
+				if (triggerOption.contains(triggerId)) {
+					ret.add(targetId);
+				}
+			}
+		}
+		return ret;
 	}
 	
 }

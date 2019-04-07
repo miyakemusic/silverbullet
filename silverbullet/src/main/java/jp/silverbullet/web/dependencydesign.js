@@ -65,7 +65,7 @@ class DependencyDesign {
 		$('#' + div).append('<button id="' + updateId + '">Update</button>');
 		$('#' + updateId).click(function() {
 		   	initTable();
-		   	initPriority();
+		   	updatePriorityEditor();
 		});
 		
 		var showAllId = div + "_showAll";
@@ -77,7 +77,7 @@ class DependencyDesign {
 			   success: function(msg) {
 			   	initOptions();
 			   	initTable();
-			   	initPriority();
+			   	updatePriorityEditor();
 			   }
 			});
 		});	
@@ -91,7 +91,7 @@ class DependencyDesign {
 			   success: function(msg) {
 			   	initOptions();
 			   	initTable();
-			   	initPriority();
+			   	updatePriorityEditor();
 			   }
 			});
 		});
@@ -192,7 +192,12 @@ class DependencyDesign {
 		var idValueTableDiv = idMain + "_valueTable";
 		$('#' + idMain).append('<div id="' + idValueTableDiv + '">value table</div>');
 		
-		new PriorityEditor(idMain);
+		var priorityEditor = new PriorityEditor(idMain);
+		
+		function updatePriorityEditor() {
+			priorityEditor.update();
+		}
+		
 		initTable();
 		
 		function updateTable() {
@@ -291,31 +296,6 @@ class DependencyDesign {
 				
 		var idPriority = div + "_priority";
 		$('#' + div).append('<div id="' + idPriority + '"></div>');
-		initPriority();
-		var priorityData;
-		function initPriority() {
-			$('#' + idPriority).empty();
-			var priorityTable = new JsMyTable(idPriority);
-
-			$.ajax({
-			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/dependencyDesign/getPriorities",
-			   success: function(msg){
-				priorityTable.appendRows(msg);
-				priorityData = msg;
-			   }
-			});		
-			
-			priorityTable.listenerChange = function(k, row, text) {
-				$.ajax({
-				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/dependencyDesign/setPriority?id=" + priorityData[k].key +"&value=" + text,
-				   success: function(msg){
-
-				   }
-				});				
-			};	
-		}
 	}
 	
 }
