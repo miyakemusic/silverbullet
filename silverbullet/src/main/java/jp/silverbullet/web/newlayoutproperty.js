@@ -170,6 +170,11 @@ class NewLayoutProperty {
 			   }
 			});		
 		});
+		
+		var visibleCondition = div + "_visibleCondition";
+		var visibleConditionSet = div + "_visibleConditionSet";
+		$('#' + this.mainDiv).append('<input type="text" id="' + visibleCondition + '"><button id="visibleConditionSet">Set</button>');
+		
 	}
 	
 	update(widget) {

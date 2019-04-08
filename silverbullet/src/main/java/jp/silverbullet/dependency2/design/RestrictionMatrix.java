@@ -199,7 +199,12 @@ public abstract class RestrictionMatrix {
 				// Calculates same priority IDs
 				for (String targetId : idsSamePriority) {
 					if (!targetId.equals(triggerId)) {
-						calculateSamePriorityIds(triggerId, targetId);
+						if (isList(targetId) && isList(triggerId)) {
+							calculateSamePriorityIds(triggerId, targetId);
+						}
+						else if (isNumeric(targetId) && isList(triggerId)) {
+							calculateLowerPriorityIds(triggerId, targetId);
+						}
 					}
 				}
 				// Calculates lower priority IDs
@@ -250,18 +255,26 @@ public abstract class RestrictionMatrix {
 				}
 			}
 		}
-		for (String triggerId : this.spec.getValueTriggerIds()) {
-			for (String targetId: this.spec.getValueTargetId(triggerId)) {
-				PropertyDef2 targetProp = this.getPropertyDef(targetId);
-				PropertyDef2 triggerProp = this.getPropertyDef(this.getMainId(triggerId));
-				if (targetProp.isNumeric()&& triggerProp.isList()) {
-					String value = this.spec.getValue(triggerId, targetId);
-					if (!value.isEmpty()) {
-						this.getDependencySpecHolder().getSpec(this.getMainId(triggerId)).addValue(triggerId, "$" + targetId + "==" + value);
-					}
-				}
-			}
-		}
+//		for (String triggerId : this.spec.getValueTriggerIds()) {
+//			for (String targetId: this.spec.getValueTargetId(triggerId)) {
+//				PropertyDef2 targetProp = this.getPropertyDef(targetId);
+//				PropertyDef2 triggerProp = this.getPropertyDef(this.getMainId(triggerId));
+//				if (targetProp.isNumeric()&& triggerProp.isList()) {
+//					String value = this.spec.getValue(triggerId, targetId);
+//					if (!value.isEmpty()) {
+//						this.getDependencySpecHolder().getSpec(this.getMainId(triggerId)).addValue(triggerId, "$" + targetId + "==" + value);
+//					}
+//				}
+//			}
+//		}
+	}
+	
+	private boolean isList(String id) {
+		return this.getPropertyDef(id).isList();
+	}
+
+	private boolean isNumeric(String id) {
+		return this.getPropertyDef(id).isNumeric();
 	}
 	
 	private void calculateLowerPriorityIds(String triggerId, String targetId) {
@@ -335,13 +348,19 @@ public abstract class RestrictionMatrix {
 		triggerOptions.add(triggerId);
 		
 		for (String targetOption : targetOptions) {
-
+			if (targetOption.equals(this.getMainId(targetOption))) { // ignore main ID
+				continue;
+			}
 			for (String triggerOption : triggerOptions) {
+				if (triggerOption.equals(this.getMainId(triggerOption))) { // ignore main ID
+					continue;
+				}
 				String enabledCondition = "";
 				for (String targetOption2 : targetOptions) {
 					if (targetOption.equals(targetOption2)) {
 						continue;
 					}
+					
 					if (this.spec.contains(targetOption2, triggerOption)) {
 						enabledCondition += "($" + targetId + "!=%" + targetOption2+ ")&&";
 					}
@@ -389,93 +408,6 @@ public abstract class RestrictionMatrix {
 		return new ArrayList<String>(ret);
 	}
 	 
-
-//	public void build_() {	
-//		resetMask();
-//
-//		DependencySpecHolder holder = getDependencySpecHolder();
-////		holder.clear();
-//		
-//		Set<String> usedId = this.getUsedIds();
-//		// This is tentative code
-//		for (String trigger : usedId) {
-//			for (String target : usedId) {
-//				if (trigger.equals(target)) {
-//					continue;
-//				}
-//				//holder.getSpec(target).clear(DependencySpec.OptionEnable, trigger);
-//				holder.getSpec(target).clear();
-//			}		
-//		}
-//		
-//		for (String trigger : usedId) {
-//			List<String> triggerOptions = this.getPropertyDef(trigger).getOptionIds(); // option IDs
-//			triggerOptions.add(trigger); // main ID
-//			for (String target : usedId) {
-//				if (trigger.equals(target)) {
-//					continue;
-//				}
-//
-//				List<String> targetOptions = this.getPropertyDef(target).getOptionIds(); // option IDs
-//				targetOptions.add(target); // main ID
-//				
-//				int priority =  this.getPriority(target) - this.getPriority(trigger);
-//				
-//				List<String> targetOptions2 = null;
-//				List<String> triggerOptions2 = null;
-//				String target2;
-//				String trigger2;
-//				if (priority > 0) {
-//					targetOptions2 = triggerOptions;
-//					triggerOptions2 = targetOptions;
-//					target2 = trigger;
-//					trigger2 = target;
-//				}
-//				else {
-//					targetOptions2 = targetOptions;
-//					triggerOptions2 = triggerOptions;
-//					target2 = target;
-//					trigger2 = trigger;					
-//				}
-//				boolean enabled = false;
-//				for (String targetOption2 : targetOptions2) {
-//					boolean optionEnabledTouched = false;
-//					boolean enabledTouched = false;
-//					for (String triggerOption2 : triggerOptions2) {
-//						if (spec.getList(targetOption2).contains(triggerOption2)) {
-//							String condition = createCondition(targetOption2, triggerOption2, new ArrayList<String>(spec.getEnableRelation().keySet()));
-//							
-//							String triggerExpression = "$" + trigger2 + "==%" + triggerOption2;
-//							if (isMainId(targetOption2, target2)) {
-//								getDependencySpecHolder().getSpec(target2).addEnable(DependencySpec.True, triggerExpression, condition);
-//								enabledTouched = true;
-//							}
-//							else {
-//								getDependencySpecHolder().getSpec(target2).addOptionEnabled(targetOption2, DependencySpec.True, 
-//										triggerExpression, condition);
-//								optionEnabledTouched = true;
-//							}
-//
-//							
-//							enabled |= true;
-//						}
-//					}
-//					if (optionEnabledTouched) {
-//						getDependencySpecHolder().getSpec(target2).addOptionEnabled(targetOption2, DependencySpec.False, 
-//								DependencySpec.Else);		
-//					}
-//					if (enabledTouched) {
-//						getDependencySpecHolder().getSpec(target2).addEnable(DependencySpec.False, DependencySpec.Else);
-//					}
-//				}
-//				if (enabled && (priority == 0)) {
-//					setBiDirectional(trigger2, target2);
-//				}
-//			}
-//		}
-//		save();
-//	}
-
 	private boolean isMainId(String optionId, String mainId) {
 		return optionId.equals(mainId);
 	}
@@ -521,45 +453,6 @@ public abstract class RestrictionMatrix {
 		this.triggers = tmp;
 		this.initValue();
 	}
-
-//	public void alwaysTrue() {
-//		resetMask();
-//		
-//		for (String trigger : triggers) {
-//			for (String target : targets) {
-//				setBiDirectional(trigger, target);
-//			}
-//		}
-//		save();
-//	}
-
-//	private void setBiDirectional(String trigger, String target) {
-//		DependencySpecRebuilder rebuilder = new DependencySpecRebuilder(this.getDependencySpecHolder(), new PropertyGetter() {
-//			@Override
-//			public RuntimeProperty getProperty(String id) {
-//				return getRuntimeProperty(id);
-//			}
-//
-//			@Override
-//			public RuntimeProperty getProperty(String id, int index) {
-//				return getRuntimeProperty(id, index);
-//			}
-//		});
-//		
-//		rebuilder.handleOneSpec(target);
-//		
-//		DependencySpecHolder holder = this.getDependencySpecHolder();
-//		holder.getSpec(target).clear(DependencySpec.OptionEnable, trigger);
-//		holder.getSpec(target).clear(DependencySpec.Value, trigger);
-//		List<Expression> newTargetSpecs = rebuilder.getNewHolder().getSpec(target).getExpression(DependencySpec.Value);
-////		holder.getSpec(target).getExpression(DependencySpec.Value).addAll(newTargetSpecs);
-//		holder.getSpec(target).addSpecs(DependencySpec.Value, newTargetSpecs);
-//		
-//		holder.getSpec(trigger).clear(DependencySpec.Value, target);
-//		List<Expression> newTriggerSpecs = rebuilder.getNewHolder().getSpec(trigger).getExpression(DependencySpec.Value);
-////		holder.getSpec(trigger).getExpression(DependencySpec.Value).addAll(newTriggerSpecs);
-//		holder.getSpec(trigger).addSpecs(DependencySpec.Value, newTriggerSpecs);
-//	}
 
 	public void add(String id, AxisType type) {
 		if (type.equals(AxisType.X)) {

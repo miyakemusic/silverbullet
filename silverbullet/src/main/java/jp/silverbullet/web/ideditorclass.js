@@ -122,6 +122,8 @@ class IdEditorClass {
 	}
 	
 	update() {
+		this.selectionId = "";
+		this.currentId = "";
 		this.updateMainTable();
 	}
 	
