@@ -444,6 +444,46 @@ class ComboBox extends Widget {
 	}
 }
 
+class ChartMine extends Widget {
+	constructor(widget, parent, divid) {
+		super(widget, parent, divid);
+		
+		$('#' + parent).append('<div id="' + divid + '"></div>');
+		
+		var width = 300;
+		var height = 200;
+		for (var css of widget.css) {
+			if (css.key == "width") {
+				width = css.value;
+			}
+			else if (css.key == "height") {
+				height = css.value;
+			}
+		}
+		this.chart = new MyChart(divid, width, height);
+//		this.chart.setSize($('#' + divid).width(), $('#' + divid).height());
+		this.chart.update();
+	}
+	
+	onUpdateValue(property) {
+		var me = this;
+		var index = 0;
+		if (property.currentValue == 'REQUEST_AGAIN') {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/runtime/getProperty?id=" + me.widget.id + '&index=' + index + '&ext=1001',
+			   success: function(property){
+			   		if (property == null) {
+			   			return;
+			   		}
+					var trace = JSON.parse(property.currentValue);
+ 
+			   }
+			});
+		}	
+	}
+}
+
 class Chart extends Widget {
 	constructor(widget, parent, divid) {
 		super(widget, parent, divid);
@@ -765,7 +805,7 @@ class NewLayout {
 				wrappedWidget = new Button(widget, parentDiv, divid);
 			}
 			else if (widget.type == 'Chart') {	
-				wrappedWidget = new Chart(widget, parentDiv, divid);
+				wrappedWidget = new ChartMine(widget, parentDiv, divid);
 			}
 			else if (widget.type == 'Table') {	
 				wrappedWidget = new Table(widget, parentDiv, divid);
