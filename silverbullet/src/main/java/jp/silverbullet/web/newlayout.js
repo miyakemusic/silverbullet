@@ -461,17 +461,12 @@ class ChartMine extends Widget {
 			}
 		}
 		this.chart = new MyChart(divid, width, height);
-//		this.chart.setSize($('#' + divid).width(), $('#' + divid).height());
-//		this.chart.update();
 	
 	}
 	
 	onUpdateValue(property) {
 		var me = this;
 
-//		if (this.timeoutid != null) {
-//			clearTimeout(this.timeoutid);
-//		}
 		this.timeoutid = setTimeout(updateChart, 10);
 		
 		function updateChart() {			
@@ -550,7 +545,6 @@ class Table extends Widget {
 
 		this.headers = [];
 		
-//		this.tableid = 'table' + this.divid;
 		$('#' + this.parent).append('<div id="' + this.divid + '"></div>');
 
 		var headers = ['COL#1', 'COL#2', 'COL#3', 'COL#4'];
@@ -589,6 +583,42 @@ class Table extends Widget {
 	}
 }
 
+class Table2 extends Widget {
+	constructor(widget, parent, divid) {
+		super(widget, parent, divid);
+		
+		$('#' + this.parent).append('<div id="' + this.divid + '"></div>');
+		$('#' + this.divid).css('font', 'inherit');
+		
+		var me = this;
+		this.table = new JsMyTable2(this.divid,
+			function() { // row count
+				return me.data.headers.length;
+			},
+			function() { // col count
+				return me.data.headers.length;
+			},
+			function(col) { // title
+				return me.data.headers[col];
+			},
+			function(row, col) { // value
+				return me.data.data[row][col];
+			}
+		);
+	}
+	
+	onUpdateValue(property) {
+		if (property.currentValue == '') {
+			return;
+		}
+		this.data = JSON.parse(property.currentValue);
+		
+		if (this.data.newFlag) {
+			this.table.build();
+		}
+		this.table.update();
+	}
+}
 
 class NewLayout {
 	constructor(div) {
@@ -823,7 +853,7 @@ class NewLayout {
 				wrappedWidget = new ChartMine(widget, parentDiv, divid);
 			}
 			else if (widget.type == 'Table') {	
-				wrappedWidget = new Table(widget, parentDiv, divid);
+				wrappedWidget = new Table2(widget, parentDiv, divid);
 			}					
 			else if (widget.type == 'Image') {	
 				wrappedWidget = new SbImage(widget, parentDiv, divid);

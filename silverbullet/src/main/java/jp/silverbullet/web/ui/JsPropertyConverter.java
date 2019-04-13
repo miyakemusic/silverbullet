@@ -41,7 +41,7 @@ public class JsPropertyConverter {
 					if (property.getCurrentValue().isEmpty()) {
 						return ret;
 					}
-					ChartContent chartContent = (ChartContent)StaticInstances.getInstance().blobStore.get(property.getId());
+					ChartContent chartContent = (ChartContent)StaticInstances.getInstance().getBuilderModel().getBlobStore().get(property.getId());
 					
 //					ChartContent chartContent = new ObjectMapper().readValue(property.getCurrentValue(), ChartContent.class);
 					int point = Integer.valueOf(ext);

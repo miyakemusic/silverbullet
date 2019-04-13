@@ -17,7 +17,6 @@ public class StaticInstances {
 	
 	private List<BuilderModelImpl> builderModels = new ArrayList<>();
 	private String currentFilename = "";
-	public static BlobStore blobStore = new BlobStore();
 	
 	public static StaticInstances getInstance() {
 		if (instance == null) {

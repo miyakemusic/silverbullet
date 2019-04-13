@@ -51,6 +51,7 @@ public class BuilderModelImpl {
 	
 	private RegisterController registerController = new RegisterController();
 	private RuntimeRegisterMap runtimeRegisterMap = new RuntimeRegisterMap();
+	private BlobStore blobStore = new BlobStore();
 	
 	private RegisterAccessor currentRegisterAccessor = runtimeRegisterMap;
 	private RestrictionMatrix restrictionMatrix = new RestrictionMatrix() {
@@ -112,6 +113,12 @@ public class BuilderModelImpl {
 		
 		public void requestChange(String id, int index, String value) throws RequestRejectedException {
 			getSequencer().requestChange(id, index, value);
+		}
+
+		@Override
+		public void requestChange(String id, Object blobData, String name) throws RequestRejectedException {
+			//getSequencer().requestChange(id, name);
+			System.err.println("requestChange blob");
 		}
 	};
 	
@@ -182,6 +189,11 @@ public class BuilderModelImpl {
 			
 			protected RegisterAccessor getRegisterAccessor() {
 				return currentRegisterAccessor;
+			}
+
+			@Override
+			protected BlobStore getBlobStore() {
+				return blobStore;
 			}
 		};
 
@@ -463,6 +475,10 @@ public class BuilderModelImpl {
 
 	public RestrictionMatrix getDependencyDesigner() {
 		return this.restrictionMatrix;
+	}
+
+	public BlobStore getBlobStore() {
+		return blobStore;
 	}
 
 }

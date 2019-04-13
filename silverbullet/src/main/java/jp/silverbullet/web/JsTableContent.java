@@ -10,6 +10,7 @@ public class JsTableContent {
 
 	private List<String> headers;
 	private List<List<String>> data = new ArrayList<>();
+	private boolean newFlag;
 	
 	public void setHeaders(List<String> asList) {
 		this.headers= asList;
@@ -25,6 +26,14 @@ public class JsTableContent {
 
 	public List<List<String>> getData() {
 		return data;
+	}
+
+	public boolean isNewFlag() {
+		return newFlag;
+	}
+
+	public void setNewFlag(boolean newFlag) {
+		this.newFlag = newFlag;
 	}
 
 }

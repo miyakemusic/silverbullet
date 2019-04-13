@@ -44,12 +44,7 @@ class EditableText {
 		});	
 		
 		function setLabelValue(value) {
-//			if (value == '') {
-//				$('#' + labelId).text('<click to edit>');
-//			}
-//			else {
-				$('#' + labelId).text(value);
-//			}
+			$('#' + labelId).text(value);
 		}
 	}
 }
@@ -205,9 +200,7 @@ class JsMyTable {
 				var checked = me.colDef(k, row, 'checked');
 	
 				$('#' + checkId).prop('checked', checked);
-//				new EditableText(checkNameId, me.colDef(k, row, 'name'), function(value) {
-//					me.listenerChange(row, k, value);
-//				});
+
 				$('#' + checkId).click(function() {
 					if (me.checkListener != null) {
 						me.checkListener(k, row, $(this).prop('checked'));
@@ -234,5 +227,84 @@ class JsMyTable {
 		for (var checkbox of this.allChecks) {
 			$('#' + checkbox.id).prop('checked', this.colDef(checkbox.k, checkbox.row, 'checked'));
 		}
+	}
+}
+
+class JsMyTable2 {
+	constructor(div, rowCount, colCount, header, value) {
+		this.div = div;
+		this.getRowCount = rowCount;
+		this.getColCount = colCount;
+		this.getHeader = header;
+		this.getValue = value;
+		
+		this.tableId = div + "_table";
+		$('#' + div).append('<table class="mytable" id="' + this.tableId + '"><thead class="scrollHead"></thead><tbody class="scrollBody"></tbody></table>');
+
+		$('.scrollBody').css("height", "100%");
+		
+	}
+	
+	
+	buildHeader() {
+		$('#' + this.tableId + ' thead').empty();
+
+		$('#' + this.tableId + ' > thead').append($('<tr>'));
+		for (var col = 0; col < this.getColCount(); col++) {
+			var headerId = "H" + col;
+			$('#' + this.tableId + ' > thead tr:last').append('<th><div id="' +  headerId + '"></div></th>');
+		}
+	}
+	updateHeader() {
+		for (var col = 0; col < this.getColCount(); col++) {
+			var headerId = "H" + col;
+			$('#' + headerId).text(this.getHeader(col));
+		}
+	}
+	
+	buildBody() {
+		$('#' + this.tableId + ' tbody').empty();
+		
+		var tbody = $('#' + this.tableId).find('tbody');
+
+		for (var row = 0; row < this.getRowCount(); row++) {
+			var tr = tbody.append($('<tr>'));
+			for (var col = 0; col < this.getColCount(); col++) {
+				var id = 'R' + row + 'C' + col;
+				tr.append('<td><label id="' + id + '"></lable></td>');
+			}
+		}
+	}
+	
+	updateBody() {
+		for (var row = 0; row < this.getRowCount(); row++) {
+			for (var col = 0; col < this.getColCount(); col++) {
+				var id = 'R' + row + 'C' + col;
+				$('#' + id).text(this.getValue(row, col));
+			}
+		}		
+	}
+	
+	build() {
+		this.buildHeader();
+		this.buildBody();
+		var width = $('#' + this.tableId).width();
+		var headerHeight = $('#' + this.tableId).find('thead').height();
+		var bodyHeight = $('#' + this.tableId).find('tbody').height();
+		var tableHeight = $('#' + this.div).height();
+		
+		if (width == 0)return;
+		var colWidth = (width -65) / this.getColCount();
+		$('#' + this.tableId + ' th,td').css("width", colWidth + "px");
+		var bodyHeight = tableHeight - headerHeight;
+
+		$('.scrollBody').css("height", (tableHeight - headerHeight) + "px");
+	}
+	
+	update() {
+		this.updateHeader();
+		this.updateBody();
+				
+		this.touched = true;
 	}
 }

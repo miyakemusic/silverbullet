@@ -14,6 +14,8 @@ class MyChart {
 		this.offsetTop = 15;
 		this.offsetRight = 15;
 		this.offsetBottom = 40;
+		
+		this.update();
 	}
 	
 	setSize(width, height) {
@@ -32,15 +34,6 @@ class MyChart {
 		ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
 		ctx.lineWidth = 1.0;
-				
-		var ymin = parseFloat(data.ymin);
-		var ymax = parseFloat(data.ymax);
-		var stepY = (ymax - ymin) / this.grids;
-		var xmin = parseFloat(data.xmin);
-		var xmax = parseFloat(data.xmax);
-		var points = data.y.length;
-		var stepX = (xmax - xmin)/points;
-		
 		ctx.beginPath();
 		ctx.rect(this.offsetLeft, this.offsetTop, this.canvas.width - this.offsetLeft - this.offsetRight, this.canvas.height - this.offsetTop - this.offsetBottom);
 		ctx.stroke();
@@ -62,6 +55,19 @@ class MyChart {
 		}
 		ctx.closePath();
 		ctx.stroke();
+		
+		if (data == null) {
+			return;
+		}
+						
+		var ymin = parseFloat(data.ymin);
+		var ymax = parseFloat(data.ymax);
+		var stepY = (ymax - ymin) / this.grids;
+		var xmin = parseFloat(data.xmin);
+		var xmax = parseFloat(data.xmax);
+		var points = data.y.length;
+		var stepX = (xmax - xmin)/points;
+		
 		ctx.setLineDash([0]);
 		
 		ctx.font = "30px 'Monotype Corsiva'";

@@ -1,13 +1,13 @@
 package jp.silverbullet.sequncer;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import javax.swing.SwingUtilities;
-
+import jp.silverbullet.BlobStore;
+import jp.silverbullet.dependency2.ChangedItemValue;
 import jp.silverbullet.dependency2.CommitListener;
 import jp.silverbullet.dependency2.DependencyEngine;
 import jp.silverbullet.dependency2.DependencyListener;
@@ -60,6 +60,12 @@ public abstract class Sequencer {
 		public RuntimeProperty getProperty(String id) {
 			return getPropertiesStore().get(id);
 		}
+
+		@Override
+		public void requestChange(String id, Object blobData, String name) throws RequestRejectedException {
+			storeBlob(id, blobData);
+			requestChange(id, name);
+		}
 		
 	};
 			
@@ -67,6 +73,11 @@ public abstract class Sequencer {
 		requestChange(id, 0, value);
 	}
 	
+	private void storeBlob(String id, Object blobData) {
+		getBlobStore().put(id, blobData);
+	}
+	
+	protected abstract BlobStore getBlobStore();
 	public void requestChange(String id, Integer index, String value) throws RequestRejectedException {
 		requestChange(id, index, value, new CommitListener() {
 			@Override
