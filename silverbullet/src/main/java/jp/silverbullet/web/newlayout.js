@@ -462,25 +462,40 @@ class ChartMine extends Widget {
 		}
 		this.chart = new MyChart(divid, width, height);
 //		this.chart.setSize($('#' + divid).width(), $('#' + divid).height());
-		this.chart.update();
+//		this.chart.update();
+	
 	}
 	
 	onUpdateValue(property) {
 		var me = this;
-		var index = 0;
-		if (property.currentValue == 'REQUEST_AGAIN') {
-			$.ajax({
-			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/runtime/getProperty?id=" + me.widget.id + '&index=' + index + '&ext=1001',
-			   success: function(property){
-			   		if (property == null) {
-			   			return;
-			   		}
-					var trace = JSON.parse(property.currentValue);
- 
-			   }
-			});
-		}	
+
+//		if (this.timeoutid != null) {
+//			clearTimeout(this.timeoutid);
+//		}
+		this.timeoutid = setTimeout(updateChart, 10);
+		
+		function updateChart() {			
+			var widget = me.widget;
+			var index = 0;
+			var chart = me.chart;
+			
+			if (property.currentValue == 'REQUEST_AGAIN') {
+				$.ajax({
+				   type: "GET", 
+				   url: "http://" + window.location.host + "/rest/runtime/getProperty?id=" + widget.id + '&index=' + index + '&ext=' + chart.getDataPoints(),
+				   success: function(property){
+				   		if (property == null) {
+				   			return;
+				   		}
+						var trace = JSON.parse(property.currentValue);
+						if (trace != null) {
+	 						me.chart.update(trace);
+	 					}
+				   }
+				});
+			}	
+
+		}
 	}
 }
 

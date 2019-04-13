@@ -42,7 +42,6 @@ public class BuilderModelImpl {
 	private static final String DEPENDENCYSPEC3_XML = "dependencyspec3.xml";
 	private static final String UIBUILDER = "uibuilder.json";
 
-//	private List<String> selectedId;
 	private RuntimePropertyStore store;
 	private Sequencer sequencer;
 	private PropertyHolder2 propertiesHolder2 = new PropertyHolder2();
@@ -52,6 +51,7 @@ public class BuilderModelImpl {
 	
 	private RegisterController registerController = new RegisterController();
 	private RuntimeRegisterMap runtimeRegisterMap = new RuntimeRegisterMap();
+	
 	private RegisterAccessor currentRegisterAccessor = runtimeRegisterMap;
 	private RestrictionMatrix restrictionMatrix = new RestrictionMatrix() {
 

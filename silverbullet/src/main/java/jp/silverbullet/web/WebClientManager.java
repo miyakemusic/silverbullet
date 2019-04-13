@@ -42,16 +42,7 @@ public class WebClientManager {
 
 			@Override
 			public void onCompleted(String message) {
-				try {
-					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("VALUES", message));
-					WebSocketBroadcaster.getInstance().sendMessage(str);
-				} catch (JsonGenerationException e) {
-					e.printStackTrace();
-				} catch (JsonMappingException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				WebSocketBroadcaster.getInstance().sendMessageAsync("VALUES", message);
 			}
 
 			@Override

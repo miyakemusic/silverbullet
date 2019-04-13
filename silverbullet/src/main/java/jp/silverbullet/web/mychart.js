@@ -7,6 +7,13 @@ class MyChart {
 		this.canvas.height = height*2;
 		this.canvas.style.width = width + "px";
 		this.canvas.style.height = height + "px";
+		this.ctx = this.canvas.getContext('2d');
+		
+		this.grids = 10;
+		this.offsetLeft = 100;
+		this.offsetTop = 15;
+		this.offsetRight = 15;
+		this.offsetBottom = 40;
 	}
 	
 	setSize(width, height) {
@@ -14,42 +21,44 @@ class MyChart {
 		$('#' + this.chartId).height(height);
 	}
 	
-	update() {
-		var ctx = this.canvas.getContext('2d');
-//		ctx.beginPath();
+	getDataPoints() {
+		return this.canvas.width - this.offsetLeft - this.offsetRight;
+	}
+	
+	update(data) {
+		var ctx = this.ctx;
+		
+		ctx.strokeStyle = 'rgb(0, 0, 0)';
+		ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
 		ctx.lineWidth = 1.0;
-		
-		var grids = 10;
-		var offsetLeft = 100;
-		var offsetTop = 15;
-		var offsetRight = 15;
-		var offsetBottom = 40;
-		
-		var ymin = -2;
-		var ymax = 2;
-		var stepY = (ymax - ymin) / grids;
-		var xmin = 1500;
-		var xmax = 1600;
-		var points = 100;
+				
+		var ymin = parseFloat(data.ymin);
+		var ymax = parseFloat(data.ymax);
+		var stepY = (ymax - ymin) / this.grids;
+		var xmin = parseFloat(data.xmin);
+		var xmax = parseFloat(data.xmax);
+		var points = data.y.length;
 		var stepX = (xmax - xmin)/points;
-		ctx.rect(offsetLeft, offsetTop, this.canvas.width - offsetLeft - offsetRight, this.canvas.height - offsetTop - offsetBottom);
+		
+		ctx.beginPath();
+		ctx.rect(this.offsetLeft, this.offsetTop, this.canvas.width - this.offsetLeft - this.offsetRight, this.canvas.height - this.offsetTop - this.offsetBottom);
 		ctx.stroke();
 		
-		var xstep = (this.canvas.width - offsetLeft - offsetRight) / grids;
-		var ystep = (this.canvas.height - offsetTop - offsetBottom) / grids;
+		var xstep = (this.canvas.width - this.offsetLeft - this.offsetRight) / this.grids;
+		var ystep = (this.canvas.height - this.offsetTop - this.offsetBottom) / this.grids;
 		
 		ctx.setLineDash([1,5]);
 		ctx.beginPath();
 		
-		for (var x = 1; x < grids ; x++) {
-			ctx.moveTo(offsetLeft + x * xstep, offsetTop);
-			ctx.lineTo(offsetLeft + x * xstep, this.canvas.height - offsetBottom);
+		for (var x = 1; x < this.grids ; x++) {
+			ctx.moveTo(this.offsetLeft + x * xstep, this.offsetTop);
+			ctx.lineTo(this.offsetLeft + x * xstep, this.canvas.height - this.offsetBottom);
 			
 		}
-		for (var y = 1; y < grids; y++) {
-			ctx.moveTo(offsetLeft, offsetTop + y * ystep);
-			ctx.lineTo(this.canvas.width - offsetRight, offsetTop + y * ystep);
+		for (var y = 1; y < this.grids; y++) {
+			ctx.moveTo(this.offsetLeft, this.offsetTop + y * ystep);
+			ctx.lineTo(this.canvas.width - this.offsetRight, this.offsetTop + y * ystep);
 		}
 		ctx.closePath();
 		ctx.stroke();
@@ -58,31 +67,31 @@ class MyChart {
 		ctx.font = "30px 'Monotype Corsiva'";
 		ctx.textBaseline = "top";
 		ctx.textAlign = "start";
-		ctx.fillText(xmin + 0 * stepX, offsetLeft, this.canvas.height - offsetBottom);
+		ctx.fillText(xmin, this.offsetLeft, this.canvas.height - this.offsetBottom);
 		ctx.textAlign = "center";
-		ctx.fillText(xmin + 5 * stepX, offsetLeft + 5 * xstep, this.canvas.height - offsetBottom);
+		ctx.fillText((xmin + xmax)/2.0, this.offsetLeft + 5 * xstep, this.canvas.height - this.offsetBottom);
 		ctx.textAlign = "end";
-		ctx.fillText(xmin + 10 * stepX, offsetLeft + 10 * xstep, this.canvas.height - offsetBottom);
+		ctx.fillText(xmax, this.offsetLeft + 10 * xstep, this.canvas.height - this.offsetBottom);
 	
 		ctx.textBaseline = "top";
-		ctx.fillText(ymin + 10 * stepY, offsetLeft - 10, offsetTop + 0 * ystep);
+		ctx.fillText(ymax, this.offsetLeft - 10, this.offsetTop + 0 * ystep);
 		ctx.textBaseline = "middle";
-		ctx.fillText(ymin + 5 * stepY, offsetLeft - 10, offsetTop + 5 * ystep);
+		ctx.fillText((ymin+ymax)/2.0, this.offsetLeft - 10, this.offsetTop + 5 * ystep);
 		ctx.textBaseline = "bottom";
-		ctx.fillText(ymin + 0 * stepY, offsetLeft - 10, offsetTop + 10 * ystep);
+		ctx.fillText(ymin, this.offsetLeft - 10, this.offsetTop + 10 * ystep);
 		
-		var xres = (this.canvas.width - offsetLeft - offsetRight) / (xmax - xmin);
-		var yres = (this.canvas.height - offsetTop - offsetBottom) / (ymax - ymin);
+		var xres = (this.canvas.width - this.offsetLeft - this.offsetRight) / (data.y.length);
+		var yres = (this.canvas.height - this.offsetTop - this.offsetBottom) / (ymax - ymin);
 		
 		var ix = 0;
 		var iy = 0;
 		
 		ctx.beginPath();
 		ctx.strokeStyle = 'rgb(255, 0, 0)';
-		for (var x = xmin; x < xmax; x+= 0.1) {
-			var y = Math.sin(x);
-			ix = (x - xmin) * xres + offsetLeft;
-			iy = y * yres + offsetTop + (this.canvas.height - offsetTop - offsetBottom)/2;
+		var yy = this.offsetTop + (this.canvas.height - this.offsetTop - this.offsetBottom)/2;
+		for (var i = 0; i < data.y.length; i++) {
+			ix = i * xres + this.offsetLeft;
+			iy = parseInt(data.y[i]) * yres + yy;
 			
 			ctx.lineTo(ix, iy);
 		}

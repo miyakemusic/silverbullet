@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jp.silverbullet.StaticInstances;
 import jp.silverbullet.property2.ChartContent;
 import jp.silverbullet.property2.ListDetailElement;
 import jp.silverbullet.property2.RuntimeProperty;
@@ -40,7 +41,9 @@ public class JsPropertyConverter {
 					if (property.getCurrentValue().isEmpty()) {
 						return ret;
 					}
-					ChartContent chartContent = new ObjectMapper().readValue(property.getCurrentValue(), ChartContent.class);
+					ChartContent chartContent = (ChartContent)StaticInstances.getInstance().blobStore.get(property.getId());
+					
+//					ChartContent chartContent = new ObjectMapper().readValue(property.getCurrentValue(), ChartContent.class);
 					int point = Integer.valueOf(ext);
 					int allSize = chartContent.getY().length;
 					double step = (double)allSize / (double)point;
@@ -49,6 +52,8 @@ public class JsPropertyConverter {
 						y[i] = chartContent.getY()[(int)((double)i*step)];
 					}
 					chartContent.setY(y);
+					
+					
 					ret.setCurrentValue(new ObjectMapper().writeValueAsString(chartContent));
 				} catch (JsonParseException e) {
 					e.printStackTrace();
