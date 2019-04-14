@@ -24,7 +24,7 @@ public class RuntimeResource {
 		if (property == null) {
 			System.out.println();
 		}
-		return JsPropertyConverter.convert(property, ext);
+		return JsPropertyConverter.convert(property, ext, StaticInstances.getInstance().getBuilderModel().getBlobStore());
 	}
 
 	@GET

@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import jp.silverbullet.BlobStore;
 import jp.silverbullet.dependency2.ChangedItemValue;
 import jp.silverbullet.dependency2.DependencyEngine;
 import jp.silverbullet.dependency2.DependencySpecHolder;
@@ -95,6 +96,12 @@ public class SequencerTest {
 
 			@Override
 			protected RegisterAccessor getRegisterAccessor() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			protected BlobStore getBlobStore() {
 				// TODO Auto-generated method stub
 				return null;
 			}

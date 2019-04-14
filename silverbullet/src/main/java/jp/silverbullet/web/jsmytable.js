@@ -251,15 +251,19 @@ class JsMyTable2 {
 
 		$('#' + this.tableId + ' > thead').append($('<tr>'));
 		for (var col = 0; col < this.getColCount(); col++) {
-			var headerId = "H" + col;
+			var headerId = this.createCellId(col);//"H" + col;
 			$('#' + this.tableId + ' > thead tr:last').append('<th><div id="' +  headerId + '"></div></th>');
 		}
 	}
 	updateHeader() {
 		for (var col = 0; col < this.getColCount(); col++) {
-			var headerId = "H" + col;
+			var headerId = this.createCellId(col);//"H" + col;
 			$('#' + headerId).text(this.getHeader(col));
 		}
+	}
+	
+	createCellId(col, row) {
+		return this.div + "R" + row + "C" + col;
 	}
 	
 	buildBody() {
@@ -270,7 +274,7 @@ class JsMyTable2 {
 		for (var row = 0; row < this.getRowCount(); row++) {
 			var tr = tbody.append($('<tr>'));
 			for (var col = 0; col < this.getColCount(); col++) {
-				var id = 'R' + row + 'C' + col;
+				var id = this.createCellId(col, row);//'R' + row + 'C' + col;
 				tr.append('<td><label id="' + id + '"></lable></td>');
 			}
 		}
@@ -279,7 +283,7 @@ class JsMyTable2 {
 	updateBody() {
 		for (var row = 0; row < this.getRowCount(); row++) {
 			for (var col = 0; col < this.getColCount(); col++) {
-				var id = 'R' + row + 'C' + col;
+				var id = this.createCellId(col, row);//'R' + row + 'C' + col;
 				$('#' + id).text(this.getValue(row, col));
 			}
 		}		
@@ -298,7 +302,7 @@ class JsMyTable2 {
 		$('#' + this.tableId + ' th,td').css("width", colWidth + "px");
 		var bodyHeight = tableHeight - headerHeight;
 
-		$('.scrollBody').css("height", (tableHeight - headerHeight) + "px");
+		$('.scrollBody').css("height", (tableHeight - headerHeight - 20) + "px");
 	}
 	
 	update() {

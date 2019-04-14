@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jp.silverbullet.BlobStore;
 import jp.silverbullet.property2.ChartContent;
 import jp.silverbullet.property2.ChartContent.ChartType;
 import jp.silverbullet.property2.PropertyFactory;
@@ -27,9 +28,10 @@ public class JsPropertyTest {
 		holder.addProperty(factory.create("ID_BOOLEAN", PropertyType2.Boolean));
 		holder.addProperty(factory.create("ID_TEXT", PropertyType2.Text));
 		holder.addProperty(factory.create("ID_CHART", PropertyType2.Chart));
+		BlobStore blobStore = new BlobStore();
 		
 		{
-			JsProperty prop = JsPropertyConverter.convert(store.get("ID_LIST"), null);
+			JsProperty prop = JsPropertyConverter.convert(store.get("ID_LIST"), null, blobStore);
 			assertEquals("ID_LIST", prop.getId());
 			assertEquals("ID_LIST_A", prop.getCurrentSelectionId());
 			assertEquals("list", prop.getTitle());
@@ -43,7 +45,7 @@ public class JsPropertyTest {
 		}
 		
 		{
-			JsProperty prop = JsPropertyConverter.convert(store.get("ID_NUMERIC"), null);
+			JsProperty prop = JsPropertyConverter.convert(store.get("ID_NUMERIC"), null, blobStore);
 			assertEquals("ID_NUMERIC", prop.getId());
 			assertEquals("123.00", prop.getCurrentValue());
 			assertEquals("number", prop.getTitle());
@@ -57,9 +59,11 @@ public class JsPropertyTest {
 			content.setYmin("0");
 			content.setY(Arrays.asList("1", "2", "3", "4", "5").toArray(new String[0]));
 			store.get("ID_CHART").setCurrentValue(new ObjectMapper().writeValueAsString(content));
-			JsProperty prop = JsPropertyConverter.convert(store.get("ID_CHART"), null);
+			JsProperty prop = JsPropertyConverter.convert(store.get("ID_CHART"), null, blobStore);
 			assertEquals("ID_CHART", prop.getId());
-			prop = JsPropertyConverter.convert(store.get("ID_CHART"), "2");
+			
+			blobStore.put("ID_CHART", content);
+			prop = JsPropertyConverter.convert(store.get("ID_CHART"), "2", blobStore);
 			
 			assertEquals("ID_CHART", prop.getId());
 		}

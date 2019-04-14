@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jp.silverbullet.BlobStore;
 import jp.silverbullet.StaticInstances;
 import jp.silverbullet.property2.ChartContent;
 import jp.silverbullet.property2.ListDetailElement;
@@ -15,7 +16,7 @@ import jp.silverbullet.property2.RuntimeProperty;
 
 public class JsPropertyConverter {
 
-	public static JsProperty convert(RuntimeProperty property, String ext) {
+	public static JsProperty convert(RuntimeProperty property, String ext, BlobStore blobStore) {
 		JsProperty ret = new JsProperty();
 		ret.setId(property.getId());
 		ret.setTitle(property.getTitle());
@@ -41,7 +42,7 @@ public class JsPropertyConverter {
 					if (property.getCurrentValue().isEmpty()) {
 						return ret;
 					}
-					ChartContent chartContent = (ChartContent)StaticInstances.getInstance().getBuilderModel().getBlobStore().get(property.getId());
+					ChartContent chartContent = (ChartContent)blobStore.get(property.getId());
 					
 //					ChartContent chartContent = new ObjectMapper().readValue(property.getCurrentValue(), ChartContent.class);
 					int point = Integer.valueOf(ext);
@@ -80,7 +81,7 @@ public class JsPropertyConverter {
 	
 	public static List<JsProperty> convert(List<RuntimeProperty> allProperties) {
 		List<JsProperty> ret = new ArrayList<>();
-		allProperties.forEach(prop -> ret.add(convert(prop, "")));
+		allProperties.forEach(prop -> ret.add(convert(prop, "", null)));
 		return ret;
 	}
 }
