@@ -163,7 +163,7 @@ public class BuilderModelImpl {
 	private List<RegisterAccessor> simulators;
 	private String sourceInfo;
 	private RegisterAccessor hardwareAccessor;
-	private UiBuilder uiBuilder  = new UiBuilder();
+	private UiBuilder uiBuilder  = null;
 
 	public enum RegisterTypeEnum {
 		Simulator,
@@ -225,7 +225,9 @@ public class BuilderModelImpl {
 		restrictionMatrix.load(folder);
 		
 		this.uiBuilder = this.load(UiBuilder.class, folder + "/" + UIBUILDER);
-		this.uiBuilder.nameAll();
+		if (this.uiBuilder != null) {
+			this.uiBuilder.nameAll();
+		}
 	}
 
 	public void createDependencyEngine() {
@@ -465,8 +467,10 @@ public class BuilderModelImpl {
 	}
 
 	public void setUiBuilder(UiBuilder ui) {
-		ui.addListener(this.uiBuilder.getListener());
-		this.uiBuilder = ui;
+		if (this.uiBuilder == null) {
+			this.uiBuilder = ui;
+			
+		}
 	}
 
 	public UiBuilder getUiBuilder() {

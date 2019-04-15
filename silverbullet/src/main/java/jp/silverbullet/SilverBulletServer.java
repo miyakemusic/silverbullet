@@ -7,6 +7,7 @@ import jp.silverbullet.sequncer.UserSequencer;
 import jp.silverbullet.web.BuilderServer;
 import jp.silverbullet.web.BuilderServerListener;
 import jp.silverbullet.web.WebClientManager;
+import jp.silverbullet.web.ui.part2.Pane;
 import jp.silverbullet.web.ui.part2.UiBuilder;
 
 public abstract class SilverBulletServer {
@@ -17,7 +18,21 @@ public abstract class SilverBulletServer {
 		StaticInstances.getInstance().createInstances(getInstanceCount(), Thread.currentThread().getId());
 		StaticInstances.getInstance().load(filename);
 
+		StaticInstances.getInstance().getBuilderModels().forEach(builderModel -> {
+			builderModel.setUiBuilder(getUi());
+			onStart(builderModel);
+			builderModel.setSimulators(getSimulators());
+			builderModel.setSourceInfo(getBaseFolderAndPackage());
+			builderModel.setHardwareAccessor(getHardwareAccessor(builderModel));
+			getUserSequencers(builderModel).forEach(sequencer -> {
+				builderModel.getSequencer().addUserSequencer(sequencer);
+			});	
+
+		});	
+		new WebClientManager();
+		
 		startWebServer(Integer.valueOf(port));
+		
 	}
 
 	protected abstract String getDefaultFilename();
@@ -26,7 +41,13 @@ public abstract class SilverBulletServer {
 	protected abstract String getBaseFolderAndPackage();
 	protected abstract RegisterAccessor getHardwareAccessor(BuilderModelImpl model);
 	protected abstract List<UserSequencer> getUserSequencers(BuilderModelImpl model);
-	protected abstract UiBuilder getUi();
+	
+	protected UiBuilder getUi() {
+		UiBuilder builder = new UiBuilder();
+		Pane pane = builder.getRootPane();
+		pane.css("width", "800").css("height", "600").css("top", "150px").css("border-style", "dashed").css("border-width", "1px");
+		return builder;
+	}
 	
 	protected int getInstanceCount() {
 		// currently only one instance is supported
@@ -34,23 +55,11 @@ public abstract class SilverBulletServer {
 	}
 	
 	protected void startWebServer(Integer port) {
-		new WebClientManager();
+		
 		new BuilderServer(port, new BuilderServerListener() {
 			@Override
 			public void onStarted() {
-				StaticInstances.getInstance().getBuilderModels().forEach(builderModel -> {
-					onStart(builderModel);
-					builderModel.setSimulators(getSimulators());
-					builderModel.setSourceInfo(getBaseFolderAndPackage());
-					builderModel.setHardwareAccessor(getHardwareAccessor(builderModel));
-					getUserSequencers(builderModel).forEach(sequencer -> {
-						builderModel.getSequencer().addUserSequencer(sequencer);
-					});	
-					
-					if (getUi() != null) {
-						builderModel.setUiBuilder(getUi());
-					}
-				});				
+			
 			}
 		});
 	}
