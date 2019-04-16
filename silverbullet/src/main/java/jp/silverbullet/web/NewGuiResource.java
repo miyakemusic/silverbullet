@@ -9,6 +9,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import jp.silverbullet.SilverBulletServer;
 import jp.silverbullet.StaticInstances;
 import jp.silverbullet.web.ui.part2.UiBuilder;
 import jp.silverbullet.web.ui.part2.WidgetGeneratorHelper;
@@ -23,21 +24,21 @@ public class NewGuiResource {
 	@Path("/getDesign")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public UiBuilder getDesign() {
-		return StaticInstances.getInstance().getBuilderModel().getUiBuilder();
+		return SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder();
 	}	
 	
 	@GET
 	@Path("/getWidget")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public Pane getWidget(@QueryParam("divid") final String divid) {
-		return StaticInstances.getInstance().getBuilderModel().getUiBuilder().getWidget(divid);
+		return SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().getWidget(divid);
 	}	
 	
 	@GET
 	@Path("/setSize")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setSize(@QueryParam("divid") final String divid, @QueryParam("width") final String width, @QueryParam("height") final String height) {
-		Pane widget = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getWidget(divid);
+		Pane widget = SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().getWidget(divid);
 		widget.css("width", width).css("height", height);
 		widget.fireLayoutChange();
 		return "OK";
@@ -47,7 +48,7 @@ public class NewGuiResource {
 	@Path("/setCss")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setCss(@QueryParam("divid") final String divid, @QueryParam("key") final String key, @QueryParam("value") final String value) {
-		Pane widget = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getWidget(divid);
+		Pane widget = SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().getWidget(divid);
 		widget.css(key, value);
 		widget.fireCssChange(divid, key, value);
 		return "OK";
@@ -57,7 +58,7 @@ public class NewGuiResource {
 	@Path("/setId")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setId(@QueryParam("divid") final String divid, @QueryParam("id") final String id, @QueryParam("subId") final String subId) {
-		Pane widget = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getWidget(divid);
+		Pane widget = SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().getWidget(divid);
 		widget.setId(id, subId);
 		widget.fireIdChange();
 		return "OK";
@@ -67,7 +68,7 @@ public class NewGuiResource {
 	@Path("/setField")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setField(@QueryParam("divid") final String divid, @QueryParam("field") final String field) {
-		Pane widget = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getWidget(divid);
+		Pane widget = SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().getWidget(divid);
 		widget.field(PropertyField.valueOf(field));
 		widget.fireFieldChange();
 		return "OK";
@@ -77,7 +78,7 @@ public class NewGuiResource {
 	@Path("/setLayout")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setLayout(@QueryParam("divid") final String divid, @QueryParam("layout") final String layout) {
-		Pane widget = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getWidget(divid);
+		Pane widget = SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().getWidget(divid);
 		widget.layout(Layout.valueOf(layout));
 		widget.fireLayoutChange();
 		return "OK";
@@ -96,7 +97,7 @@ public class NewGuiResource {
 	@Path("/setWidgetType")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setWidgetType(@QueryParam("divid") final String divid, @QueryParam("type") final String type) {
-		Pane widget = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getWidget(divid);
+		Pane widget = SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().getWidget(divid);
 		widget.setType(type);
 		
 		widget.fireTypeChange();
@@ -108,10 +109,10 @@ public class NewGuiResource {
 	@Path("/addWidget")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String addWidget(@QueryParam("divid") final String divid) {
-		Pane widget = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getWidget(divid);
+		Pane widget = SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().getWidget(divid);
 		widget.createPane(Layout.HORIZONTAL).css("width", "100").css("height", "30");//.css("border-style", "solid");
 		
-		Pane parent = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getParentOf(divid);
+		Pane parent = SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().getParentOf(divid);
 		parent.fireLayoutChange();
 		return "OK";
 	}
@@ -120,8 +121,8 @@ public class NewGuiResource {
 	@Path("/removeWidget")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String removeWidget(@QueryParam("divid") final String divid) {
-		Pane widget = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getWidget(divid);
-		Pane parent = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getParentOf(divid);
+		Pane widget = SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().getWidget(divid);
+		Pane parent = SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().getParentOf(divid);
 		parent.removeChild(widget);
 		parent.fireLayoutChange();
 		return "OK";
@@ -131,8 +132,8 @@ public class NewGuiResource {
 	@Path("/move")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String move(@QueryParam("divid") final String divid, @QueryParam("top") final String top, @QueryParam("left") final String left) {
-		Pane widget = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getWidget(divid);
-		Pane parent = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getParentOf(divid);
+		Pane widget = SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().getWidget(divid);
+		Pane parent = SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().getParentOf(divid);
 		
 		if (parent.layout.equals(Layout.HORIZONTAL)) {
 			int sum = 0;
@@ -168,14 +169,14 @@ public class NewGuiResource {
 	@Path("/changeParent")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String move(@QueryParam("divid") final String divid, @QueryParam("parent") final String parentId) {
-		Pane widget = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getWidget(divid);
-		Pane parent = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getParentOf(divid);
+		Pane widget = SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().getWidget(divid);
+		Pane parent = SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().getParentOf(divid);
 		
 		if (!parent.type.equals(WidgetType.Pane)) {
 			return "OK";
 		}
 		
-		Pane newParent = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getWidget(parentId);
+		Pane newParent = SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().getWidget(parentId);
 		if (newParent.equals(parent) || !newParent.type.equals(WidgetType.Pane)) {
 			return "OK";
 		}
@@ -189,8 +190,8 @@ public class NewGuiResource {
 	@Path("/buttonArray")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String buttonArray(@QueryParam("divid") final String divid) {
-		Pane widget = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getWidget(divid);
-		WidgetGeneratorHelper helper = new WidgetGeneratorHelper(StaticInstances.getInstance().getBuilderModel().getPropertiesHolder2());
+		Pane widget = SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().getWidget(divid);
+		WidgetGeneratorHelper helper = new WidgetGeneratorHelper(SilverBulletServer.getStaticInstance().getBuilderModel().getPropertiesHolder2());
 		helper.generateToggleButton(widget.id, widget);
 		widget.fireLayoutChange();
 		return "OK";
@@ -200,8 +201,8 @@ public class NewGuiResource {
 	@Path("/titledInput")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String titledInput(@QueryParam("divid") final String divid) {
-		Pane widget = StaticInstances.getInstance().getBuilderModel().getUiBuilder().getWidget(divid);
-		WidgetGeneratorHelper helper = new WidgetGeneratorHelper(StaticInstances.getInstance().getBuilderModel().getPropertiesHolder2());
+		Pane widget = SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().getWidget(divid);
+		WidgetGeneratorHelper helper = new WidgetGeneratorHelper(SilverBulletServer.getStaticInstance().getBuilderModel().getPropertiesHolder2());
 		
 		helper.generateTitledSetting(widget.id, widget);
 		widget.id = "";

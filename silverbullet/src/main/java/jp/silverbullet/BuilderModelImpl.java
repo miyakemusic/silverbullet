@@ -117,7 +117,6 @@ public class BuilderModelImpl {
 
 		@Override
 		public void requestChange(String id, Object blobData, String name) throws RequestRejectedException {
-			//getSequencer().requestChange(id, name);
 			System.err.println("requestChange blob");
 		}
 	};

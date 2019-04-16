@@ -8,6 +8,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import jp.silverbullet.SilverBulletServer;
 import jp.silverbullet.StaticInstances;
 import jp.silverbullet.test.TestScriptPresentation;
 import jp.silverbullet.web.ui.JsWidget;
@@ -18,14 +19,14 @@ public class TestResource {
 	@Path("/getTest")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public TestScriptPresentation getTest(@QueryParam("testName") final String testName) {
-		return new TestScriptPresentation(StaticInstances.getInstance().getBuilderModel().getTestRecorder().getResult());
+		return new TestScriptPresentation(SilverBulletServer.getStaticInstance().getBuilderModel().getTestRecorder().getResult());
 	}
 	
 	@GET
 	@Path("/startRecording")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public String startRecording() {
-		StaticInstances.getInstance().getBuilderModel().getTestRecorder().startRecording();
+		SilverBulletServer.getStaticInstance().getBuilderModel().getTestRecorder().startRecording();
 		return "OK";
 	}
 	
@@ -33,7 +34,7 @@ public class TestResource {
 	@Path("/stopRecording")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public String stopRecording() {
-		StaticInstances.getInstance().getBuilderModel().getTestRecorder().stopRecording();
+		SilverBulletServer.getStaticInstance().getBuilderModel().getTestRecorder().stopRecording();
 		return "OK";
 	}
 	
@@ -41,7 +42,7 @@ public class TestResource {
 	@Path("/playBack")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public String playBack() {
-		StaticInstances.getInstance().getBuilderModel().getTestRecorder().playBack();
+		SilverBulletServer.getStaticInstance().getBuilderModel().getTestRecorder().playBack();
 		return "OK";
 	}
 	
@@ -49,7 +50,7 @@ public class TestResource {
 	@Path("/deleteRow")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public String deleteRow(@QueryParam("serial") final long serial) {
-		StaticInstances.getInstance().getBuilderModel().getTestRecorder().remove(serial);
+		SilverBulletServer.getStaticInstance().getBuilderModel().getTestRecorder().remove(serial);
 		return "OK";
 	}
 	
@@ -57,7 +58,7 @@ public class TestResource {
 	@Path("/updateValue")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public String updateValue(@QueryParam("serial") final long serial, @QueryParam("value") final String value) {
-		StaticInstances.getInstance().getBuilderModel().getTestRecorder().updateValue(serial, value);
+		SilverBulletServer.getStaticInstance().getBuilderModel().getTestRecorder().updateValue(serial, value);
 		return "OK";
 	}
 	
@@ -65,7 +66,7 @@ public class TestResource {
 	@Path("/updateExpected")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public String updateExpected(@QueryParam("serial") final long serial, @QueryParam("value") final String value) {
-		StaticInstances.getInstance().getBuilderModel().getTestRecorder().updateExpected(serial, value);
+		SilverBulletServer.getStaticInstance().getBuilderModel().getTestRecorder().updateExpected(serial, value);
 		return "OK";
 	}
 	
@@ -73,8 +74,8 @@ public class TestResource {
 	@Path("/addPropertyTest")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public String addPropertyTest(@QueryParam("div") final String div) {
-		JsWidget widget = StaticInstances.getInstance().getBuilderModel().getUiLayoutHolder().getCurrentUi().getWidget(div);
-		StaticInstances.getInstance().getBuilderModel().getTestRecorder().addPropertyTest(widget.getId());
+		JsWidget widget = SilverBulletServer.getStaticInstance().getBuilderModel().getUiLayoutHolder().getCurrentUi().getWidget(div);
+		SilverBulletServer.getStaticInstance().getBuilderModel().getTestRecorder().addPropertyTest(widget.getId());
 		return "OK";
 	}
 
@@ -82,8 +83,8 @@ public class TestResource {
 	@Path("/addPropertyCommand")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public String addCommand(@QueryParam("div") final String div) {
-		JsWidget widget = StaticInstances.getInstance().getBuilderModel().getUiLayoutHolder().getCurrentUi().getWidget(div);
-		StaticInstances.getInstance().getBuilderModel().getTestRecorder().addPropertyCommand(widget.getId());
+		JsWidget widget = SilverBulletServer.getStaticInstance().getBuilderModel().getUiLayoutHolder().getCurrentUi().getWidget(div);
+		SilverBulletServer.getStaticInstance().getBuilderModel().getTestRecorder().addPropertyCommand(widget.getId());
 		return "OK";
 	}
 	
@@ -91,7 +92,7 @@ public class TestResource {
 	@Path("/addCommand")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public String addCommand(@QueryParam("type") final String type, @QueryParam("target") final String target, @QueryParam("value") final String value, @QueryParam("serial") final String serial) {
-		StaticInstances.getInstance().getBuilderModel().getTestRecorder().addCommand(type, target, value, serial);
+		SilverBulletServer.getStaticInstance().getBuilderModel().getTestRecorder().addCommand(type, target, value, serial);
 		return "OK";
 	}
 	
@@ -99,7 +100,7 @@ public class TestResource {
 	@Path("/moveUp")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public String moveUp(@QueryParam("serial") final long serial) {
-		StaticInstances.getInstance().getBuilderModel().getTestRecorder().moveUp(serial);
+		SilverBulletServer.getStaticInstance().getBuilderModel().getTestRecorder().moveUp(serial);
 		return "OK";
 	}
 	
@@ -107,7 +108,7 @@ public class TestResource {
 	@Path("/moveDown")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public String moveDown(@QueryParam("serial") final long serial) {
-		StaticInstances.getInstance().getBuilderModel().getTestRecorder().moveDown(serial);
+		SilverBulletServer.getStaticInstance().getBuilderModel().getTestRecorder().moveDown(serial);
 		return "OK";
 	}
 	
@@ -115,7 +116,7 @@ public class TestResource {
 	@Path("/save")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public String save(@QueryParam("testName") final String testName) {
-		StaticInstances.getInstance().getBuilderModel().getTestRecorder().save(testName);
+		SilverBulletServer.getStaticInstance().getBuilderModel().getTestRecorder().save(testName);
 		return "OK";
 	}
 	
@@ -123,14 +124,14 @@ public class TestResource {
 	@Path("/getTestList")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<String> getTestList() {
-		return StaticInstances.getInstance().getBuilderModel().getTestRecorder().getTestList();
+		return SilverBulletServer.getStaticInstance().getBuilderModel().getTestRecorder().getTestList();
 	}
 	
 	@GET
 	@Path("/selectTest")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public String selectTest(@QueryParam("testName") final String testName) {
-		StaticInstances.getInstance().getBuilderModel().getTestRecorder().loadTest(testName);
+		SilverBulletServer.getStaticInstance().getBuilderModel().getTestRecorder().loadTest(testName);
 		return "OK";
 	}
 	
@@ -138,7 +139,7 @@ public class TestResource {
 	@Path("/selectRow")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public String selectRow(@QueryParam("serial") final long serial) {
-		StaticInstances.getInstance().getBuilderModel().getTestRecorder().selectRow(serial);
+		SilverBulletServer.getStaticInstance().getBuilderModel().getTestRecorder().selectRow(serial);
 		return "OK";
 	}
 }

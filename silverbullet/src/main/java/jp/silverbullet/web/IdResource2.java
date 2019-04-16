@@ -10,6 +10,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import jp.silverbullet.SilverBulletServer;
 import jp.silverbullet.StaticInstances;
 import jp.silverbullet.property2.PropertyFactory;
 import jp.silverbullet.property2.PropertyType2;
@@ -22,7 +23,7 @@ public class IdResource2 {
 	@Path("/selection")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public JsonTable getSelections(@QueryParam("id") final String id) {
-		JsonTable ret = new WebTableConverter(StaticInstances.getInstance().getBuilderModel().getPropertiesHolder2()).createOptionTable(id);
+		JsonTable ret = new WebTableConverter(SilverBulletServer.getStaticInstance().getBuilderModel().getPropertiesHolder2()).createOptionTable(id);
 		return ret;
 	}
 	
@@ -31,7 +32,7 @@ public class IdResource2 {
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String addNewProperty(@QueryParam("type") final String type) {
 		String id = "ID_" + Calendar.getInstance().getTime().getTime();
-		StaticInstances.getInstance().getBuilderModel().getPropertiesHolder2().addProperty(new PropertyFactory().create(id, PropertyType2.valueOf(type)));
+		SilverBulletServer.getStaticInstance().getBuilderModel().getPropertiesHolder2().addProperty(new PropertyFactory().create(id, PropertyType2.valueOf(type)));
 		return "OK";
 	}
 	
@@ -39,7 +40,7 @@ public class IdResource2 {
 	@Path("/remove")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String remove(@QueryParam("id") final String id) {
-		StaticInstances.getInstance().getBuilderModel().getPropertiesHolder2().remove(id);
+		SilverBulletServer.getStaticInstance().getBuilderModel().getPropertiesHolder2().remove(id);
 		return "OK";
 	}
 	
@@ -49,7 +50,7 @@ public class IdResource2 {
 	public String addNewChoice(@QueryParam("id") final String id) {
 		String optionId = id + "_" + Calendar.getInstance().getTime().getTime();
 		try {
-			StaticInstances.getInstance().getBuilderModel().getPropertiesHolder2().get(id).option(optionId, "", "");
+			SilverBulletServer.getStaticInstance().getBuilderModel().getPropertiesHolder2().get(id).option(optionId, "", "");
 		} catch (Exception e) {
 			return e.toString();
 		}
@@ -60,7 +61,7 @@ public class IdResource2 {
 	@Path("/updateChoice")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public String updateChoice(@QueryParam("id") final String id, @QueryParam("selectionId") final String selectionId, @QueryParam("paramName") final String paramName, @QueryParam("value") final String value) {
-		WebTableConverter converter = new WebTableConverter(StaticInstances.getInstance().getBuilderModel().getPropertiesHolder2());
+		WebTableConverter converter = new WebTableConverter(SilverBulletServer.getStaticInstance().getBuilderModel().getPropertiesHolder2());
 		converter.updateOptionField(id, selectionId, paramName, value);
 		return "OK";
 	}
@@ -69,7 +70,7 @@ public class IdResource2 {
 	@Path("/properties")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public JsonTable test(@QueryParam("type") final String type) {
-		return new WebTableConverter(StaticInstances.getInstance().getBuilderModel().getPropertiesHolder2()).
+		return new WebTableConverter(SilverBulletServer.getStaticInstance().getBuilderModel().getPropertiesHolder2()).
 				createIdTable(PropertyType2.valueOf(type));
 	}
 
@@ -80,7 +81,7 @@ public class IdResource2 {
 			@QueryParam("paramName") final String paramName,  
 			@QueryParam("value") final String value) {
 		
-		WebTableConverter converter = new WebTableConverter(StaticInstances.getInstance().getBuilderModel().getPropertiesHolder2());
+		WebTableConverter converter = new WebTableConverter(SilverBulletServer.getStaticInstance().getBuilderModel().getPropertiesHolder2());
 		converter.updateMainField(id, paramName, value);
 
 		return "OK";
@@ -90,13 +91,13 @@ public class IdResource2 {
 	@Path("/typeNames")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<String> getTypeNames() {
-		return StaticInstances.getInstance().getBuilderModel().getPropertiesHolder2().getTypes();
+		return SilverBulletServer.getStaticInstance().getBuilderModel().getPropertiesHolder2().getTypes();
 	}
 
 	@GET
 	@Path("/ids")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public Set<String> getIds() {
-		return StaticInstances.getInstance().getBuilderModel().getPropertiesHolder2().getAllIds(PropertyType2.NotSpecified);
+		return SilverBulletServer.getStaticInstance().getBuilderModel().getPropertiesHolder2().getAllIds(PropertyType2.NotSpecified);
 	}
 }

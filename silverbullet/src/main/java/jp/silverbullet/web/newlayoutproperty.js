@@ -8,7 +8,7 @@ class NewLayoutProperty {
 		
 		this.widgetId = div + "_widgetId";
 		$('#' + this.mainDiv).append('Widget ID: <label id="' + this.widgetId + '"></label>');
-		
+					
 		this.titleId = div + "_title";
 		$('#' + this.mainDiv).append('<div><button id="' + this.titleId + '"></button></div>');
 			

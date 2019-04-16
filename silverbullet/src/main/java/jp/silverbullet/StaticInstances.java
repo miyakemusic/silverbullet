@@ -6,24 +6,23 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import jp.silverbullet.property2.ChartContent;
 import jp.silverbullet.sourcegenerator.PropertySourceGenerator;
 import jp.silverbullet.sourcegenerator.RegisterSourceGenerator;
 
 public class StaticInstances {
 	public static final String TMP_FOLDER = "./sv_tmp";
 	
-	private static StaticInstances instance;
+//	private static StaticInstances instance;
 	
 	private List<BuilderModelImpl> builderModels = new ArrayList<>();
 	private String currentFilename = "";
-	
-	public static StaticInstances getInstance() {
-		if (instance == null) {
-			instance = new StaticInstances();
-		}
-		return instance;
-	}
+//	
+//	public static StaticInstances getInstance() {
+//		if (instance == null) {
+//			instance = new StaticInstances();
+//		}
+//		return instance;
+//	}
 		
 	public BuilderModelImpl getBuilderModel(int index) {
 		return builderModels.get(index);

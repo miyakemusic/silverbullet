@@ -6,6 +6,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import jp.silverbullet.SilverBulletServer;
 import jp.silverbullet.StaticInstances;
 
 @Path("/system")
@@ -14,7 +15,7 @@ public class SystemResource {
 	@Path("/save")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String Save() {
-		StaticInstances.getInstance().save();
+		SilverBulletServer.getStaticInstance().save();
 		return "OK";
 	}
 	
@@ -22,7 +23,7 @@ public class SystemResource {
 	@Path("/generateSource")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String generateSource() {
-		StaticInstances.getInstance().generateSource();
+		SilverBulletServer.getStaticInstance().generateSource();
 		return "OK";
 	}
 	
@@ -30,7 +31,7 @@ public class SystemResource {
 	@Path("/saveParameters")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String saveParameters(@QueryParam("filename") final String filename) {
-		StaticInstances.getInstance().getBuilderModel().saveParameters(filename);
+		SilverBulletServer.getStaticInstance().getBuilderModel().saveParameters(filename);
 		return "OK";
 	}
 	
@@ -38,7 +39,7 @@ public class SystemResource {
 	@Path("/loadParameters")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String loadParameters(@QueryParam("filename") final String filename) {
-		StaticInstances.getInstance().getBuilderModel().loadParameters(filename);
+		SilverBulletServer.getStaticInstance().getBuilderModel().loadParameters(filename);
 		return "OK";
 	}
 }

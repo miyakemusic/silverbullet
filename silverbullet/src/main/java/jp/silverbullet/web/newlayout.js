@@ -623,10 +623,16 @@ class Table2 extends Widget {
 class NewLayout {
 	constructor(div) {
 		var editId = div + "_edit";
+		var actionId = div + "_action";
 		$('#' + div).append('<input type="checkbox" id="' + editId + '"><label>Edit</label>');
 		$('#' + editId).click(function() {
 			retreiveDesign();
+			$('#' + actionId).prop('disabled', !$('#' + editId).prop('checked'));
 		});
+		
+		
+		$('#' + div).append('<input type="checkbox" id="' + actionId + '"><label>Action</label>');
+		$('#' + actionId).prop('checked', true);
 		
 		this.propertyWindow = new NewLayoutProperty(div);
 		
@@ -864,15 +870,15 @@ class NewLayout {
 											
 			wrappedWidget.accessor(
 				function(id, index, value) {
+					if ($('#' + editId).prop('checked') && !$('#' + actionId).prop('checked')) {
+						return;
+					}
 					setValue(id, index, value);
 				},
 				function(id, index, callback) {
 					getProperty(id, index, callback);
 				}
 			);
-//			if ($('#' + editId).prop('checked')) {
-//				$('#' + parentDiv).append('<span class="separator"></span>');
-//			}
 			
 			var id = widget.id;
 			addWidget(id, wrappedWidget);

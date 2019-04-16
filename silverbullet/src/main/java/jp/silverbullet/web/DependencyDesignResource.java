@@ -10,6 +10,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import jp.silverbullet.SilverBulletServer;
 import jp.silverbullet.StaticInstances;
 import jp.silverbullet.dependency2.design.RestrictionMatrix;
 
@@ -19,35 +20,35 @@ public class DependencyDesignResource {
 	@Path("/getEnableSpec")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public RestrictionMatrix getEnableSpec() {
-		return StaticInstances.getInstance().getBuilderModel().getDependencyDesigner();
+		return SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner();
 	}
 	
 	@GET
 	@Path("/getValueSpec")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public RestrictionMatrix getValueSpec() {
-		return StaticInstances.getInstance().getBuilderModel().getDependencyDesigner();
+		return SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner();
 	}
 	
 	@GET
 	@Path("/getTriggers")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public Set<String> getTrigger() {
-		return StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().getTriggers();
+		return SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner().getTriggers();
 	}
 	
 	@GET
 	@Path("/getTargets")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public Set<String> getTarget() {
-		return StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().getTargets();
+		return SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner().getTargets();
 	}
 	
 	@GET
 	@Path("/changeSpec")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String changeSpec(@QueryParam("row") final int row, @QueryParam("col") final int col, @QueryParam("checked") final boolean checked) {
-		StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().updateEnabled(row, col, checked);
+		SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner().updateEnabled(row, col, checked);
 		return "OK";
 	}
 	
@@ -55,7 +56,7 @@ public class DependencyDesignResource {
 	@Path("/changeSpecValue")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String changeSpecValue(@QueryParam("row") final int row, @QueryParam("col") final int col, @QueryParam("value") final String value) {
-		StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().updateValue(row, col, value);
+		SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner().updateValue(row, col, value);
 		return "OK";
 	}
 	
@@ -63,7 +64,7 @@ public class DependencyDesignResource {
 	@Path("/build")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String build() {
-		StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().build();
+		SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner().build();
 		return "OK";
 	}
 	
@@ -71,7 +72,7 @@ public class DependencyDesignResource {
 	@Path("/switch")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String switchTriggerTarget() {
-		StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().switchTriggerTarget();
+		SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner().switchTriggerTarget();
 		return "OK";
 	}
 	
@@ -80,7 +81,7 @@ public class DependencyDesignResource {
 //	@Path("/alwaysTrue")
 //	@Produces(MediaType.TEXT_PLAIN) 
 //	public String alwaysTrue() {
-//		StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().alwaysTrue();
+//		SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner().alwaysTrue();
 //		return "OK";
 //	}
 	
@@ -89,7 +90,7 @@ public class DependencyDesignResource {
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String addId(@QueryParam("id") final String id, @QueryParam("type") final String type) {
 		RestrictionMatrix.AxisType axisType = convertAxisType(type);	
-		StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().add(id, axisType);
+		SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner().add(id, axisType);
 		return "OK";
 	}
 
@@ -108,7 +109,7 @@ public class DependencyDesignResource {
 	@Path("/removeId")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String removeId(@QueryParam("id") final String id, @QueryParam("type") final String type) {
-		StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().hide(id, convertAxisType(type));
+		SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner().hide(id, convertAxisType(type));
 		return "OK";
 	}
 	
@@ -116,29 +117,29 @@ public class DependencyDesignResource {
 	@Path("/showAll")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String showAll() {
-		StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().showAll();
+		SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner().showAll();
 		return "OK";
 	}
 	@GET
 	@Path("/getDefinedPriorities")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<Integer> getDefinedPriorities() {
-		return StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().getDefinedPriorities();
+		return SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner().getDefinedPriorities();
 	}
 	
 	@GET
 	@Path("/getPriorities")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public Map<Integer, List<String>> getPriorities() {
-		return StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().getPriorities();
+		return SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner().getPriorities();
 	}
 	
 	@GET
 	@Path("/setPriority")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setPriority(@QueryParam("id") final String id, @QueryParam("value") final Integer value) {
-		StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().setPriority(id, value);
-		StaticInstances.getInstance().getBuilderModel().getDependencyDesigner().build();
+		SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner().setPriority(id, value);
+		SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner().build();
 		return "OK";
 	}
 }
