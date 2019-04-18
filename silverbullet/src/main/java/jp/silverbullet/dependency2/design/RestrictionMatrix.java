@@ -223,7 +223,7 @@ public abstract class RestrictionMatrix {
 				}
 				
 				PropertyDef2 targetProp = this.getPropertyDef(targetId);
-//				PropertyDef2 triggerProp = this.getPropertyDef(this.getMainId(triggerId));
+				PropertyDef2 triggerProp = this.getPropertyDef(this.getMainId(triggerId));
 				
 				if (targetProp.isNumeric()) {
 					if (value.equals("<")) {
@@ -237,21 +237,36 @@ public abstract class RestrictionMatrix {
 					}
 				}
 				else if (targetProp.isList()) {
-					String val2 = "";
-					String triggerCond = "";
-					if (value.contains(":")) {
-						String[] tmp = value.split(":");
-						val2 = tmp[0];
-						if (tmp[1].equals("*")) {
-							triggerCond = "$" + this.getMainId(triggerId) + "==" +  "$" + this.getMainId(triggerId);
+					if (triggerProp.isList()) {
+						if (this.isOptionId(triggerId)) {
+							String value2 = value;
+							String condition = "";
+							if (value.contains("(")) {
+								String[] tmp = value.split("()");
+								value2 = value.split("(")[0];
+							}
+							this.getDependencySpecHolder().getSpec(targetId).addValue(value2, "$" + this.getMainId(triggerId) + "==%" + triggerId, condition);
 						}
-						else {
-							triggerCond = "$" + this.getMainId(triggerId) + "==" + tmp[1];
-						}
-						
 					}
-					this.getDependencySpecHolder().getSpec(targetId).addValue(val2, triggerCond);
-					
+					else if (triggerProp.isNumeric()) {
+						String val2 = "";
+						String triggerCond = "";
+						if (value.contains(":")) {
+							String[] tmp = value.split(":");
+							val2 = tmp[0];
+							if (tmp[1].equals("*")) {
+								triggerCond = "$" + this.getMainId(triggerId) + "==" +  "$" + this.getMainId(triggerId);
+							}
+							else {
+								triggerCond = "$" + this.getMainId(triggerId) + "==" + tmp[1];
+							}
+							
+						}
+						this.getDependencySpecHolder().getSpec(targetId).addValue(val2, triggerCond);
+					}
+					else {
+						System.out.println();
+					}
 				}
 			}
 		}
@@ -269,6 +284,10 @@ public abstract class RestrictionMatrix {
 //		}
 	}
 	
+	private boolean isOptionId(String optionId) {
+		return this.idMap.keySet().contains(optionId);
+	}
+
 	private boolean isList(String id) {
 		return this.getPropertyDef(id).isList();
 	}
