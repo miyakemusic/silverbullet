@@ -173,6 +173,9 @@ public class WebTableConverter {
 				String newSelectionId = convertId(id, value);
 				def.updateOptionId(selectionId, newSelectionId);
 				def.getOption(newSelectionId).setTitle(value);
+				if (def.getDefaultId().equals(selectionId)) {
+					def.setDefaultId(newSelectionId);
+				}
 			}
 		}
 		else {
