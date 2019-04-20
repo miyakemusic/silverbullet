@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import jp.silverbullet.web.JsonTable;
 
@@ -147,21 +148,65 @@ public class WebTableConverter {
 		}.create(holder.get(id).getOptionValues().iterator(), PropertyType2.List, cls.getDeclaredFields());
 	}
 
+	private String convertId(String value) {
+		return convertId("ID", value);
+	}
+	
+	private String convertId(String baseId, String value) {
+		return baseId + "_" + value.replace(" ", "_").toUpperCase();
+	}
+	
 	public void updateOptionField(String id, String selectionId, String paramName, String value) {
+		PropertyDef2 def = holder.get(id);
 		if (paramName.equals(PropertyDef2.ID)) {
-			holder.get(id).updateOptionId(selectionId, value);
+			if (!value.startsWith(id)) {
+				value = convertId(id, value);
+			}
+			
+			def.updateOptionId(selectionId, value);
+			if (def.getDefaultId().contentEquals(selectionId)) {
+				def.setDefaultId(value);
+			}
+		}
+		else if (paramName.equals(PropertyDef2.TITLE)) {
+			if (def.getOption(selectionId).getTitle().isEmpty()) {
+				String newSelectionId = convertId(id, value);
+				def.updateOptionId(selectionId, newSelectionId);
+				def.getOption(newSelectionId).setTitle(value);
+			}
 		}
 		else {
-			ListDetailElement element = this.holder.get(id).getOption(selectionId);
+			ListDetailElement element = def.getOption(selectionId);
 			Class<ListDetailElement> clazz = ListDetailElement.class;
 			updateFields(paramName, value, element, clazz);
 		}
 	}
 
+	private boolean isDefaultId(PropertyDef2 def) {
+		return def.getTitle().isEmpty() && NumberUtils.isNumber(def.getId().split("_")[1]);
+	}
+	
 	public void updateMainField(String id, String paramName, String value) {
 		PropertyDef2 prop = this.holder.get(id);
-		Class<PropertyDef2> clazz = PropertyDef2.class;
-		updateFields(paramName, value, prop, clazz);
+		
+		if (paramName.equals(PropertyDef2.ID)) {
+			if (!value.startsWith("ID_")) {
+				value = convertId(value);
+			}
+			prop.setId(value.toUpperCase());
+		}
+		else if (paramName.equals(PropertyDef2.PRESENTATION)) {
+			if (this.isDefaultId(prop)) {
+				
+				String newId = convertId(value);
+				prop.setId(newId);
+				this.holder.get(newId).setTitle(value);
+			}
+		}
+		else {
+			Class<PropertyDef2> clazz = PropertyDef2.class;
+			updateFields(paramName, value, prop, clazz);
+		}
 	}
 	
 	private void updateFields(String paramName, String value, Object object,

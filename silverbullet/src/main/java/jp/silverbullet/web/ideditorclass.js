@@ -40,9 +40,12 @@ class IdEditorClass {
 			
 			if (command == 'Change' || command == 'Add' || command == 'Remove') {
 				me.updateMainTable();
-				me.collectSelections(id, function(message) {
-					me.updateSelectionTable(me.currentId);
-				});
+				
+				if (id != '') {
+					me.collectSelections(id, function(message) {
+						me.updateSelectionTable(me.currentId);
+					});
+				}
 			}
 		}
 		, 'ID');

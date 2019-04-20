@@ -239,7 +239,12 @@ public class RuntimeProperty implements Cloneable {
 
 	@JsonIgnore
 	public String getSelectedListTitle() {
-		return this.property.getOption(this.currentValue).getTitle();
+		ListDetailElement e = this.property.getOption(this.currentValue);
+		
+		if (e != null) {
+			return e.getTitle();
+		}
+		return "";
 	}
 
 	@JsonIgnore

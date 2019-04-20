@@ -313,12 +313,7 @@ public class PropertyDef2 implements Cloneable {
 		return this;
 	}
 
-	public void changeOptionId(String oldId, String newId) {
-		ListDetailElement e = this.options.get(oldId);
-		this.removeOption(oldId);
-		e.setId(newId);
-		this.options.put(newId, e);
-	}
+
 
 	public void addListener(PropertyDefListener2 listener) {
 		this.listeners.add(listener);
@@ -447,9 +442,16 @@ public class PropertyDef2 implements Cloneable {
 		return this.persistent;
 	}
 
-	public void updateOptionId(String currentId, String newId) {
-		ListDetailElement e = this.getOption(currentId);
-		this.removeOption(currentId);
+//	public void changeOptionId(String oldId, String newId) {
+//		ListDetailElement e = this.options.get(oldId);
+//		this.removeOption(oldId);
+//		e.setId(newId);
+//		this.options.put(newId, e);
+//	}
+	
+	public void updateOptionId(String oldId, String newId) {
+		ListDetailElement e = this.getOption(oldId);
+		this.removeOption(oldId);
 		try {
 			this.option(newId, e.getTitle(), e.getComment());
 		} catch (Exception e1) {

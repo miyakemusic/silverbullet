@@ -151,7 +151,7 @@ public class PropertyHolderTest {
 			assertEquals("ID_LIST_D", def.getOption(1).getId());	
 			
 			// option ID is changed
-			def.changeOptionId("ID_LIST_A", "ID_LIST_Z");
+			def.updateOptionId("ID_LIST_A", "ID_LIST_Z");
 			assertEquals(2, def.getOptionValues().size());
 			assertEquals("ID_LIST_D", def.getOption(0).getId());
 			assertEquals("ID_LIST_Z", def.getOption(1).getId());	
