@@ -177,6 +177,9 @@ public class WebTableConverter {
 					def.setDefaultId(newSelectionId);
 				}
 			}
+			else {
+				def.getOption(selectionId).setTitle(value);
+			}
 		}
 		else {
 			ListDetailElement element = def.getOption(selectionId);
@@ -204,6 +207,9 @@ public class WebTableConverter {
 				String newId = convertId(value);
 				prop.setId(newId);
 				this.holder.get(newId).setTitle(value);
+			}
+			else {
+				prop.setTitle(value);
 			}
 		}
 		else {
