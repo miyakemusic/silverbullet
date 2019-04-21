@@ -14,6 +14,7 @@ import jp.silverbullet.dependency2.design.RestrictionMatrix;
 import jp.silverbullet.dependency2.CommitListener;
 import jp.silverbullet.dependency2.DependencyEngine;
 import jp.silverbullet.dependency2.DependencySpecHolder;
+import jp.silverbullet.property2.PropertDefHolderListener;
 import jp.silverbullet.property2.PropertyDef2;
 import jp.silverbullet.property2.PropertyHolder2;
 import jp.silverbullet.property2.RuntimeProperty;
@@ -171,6 +172,22 @@ public class BuilderModelImpl {
 
 	public BuilderModelImpl() {
 		store = new RuntimePropertyStore(propertiesHolder2);
+		propertiesHolder2.addListener(new PropertDefHolderListener() {
+			@Override
+			public void onChange(String id, String field, Object value, Object prevValue) {
+//				restrictionMatrix.initValue();
+			}
+
+			@Override
+			public void onAdd(String id) {
+//				restrictionMatrix.initValue();
+			}
+
+			@Override
+			public void onRemove(String id, String replacedId) {
+//				restrictionMatrix.initValue();
+			}
+		});
 		this.getRegisterAccessor().addListener(this.testRecorder);
 		this.getRuntimRegisterMap().addDevice(DeviceType.CONTROLLER, this.registerController);
 		this.sequencer = new Sequencer() {
@@ -303,6 +320,7 @@ public class BuilderModelImpl {
 	}
 
 	private <T> void save(T object, Class<T> clazz, String filename) {
+		if (object == null) return;
 		XmlPersistent<T> propertyPersister = new XmlPersistent<>();
 		try {
 			propertyPersister.save(object, filename, clazz);

@@ -226,6 +226,7 @@ class Button extends Widget {
 				me.setter(me.widget.id, 0, next.id);
 			}
 		});		
+		
 	}
 	
 	onUpdateValue(property) {
@@ -249,6 +250,8 @@ class Button extends Widget {
 		else {
 			$('#' + this.valueId).html(this.nextItem(property).title);
 		}
+		
+		$('#' + this.divid).prop('disabled', !property.enabled);
 	}
 	
 	nextItem(property) {
@@ -383,6 +386,9 @@ class ToggleButton extends Widget {
 
 	}
 	onUpdateValue(property) {
+		if(property.enabled) {
+			$('#' + this.divid).removeClass('disabled');
+		}
 		if (this.isList()) {
 			for (var e of property.elements) {
 				if (e.id == this.widget.subId) {
@@ -410,6 +416,10 @@ class ToggleButton extends Widget {
 			else {
 				$('#' + this.divid).addClass('mybutton');
 			}
+		}
+		
+		if(!property.enabled) {
+			$('#' + this.divid).addClass('disabled');
 		}
 	}
 	
@@ -441,6 +451,8 @@ class ComboBox extends Widget {
 			}
 		}
 		$('#' + this.comboId).val(property.currentSelectionId);
+		
+		$('#' + this.comboId).prop('disabled', !property.enabled);
 	}
 }
 
@@ -882,7 +894,7 @@ class NewLayout {
 			
 			var id = widget.id;
 			addWidget(id, wrappedWidget);
-							
+			
 			for (var css of widget.css) {
 				$('#' + divid).css(css.key, css.value);			
 			}

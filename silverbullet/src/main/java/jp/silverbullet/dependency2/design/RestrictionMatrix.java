@@ -63,7 +63,7 @@ public abstract class RestrictionMatrix {
 		initValue();
 	}
 	
-	private void initValue() {
+	public void initValue() {
 		collectId();
 		createMatrix();
 	}
@@ -497,7 +497,7 @@ public abstract class RestrictionMatrix {
 		return idMap.get(option);
 	}
 	
-	private void collectId() {
+	public void collectId() {
 		this.idMap.clear();
 
 		Set<String> options = new HashSet<>();

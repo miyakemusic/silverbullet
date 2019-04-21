@@ -98,6 +98,7 @@ public class IdResource2 {
 	@Path("/ids")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public Set<String> getIds() {
-		return SilverBulletServer.getStaticInstance().getBuilderModel().getPropertiesHolder2().getAllIds(PropertyType2.NotSpecified);
+		return SilverBulletServer.getStaticInstance().getBuilderModel().
+				getPropertiesHolder2().getAllIds(PropertyType2.NotSpecified);
 	}
 }

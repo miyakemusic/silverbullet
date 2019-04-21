@@ -40,6 +40,14 @@ class DependencyDesign {
 		var addedTriggers = div + "_addedTriggers";
 		var addedTargets = div + "_addedTargets";
 		
+		var updateAll = div + "_updateAll";
+		$('#' + div).append('<button id="' + updateAll + '">Update</button>');
+		$('#' + updateAll).click(function() {
+			initIdSelection();
+		   	initTable();
+		   	updatePriorityEditor();
+		});
+		
 		$('#' + div).append('<fieldset><legend>Trigger</legend><div>ID:<select id="' + triggerId + '"></select><button id="' + addTriggerId + '">Add</button><div>Remove:<span id="' + addedTriggers + '"></span></div></div></fieldset>');
 		$('#' + div).append('<fieldset><legend>Target</legend><div>ID:<select id="' + targetId + '"></select><button id="' + addTargetId + '">Add</button><div>Remove:<span id="' + addedTargets + '"></span></div></div></fieldset>');
 		
@@ -107,26 +115,33 @@ class DependencyDesign {
 			});
 		});
 		
-		$.ajax({
-		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/id2/ids",
-		   success: function(msg) {
-		   		for (var i = 0; i < msg.length; i++) {
-					var id = msg[i];
-					$('#' + triggerId).append($('<option>').text(id).val(id));
-					$('#' + targetId).append($('<option>').text(id).val(id));
-				}
-				$('#' + triggerId).change(function() {
-					//setCombination();
-				});
-				$('#' + targetId).change(function() {
-					//setCombination();
-				});
-				
-				initOptions();
-		   }
-		});	
-			
+		initIdSelection();
+		
+		function initIdSelection() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/id2/ids",
+			   success: function(msg) {
+			   		$('#' + triggerId).empty();
+			   		$('#' + targetId).empty();
+			   		
+			   		for (var i = 0; i < msg.length; i++) {
+						var id = msg[i];
+						$('#' + triggerId).append($('<option>').text(id).val(id));
+						$('#' + targetId).append($('<option>').text(id).val(id));
+					}
+					$('#' + triggerId).change(function() {
+						//setCombination();
+					});
+					$('#' + targetId).change(function() {
+						//setCombination();
+					});
+					
+					initOptions();
+			   }
+			});	
+		}
+		
 		function initOptions() {
 			$.ajax({
 			   type: "GET", 
