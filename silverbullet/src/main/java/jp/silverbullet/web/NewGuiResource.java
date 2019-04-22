@@ -1,5 +1,6 @@
 package jp.silverbullet.web;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -209,4 +210,17 @@ public class NewGuiResource {
 		widget.fireLayoutChange();
 		return "OK";
 	}
+	
+	@GET
+	@Path("/widgetTypes")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<String> getWidgetTypes () {
+		List<String> ret = new ArrayList<>();
+		for (WidgetType type : WidgetType.values()) {
+			ret.add(type.toString());
+		}
+		return ret;
+	}
+	
+	
 }

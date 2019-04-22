@@ -36,7 +36,7 @@ public class WidgetGeneratorHelper {
 		if (prop.isList()) {
 			subPane.createComboBox(id);
 		}
-		else if (prop.isNumeric()) {
+		else if (prop.isNumeric() || prop.isText()) {
 			subPane.createTextField(id, PropertyField.VALUE);
 			subPane.createLabel(id, PropertyField.UNIT);
 		}

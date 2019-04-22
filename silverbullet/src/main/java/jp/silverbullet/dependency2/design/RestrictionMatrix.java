@@ -309,7 +309,7 @@ public abstract class RestrictionMatrix {
 			boolean enabledTouched = false;
 //			boolean valueTouched = false;
 			for (String triggerOption : triggerOptions) {
-				if (isMainId(triggerOption, triggerId) && this.hasRelation(targetId, triggerId)) {
+				if (isMainId(triggerOption) && this.hasRelation(targetId, triggerId)) {
 					if (this.getPropertyDef(triggerId).isBoolean()) {
 						if (this.spec.contains(targetOption, triggerOption)) {
 				
@@ -330,7 +330,7 @@ public abstract class RestrictionMatrix {
 						String condition = createCondition(targetOption, triggerOption, usedOptions);
 						
 						String triggerExpression = "$" + triggerId + "==%" + triggerOption;
-						if (isMainId(targetOption, targetId)) {
+						if (isMainId(targetOption)) {
 							getDependencySpecHolder().getSpec(targetId).addEnable(DependencySpec.True, 
 									triggerExpression, condition);
 							enabledTouched = true;
@@ -427,8 +427,9 @@ public abstract class RestrictionMatrix {
 		return new ArrayList<String>(ret);
 	}
 	 
-	private boolean isMainId(String optionId, String mainId) {
-		return optionId.equals(mainId);
+	private boolean isMainId(String optionId) {
+		return this.idMap.values().contains(optionId);
+		//return optionId.equals(mainId);
 	}
 
 	private String createCondition(String targetOption, String triggerOption, List<String> triggerOptions) {

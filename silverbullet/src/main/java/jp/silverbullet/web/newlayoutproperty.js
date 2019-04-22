@@ -39,11 +39,20 @@ class NewLayoutProperty {
 				
 		this.typeId = div + "_type";
 		$('#' + this.mainDiv).append('<div>Widget Type: <select id="' + this.typeId + '"></div>');
-		var type_options = ["CheckBox", "TextField", "ToggleButton", "TabPane", "Pane", "ComboBox", "Label", "StaticText", "Tab", "Button", "Chart", "Table", "Image", "Slider"];
-		for (var option of type_options) {
-			$('#' + this.typeId).append($('<option>').text(option).val(option));
-		}
-		
+//		var type_options = ["CheckBox", "TextField", "ToggleButton", "TabPane", "Pane", "ComboBox", "Label", "StaticText", "Tab", "Button", "Chart", "Table", "Image", "Slider"];
+//		for (var option of type_options) {
+//			$('#' + this.typeId).append($('<option>').text(option).val(option));
+//		}
+		$.ajax({
+		   type: "GET", 
+		   url: "http://" + window.location.host + "/rest/newGui/widgetTypes",
+		   success: function(types){
+				for (var option of types) {
+					$('#' + me.typeId).append($('<option>').text(option).val(option));
+				}
+		   }
+		});	
+					
 		this.cssKeys = div + "_cssKeys";
 		this.cssAdd = div + "_cssAdd";
 		$('#' + this.mainDiv).append('<fieldset><legend>Add new CSS</legend><button id="' + this.cssAdd + '">Add</button><select id="' + this.cssKeys + '"><input type="text" id="' + this.cssValue + '" value="10px"></fieldset>');

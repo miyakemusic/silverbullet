@@ -247,6 +247,8 @@ class Button extends Widget {
 			}
 			
 		}
+		else if (property.type == 'Action') {
+		}
 		else {
 			$('#' + this.valueId).html(this.nextItem(property).title);
 		}
@@ -301,10 +303,10 @@ class Label extends Widget {
 }
 
 class TextField extends Widget {
-	constructor(widget, parent, divid) {
+	constructor(widget, parent, divid, type) {
 		super(widget, parent, divid);
 		this.textId = divid + "_textid";
-		$('#' + this.parent).append('<div id="' + this.divid + '"><input type="text" id="' + this.textId + '"></div>');
+		$('#' + this.parent).append('<div id="' + this.divid + '"><input type="' + type + '" id="' + this.textId + '"></div>');
 		$('#' + this.textId).css("width", "100%");
 		$('#' + this.textId).css("height", "100%");
 		var me = this;
@@ -850,7 +852,10 @@ class NewLayout {
 				wrappedWidget = new CheckBox(widget, parentDiv, divid);
 			}
 			else if (widget.type == 'TextField') {
-				wrappedWidget = new TextField(widget, parentDiv, divid);
+				wrappedWidget = new TextField(widget, parentDiv, divid, 'text');
+			}
+			else if (widget.type == 'Password') {
+				wrappedWidget = new TextField(widget, parentDiv, divid, 'password');
 			}	
 			else if (widget.type == 'ToggleButton') {
 				wrappedWidget = new ToggleButton(widget, parentDiv, divid);				
