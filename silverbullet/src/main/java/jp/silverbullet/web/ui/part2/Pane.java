@@ -24,6 +24,7 @@ public class Pane {
 	public String subId = "";
 	public List<KeyValue> css = new ArrayList<>();
 	public String text;
+	public String optional = "";
 	
 	@JsonIgnore
 	public String widgetId;
@@ -104,7 +105,9 @@ public class Pane {
 	}
 	
 	public Pane createToggleButton(String id) {
-		return createToggleButton(id, "");
+		Pane widget = createToggleButton(id, "");
+		widget.css("padding", "5px");
+		return widget;
 	}
 
 	public Pane createStaticText(String text) {
@@ -112,7 +115,9 @@ public class Pane {
 	}
 
 	public Pane createButton(String id) {
-		return createWidget(WidgetType.Button, id);
+		Pane widget = createWidget(WidgetType.Button, id);
+		widget.css("padding", "5px");
+		return widget;
 	}
 
 	public Pane condition(String id, String subId) {
@@ -185,7 +190,7 @@ public class Pane {
 	public Pane css(String key, String value) {
 		boolean updated = false;
 		
-		if (value.isEmpty()) {
+		if (value == null || value.isEmpty()) {
 			updated = true;
 			Iterator<KeyValue> it = this.css.iterator();
 			while(it.hasNext()) {
@@ -258,7 +263,8 @@ public class Pane {
 		}.walkThrough(this, null);
 	}
 	public void setType(String type2) {
-		this.type = WidgetType.valueOf(type2);
+		this.type(WidgetType.valueOf(type2));
+		//this.type = WidgetType.valueOf(type2);
 //		if (this.listener != null) {
 //			this.listener.onTypeUpdate(this.widgetId, this.type);
 //		}
@@ -323,5 +329,8 @@ public class Pane {
 		if (this.listener != null) {
 			this.listener.onCssUpdate(widgetId, key, value);
 		}
+	}
+	public void setOptional(String optional2) {
+		this.optional = optional2;
 	}
 }

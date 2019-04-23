@@ -6,8 +6,8 @@
 .mybutton {
     border: 0;
     line-height: 2.0;
-    padding: 0 20px;
-    font-size: 1rem;
+    padding:5px;
+    font: inherit;
     text-align: center;
     color: black;
     text-shadow: 1px 1px 1px #000;
@@ -44,6 +44,7 @@
 
 .buttonValue {
 	color: blue;
+	font:inherit;
 	font-weight: bold;
 	padding: 1px 1px 1px 1px;
 	margin:  0px 0px 0px 0px;
@@ -51,7 +52,8 @@
 }
 
 .buttonTitle {
-	color: black;
+	font:inherit;
+	color: inherit;
 	padding: 1px 1px 1px 1px;
 	margin:  0px 0px 0px 0px;
 	height:50%;

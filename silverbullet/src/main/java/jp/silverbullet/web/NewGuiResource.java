@@ -11,7 +11,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import jp.silverbullet.SilverBulletServer;
-import jp.silverbullet.StaticInstances;
 import jp.silverbullet.web.ui.part2.UiBuilder;
 import jp.silverbullet.web.ui.part2.WidgetGeneratorHelper;
 import jp.silverbullet.web.ui.part2.WidgetType;
@@ -222,5 +221,33 @@ public class NewGuiResource {
 		return ret;
 	}
 	
+	@GET
+	@Path("/setOptional")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String setOptional (@QueryParam("divid") final String divid, @QueryParam("optional") final String optional) {
+		Pane widget = SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().getWidget(divid);
+		widget.setOptional(optional);
+		widget.fireFieldChange();
+		return "OK";
+	}	
 	
+	@GET
+	@Path("/copySize")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String copySize (@QueryParam("divid") final String divid) {
+		Pane widget = SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().getWidget(divid);
+	
+		Pane parent = SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().getParentOf(divid);
+		
+		List<String> keys = Arrays.asList("width", "height", "padding", "margin", "font-size");
+		for (Pane child : parent.widgets) {
+			if (child.type.equals(widget.type)) {
+				for (String key : keys) {
+					child.css(key, widget.css(key));
+				}				
+			}
+		}
+		parent.fireFieldChange();
+		return "OK";
+	}
 }

@@ -216,8 +216,15 @@ class Button extends Widget {
 		this.titleId = divid + 'title';
 		this.valueId = divid + 'value';
 
-		$('#' + parent).append('<div id="' + divid + '" class="mybutton canpush"><label id="' + this.titleId + '" class="buttonTitle"></label><br><label id="' + this.valueId + '" class="buttonValue"></label></div>');
-
+		$('#' + parent).append('<div id="' + divid + '" class="mybutton canpush"></div>');
+			
+		if (widget.optional == 'notitle') {
+			$('#' + divid).append('<label id="' + this.valueId + '" class="buttonTitle"></label>');
+		}
+		else {
+			$('#' + divid).append('<label id="' + this.titleId + '" class="buttonTitle"></label><br>');
+			$('#' + divid).append('<label id="' + this.valueId + '" class="buttonValue"></label>');
+		}
 		var me = this;
 
 		$('#' + this.divid).click(function() {
@@ -310,10 +317,18 @@ class TextField extends Widget {
 		$('#' + this.textId).css("width", "100%");
 		$('#' + this.textId).css("height", "100%");
 		var me = this;
-		$('#' + this.textId).keydown(function(event) {
-			if (event.which == 13) {
+		$('#' + this.textId).change(function(event) {
+//			if (event.which == 13) {
+//				me.setter(me.widget.id, 0, $('#' + me.textId).val());
+//			}
+		});
+		
+		$('#' + this.textId).click(function() {
+			$('#' + me.textId).keyboard({
+			  accepted : function(event, keyboard, el) {
 				me.setter(me.widget.id, 0, $('#' + me.textId).val());
-			}
+			  }
+			});
 		});
 	}
 	

@@ -77,6 +77,32 @@ class NewLayoutProperty {
 		$('#' + me.layoutId).append($('<option>').text('ABSOLUTE').val('ABSOLUTE'));
 		$('#' + me.layoutId).append($('<option>').text('NONE').val('NONE'));
 
+
+		this.optionalId = div + "_optional";
+		this.optionalCommitId = div + "_optionalCommit";
+		$('#' + this.mainDiv).append('Optional:<input type="text" id="' + this.optionalId + '"><button id="' + this.optionalCommitId + '">Set</button>');
+		
+		$('#' + this.optionalCommitId).click(function() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/newGui/setOptional?divid=" + me.widget.widgetId + "&optional=" + 
+			   	$('#' + me.optionalId).val(),
+			   success: function(result){
+			   }
+			});					
+		});
+		
+		this.copySizeId = div + "_copySize";
+		$('#' + this.mainDiv).append('<button id="' + this.copySizeId + '">Copy Size</button>');
+		$('#' + this.copySizeId).click(function() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/newGui/copySize?divid=" + me.widget.widgetId,
+			   success: function(result){
+			   }
+			});				
+		});
+				
 		$('#' + this.dialogId).dialog({
 //			  dialogClass: "no-titlebar", 
 			  autoOpen: false,
@@ -207,6 +233,7 @@ class NewLayoutProperty {
 		this.table.clear();
 		this.table.appendRows(widget.css);
 		
+		$('#' + this.optionalId).text(widget.optional);
 		
 	}
 	
