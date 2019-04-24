@@ -859,6 +859,9 @@ class NewLayout {
 
 			if (widget.type == 'Pane') {
 				wrappedWidget = new Pane(widget, parentDiv, divid, buildSub);
+			}
+			else if (widget.type == 'Debug_Register') {
+				wrappedWidget = new Pane(widget, parentDiv, divid, buildSub);
 			}		
 			else if (widget.type == 'TabPane') {
 				wrappedWidget = new TabPane(widget, parentDiv, divid, buildSub, addWidget);

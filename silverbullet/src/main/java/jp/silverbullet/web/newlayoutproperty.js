@@ -82,15 +82,19 @@ class NewLayoutProperty {
 		this.optionalCommitId = div + "_optionalCommit";
 		$('#' + this.mainDiv).append('Optional:<input type="text" id="' + this.optionalId + '"><button id="' + this.optionalCommitId + '">Set</button>');
 		
-		$('#' + this.optionalCommitId).click(function() {
+		function setOptional(optional) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/newGui/setOptional?divid=" + me.widget.widgetId + "&optional=" + 
-			   	$('#' + me.optionalId).val(),
+			   url: "http://" + window.location.host + "/rest/newGui/setOptional?divid=" + me.widget.widgetId + "&optional=" + optional,
 			   success: function(result){
 			   }
-			});					
+			});		
+		}
+		
+		$('#' + this.optionalCommitId).click(function() {
+				setOptional($('#' + me.optionalId).val());
 		});
+		
 		
 		this.copySizeId = div + "_copySize";
 		$('#' + this.mainDiv).append('<button id="' + this.copySizeId + '">Copy Size</button>');
@@ -211,7 +215,14 @@ class NewLayoutProperty {
 		$('#' + this.mainDiv).append('<input type="text" id="' + visibleCondition + '"><button id="visibleConditionSet">Set</button>');
 		
 		var registerShortcut = div + "_registerShortcut";
-		$('#' + this.mainDiv).append('<select id="' + registerShortcut + '"></select>');
+		var registerShoftcutSet =  div + "_registerShortcutSet";
+		$('#' + this.mainDiv).append('<div><select id="' + registerShortcut + '"></select><button id="' + registerShoftcutSet + '">Set</button></div>');
+		$('#' + registerShoftcutSet).click(function() {
+			setOptional($('#' + registerShortcut).val());
+		});
+		
+		
+		
 		updateRegisterShortcut();
 		function updateRegisterShortcut() {
 			$.ajax({
@@ -248,7 +259,7 @@ class NewLayoutProperty {
 		this.table.clear();
 		this.table.appendRows(widget.css);
 		
-		$('#' + this.optionalId).text(widget.optional);
+		$('#' + this.optionalId).val(widget.optional);
 		
 	}
 	
