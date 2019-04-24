@@ -201,7 +201,7 @@ class NewLayoutProperty {
 			   type: "GET", 
 			   url: "http://" + window.location.host + "/rest/newGui/titledInput?divid=" + me.widget.widgetId,
 			   success: function(design){
-		
+	
 			   }
 			});		
 		});
@@ -210,6 +210,21 @@ class NewLayoutProperty {
 		var visibleConditionSet = div + "_visibleConditionSet";
 		$('#' + this.mainDiv).append('<input type="text" id="' + visibleCondition + '"><button id="visibleConditionSet">Set</button>');
 		
+		var registerShortcut = div + "_registerShortcut";
+		$('#' + this.mainDiv).append('<select id="' + registerShortcut + '"></select>');
+		updateRegisterShortcut();
+		function updateRegisterShortcut() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/register2/getShortCuts",
+			   success: function(options){
+					for (var option of options) {
+						var s = option.bitName + "@" + option.regName;
+						$('#' + registerShortcut).append($('<option>').text(s).val(s));
+					}			
+			   }
+			});	
+		}
 	}
 	
 	update(widget) {

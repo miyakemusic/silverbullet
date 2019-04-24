@@ -264,14 +264,16 @@ class RegisterMap {
 					    "Create Shortcut": function(event) {
 					    	createShortCut(me.selectedValueId);
 					    	$(this).dialog('destroy');	
-							$(event.target).remove();
+					    	$('#' + dialogId).empty();
+					    	$('#' + dialogId).remove();
 					    	
 					    }
 					    ,
 					    "Add to Test": function(event) {
 					    	addToTest(me.selectedValueId);
 					    	$(this).dialog('destroy');	
-							$(event.target).remove();
+					    	$('#' + dialogId).empty();
+					    	$('#' + dialogId).remove();
 					    }
 					  },
 					  width: 400,
