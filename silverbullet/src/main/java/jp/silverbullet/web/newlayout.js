@@ -24,6 +24,38 @@ class Widget {
 	
 }
 
+class RegisterShortcut extends Widget {
+	constructor(widget, parent, divid, buildSub) {
+		super(widget, parent, divid);
+		
+		$('#' + parent).append('<div id="' + divid + '"></div>');
+//		$('#' + parent).css('border-style', 'dashed');
+//		$('#' + parent).css('border-width', '1');
+//		$('#' + parent).css('border-color', 'yellow');
+		
+		
+		$('#' + divid).click(function() {
+			if (widget.optional == '') {
+				return;
+			}
+			
+			var addr = widget.optional.split('@')[1];
+			var bit = widget.optional.split('@')[0];
+			
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/register2/triggerShortcut?regName=" + addr + "&bitName=" + bit,
+			   success: function(options){
+		
+			   }
+			});				
+		});
+	}
+	
+	onUpdateValue(property) {
+	}
+}
+
 class Pane extends Widget {
 	constructor(widget, parent, divid, buildSub) {
 		super(widget, parent, divid);
@@ -217,17 +249,29 @@ class Button extends Widget {
 		this.valueId = divid + 'value';
 
 		$('#' + parent).append('<div id="' + divid + '" class="mybutton canpush"></div>');
+		var tableId = divid + "_tableId";
+		$('#' + divid).append('<table id="' + tableId + '"></table>');
+		$('#' + tableId).css('width', '100%');
+		$('#' + tableId).css('height', '100%');
 			
-		if (widget.optional == 'notitle') {
-			$('#' + divid).append('<label id="' + this.valueId + '" class="buttonTitle"></label>');
+		if (widget.optional == 'notitle') {	
+			$('#' + tableId).append('<tr><td><label id="' + this.valueId + '">' + '</label></td></tr>');
 		}
 		else {
-			$('#' + divid).append('<label id="' + this.titleId + '" class="buttonTitle"></label><br>');
-			$('#' + divid).append('<label id="' + this.valueId + '" class="buttonValue"></label>');
+			$('#' + tableId).append('<tr><td><label id="' + this.titleId + '" class="buttonTitle"></label></td></tr>');
+			$('#' + tableId).append('<tr><td><label id="' + this.valueId + '" class="buttonValue"></label> </td></tr>');
 		}
+		
+		$('#' + tableId + ' tr td').css('border', '0');
+		$('#' + tableId + ' tr td').css('font', 'inherit');
+		
 		var me = this;
 
 		$('#' + this.divid).click(function() {
+			if (!$('#' + divid).hasClass('canpush')) {
+				return;
+			}
+			
 			if (me.property.elements.length > 0) {
 				var next = me.nextItem(me.property);				
 				me.setter(me.widget.id, 0, next.id);
@@ -240,6 +284,10 @@ class Button extends Widget {
 		this.property = property;
 		$('#' + this.titleId).html(property.title);
 				
+		$('#' + this.divid).removeClass('disabled');
+		$('#' + this.valueId).removeClass('disabled');
+		$('#' + this.divid).addClass('canpush');
+		
 		var me = this;
 		if (property.type == 'Boolean') {
 			if (property.currentValue == 'true') {
@@ -260,7 +308,11 @@ class Button extends Widget {
 			$('#' + this.valueId).html(this.nextItem(property).title);
 		}
 		
-		$('#' + this.divid).prop('disabled', !property.enabled);
+		if(!property.enabled) {
+			$('#' + this.divid).removeClass('canpush');
+			$('#' + this.divid).addClass('disabled');
+			$('#' + this.valueId).addClass('disabled');
+		}
 	}
 	
 	nextItem(property) {
@@ -845,11 +897,6 @@ class NewLayout {
 			else {
 				me.propertyWindow.hide();
 			}
-			
-//			$('.separator').mouseover(function(e) {
-//				$('.separator').removeClass('mouseover');
-//				$(this).addClass('mouseover');
-//			});
 		}
 		
 		function buildSub(widget, parentDiv) {
@@ -861,7 +908,7 @@ class NewLayout {
 				wrappedWidget = new Pane(widget, parentDiv, divid, buildSub);
 			}
 			else if (widget.type == 'Debug_Register') {
-				wrappedWidget = new Pane(widget, parentDiv, divid, buildSub);
+				wrappedWidget = new RegisterShortcut(widget, parentDiv, divid, buildSub);
 			}		
 			else if (widget.type == 'TabPane') {
 				wrappedWidget = new TabPane(widget, parentDiv, divid, buildSub, addWidget);
@@ -931,8 +978,6 @@ class NewLayout {
 			
 					} ,
 					stop : function (event , ui){
-						//updatePosition(divid, ui.offset.top, ui.offset.left);
-						//updatePosition(divid, event.clientY + "px", event.clientX + "px");
 						updatePosition(divid, $('#' + divid).position().top + "px", $('#' + divid).position().left + "px");						
 					},
 				});

@@ -88,9 +88,9 @@ public class NewGuiResource {
 	@Path("/getCssKeys")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<String> getCssKeys() {
-		return Arrays.asList("font", "font-weight", "font-size", "border-style", "border-width", "border-color", "color", 
+		return Arrays.asList("font", "font-weight", "font-size", "border-style", "border-width", "border-color", "border-radius", "color", 
 				"background-color", "background-image", "background-size", "padding", "margin", "top", "left", "width", "height", 
-				"vertical-align");
+				"vertical-align", "text-align", "position");
 	}
 
 	@GET
