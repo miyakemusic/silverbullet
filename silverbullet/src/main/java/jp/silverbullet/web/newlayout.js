@@ -702,9 +702,33 @@ class Table2 extends Widget {
 }
 
 class NewLayout {
-	constructor(div) {
-		var editId = div + "_edit";
-		var actionId = div + "_action";
+	constructor(divParent) {
+		var divBase = divParent + "_newLayout";
+		$('#' + divParent).append('<div id="' + divBase + '"></div>');
+		
+		
+		var editId = divBase + "_edit";
+		var actionId = divBase + "_action";
+		
+		var div = divBase + "_right";
+		var divLeft = divParent + "_left";
+		
+		$('#' + divBase).append('<div id="' + divLeft + '"></div><div id="' + div + '"></div>');
+		$('#' + divLeft).css('display', 'inline-block');
+		$('#' + divLeft).css('width', '100px');
+		$('#' + divLeft).css('height', '1000px');
+		$('#' + divLeft).css('vertical-align', 'top');
+		$('#' + divLeft).css('border-style', 'solid');
+		
+		$('#' + div).css('display', 'inline-block');
+		$('#' + div).css('width', '90%');
+		$('#' + div).css('height', '1000px');
+		$('#' + div).css('vertical-align', 'top');
+		$('#' + div).css('border-style', 'solid');
+		
+		new NewLayoutLibrary(divLeft);
+
+		
 		$('#' + div).append('<input type="checkbox" id="' + editId + '"><label>Edit</label>');
 		$('#' + editId).click(function() {
 			retreiveDesign();
@@ -799,7 +823,6 @@ class NewLayout {
 		}
 		
 		function retreiveDesign(finished) {
-//			propertyMap.clear();
 			widgetMap.clear();
 			divMap.clear();
 			
@@ -970,6 +993,7 @@ class NewLayout {
 			}
 			
 			if ($('#' + editId).prop('checked')) {
+
 				$('#' + divid).draggable({
 					start : function (event , ui){
 				
@@ -981,21 +1005,24 @@ class NewLayout {
 						updatePosition(divid, $('#' + divid).position().top + "px", $('#' + divid).position().left + "px");						
 					},
 				});
+
 				$('#' + divid).resizable({
 			      stop: function( event, ui ) {
 			      	updateSize(divid, ui.size.width, ui.size.height);
 			      },
 			      grid: 5, 
 			    }); 
-						
+					
 				$('#' + divid).droppable({
 					greedy: true,
 					drop: function( event, ui ) {
 			           changeParent(ui.draggable[0].id, divid);
 			           event.stopPropagation();
 			        }
-			    });			    
+			    });	
+	    
 			    $('#' + divid).addClass('editable');
+
 		    }
 
 		}

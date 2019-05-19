@@ -270,7 +270,7 @@ public abstract class SilverBulletServer {
 	protected UiBuilder getUi() {
 		UiBuilder builder = new UiBuilder();
 		Pane pane = builder.getRootPane();
-		pane.css("width", "800").css("height", "600").css("top", "150px").css("border-style", "dashed").css("border-width", "1px");
+//		pane.css("width", "800").css("height", "600").css("top", "150px").css("border-style", "dashed").css("border-width", "1px");
 		return builder;
 	}
 	
