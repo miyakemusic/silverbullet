@@ -23,8 +23,8 @@ public class NewGuiResource {
 	@GET
 	@Path("/getDesign")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public UiBuilder getDesign() {
-		return SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder();
+	public Pane getDesign(@QueryParam("root") final String root) {
+		return SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().getRootPane(root);
 	}	
 	
 	@GET
@@ -248,6 +248,21 @@ public class NewGuiResource {
 			}
 		}
 		parent.fireFieldChange();
+		return "OK";
+	}
+	
+	@GET
+	@Path("/getRootPanes")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<String> getRootPanes() {
+		return SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().getList();
+	}
+	
+	@GET
+	@Path("/addRootPane")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String addRootPanes() {
+		SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().createRoot();
 		return "OK";
 	}
 }

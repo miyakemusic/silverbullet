@@ -703,6 +703,7 @@ class Table2 extends Widget {
 
 class NewLayout {
 	constructor(divParent) {
+		var me = this;
 		var divBase = divParent + "_newLayout";
 		$('#' + divParent).append('<div id="' + divBase + '"></div>');
 		
@@ -726,7 +727,11 @@ class NewLayout {
 		$('#' + div).css('vertical-align', 'top');
 		$('#' + div).css('border-style', 'solid');
 		
-		new NewLayoutLibrary(divLeft);
+		me.currentRoot = "";
+		new NewLayoutLibrary(divLeft, function(selectedRoot) {
+			me.currentRoot = selectedRoot;
+			retreiveDesign();
+		});
 
 		
 		$('#' + div).append('<input type="checkbox" id="' + editId + '"><label>Edit</label>');
@@ -749,7 +754,7 @@ class NewLayout {
 		var divMap = new Map();
 		
 		this.divNumber = 0;
-		var me = this;
+		
 		retreiveDesign();
 		
 		new MyWebSocket(function(msg) {
@@ -829,9 +834,9 @@ class NewLayout {
 			$('#' + mainDiv).empty();
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/newGui/getDesign",
-			   success: function(design){
-			   		build(design, mainDiv);
+			   url: "http://" + window.location.host + "/rest/newGui/getDesign?root=" + me.currentRoot,
+			   success: function(pane){
+			   		build(pane, mainDiv);
 			   		if (finished != null) {
 			   			finished();
 			   		}
@@ -891,8 +896,8 @@ class NewLayout {
 			});
 		}
 		
-		function build(design, div) {
-			buildSub(design.rootPane, div);
+		function build(pane, div) {
+			buildSub(pane, div);
 			
 			for (var [id, val] of widgetMap) {
 				if (id == '') {

@@ -1,6 +1,8 @@
 package jp.silverbullet.web.ui.part2;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -31,6 +33,9 @@ public class UiBuilder {
 				.css("position", "absolute")
 				.css("width", "800").css("height", "600")
 				.css("border-style", "dashed").css("border-width", "1px");	
+		
+		pane.setListener(this.listener);
+		
 		while(true) {
 			String candName = "Undefined" + (int)(Math.random()*10);
 			boolean ok = true;
@@ -51,6 +56,14 @@ public class UiBuilder {
 		return panes.values().iterator().next();
 	}
 
+
+	public Pane getRootPane(String root) {
+		if (root == null || root.isEmpty()) {
+			return this.getRootPane();
+		}
+		return panes.get(root);
+	}
+	
 	public void nameAll() {
 		if (this.widgetIdManager == null) {
 			widgetIdManager = new WidgetIdManager();
@@ -83,4 +96,9 @@ public class UiBuilder {
 		return null;
 		//return pane.getParent(divid);
 	}
+	
+	public List<String> getList() {
+		return new ArrayList<String>(this.panes.keySet());
+	}
+
 }
