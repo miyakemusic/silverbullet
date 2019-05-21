@@ -265,4 +265,12 @@ public class NewGuiResource {
 		SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().createRoot();
 		return "OK";
 	}
+	
+	@GET
+	@Path("/changeName")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String changeName(@QueryParam("oldName") final String oldName, @QueryParam("newName") final String newName) {
+		SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().changeRootName(oldName, newName);
+		return "OK";
+	}
 }

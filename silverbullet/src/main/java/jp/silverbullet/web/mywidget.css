@@ -100,3 +100,12 @@
 .priorityEmpty:hover {
 	background-color: yellow;
 }
+
+.listItem {
+	background-color: white;
+}
+
+.listItem.checked {
+	background-color: yellow;
+	font-weight:bold;
+}

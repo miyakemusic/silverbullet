@@ -101,4 +101,10 @@ public class UiBuilder {
 		return new ArrayList<String>(this.panes.keySet());
 	}
 
+	public void changeRootName(String oldName, String newName) {
+		Pane pane = this.panes.get(oldName);
+		this.panes.put(newName, pane);
+		this.panes.remove(oldName);
+	}
+
 }

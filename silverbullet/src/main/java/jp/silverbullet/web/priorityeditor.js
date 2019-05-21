@@ -33,9 +33,10 @@ class PriorityEditor {
 		
 		function build(priorities, msg) {
 			$('#' + mainId).empty();
-			var number = msg[0].value;
+			var firstIndex = priorities[0];
+			var number = msg[firstIndex].value;
 			var rowName = "";
-			var emptyName = msg[0].value;
+			var emptyName = msg[firstIndex].value;
 			$('#' + mainId).append('<div class="priorityLabel">High Priority</div>');
 			
 			emptyName = "row_" + parseInt(Number(priorities[0]) + 10);
