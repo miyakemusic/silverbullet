@@ -279,7 +279,7 @@ public class Pane {
 	@JsonIgnore
 	private Pane parent;
 	public Pane getParent(String divid) {
-		
+		parent = null;
 		new WalkThrough() {
 			@Override
 			protected boolean handle(Pane widget, Pane parent2) {

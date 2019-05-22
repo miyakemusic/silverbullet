@@ -255,7 +255,7 @@ public class NewGuiResource {
 	@Path("/getRootPanes")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<String> getRootPanes() {
-		return SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().getList();
+		return SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().getRootList();
 	}
 	
 	@GET

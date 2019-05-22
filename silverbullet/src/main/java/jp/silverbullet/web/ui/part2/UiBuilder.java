@@ -1,6 +1,7 @@
 package jp.silverbullet.web.ui.part2;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,10 +59,16 @@ public class UiBuilder {
 
 
 	public Pane getRootPane(String root) {
+		Pane ret = null;
 		if (root == null || root.isEmpty()) {
-			return this.getRootPane();
+			ret = this.getRootPane();
 		}
-		return panes.get(root);
+		else {
+			ret = panes.get(root);
+		}
+		
+		ret = ret.resolveLink();
+		return ret;
 	}
 	
 	public void nameAll() {
@@ -97,8 +104,10 @@ public class UiBuilder {
 		//return pane.getParent(divid);
 	}
 	
-	public List<String> getList() {
-		return new ArrayList<String>(this.panes.keySet());
+	public List<String> getRootList() {
+		List<String> ret = new ArrayList<String>(this.panes.keySet());
+		Collections.sort(ret);
+		return ret;
 	}
 
 	public void changeRootName(String oldName, String newName) {

@@ -243,7 +243,7 @@ public abstract class RestrictionMatrix {
 							String condition = "";
 							if (value.contains("(")) {
 								String[] tmp = value.split("()");
-								value2 = value.split("(")[0];
+								value2 = value.split("\\(")[0];
 							}
 							this.getDependencySpecHolder().getSpec(targetId).addValue(value2, "$" + this.getMainId(triggerId) + "==%" + triggerId, condition);
 						}
