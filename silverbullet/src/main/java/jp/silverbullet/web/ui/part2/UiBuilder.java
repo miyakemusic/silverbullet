@@ -58,7 +58,7 @@ public class UiBuilder {
 	}
 
 
-	public Pane getRootPane(String root) {
+	public Pane getRootPane(String root, boolean link) {
 		Pane ret = null;
 		if (root == null || root.isEmpty()) {
 			ret = this.getRootPane();
@@ -67,7 +67,10 @@ public class UiBuilder {
 			ret = panes.get(root);
 		}
 		
-		ret = ret.resolveLink();
+		if (link) {
+			ret = new LinkResolver(panes).resolve(ret);
+		}
+		
 		return ret;
 	}
 	

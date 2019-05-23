@@ -710,6 +710,7 @@ class NewLayout {
 		
 		var editId = divBase + "_edit";
 		var actionId = divBase + "_action";
+		var linkId = divBase + "_link";
 		
 		var div = divBase + "_right";
 		var divLeft = divParent + "_left";
@@ -738,12 +739,18 @@ class NewLayout {
 		$('#' + editId).click(function() {
 			retreiveDesign();
 			$('#' + actionId).prop('disabled', !$('#' + editId).prop('checked'));
-		});
-		
+		});		
 		
 		$('#' + div).append('<input type="checkbox" id="' + actionId + '"><label>Action</label>');
 		$('#' + actionId).prop('checked', true);
-		
+
+		$('#' + div).append('<input type="checkbox" id="' + linkId + '"><label>Link</label>');
+		$('#' + linkId).prop('checked', false);
+		$('#' + linkId).click(function() {
+			retreiveDesign();
+//			$('#' + linkId).prop('disabled', !$('#' + editId).prop('checked'));
+		});
+						
 		this.propertyWindow = new NewLayoutProperty(div);
 		
 		var mainDiv = div + "_mainDiv";
@@ -755,7 +762,7 @@ class NewLayout {
 		
 		this.divNumber = 0;
 		
-		retreiveDesign();
+//		retreiveDesign();
 		
 		new MyWebSocket(function(msg) {
 			var ids = msg.split(',');
@@ -834,7 +841,7 @@ class NewLayout {
 			$('#' + mainDiv).empty();
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/newGui/getDesign?root=" + me.currentRoot,
+			   url: "http://" + window.location.host + "/rest/newGui/getDesign?root=" + me.currentRoot + "&link=" + $('#' + linkId).prop('checked'),
 			   success: function(pane){
 			   		build(pane, mainDiv);
 			   		if (finished != null) {

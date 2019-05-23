@@ -11,7 +11,7 @@ import jp.silverbullet.web.KeyValue;
 import jp.silverbullet.web.ui.part2.UiBuilder.PropertyField;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class Pane {
+public class Pane implements Cloneable {
 
 	public Layout layout = Layout.VERTICAL;
 	public List<Pane> widgets = new ArrayList<>();
@@ -333,4 +333,40 @@ public class Pane {
 	public void setOptional(String optional2) {
 		this.optional = optional2;
 	}
+	
+	@Override
+	protected Pane clone() {
+		try {
+			Pane pane = (Pane)super.clone();
+			pane.widgets = new ArrayList<Pane>(this.widgets);
+			return pane;
+			
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	// bad design this should be a saparated class
+	@JsonIgnore
+	private Pane foundPane = null;
+	public Pane findLink(String linkName) {
+		foundPane = null;
+		new WalkThrough() {
+			@Override
+			protected boolean handle(Pane widget, Pane parent2) {
+				if (widget.optional.startsWith("$NAME")) {
+					String name = widget.optional.split("=")[1];
+					if (linkName.equals(name)) {
+						foundPane = widget;
+						return false;
+					}
+				}
+
+				return true;
+			}
+		}.walkThrough(this, null);
+		return foundPane;
+	}
+	
 }

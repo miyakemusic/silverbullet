@@ -23,8 +23,8 @@ public class NewGuiResource {
 	@GET
 	@Path("/getDesign")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public Pane getDesign(@QueryParam("root") final String root) {
-		return SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().getRootPane(root);
+	public Pane getDesign(@QueryParam("root") final String root, @QueryParam("link") final boolean link) {
+		return SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().getRootPane(root, link);
 	}	
 	
 	@GET
