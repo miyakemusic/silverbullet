@@ -35,6 +35,7 @@ class DependencyClass2 {
 		var idDiagramButton = div + "_diagamButton";
 		$('#' + div).append('<button id="' + idDiagramButton + '">Show Diagram</button>');
 		$('#' + idDiagramButton).click(function() {
+			me.updateLink();
 			$('#' + idDiagram).dialog('open');
 			diagramActive = true;
 		});

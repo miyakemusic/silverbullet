@@ -119,4 +119,14 @@ public class UiBuilder {
 		this.panes.remove(oldName);
 	}
 
+	public Pane getPaneByName(String name, boolean link) {
+		for (Pane pane : this.panes.values()) {
+			Pane ret = pane.findLink(name);
+			if (ret != null) {
+				return ret;
+			}
+		}
+		return null;
+	}
+
 }

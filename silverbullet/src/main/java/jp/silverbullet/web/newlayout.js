@@ -231,10 +231,45 @@ class StaticText extends Widget {
 	constructor(widget, parent, divid) {
 		super(widget, parent, divid);
 		
-//		$('#' + parent).append('<div id="' + this.divid + '"><label>' + widget.text + '</label></div>');
 		$('#' + parent).append('<div id="' + this.divid + '">' + widget.text + '</div>');
-//		$('#' + this.comboId).css("width", "100%");
-//		$('#' + this.comboId).css("height", "100%");
+	}
+	
+	onUpdateValue(property) {
+	}
+}
+
+class Dialog extends Widget {
+	constructor(widget, parent, divid, retreiveDesignDialog) {
+		super(widget, parent, divid);
+		
+		$('#' + parent).append('<div id="' + divid + '" class="mybutton canpush"></div>');
+		
+		var dialogId = divid + '_dialog';
+		$('#' + parent).append('<div id="' + dialogId + '"></div>');
+		
+		$('#' + dialogId).dialog({
+			  autoOpen: false,
+			  title: 'Properties',
+			  closeOnEscape: false,
+			  modal: false,
+			  buttons: {
+			    "Close": function(){
+			    	$(this).dialog('close');
+			    }
+			  },
+			width: 800,
+			height: 500
+		});	
+		
+		$('#' + divid).click(function() {
+			$('#' + dialogId).dialog('open');
+			if (widget.optional.startsWith('$DIALOG')) {
+				var name = widget.optional.split('=')[1];
+				retreiveDesignDialog(name, dialogId);
+			}
+		});
+		
+		
 	}
 	
 	onUpdateValue(property) {
@@ -839,9 +874,10 @@ class NewLayout {
 			divMap.clear();
 			
 			$('#' + mainDiv).empty();
+			var link = $('#' + linkId).prop('checked') || !$('#' + editId).prop('checked');
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/newGui/getDesign?root=" + me.currentRoot + "&link=" + $('#' + linkId).prop('checked'),
+			   url: "http://" + window.location.host + "/rest/newGui/getDesign?root=" + me.currentRoot + "&link=" + link,
 			   success: function(pane){
 			   		build(pane, mainDiv);
 			   		if (finished != null) {
@@ -851,6 +887,17 @@ class NewLayout {
 			});	
 		}
 		
+		function retreiveDesignDialog(name, div) {			
+			var link = $('#' + linkId).prop('checked') || !$('#' + editId).prop('checked');
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/newGui/getDesignByName?name=" + name + "&link=" + link,
+			   success: function(pane){
+			   		build(pane, div);
+			   }
+			});	
+		}
+				
 		function getProperty(id, index, callback) {
 			if (propertyMap[id] != null) {
 				callback(propertyMap[id]);
@@ -984,7 +1031,10 @@ class NewLayout {
 			else if (widget.type == 'Slider') {	
 				wrappedWidget = new Slider(widget, parentDiv, divid);
 			}
-											
+			else if (widget.type == 'Dialog') {	
+				wrappedWidget = new Dialog(widget, parentDiv, divid, retreiveDesignDialog);
+			}
+														
 			wrappedWidget.accessor(
 				function(id, index, value) {
 					if ($('#' + editId).prop('checked') && !$('#' + actionId).prop('checked')) {
