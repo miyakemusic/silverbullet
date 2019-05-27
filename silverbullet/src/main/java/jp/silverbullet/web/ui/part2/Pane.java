@@ -27,6 +27,9 @@ public class Pane implements Cloneable {
 	public String optional = "";
 	
 	@JsonIgnore
+	public List<String> volatileInfo = new ArrayList<>();
+	
+	@JsonIgnore
 	public String widgetId;
 	
 	private UiBuilderListener listener;
@@ -176,7 +179,7 @@ public class Pane implements Cloneable {
 	public void applyWidgetId(WidgetIdManager widgetIdManager) {
 		this.widgetIdManager = widgetIdManager;
 		this.widgetId = widgetIdManager.createWidgetId(this);
-		new WalkThrough() {
+		new PaneWalkThrough() {
 			@Override
 			protected boolean handle(Pane widget, Pane parent) {
 				widget.widgetId = widgetIdManager.createWidgetId(widget);
@@ -238,23 +241,9 @@ public class Pane implements Cloneable {
 		return this;
 	}
 	
-	abstract class WalkThrough {
-		abstract protected boolean handle(Pane widget, Pane parent);
-		void walkThrough(Pane pane, Pane parent) {
-			if (!handle(pane, parent)) {
-				return;
-			}
-			for (Pane w : pane.widgets) {
-				if (w == null) {
-					continue;
-				}
-				walkThrough( w, pane);
-			}
-		}
-	}
 
 	public void setListener(UiBuilderListener uiBuilderListener) {
-		new WalkThrough() {
+		new PaneWalkThrough() {
 			@Override
 			protected boolean handle(Pane widget, Pane parent) {
 				widget.listener = uiBuilderListener;
@@ -280,7 +269,7 @@ public class Pane implements Cloneable {
 	private Pane parent;
 	public Pane getParent(String divid) {
 		parent = null;
-		new WalkThrough() {
+		new PaneWalkThrough() {
 			@Override
 			protected boolean handle(Pane widget, Pane parent2) {
 				if (widget.widgetId.equals(divid)) {
@@ -339,6 +328,7 @@ public class Pane implements Cloneable {
 		try {
 			Pane pane = (Pane)super.clone();
 			pane.widgets = new ArrayList<Pane>(this.widgets);
+//			pane.volatileInfo = new ArrayList<String>();
 			return pane;
 			
 		} catch (CloneNotSupportedException e) {
@@ -352,7 +342,7 @@ public class Pane implements Cloneable {
 	private Pane foundPane = null;
 	public Pane findLink(String linkName) {
 		foundPane = null;
-		new WalkThrough() {
+		new PaneWalkThrough() {
 			@Override
 			protected boolean handle(Pane widget, Pane parent2) {
 				if (widget.optional.startsWith("$NAME")) {

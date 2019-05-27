@@ -15,17 +15,7 @@ public class LinkResolver {
 		ret.widgets.clear();
 		
 		walkThrough(pane, ret);
-//		for (Pane subPane : pane.widgets) {
-//			if (subPane.optional.startsWith("$LINK")) {
-//				String linkId = subPane.optional.split("=")[1];
-//				Pane linkPane = findPane(linkId);
-//				if (linkPane != null) {
-//					subPane.addChild(linkPane);
-//				}
-//			}
-//			
-//			resolve(subPane);
-//		}
+
 		return ret;
 	}
 

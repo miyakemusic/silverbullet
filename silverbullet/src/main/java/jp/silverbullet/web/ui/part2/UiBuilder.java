@@ -67,6 +67,8 @@ public class UiBuilder {
 			ret = panes.get(root);
 		}
 		
+		updateVolatileInfo(ret);
+		
 		if (link) {
 			ret = new LinkResolver(panes).resolve(ret);
 		}
@@ -74,6 +76,29 @@ public class UiBuilder {
 		return ret;
 	}
 	
+	private void updateVolatileInfo(Pane pane) {
+		// decides dialog size
+		new PaneWalkThrough() {
+			@Override
+			protected boolean handle(Pane widget, Pane parent2) {
+				widget.volatileInfo.clear();
+				if (widget.type.equals(WidgetType.Dialog)) {
+					if (widget.optional.startsWith("$CONTENT")) {
+						String linkId = widget.optional.split("=")[1];
+						Pane content = getPaneByName(linkId, false);
+
+						widget.volatileInfo.add("width="  + String.valueOf((Integer.valueOf(content.css("width")) + 100)));
+						widget.volatileInfo.add("height="  + String.valueOf((Integer.valueOf(content.css("height")) + 150)));
+					}
+				}
+
+				return true;
+			}
+		}.walkThrough(pane, null);
+		
+
+	}
+
 	public void nameAll() {
 		if (this.widgetIdManager == null) {
 			widgetIdManager = new WidgetIdManager();
@@ -122,7 +147,11 @@ public class UiBuilder {
 	public Pane getPaneByName(String name, boolean link) {
 		for (Pane pane : this.panes.values()) {
 			Pane ret = pane.findLink(name);
+			
 			if (ret != null) {
+				if (link) {
+					ret = new LinkResolver(panes).resolve(ret);
+				}
 				return ret;
 			}
 		}

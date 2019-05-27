@@ -22,6 +22,13 @@ class Widget {
 		this.getter(id, index, callback);
 	}
 	
+	set actionEnabled(actionEnabled) {
+		this._actionEnabled = actionEnabled
+	}
+	
+	get actionEnabled() {
+		return this._actionEnabled;
+	}
 }
 
 class RegisterShortcut extends Widget {
@@ -244,28 +251,59 @@ class Dialog extends Widget {
 		
 		$('#' + parent).append('<div id="' + divid + '" class="mybutton canpush"></div>');
 		
-		var dialogId = divid + '_dialog';
-		$('#' + parent).append('<div id="' + dialogId + '"></div>');
+		this.dialogId = divid + '_dialog';
 		
-		$('#' + dialogId).dialog({
-			  autoOpen: false,
-			  title: 'Properties',
-			  closeOnEscape: false,
-			  modal: false,
-			  buttons: {
-			    "Close": function(){
-			    	$(this).dialog('close');
-			    }
-			  },
-			width: 800,
-			height: 500
-		});	
+//		this.dialogId = this.dialogId + Math.random();
+//		this.dialogId = this.dialogId.replace('.', '');
 		
+//		$('#' + this.dialogId).dialog('destroy'); // if already created, remove at first.
+		
+		$('#' + parent).append('<div id="' + this.dialogId + '"></div>');
+		
+		var width = 600;
+		var height = 400;
+		
+		for (var s of widget.volatileInfo) {
+			if (s.startsWith('width=')) {
+				width = s.split('=')[1];
+			}
+			else if (s.startsWith('height=')) {
+				height = s.split('=')[1];
+			}			
+		}
+		
+		var me = this;
+				
+				
 		$('#' + divid).click(function() {
-			$('#' + dialogId).dialog('open');
-			if (widget.optional.startsWith('$DIALOG')) {
-				var name = widget.optional.split('=')[1];
-				retreiveDesignDialog(name, dialogId);
+			$('#' + me.dialogId).dialog({
+				  autoOpen: false,
+				  title: me.property.title,
+				  closeOnEscape: false,
+				  modal: false,
+				  buttons: {
+				    "OK": function(){
+				    	$('#' + me.dialogId).empty();
+				    	$(this).dialog('destroy');
+				    	
+				    },
+				    "Cancel": function(){
+				    	$('#' + me.dialogId).empty();
+				    	$(this).dialog('destroy');
+				    }
+				  },
+				width: width,
+				height: height
+			});
+		
+			if (me.actionEnabled) {
+				$('#' + me.dialogId).empty();
+				$('#' + me.dialogId).dialog('open');
+				
+				if (widget.optional.startsWith('$CONTENT')) {
+					var name = widget.optional.split('=')[1];
+					retreiveDesignDialog(name, me.dialogId);
+				}
 			}
 		});
 		
@@ -273,6 +311,12 @@ class Dialog extends Widget {
 	}
 	
 	onUpdateValue(property) {
+		$('#' + this.divid).text(property.title);
+		this.property = property;
+//		$('#' + this.dialogId).dialog('option', 'title', property.title);
+		
+//		$('#' + me.dialogId).dialog('title', property.title);
+		
 	}
 }
 
@@ -778,6 +822,10 @@ class NewLayout {
 		
 		$('#' + div).append('<input type="checkbox" id="' + actionId + '"><label>Action</label>');
 		$('#' + actionId).prop('checked', true);
+		$('#' + actionId).click(function() {
+			retreiveDesign();
+			//$('#' + actionId).prop('disabled', !$('#' + editId).prop('checked'));
+		});	
 
 		$('#' + div).append('<input type="checkbox" id="' + linkId + '"><label>Link</label>');
 		$('#' + linkId).prop('checked', false);
@@ -982,8 +1030,12 @@ class NewLayout {
 		}
 		
 		function buildSub(widget, parentDiv) {
+			// adding parentDiv in order to avoid ID duplication. for Dialog pane.
 			var divid = widget.widgetId;
-			
+
+			if (parentDiv.includes('dialog')) {
+				divid = "dialog_" + divid;
+			}
 			var wrappedWidget = new Widget(widget, parentDiv, divid);
 
 			if (widget.type == 'Pane') {
@@ -1034,10 +1086,11 @@ class NewLayout {
 			else if (widget.type == 'Dialog') {	
 				wrappedWidget = new Dialog(widget, parentDiv, divid, retreiveDesignDialog);
 			}
-														
+			
+			var actionEnabled = !$('#' + editId).prop('checked') || $('#' + actionId).prop('checked');							
 			wrappedWidget.accessor(
 				function(id, index, value) {
-					if ($('#' + editId).prop('checked') && !$('#' + actionId).prop('checked')) {
+					if (!actionEnabled) {
 						return;
 					}
 					setValue(id, index, value);
@@ -1046,6 +1099,8 @@ class NewLayout {
 					getProperty(id, index, callback);
 				}
 			);
+			
+			wrappedWidget.actionEnabled = actionEnabled;
 			
 			var id = widget.id;
 			addWidget(id, wrappedWidget);
