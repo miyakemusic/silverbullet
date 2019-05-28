@@ -39,7 +39,14 @@ public class LinkGenerator {
 	abstract class WalkThrough {
 		public boolean walk(DependencyNode me, List<GenericLink> links, Set<String> loops, ArrayList<String> experienced) {
 			if (experienced.contains(me.getId())) {
-				loops.add(experienced.get(experienced.size()-2) + "-" +  experienced.get(experienced.size()-1));
+				if (experienced.size() > 2) {
+					String from = experienced.get(experienced.size()-2);
+					String to = experienced.get(experienced.size()-1);
+					loops.add(from + "-" +  to);
+				}
+				else {
+					loops.add(experienced.get(experienced.size()-1));
+				}
 				return false;
 			}
 			experienced.add(me.getId());
@@ -72,6 +79,9 @@ public class LinkGenerator {
 	
 	private void createLink(DependencyNode node, List<GenericLink> links) {
 		for (DependencyLink child : node.getChildLinks()) {
+			if (child.getId().equals(node.getId())) {
+				continue;
+			}
 			createLink(node.getId(), child.getId(), child.getTargetElement(), links);
 		}
 	}
