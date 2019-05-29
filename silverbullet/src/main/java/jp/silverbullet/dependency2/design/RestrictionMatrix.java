@@ -185,7 +185,7 @@ public abstract class RestrictionMatrix {
 
 	public void build() {
 		resetMask();
-//		this.collectId();
+		this.collectId();
 		DependencySpecHolder holder = getDependencySpecHolder();
 		holder.clear();
 
@@ -292,6 +292,10 @@ public abstract class RestrictionMatrix {
 		return this.getPropertyDef(id).isList();
 	}
 
+	private boolean isBoolean(String id) {
+		return this.getPropertyDef(id).isBoolean();
+	}
+	
 	private boolean isNumeric(String id) {
 		return this.getPropertyDef(id).isNumeric();
 	}
@@ -450,7 +454,12 @@ public abstract class RestrictionMatrix {
 				continue;
 			}
 			if (this.getPriority(id) >= this.getPriority(triggerMainId)) {
-				ret += "($" + id + "==%" + option + ")||";
+				if (this.isBoolean(id)) {
+					ret += "($" + id + "==" + "true" + ")||";
+				}
+				else {
+					ret += "($" + id + "==%" + option + ")||";
+				}
 			}
 		}
 		if (ret.isEmpty()) {

@@ -326,6 +326,90 @@ public class RestrictionMatrixTest {
 		assertEquals(0, exp2.size());
 	}
 
+	@Test
+	public void testValue() throws Exception {
+		PropertyHolder2 holder = new PropertyHolder2();
+		PropertyFactory factory = new PropertyFactory();
+		RuntimePropertyStore store = new RuntimePropertyStore(holder);
+
+		holder.addProperty(factory.createList("ID_BAND").option("ID_BAND_A", "A", "").option("ID_BAND_B", "B", "")
+				.option("ID_BAND_C", "C", "").option("ID_BAND_D", "D", ""));
+		holder.addProperty(factory.createList("ID_OPTION").option("ID_OPTION_A", "A", "").option("ID_OPTION_B", "B", ""));
+		holder.addProperty(factory.createNumeric("ID_NUMERIC"));
+		
+		DependencySpecHolder depSpecHolder = new DependencySpecHolder();
+		
+		RestrictionMatrix matrix = new RestrictionMatrix() {
+			@Override
+			protected DependencySpecHolder getDependencySpecHolder() {
+				return depSpecHolder;
+			}
+
+			@Override
+			protected void resetMask() {
+
+			}
+
+			@Override
+			protected RuntimeProperty getRuntimeProperty(String id, int index) {
+				return store.get(id, index);
+			}
+
+			@Override
+			protected RuntimeProperty getRuntimeProperty(String id) {
+				return store.get(id);
+			}
+
+			@Override
+			protected PropertyDef2 getPropertyDef(String id) {
+				return holder.get(id);
+			}
+
+			@Override
+			protected List<PropertyDef2> getAllPropertieDefs() {
+				return new ArrayList<PropertyDef2>(holder.getProperties());
+			}
+			
+		};
+		
+		matrix.add("ID_BAND", AxisType.X);
+		matrix.add("ID_NUMERIC", AxisType.X);
+		matrix.add("ID_NUMERIC", AxisType.Y);
+		matrix.add("ID_BAND", AxisType.Y);
+		matrix.add("ID_OPTION", AxisType.Y);
+		
+		matrix.updateValue(matrix.yTitle.indexOf("ID_NUMERIC"), matrix.xTitle.indexOf("ID_BAND_A"), "0");
+		matrix.updateValue(matrix.yTitle.indexOf("ID_NUMERIC"), matrix.xTitle.indexOf("ID_BAND_B"), "100");
+		matrix.updateValue(matrix.yTitle.indexOf("ID_NUMERIC"), matrix.xTitle.indexOf("ID_BAND_B"), "100");
+
+		matrix.updateValue(matrix.yTitle.indexOf("ID_BAND"), matrix.xTitle.indexOf("ID_NUMERIC"), "ID_BAND_C:*");
+		matrix.updateValue(matrix.yTitle.indexOf("ID_OPTION"), matrix.xTitle.indexOf("ID_BAND_A"), "ID_OPTION_A");
+		
+		matrix.build();	
+		
+		{
+			DependencySpec spec = depSpecHolder.getSpec("ID_NUMERIC");
+			List<Expression> expected = Arrays.asList(
+					new Expression("0", "$ID_BAND==%ID_BAND_A", ""),
+					new Expression("100", "$ID_BAND==%ID_BAND_B", "")
+					);
+			testSpec(spec, expected, DependencySpec.Value);	
+		}
+		{
+			DependencySpec spec = depSpecHolder.getSpec("ID_BAND");
+			List<Expression> expected = Arrays.asList(
+					new Expression("ID_BAND_C", "$ID_NUMERIC==$ID_NUMERIC", "")
+					);
+			testSpec(spec, expected, DependencySpec.Value);	
+		}
+		{
+			DependencySpec spec = depSpecHolder.getSpec("ID_OPTION");
+			List<Expression> expected = Arrays.asList(
+					new Expression("ID_OPTION_A", "$ID_BAND==%ID_BAND_A", "")
+					);
+			testSpec(spec, expected, DependencySpec.Value);	
+		}
+	}
 //	@Test
 //	public void testSamePriority() throws Exception {
 //		PropertyHolder2 holder = new PropertyHolder2();
