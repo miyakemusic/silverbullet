@@ -21,6 +21,7 @@ class JsMyTable {
 		this.listenerRemove = function() {};
 		
 		this.allChecks = [];
+		this.allTexts = new Map();
 	}
 	
 	clear() {
@@ -158,10 +159,16 @@ class JsMyTable {
 					}
 				});
 			}
-			else {
-				new EditableText(tdId, v, function(value) {
+			else {			
+				var key = new Object();
+				key.k = k;
+				key.row = row;
+				key.id = tdId;	
+				var edit = new EditableText(tdId, v, function(value) {
 					me.listenerChange(row, k, value);
 				});
+				
+				me.allTexts.set(key, edit);
 			}
 		});		
 			
@@ -177,6 +184,10 @@ class JsMyTable {
 	updateData() {
 		for (var checkbox of this.allChecks) {
 			$('#' + checkbox.id).prop('checked', this.colDef(checkbox.k, checkbox.row, 'checked'));
+		}
+		for (var [key, value] of this.allTexts) {
+			var text = this.colDef(key.k, key.row, 'text');
+			value.setText(text);
 		}
 	}
 }

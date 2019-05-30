@@ -377,9 +377,19 @@ public class RestrictionMatrixTest {
 		matrix.add("ID_NUMERIC", AxisType.Y);
 		matrix.add("ID_BAND", AxisType.Y);
 		matrix.add("ID_OPTION", AxisType.Y);
+
+		/*
+		 * 
+		|         | BAND  | BAND A | BAND B | BAND C | BAND D | NUMERIC | 
+		| NUMERIC |       |    0   |   100  |        |        |         |
+		| BAND    |       |        |        |        |        |BAND_C:* |
+		| BAND A  |       |        |        |        |        |         |
+		| BAND B  |       |        |        |        |        |         |
+		| BAND C  |       |        |        |        |        |         |
+		| BAND D  |       |        |        |        |        |         |
 		
+	 */
 		matrix.updateValue(matrix.yTitle.indexOf("ID_NUMERIC"), matrix.xTitle.indexOf("ID_BAND_A"), "0");
-		matrix.updateValue(matrix.yTitle.indexOf("ID_NUMERIC"), matrix.xTitle.indexOf("ID_BAND_B"), "100");
 		matrix.updateValue(matrix.yTitle.indexOf("ID_NUMERIC"), matrix.xTitle.indexOf("ID_BAND_B"), "100");
 
 		matrix.updateValue(matrix.yTitle.indexOf("ID_BAND"), matrix.xTitle.indexOf("ID_NUMERIC"), "ID_BAND_C:*");

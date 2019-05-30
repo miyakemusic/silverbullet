@@ -17,18 +17,12 @@ import jp.silverbullet.dependency2.design.RestrictionMatrix;
 @Path("/dependencyDesign")
 public class DependencyDesignResource {
 	@GET
-	@Path("/getEnableSpec")
+	@Path("/getSpec")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public RestrictionMatrix getEnableSpec() {
 		return SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner();
 	}
 	
-	@GET
-	@Path("/getValueSpec")
-	@Produces(MediaType.APPLICATION_JSON) 
-	public RestrictionMatrix getValueSpec() {
-		return SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner();
-	}
 	
 	@GET
 	@Path("/getTriggers")

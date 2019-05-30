@@ -143,6 +143,7 @@ public abstract class RestrictionMatrix {
 		this.spec.setValue(trigger, target, value);		
 //		this.spec.setValue(target, this.getMainId(trigger), trigger + ":" + value);
 		this.createMatrix();
+		this.fireUpdateMatrix();
 	}
 
 	private void calculateCondition(List<String> list) {

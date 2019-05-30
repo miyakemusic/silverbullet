@@ -21,6 +21,20 @@ class DependencyDesign {
 		}
 		
 		var colDefValueTable = function(k, row, type) {
+			if (type == 'type') {
+				return 'text';
+			}
+			else if (type == 'checked') {
+			//	var index = me.current.yTitle.indexOf(row);
+			//	return me.current.enableMatrix[index][k-1].enabled;
+			}
+			else if (type == 'text') {
+				if (row == 'title') {
+					return me.current.xTitle[me.current.xTitle.indexOf(k)];
+				}
+				var index = me.current.yTitle.indexOf(row);
+				return me.current.valueMatrix[index][k-1];
+			}		
 		}
 		
 		new MyWebSocket(function(msg) {				
@@ -227,6 +241,7 @@ class DependencyDesign {
 			function replaceTable(msg) {
 				me.current = msg;
 				me.enabledTable.updateData();
+				me.valueTable.updateData();
 			}
 		}
 		
@@ -264,7 +279,7 @@ class DependencyDesign {
 			
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/dependencyDesign/getEnableSpec",
+			   url: "http://" + window.location.host + "/rest/dependencyDesign/getSpec",
 			   success: function(msg){
 					updateEnableList(msg);
 			   }

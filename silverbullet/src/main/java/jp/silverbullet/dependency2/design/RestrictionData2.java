@@ -21,6 +21,13 @@ public class RestrictionData2 {
 			this.values.put(target, new HashMap<String, String>());
 		}
 		this.values.get(target).put(trigger, value);
+		
+		if (value.equals(">")) {
+			this.values.get(trigger).put(target, "<");
+		}
+		else if (value.equals("<")) {
+			this.values.get(trigger).put(target, ">");
+		}
 	}
 	
 	public String getValue(String triggerId, String targetId) {

@@ -46,5 +46,14 @@ class EditableText {
 		function setLabelValue(value) {
 			$('#' + labelId).text(value);
 		}
+		
+		this.text = function text(text) {
+			$('#' + editId).val(text);
+			$('#' + labelId).text(text);
+		}
+	}
+	
+	setText(text) {
+		this.text(text);
 	}
 }
