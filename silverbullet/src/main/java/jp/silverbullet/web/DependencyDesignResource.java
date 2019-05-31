@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.ws.rs.Encoded;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -49,7 +50,8 @@ public class DependencyDesignResource {
 	@GET
 	@Path("/changeSpecValue")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String changeSpecValue(@QueryParam("row") final int row, @QueryParam("col") final int col, @QueryParam("value") final String value) {
+	public String changeSpecValue(@QueryParam("row") final int row, @QueryParam("col") final int col, 
+			@QueryParam("value") @Encoded final String value) {
 		SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner().updateValue(row, col, value);
 		return "OK";
 	}

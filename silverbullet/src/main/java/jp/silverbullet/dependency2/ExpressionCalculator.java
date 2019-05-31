@@ -66,7 +66,12 @@ public abstract class ExpressionCalculator {
 
 	public String calculate(String expression) {
 		String expression2 = replaceWithRealValue(expression);
-		return String.valueOf(getReturn(expression2));
+		if (expression.startsWith("ret=")) {
+			return String.valueOf(getReturn(expression2));
+		}
+		else {
+			return String.valueOf(getReturn("ret=" + expression2));
+		}
 	}
 	
 	private Object getReturn(String expression) {

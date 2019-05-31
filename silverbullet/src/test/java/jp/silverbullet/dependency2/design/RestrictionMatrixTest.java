@@ -336,6 +336,7 @@ public class RestrictionMatrixTest {
 				.option("ID_BAND_C", "C", "").option("ID_BAND_D", "D", ""));
 		holder.addProperty(factory.createList("ID_OPTION").option("ID_OPTION_A", "A", "").option("ID_OPTION_B", "B", ""));
 		holder.addProperty(factory.createNumeric("ID_NUMERIC"));
+		holder.addProperty(factory.createNumeric("ID_NUMERIC2"));
 		
 		DependencySpecHolder depSpecHolder = new DependencySpecHolder();
 		
@@ -374,24 +375,29 @@ public class RestrictionMatrixTest {
 		
 		matrix.add("ID_BAND", AxisType.X);
 		matrix.add("ID_NUMERIC", AxisType.X);
+		matrix.add("ID_NUMERIC2", AxisType.X);
+		
 		matrix.add("ID_NUMERIC", AxisType.Y);
 		matrix.add("ID_BAND", AxisType.Y);
 		matrix.add("ID_OPTION", AxisType.Y);
-
+		matrix.add("ID_NUMERIC2", AxisType.Y);
+		
 		/*
 		 * 
-		|         | BAND  | BAND A | BAND B | BAND C | BAND D | NUMERIC | 
-		| NUMERIC |       |    0   |   100  |        |        |         |
-		| BAND    |       |        |        |        |        |BAND_C:* |
-		| BAND A  |       |        |        |        |        |         |
-		| BAND B  |       |        |        |        |        |         |
-		| BAND C  |       |        |        |        |        |         |
-		| BAND D  |       |        |        |        |        |         |
+		|         | BAND  | BAND A | BAND B | BAND C | BAND D | NUMERIC | NUMERIC2 | 
+		| NUMERIC |       |    0   |   100  |        |        |         |     <    |
+		| BAND    |       |        |        |        |        |BAND_C:* |          |
+		| BAND A  |       |        |        |        |        |         |          |
+		| BAND B  |       |        |        |        |        |         |          |
+		| BAND C  |       |        |        |        |        |         |          |
+		| BAND D  |       |        |        |        |        |         |          |
+		| NUMERIC2|       |        |        |        |        |         |          |
 		
 	 */
 		matrix.updateValue(matrix.yTitle.indexOf("ID_NUMERIC"), matrix.xTitle.indexOf("ID_BAND_A"), "0");
 		matrix.updateValue(matrix.yTitle.indexOf("ID_NUMERIC"), matrix.xTitle.indexOf("ID_BAND_B"), "100");
-
+		matrix.updateValue(matrix.yTitle.indexOf("ID_NUMERIC"), matrix.xTitle.indexOf("ID_NUMERIC2"), "<");
+		
 		matrix.updateValue(matrix.yTitle.indexOf("ID_BAND"), matrix.xTitle.indexOf("ID_NUMERIC"), "ID_BAND_C:*");
 		matrix.updateValue(matrix.yTitle.indexOf("ID_OPTION"), matrix.xTitle.indexOf("ID_BAND_A"), "ID_OPTION_A");
 		
@@ -401,7 +407,15 @@ public class RestrictionMatrixTest {
 			DependencySpec spec = depSpecHolder.getSpec("ID_NUMERIC");
 			List<Expression> expected = Arrays.asList(
 					new Expression("0", "$ID_BAND==%ID_BAND_A", ""),
-					new Expression("100", "$ID_BAND==%ID_BAND_B", "")
+					new Expression("100", "$ID_BAND==%ID_BAND_B", ""),
+					new Expression("$ID_NUMERIC2", "$ID_NUMERIC>$ID_NUMERIC2", "")
+					);
+			testSpec(spec, expected, DependencySpec.Value);	
+		}
+		{
+			DependencySpec spec = depSpecHolder.getSpec("ID_NUMERIC2");
+			List<Expression> expected = Arrays.asList(
+					new Expression("$ID_NUMERIC", "$ID_NUMERIC2<$ID_NUMERIC", "")
 					);
 			testSpec(spec, expected, DependencySpec.Value);	
 		}

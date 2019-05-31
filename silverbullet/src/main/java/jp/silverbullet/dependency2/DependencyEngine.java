@@ -91,9 +91,25 @@ public abstract class DependencyEngine {
 		handle(id, value);
 		this.cachedPropertyStore.removeCachedPropertyStoreListener(prevChangedProperties);
 		
+		List<Id> done = new ArrayList<>();
 		while(prevChangedProperties.getIds().size() > 0) {
 			prevChangedProperties = handleNext(prevChangedProperties);
+			if (contains(done, prevChangedProperties.getIds())) {
+				break;
+			}
+			done.addAll(prevChangedProperties.getIds());
 		}
+	}
+
+	private boolean contains(List<Id> done, List<Id> ids) {
+		for (Id id : ids) {
+			for (Id id2: done) {
+				if (id.equals(id2)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	private ChangedProperties handleNext(ChangedProperties prevChangedProperties) throws RequestRejectedException {
@@ -141,7 +157,10 @@ public abstract class DependencyEngine {
 						throw new RequestRejectedException(property.getId() + "Selection is valid");
 					}
 					else {
-						reselectClosestValue(property);
+						boolean reselected = reselectClosestValue(property);
+						if (!reselected) {
+							throw new RequestRejectedException(property.getId() + "Nothing can be selected"); 
+						}
 					}
 				}
 			}
@@ -150,6 +169,9 @@ public abstract class DependencyEngine {
 			}
 			else if (spec.isValue()) {
 				String val = spec.getExpression().getValue();
+				if (val.contains("$")) {
+					val = this.calculator.calculate(val);
+				}
 				if (property.isList()) {
 					val = val.replace("%", "");
 				}
@@ -302,7 +324,7 @@ public abstract class DependencyEngine {
 		return Double.valueOf(val1) > Double.valueOf(val2);
 	}
 
-	private void reselectClosestValue(RuntimeProperty property) {
+	private boolean reselectClosestValue(RuntimeProperty property) {
 		List<String> listIds = property.getListIds();
 		int currentIndex = listIds.indexOf(property.getCurrentValue());
 		int limit = Math.max(listIds.size() - currentIndex, currentIndex);
@@ -311,17 +333,18 @@ public abstract class DependencyEngine {
 			if (index < listIds.size()) {
 				if (!property.isOptionDisabled(index)) {
 					property.setCurrentValue(listIds.get(index));
-					return;
+					return true;
 				}
 			}
 			index = currentIndex - width;
 			if (index >= 0) {
 				if (!property.isOptionDisabled(index)) {
 					property.setCurrentValue(listIds.get(index));
-					return;
+					return true;
 				}
 			}
 		}
+		return false;
 	}
 
 

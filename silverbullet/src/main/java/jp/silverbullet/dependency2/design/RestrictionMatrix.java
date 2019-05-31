@@ -199,7 +199,7 @@ public abstract class RestrictionMatrix {
 			for (String triggerId : idsSamePriority) {
 				// Calculates same priority IDs
 				for (String targetId : idsSamePriority) {
-					if (!targetId.equals(triggerId)) {
+					if (!targetId.equals(triggerId) && (isMainId(targetId) && isMainId(triggerId))) {
 						if (isList(targetId) && isList(triggerId)) {
 							calculateSamePriorityIds(triggerId, targetId);
 						}
@@ -227,14 +227,14 @@ public abstract class RestrictionMatrix {
 				PropertyDef2 triggerProp = this.getPropertyDef(this.getMainId(triggerId));
 				
 				if (targetProp.isNumeric()) {
-					if (value.equals("<")) {
+					if (value.equals(">")) {
 						this.getDependencySpecHolder().getSpec(targetId).addValue("$" + triggerId, "$" + targetId + "<$" + triggerId);
 					}
-					else if (value.equals(">")) {
+					else if (value.equals("<")) {
 						this.getDependencySpecHolder().getSpec(targetId).addValue("$" + triggerId, "$" + targetId + ">$" + triggerId);						
 					}
 					else {
-						this.getDependencySpecHolder().getSpec(targetId).addValue(value, "$" + this.getMainId(triggerId) + "==%" + triggerId);
+						this.getDependencySpecHolder().getSpec(targetId).addValue(value, "$" + this.getMainId(triggerId) + "==" + attachSign(triggerId));
 					}
 				}
 				else if (targetProp.isList()) {
@@ -285,6 +285,13 @@ public abstract class RestrictionMatrix {
 //		}
 	}
 	
+	private String attachSign(String triggerId) {
+		if (this.isMainId(triggerId)) {
+			return "$" + triggerId;
+		}
+		return "%" + triggerId;
+	}
+
 	private boolean isOptionId(String optionId) {
 		return this.idMap.keySet().contains(optionId);
 	}

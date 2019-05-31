@@ -447,17 +447,14 @@ class TextField extends Widget {
 		$('#' + this.parent).append('<div id="' + this.divid + '"><input type="' + type + '" id="' + this.textId + '"></div>');
 		$('#' + this.textId).css("width", "100%");
 		$('#' + this.textId).css("height", "100%");
+		$('#' + this.textId).keyboard();
 		var me = this;
-		$('#' + this.textId).change(function(event) {
-//			if (event.which == 13) {
-//				me.setter(me.widget.id, 0, $('#' + me.textId).val());
-//			}
-		});
 		
 		$('#' + this.textId).click(function() {
 			$('#' + me.textId).keyboard({
 			  accepted : function(event, keyboard, el) {
 				me.setter(me.widget.id, 0, $('#' + me.textId).val());
+	//			$(this).removeClass();
 			  }
 			});
 		});
@@ -480,6 +477,12 @@ class TextField extends Widget {
 		this.property = property;
 		
 		$('#' + this.textId).prop('disabled', !property.enabled);
+		if (!property.enabled) {
+			$('#' + this.textId).css('background-color', 'lightgray');
+		}
+		else  {
+			$('#' + this.textId).css('background-color', 'white');
+		}
 	}
 }
 

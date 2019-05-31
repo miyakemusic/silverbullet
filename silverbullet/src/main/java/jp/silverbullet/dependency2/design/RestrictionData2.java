@@ -20,6 +20,9 @@ public class RestrictionData2 {
 		if (!this.values.containsKey(target)) {
 			this.values.put(target, new HashMap<String, String>());
 		}
+		if (!this.values.containsKey(trigger)) {
+			this.values.put(trigger, new HashMap<String, String>());
+		}
 		this.values.get(target).put(trigger, value);
 		
 		if (value.equals(">")) {
