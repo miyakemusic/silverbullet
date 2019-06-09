@@ -18,7 +18,7 @@ public class RuntimePropertyStore {
 			addProperty(property);
 		});
 		
-		propertyHolder.addListener(new PropertDefHolderListener() {
+		propertyHolder.addListener(new PropertyDefHolderListener() {
 			@Override
 			public void onChange(String id, String field, Object value, Object prevValue) {
 				if (field.equals(PropertyDef2.ARRAY_SIZE)) {

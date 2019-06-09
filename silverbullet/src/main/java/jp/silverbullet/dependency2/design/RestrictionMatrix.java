@@ -12,11 +12,8 @@ import java.util.Set;
 import jp.silverbullet.JsonPersistent;
 import jp.silverbullet.dependency2.DependencySpec;
 import jp.silverbullet.dependency2.DependencySpecHolder;
-import jp.silverbullet.dependency2.DependencySpecRebuilder;
-import jp.silverbullet.dependency2.Expression;
 import jp.silverbullet.property2.PropertyDef2;
 import jp.silverbullet.property2.RuntimeProperty;
-import jp.silverbullet.web.ui.PropertyGetter;
 
 public abstract class RestrictionMatrix {
 	abstract protected DependencySpecHolder getDependencySpecHolder() ;
@@ -271,18 +268,6 @@ public abstract class RestrictionMatrix {
 				}
 			}
 		}
-//		for (String triggerId : this.spec.getValueTriggerIds()) {
-//			for (String targetId: this.spec.getValueTargetId(triggerId)) {
-//				PropertyDef2 targetProp = this.getPropertyDef(targetId);
-//				PropertyDef2 triggerProp = this.getPropertyDef(this.getMainId(triggerId));
-//				if (targetProp.isNumeric()&& triggerProp.isList()) {
-//					String value = this.spec.getValue(triggerId, targetId);
-//					if (!value.isEmpty()) {
-//						this.getDependencySpecHolder().getSpec(this.getMainId(triggerId)).addValue(triggerId, "$" + targetId + "==" + value);
-//					}
-//				}
-//			}
-//		}
 	}
 	
 	private String attachSign(String triggerId) {
@@ -501,6 +486,14 @@ public abstract class RestrictionMatrix {
 		this.initValue();
 	}
 
+	public void setTriggers(Set<String> triggers2) {
+		this.triggers = triggers2;
+	}
+
+	public void setTargets(Set<String> targets2) {
+		this.targets = targets2;
+	}
+	
 	public void hide(String id, AxisType type) {
 		if (type.equals(AxisType.X)) {
 			this.triggers.remove(id);
@@ -597,5 +590,9 @@ public abstract class RestrictionMatrix {
 
 	public void addListener(RestrictionMatrixListener restrictionMatrixListener) {
 		this.listenres.add(restrictionMatrixListener);
+	}
+
+	public void setData(RestrictionData2 data) {
+		this.spec = data;
 	}
 }

@@ -1,9 +1,9 @@
 package jp.silverbullet.dependency2.design;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -16,7 +16,7 @@ public class RestrictionData2 {
 	private Map<String, String> condition = new HashMap<>();
 	private Map<String, Map<String, String>> values = new HashMap<>();
 	
-	public void setValue(String trigger, String target, String value) {
+	public synchronized void setValue(String trigger, String target, String value) {
 		if (!this.values.containsKey(target)) {
 			this.values.put(target, new HashMap<String, String>());
 		}
@@ -33,7 +33,7 @@ public class RestrictionData2 {
 		}
 	}
 	
-	public String getValue(String triggerId, String targetId) {
+	public synchronized String getValue(String triggerId, String targetId) {
 		if (!this.values.containsKey(targetId)) {
 			return "";
 		}
@@ -44,7 +44,7 @@ public class RestrictionData2 {
 		return ret;
 	}
 	
-	public void set(String trigger, String target, boolean checked) {
+	public synchronized void set(String trigger, String target, boolean checked) {
 		if (checked) {
 			this.get(trigger).add(target);
 			this.get(target).add(trigger);
@@ -56,7 +56,7 @@ public class RestrictionData2 {
 		
 	}
 
-	private void remove(String trigger, String target) {
+	private synchronized void remove(String trigger, String target) {
 		this.get(trigger).remove(target);
 		if (this.get(trigger).size() == 0) {
 			this.enableRelation.remove(trigger);
@@ -156,6 +156,18 @@ public class RestrictionData2 {
 				if (triggerOption.contains(triggerId)) {
 					ret.add(targetId);
 				}
+			}
+		}
+		return ret;
+	}
+
+	public Set<String> getUserdIds() {
+		Set<String> ret = new HashSet<>();
+		for (String id : this.getValues().keySet()) {
+			ret.add(id);
+			Map<String, String> id2VsValue = this.getValues().get(id);
+			for (String id2 : id2VsValue.keySet()) {
+				ret.add(id2);
 			}
 		}
 		return ret;

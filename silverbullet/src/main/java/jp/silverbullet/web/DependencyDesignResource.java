@@ -13,6 +13,7 @@ import javax.ws.rs.core.MediaType;
 
 import jp.silverbullet.SilverBulletServer;
 import jp.silverbullet.StaticInstances;
+import jp.silverbullet.dependency2.design.DependencyDesignConfig;
 import jp.silverbullet.dependency2.design.RestrictionMatrix;
 
 @Path("/dependencyDesign")
@@ -21,7 +22,7 @@ public class DependencyDesignResource {
 	@Path("/getSpec")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public RestrictionMatrix getEnableSpec() {
-		return SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner();
+		return SilverBulletServer.getStaticInstance().getBuilderModel().getRestrictionMatrix();
 	}
 	
 	
@@ -29,21 +30,21 @@ public class DependencyDesignResource {
 	@Path("/getTriggers")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public Set<String> getTrigger() {
-		return SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner().getTriggers();
+		return SilverBulletServer.getStaticInstance().getBuilderModel().getRestrictionMatrix().getTriggers();
 	}
 	
 	@GET
 	@Path("/getTargets")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public Set<String> getTarget() {
-		return SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner().getTargets();
+		return SilverBulletServer.getStaticInstance().getBuilderModel().getRestrictionMatrix().getTargets();
 	}
 	
 	@GET
 	@Path("/changeSpec")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String changeSpec(@QueryParam("row") final int row, @QueryParam("col") final int col, @QueryParam("checked") final boolean checked) {
-		SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner().updateEnabled(row, col, checked);
+		SilverBulletServer.getStaticInstance().getBuilderModel().getRestrictionMatrix().updateEnabled(row, col, checked);
 		return "OK";
 	}
 	
@@ -52,7 +53,7 @@ public class DependencyDesignResource {
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String changeSpecValue(@QueryParam("row") final int row, @QueryParam("col") final int col, 
 			@QueryParam("value") @Encoded final String value) {
-		SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner().updateValue(row, col, value);
+		SilverBulletServer.getStaticInstance().getBuilderModel().getRestrictionMatrix().updateValue(row, col, value);
 		return "OK";
 	}
 	
@@ -60,7 +61,7 @@ public class DependencyDesignResource {
 	@Path("/build")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String build() {
-		SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner().build();
+		SilverBulletServer.getStaticInstance().getBuilderModel().getRestrictionMatrix().build();
 		return "OK";
 	}
 	
@@ -68,25 +69,16 @@ public class DependencyDesignResource {
 	@Path("/switch")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String switchTriggerTarget() {
-		SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner().switchTriggerTarget();
+		SilverBulletServer.getStaticInstance().getBuilderModel().getRestrictionMatrix().switchTriggerTarget();
 		return "OK";
 	}
-	
-	
-//	@GET
-//	@Path("/alwaysTrue")
-//	@Produces(MediaType.TEXT_PLAIN) 
-//	public String alwaysTrue() {
-//		SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner().alwaysTrue();
-//		return "OK";
-//	}
-	
+		
 	@GET
 	@Path("/addId")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String addId(@QueryParam("id") final String id, @QueryParam("type") final String type) {
 		RestrictionMatrix.AxisType axisType = convertAxisType(type);	
-		SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner().add(id, axisType);
+		SilverBulletServer.getStaticInstance().getBuilderModel().getRestrictionMatrix().add(id, axisType);
 		return "OK";
 	}
 
@@ -105,7 +97,7 @@ public class DependencyDesignResource {
 	@Path("/removeId")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String removeId(@QueryParam("id") final String id, @QueryParam("type") final String type) {
-		SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner().hide(id, convertAxisType(type));
+		SilverBulletServer.getStaticInstance().getBuilderModel().getRestrictionMatrix().hide(id, convertAxisType(type));
 		return "OK";
 	}
 	
@@ -113,29 +105,29 @@ public class DependencyDesignResource {
 	@Path("/showAll")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String showAll() {
-		SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner().showAll();
+		SilverBulletServer.getStaticInstance().getBuilderModel().getRestrictionMatrix().showAll();
 		return "OK";
 	}
 	@GET
 	@Path("/getDefinedPriorities")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<Integer> getDefinedPriorities() {
-		return SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner().getDefinedPriorities();
+		return SilverBulletServer.getStaticInstance().getBuilderModel().getRestrictionMatrix().getDefinedPriorities();
 	}
 	
 	@GET
 	@Path("/getPriorities")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public Map<Integer, List<String>> getPriorities() {
-		return SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner().getPriorities();
+		return SilverBulletServer.getStaticInstance().getBuilderModel().getRestrictionMatrix().getPriorities();
 	}
 	
 	@GET
 	@Path("/setPriority")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setPriority(@QueryParam("id") final String id, @QueryParam("value") final Integer value) {
-		SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner().setPriority(id, value);
-		SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner().build();
+		SilverBulletServer.getStaticInstance().getBuilderModel().getRestrictionMatrix().setPriority(id, value);
+		SilverBulletServer.getStaticInstance().getBuilderModel().getRestrictionMatrix().build();
 		return "OK";
 	}
 }

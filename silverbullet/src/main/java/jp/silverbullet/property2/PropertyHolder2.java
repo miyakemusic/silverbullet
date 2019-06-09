@@ -42,7 +42,7 @@ public class PropertyHolder2 {
 		}
 	};
 
-	private Set<PropertDefHolderListener> listeners = new HashSet<>();
+	private Set<PropertyDefHolderListener> listeners = new HashSet<>();
 	
 	public void addProperty(PropertyDef2 propertyDef) {
 		propertyDef.addListener(listener);
@@ -106,11 +106,11 @@ public class PropertyHolder2 {
 		new JsonPersistent().saveJson(this.properties, filename);
 	}
 
-	public void addListener(PropertDefHolderListener propertDefHolderListener) {
+	public void addListener(PropertyDefHolderListener propertDefHolderListener) {
 		this.listeners .add(propertDefHolderListener);
 	}
 	
-	public void removeListener(PropertDefHolderListener propertDefHolderListener) {
+	public void removeListener(PropertyDefHolderListener propertDefHolderListener) {
 		this.listeners .remove(propertDefHolderListener);
 	}
 

@@ -10,11 +10,12 @@ import javax.xml.bind.JAXBException;
 import jp.silverbullet.dependency2.DependencySpecRebuilder;
 import jp.silverbullet.dependency2.IdValue;
 import jp.silverbullet.dependency2.RequestRejectedException;
+import jp.silverbullet.dependency2.design.DependencyDesigner;
 import jp.silverbullet.dependency2.design.RestrictionMatrix;
 import jp.silverbullet.dependency2.CommitListener;
 import jp.silverbullet.dependency2.DependencyEngine;
 import jp.silverbullet.dependency2.DependencySpecHolder;
-import jp.silverbullet.property2.PropertDefHolderListener;
+import jp.silverbullet.property2.PropertyDefHolderListener;
 import jp.silverbullet.property2.PropertyDef2;
 import jp.silverbullet.property2.PropertyHolder2;
 import jp.silverbullet.property2.RuntimeProperty;
@@ -53,6 +54,38 @@ public class BuilderModelImpl {
 	private RegisterController registerController = new RegisterController();
 	private RuntimeRegisterMap runtimeRegisterMap = new RuntimeRegisterMap();
 	private BlobStore blobStore = new BlobStore();
+	private DependencyDesigner dependencyDesigner = new DependencyDesigner(propertiesHolder2) {
+
+		@Override
+		protected DependencySpecHolder getDependencySpecHolder() {
+			return dependencySpecHolder2;
+		}
+
+		@Override
+		protected void resetMask() {
+			store.resetMask();
+		}
+
+		@Override
+		protected RuntimeProperty getRuntimeProperty(String id, int index) {
+			return store.get(id, index);
+		}
+
+		@Override
+		protected RuntimeProperty getRuntimeProperty(String id) {
+			return store.get(id);
+		}
+
+		@Override
+		protected PropertyDef2 getPropertyDef(String id) {
+			return propertiesHolder2.get(id);
+		}
+
+		@Override
+		protected List<PropertyDef2> getAllPropertieDefs() {
+			return new ArrayList<PropertyDef2>(propertiesHolder2.getProperties());
+		}	
+	};
 	
 	private RegisterAccessor currentRegisterAccessor = runtimeRegisterMap;
 	private RestrictionMatrix restrictionMatrix = new RestrictionMatrix() {
@@ -172,7 +205,7 @@ public class BuilderModelImpl {
 
 	public BuilderModelImpl() {
 		store = new RuntimePropertyStore(propertiesHolder2);
-		propertiesHolder2.addListener(new PropertDefHolderListener() {
+		propertiesHolder2.addListener(new PropertyDefHolderListener() {
 			@Override
 			public void onChange(String id, String field, Object value, Object prevValue) {
 //				restrictionMatrix.initValue();
@@ -244,6 +277,7 @@ public class BuilderModelImpl {
 		if (this.uiBuilder != null) {
 			this.uiBuilder.nameAll();
 		}
+		this.dependencyDesigner.load(folder);
 	}
 
 	public void createDependencyEngine() {
@@ -298,6 +332,7 @@ public class BuilderModelImpl {
 		this.uiLayoutHolder.save(folder);
 		save(this.uiBuilder, UiBuilder.class, folder + "/" + UIBUILDER);
 		this.restrictionMatrix.save(folder);
+		this.dependencyDesigner.save(folder);
 	}
 
 	private void saveJson(Object object, String filename) {
@@ -494,12 +529,16 @@ public class BuilderModelImpl {
 		return uiBuilder;
 	}
 
-	public RestrictionMatrix getDependencyDesigner() {
+	public RestrictionMatrix getRestrictionMatrix() {
 		return this.restrictionMatrix;
 	}
 
 	public BlobStore getBlobStore() {
 		return blobStore;
+	}
+
+	public DependencyDesigner getDependencyDesigner() {
+		return this.dependencyDesigner;
 	}
 
 }

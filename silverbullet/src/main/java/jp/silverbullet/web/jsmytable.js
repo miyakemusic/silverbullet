@@ -23,11 +23,7 @@ class JsMyTable {
 		this.allChecks = [];
 		this.allTexts = new Map();
 	}
-	
-	clear() {
-		$('#' + this.tableId).empty();
-	}
-	
+
 	valueAt(row, col) {
 		return $('#' + this.tableId + ' tr').eq(row + 1).children('td').eq(col).text();
 	}
@@ -57,6 +53,11 @@ class JsMyTable {
 	clear() {
 		$('#' + this.tableId + ' > thead').empty();
 		$('#' + this.tableId + ' > tbody').empty();
+//		$('#' + this.tableId).empty();
+		
+		
+		this.allChecks = [];
+		this.allTexts.clear();
 	}
 	
 	set listenerRemove(listenerRemove) {

@@ -94,6 +94,8 @@ public abstract class DependencyEngine {
 		List<Id> done = new ArrayList<>();
 		while(prevChangedProperties.getIds().size() > 0) {
 			prevChangedProperties = handleNext(prevChangedProperties);
+			
+			// avoids infinite loop. but this design is not the best
 			if (contains(done, prevChangedProperties.getIds())) {
 				break;
 			}

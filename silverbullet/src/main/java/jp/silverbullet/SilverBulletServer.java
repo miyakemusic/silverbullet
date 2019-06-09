@@ -15,7 +15,7 @@ import jp.silverbullet.dependency2.DependencyListener;
 import jp.silverbullet.dependency2.Id;
 import jp.silverbullet.dependency2.design.RestrictionMatrixElement;
 import jp.silverbullet.dependency2.design.RestrictionMatrixListener;
-import jp.silverbullet.property2.PropertDefHolderListener;
+import jp.silverbullet.property2.PropertyDefHolderListener;
 import jp.silverbullet.register2.BitUpdates;
 import jp.silverbullet.register2.RegisterAccessor;
 import jp.silverbullet.register2.RegisterAccessorListener;
@@ -92,7 +92,7 @@ public abstract class SilverBulletServer {
 			}		
 		});
 	
-		staticInstance.getBuilderModel().getPropertiesHolder2().addListener(new PropertDefHolderListener() {
+		staticInstance.getBuilderModel().getPropertiesHolder2().addListener(new PropertyDefHolderListener() {
 			@Override
 			public void onChange(String id, String fieldName, Object value, Object prevValue) {
 				try {
@@ -202,7 +202,7 @@ public abstract class SilverBulletServer {
 			}
 		});
 		
-		staticInstance.getBuilderModel().getDependencyDesigner().addListener(new RestrictionMatrixListener() {
+		staticInstance.getBuilderModel().getRestrictionMatrix().addListener(new RestrictionMatrixListener() {
 			@Override
 			public void onMatrixChanged(RestrictionMatrixElement[][] value) {
 				try {

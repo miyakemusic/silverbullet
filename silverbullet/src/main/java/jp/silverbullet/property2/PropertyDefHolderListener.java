@@ -1,6 +1,6 @@
 package jp.silverbullet.property2;
 
-public interface PropertDefHolderListener {
+public interface PropertyDefHolderListener {
 
 	void onChange(String id, String field, Object value, Object prevValue);
 

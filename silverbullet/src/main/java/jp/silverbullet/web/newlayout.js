@@ -447,16 +447,18 @@ class TextField extends Widget {
 		$('#' + this.parent).append('<div id="' + this.divid + '"><input type="' + type + '" id="' + this.textId + '"></div>');
 		$('#' + this.textId).css("width", "100%");
 		$('#' + this.textId).css("height", "100%");
-		$('#' + this.textId).keyboard();
+//		$('#' + this.textId).keyboard();
 		var me = this;
 		
+		$('#' + me.textId).keyboard({
+		  accepted : function(event, keyboard, el) {
+			me.setter(me.widget.id, 0, $('#' + me.textId).val());
+			$(this).removeClass();
+		  }
+		});
+					
 		$('#' + this.textId).click(function() {
-			$('#' + me.textId).keyboard({
-			  accepted : function(event, keyboard, el) {
-				me.setter(me.widget.id, 0, $('#' + me.textId).val());
-	//			$(this).removeClass();
-			  }
-			});
+
 		});
 	}
 	
