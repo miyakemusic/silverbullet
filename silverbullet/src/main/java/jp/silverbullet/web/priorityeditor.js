@@ -31,6 +31,11 @@ class PriorityEditor {
 			});	
 		}
 		
+		function getTail(text) {
+			var s = text.split('_');
+			return s[s.length - 1];
+		}
+		
 		function build(priorities, msg) {
 			$('#' + mainId).empty();
 			var firstIndex = priorities[0];
@@ -39,17 +44,17 @@ class PriorityEditor {
 			var emptyName = msg[firstIndex].value;
 			$('#' + mainId).append('<div class="priorityLabel">High Priority</div>');
 			
-			emptyName = "row_" + parseInt(Number(priorities[0]) + 10);
-			$('#' + mainId).append('<div id="' + emptyName + '" class="priorityEmpty">' + emptyName.split('_')[1] + '</div>');
+			emptyName = divid + "row_" + parseInt(Number(priorities[0]) + 10);
+			$('#' + mainId).append('<div id="' + emptyName + '" class="priorityEmpty">' + getTail(emptyName) + '</div>');
 			
 			for (var i = 0; i < priorities.length; i++) {
 				var priority = priorities[i];
-				rowName = "row_" + priority;
+				rowName = divid + "row_" + priority;
 				$('#' + mainId).append('<div id="' + rowName + '" class="priorityRow"><div class="priorityNumber">' + priority + '</div></div>');
 				
 				if (i < priorities.length -1) {
-					emptyName = "row_" + parseInt((Number(priorities[i]) + Number(priorities[i+1]))/2);
-					$('#' + mainId).append('<div id="' + emptyName + '" class="priorityEmpty">' + emptyName.split('_')[1] + '</div>');
+					emptyName = divid + "row_" + parseInt((Number(priorities[i]) + Number(priorities[i+1]))/2);
+					$('#' + mainId).append('<div id="' + emptyName + '" class="priorityEmpty">' + getTail(emptyName) + '</div>');
 				}
 
 				var ids = msg[priority];
@@ -64,7 +69,7 @@ class PriorityEditor {
 			
 			var drop = function( event, ui ) {
 		    	var id = $(this).prop('id');
-		    	var num = id.split('_')[1];
+		    	var num = getTail(id);
 		    	var source = ui.draggable[0].id;
 		    	setPriority(source, num);
 		    }	

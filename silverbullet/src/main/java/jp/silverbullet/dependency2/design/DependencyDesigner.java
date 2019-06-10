@@ -196,6 +196,7 @@ public abstract class DependencyDesigner {
 		matrix.setTriggers(new HashSet<String>(Arrays.asList(triggers.split(","))));
 		matrix.setTargets(new HashSet<String>(Arrays.asList(targets.split(","))));
 		matrix.initValue();
+	//	matrix.collectId();
 		return matrix;
 	}
 
