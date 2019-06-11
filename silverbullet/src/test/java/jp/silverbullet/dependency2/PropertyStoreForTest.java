@@ -37,4 +37,8 @@ public class PropertyStoreForTest implements PropertyGetter {
 		return props.get(RuntimeProperty.createIdText(id, index));
 	}
 
+	public void addBooleanProperty(String id, boolean b) {
+		add(this.factory.getBooleanProperty(id, b));
+	}
+
 }

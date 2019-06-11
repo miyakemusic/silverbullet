@@ -80,7 +80,7 @@ public class RuntimeProperty implements Cloneable {
 		try {
 			RuntimeProperty ret = (RuntimeProperty)super.clone();
 			ret.listeners = new HashSet<RuntimePropertyListener>();
-			ret.listMask = new HashMap<String, Boolean>();
+			ret.listMask = new HashMap<String, Boolean>(this.listMask);
 			return ret;
 		} catch (CloneNotSupportedException e) {
 			

@@ -221,7 +221,7 @@ class DependencyDesign {
 		var idValueTableDiv = idMain + "_valueTable";
 		$('#' + idMain).append('<div id="' + idValueTableDiv + '">value table</div>');
 		
-		var priorityEditor = new PriorityEditor(idMain);
+		var priorityEditor = new PriorityEditor(idMain, 'dependencyDesign');
 		
 		function updatePriorityEditor() {
 			priorityEditor.update();

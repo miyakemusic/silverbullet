@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -163,14 +164,29 @@ public class RestrictionData2 {
 
 	public Set<String> getUserdIds() {
 		Set<String> ret = new HashSet<>();
-		for (String id : this.getValues().keySet()) {
+		
+		Map<String, Map<String, String>> values = this.getValues();
+		for (String id : values.keySet()) {
 			ret.add(id);
-			Map<String, String> id2VsValue = this.getValues().get(id);
+			Map<String, String> id2VsValue = values.get(id);
 			for (String id2 : id2VsValue.keySet()) {
+				ret.add(id2);
+			}
+		}
+		
+		for (String id : this.enableRelation.keySet()) {
+			ret.add(id);
+			for (String id2 : this.enableRelation.get(id)) {
 				ret.add(id2);
 			}
 		}
 		return ret;
 	}
+
+//	public void addPriorityIfNotExists(String mainId) {
+//		if (!this.priority.keySet().contains(mainId)) {
+//			this.setPriority(mainId, 0);
+//		}
+//	}
 	
 }

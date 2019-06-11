@@ -39,4 +39,13 @@ public class RuntimePropertyFactory  {
 		RuntimeProperty ret = new RuntimeProperty(def);	
 		return ret;
 	}
+
+	public RuntimeProperty getBooleanProperty(String id, boolean defaultValue) {
+		PropertyDef2 def = new PropertyDef2();
+		def.setType(PropertyType2.Boolean);
+		def.setDefaultValue(String.valueOf(defaultValue));
+		def.setId(id);
+		RuntimeProperty ret = new RuntimeProperty(def);	
+		return ret;
+	}
 }

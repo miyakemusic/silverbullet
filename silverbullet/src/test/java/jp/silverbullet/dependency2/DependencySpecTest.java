@@ -114,7 +114,7 @@ public class DependencySpecTest {
 		DependencySpecHolder specHolder = new DependencySpecHolder();
 		specHolder.addSpec(spec);
 		
-				DependencyEngine engine = createDependencyEngine(store, specHolder);
+		DependencyEngine engine = createDependencyEngine(store, specHolder);
 		try {
 			engine.requestChange("ID_ROOT", "ID_ROOTA");
 			CachedPropertyStore cached = engine.getCachedPropertyStore();
@@ -812,4 +812,69 @@ public class DependencySpecTest {
 		}
 	}
 	
+	@Test
+	public void testOptionEnabledByOtherCondition() {
+		PropertyStoreForTest store = new PropertyStoreForTest();
+		store.addListProperty("ID_CHOICE", Arrays.asList("ID_CHOICE_A", "ID_CHOICE_B", "ID_CHOICE", "ID_CHOICE_D"), "ID_CHOICE_A");
+		store.addBooleanProperty("ID_OPTION1", false);
+		store.addBooleanProperty("ID_OPTION2", false);
+		
+		DependencySpec spec = new DependencySpec("ID_CHOICE");
+		spec.addOptionEnabled("ID_CHOICE_C", DependencySpec.True, "$ID_OPTION1==" + DependencySpec.True);
+		spec.addOptionEnabled("ID_CHOICE_C", DependencySpec.False, "$ID_OPTION1==" + DependencySpec.False);
+		
+		spec.addOptionEnabled("ID_CHOICE_D", DependencySpec.True, "$ID_OPTION2==" + DependencySpec.True);
+		spec.addOptionEnabled("ID_CHOICE_D", DependencySpec.False, "$ID_OPTION2==" + DependencySpec.False);
+
+		DependencySpecHolder specHolder = new DependencySpecHolder();
+		specHolder.addSpec(spec);
+		
+		DependencyEngine engine = createDependencyEngine(store, specHolder);
+		try {
+			engine.requestChanges(Arrays.asList(
+					new IdValue("ID_OPTION1", DependencySpec.True), 
+					new IdValue("ID_OPTION2", DependencySpec.False)));
+			
+			CachedPropertyStore cached = engine.getCachedPropertyStore();
+			cached.commit();
+			assertEquals(false, store.getProperty("ID_CHOICE").isOptionDisabled("ID_CHOICE_C"));
+			assertEquals(true, store.getProperty("ID_CHOICE").isOptionDisabled("ID_CHOICE_D"));	
+			
+		} catch (RequestRejectedException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			engine.requestChanges(Arrays.asList(
+					new IdValue("ID_OPTION1", DependencySpec.False), 
+					new IdValue("ID_OPTION2", DependencySpec.True)));
+			
+			CachedPropertyStore cached = engine.getCachedPropertyStore();
+			cached.commit();
+			assertEquals(false, store.getProperty("ID_CHOICE").isOptionDisabled("ID_CHOICE_D"));	
+			assertEquals(true, store.getProperty("ID_CHOICE").isOptionDisabled("ID_CHOICE_C"));
+			
+		} catch (RequestRejectedException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			store.getProperty("ID_CHOICE").enableOption("ID_CHOICE_C", false);
+			store.getProperty("ID_CHOICE").enableOption("ID_CHOICE_D", true);
+			assertEquals(false, store.getProperty("ID_CHOICE").isOptionDisabled("ID_CHOICE_D"));	
+			assertEquals(true, store.getProperty("ID_CHOICE").isOptionDisabled("ID_CHOICE_C"));
+			
+			
+			engine.requestChanges(Arrays.asList(
+					new IdValue("ID_OPTION2", DependencySpec.False)));
+			
+			CachedPropertyStore cached = engine.getCachedPropertyStore();
+			cached.commit();
+			assertEquals(true, store.getProperty("ID_CHOICE").isOptionDisabled("ID_CHOICE_D"));	
+			assertEquals(true, store.getProperty("ID_CHOICE").isOptionDisabled("ID_CHOICE_C"));
+			
+		} catch (RequestRejectedException e) {
+			e.printStackTrace();
+		}
+	}
 }

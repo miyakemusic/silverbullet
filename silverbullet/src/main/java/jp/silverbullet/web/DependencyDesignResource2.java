@@ -3,6 +3,7 @@ package jp.silverbullet.web;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.Encoded;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -50,7 +51,7 @@ public class DependencyDesignResource2 {
 	@Path("setSpecValue")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String setSpecValue(@QueryParam("trigger") final String trigger, @QueryParam("target") final String target, 
-			@QueryParam("value") final String value) {
+			@QueryParam("value") @Encoded final String value) {
 		
 		SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner().setSpecValue(trigger, target, value);
 		return "OK";

@@ -7,8 +7,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class DependencySpec {
 
-	public static final String True = "True";
-	public static final String False = "False";
+	public static final String True = "true";
+	public static final String False = "false";
+	
 	public static final String Else = "*Else";
 	
 	public static final String Value = "Value";

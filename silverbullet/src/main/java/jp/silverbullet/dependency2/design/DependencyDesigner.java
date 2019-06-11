@@ -84,8 +84,13 @@ public abstract class DependencyDesigner {
 			return DependencyDesigner.this.data;
 		}
 	};
+	private PropertyHolder2 defHolder;
 	
 	public DependencyDesigner(PropertyHolder2 defHolder) {
+		this.defHolder = defHolder;
+	}
+
+	public void init() {
 		defHolder.addListener(new PropertyDefHolderListener() {
 			@Override
 			public void onChange(String id, String field, Object value, Object prevValue) {
@@ -109,7 +114,7 @@ public abstract class DependencyDesigner {
 			registerNewId(def);
 		});
 	}
-
+	
 	private void registerNewId(PropertyDef2 def) {
 		if (def.isList()) {
 			options.addAll(def.getOptionIds());
@@ -117,9 +122,7 @@ public abstract class DependencyDesigner {
 				mainIdOfOption.put(option, def.getId());
 			});
 		}
-		else {
-			mainIds.add(def.getId());
-		}
+		mainIds.add(def.getId());
 	}
 	
 	public DependencyDesignConfig getDependencyDesignConfig(String name) {
@@ -131,6 +134,9 @@ public abstract class DependencyDesigner {
 	}
 
 	protected String getMainId(String id) {
+		if (this.isMainId(id)) {
+			return id;
+		}
 		return mainIdOfOption.get(id);
 	}
 
@@ -138,7 +144,9 @@ public abstract class DependencyDesigner {
 		List<Integer> ret = new ArrayList<>();
 		
 		for (String id : this.getUsedIds()) {
-			int priority = Integer.valueOf(this.getPriority(id));
+			String mainId = this.getMainId(id);
+			
+			int priority = Integer.valueOf(this.getPriority(mainId));
 			if (!ret.contains(priority)) {
 				ret.add(priority);
 			}
@@ -162,11 +170,14 @@ public abstract class DependencyDesigner {
 		
 		for (String id : this.getUsedIds()) {
 			//ret.add(new KeyValue(id, String.valueOf(this.getPriority(id))));
-			int priority = Integer.valueOf(this.getPriority(id));
+			String mainId = this.getMainId(id);
+			int priority = Integer.valueOf(this.getPriority(mainId));
 			if (!ret.containsKey(priority)) {
 				ret.put(priority, new ArrayList<String>());
 			}
-			ret.get(priority).add(id);
+			if (!ret.get(priority).contains(mainId)) {
+				ret.get(priority).add(mainId);
+			}
 		}
 		return ret;
 	}
@@ -240,6 +251,8 @@ public abstract class DependencyDesigner {
 
 	public void setSpecValue(String trigger, String target, String value) {
 		this.data.setValue(trigger, target, value);
+//		this.data.addPriorityIfNotExists(this.getMainId(trigger));
+//		this.data.addPriorityIfNotExists(this.getMainId(target));
 		buildSpec();
 	}
 
@@ -250,6 +263,8 @@ public abstract class DependencyDesigner {
 
 	public void setSpecEnabled(String trigger, String target, Boolean enabled) {
 		this.data.set(trigger, target, enabled);
+//		this.data.addPriorityIfNotExists(this.getMainId(trigger));
+//		this.data.addPriorityIfNotExists(this.getMainId(target));
 		buildSpec();
 	}
 
@@ -271,6 +286,7 @@ public abstract class DependencyDesigner {
 	public void load(String folder) {
 		this.data = new JsonPersistent().loadJson(RestrictionData2.class, getFilename(folder));
 		this.configs = new JsonPersistent().loadJson(DependencyDesignConfigs.class, getConfigFilename(folder));
+		init();
 	}
 	
 }
