@@ -88,7 +88,11 @@ public abstract class DependencyEngine {
 		ChangedProperties prevChangedProperties = new ChangedProperties(new ArrayList<Id>(Arrays.asList(id)));
 		this.cachedPropertyStore.addCachedPropertyStoreListener(prevChangedProperties);
 		setCurrentValue(cachedPropertyStore.getProperty(id.toString()), value);
-		handle(id, value);
+		
+		Set<Id> needsFindSelection = new HashSet<>();
+		handle(id, value, needsFindSelection);
+		selectAvailableOption(needsFindSelection);
+		
 		this.cachedPropertyStore.removeCachedPropertyStoreListener(prevChangedProperties);
 		
 		List<Id> done = new ArrayList<>();
@@ -117,14 +121,30 @@ public abstract class DependencyEngine {
 	private ChangedProperties handleNext(ChangedProperties prevChangedProperties) throws RequestRejectedException {
 		ChangedProperties changedProperties2 = new ChangedProperties(prevChangedProperties.getIds());
 		this.cachedPropertyStore.addCachedPropertyStoreListener(changedProperties2);
+		
+		Set<Id> needsFindSelection = new HashSet<>();
+		
 		for (Id nextId :  prevChangedProperties.getIds()) {
-			handle(nextId, this.cachedPropertyStore.getProperty(nextId.toString()).getCurrentValue());
+			handle(nextId, this.cachedPropertyStore.getProperty(nextId.toString()).getCurrentValue(), needsFindSelection);
 		}
+		
+		selectAvailableOption(needsFindSelection);
 		this.cachedPropertyStore.removeCachedPropertyStoreListener(changedProperties2);
 		return changedProperties2;
 	}
+
+	private void selectAvailableOption(Set<Id> needsFindSelection) throws RequestRejectedException {
+		for (Id id : needsFindSelection) {
+			RuntimeProperty property = this.cachedPropertyStore.getProperty(id.getId(), id.getIndex());
+			
+			boolean reselected = reselectClosestValue(property);
+			if (!reselected) {
+				throw new RequestRejectedException(property.getId() + "Nothing can be selected"); 
+			}
+		}
+	}
 	
-	private void handle(Id id, String value) throws RequestRejectedException {	
+	private void handle(Id id, String value, Set<Id> needsFindSelection) throws RequestRejectedException {	
 		List<RuntimeDependencySpec> specs = this.getSpecHolder().getRuntimeSpecs(id.getId());
 		specs = findSatisfiedSpecs(specs, id.getIndex());
 		for (RuntimeDependencySpec spec : specs) {	
@@ -159,10 +179,11 @@ public abstract class DependencyEngine {
 						throw new RequestRejectedException(property.getId() + "Selection is valid");
 					}
 					else {
-						boolean reselected = reselectClosestValue(property);
-						if (!reselected) {
-							throw new RequestRejectedException(property.getId() + "Nothing can be selected"); 
-						}
+						needsFindSelection.add(new Id(property.getId(), property.getIndex()));
+//						boolean reselected = reselectClosestValue(property);
+//						if (!reselected) {
+//							throw new RequestRejectedException(property.getId() + "Nothing can be selected"); 
+//						}
 					}
 				}
 			}
@@ -327,10 +348,13 @@ public abstract class DependencyEngine {
 	}
 
 	private boolean reselectClosestValue(RuntimeProperty property) {
+		if (!property.isOptionDisabled(property.getCurrentValue())) {
+			return true;
+		}
 		List<String> listIds = property.getListIds();
 		int currentIndex = listIds.indexOf(property.getCurrentValue());
 		int limit = Math.max(listIds.size() - currentIndex, currentIndex);
-		for (int width = 1; width < limit; width++) {
+		for (int width = 1; width <= limit; width++) {
 			int index = currentIndex + width;
 			if (index < listIds.size()) {
 				if (!property.isOptionDisabled(index)) {

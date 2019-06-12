@@ -43,6 +43,7 @@ public class DependencySpecTest {
 			CachedPropertyStore cached = engine.getCachedPropertyStore();
 			assertEquals("-10", cached.getProperty("ID_VALUE").getCurrentValue());
 		} catch (RequestRejectedException e) {
+			assertEquals(true, false);
 		}
 		try {
 			store.getProperty("ID_VALUE").setCurrentValue("100");
@@ -50,7 +51,9 @@ public class DependencySpecTest {
 			CachedPropertyStore cached = engine.getCachedPropertyStore();
 			assertEquals("10", cached.getProperty("ID_VALUE").getCurrentValue());
 		} catch (RequestRejectedException e) {
+			assertEquals(true, false);
 		}
+		
 		
 		// ID_VALUE is stronger than ID_STRING
 		specHolder.setPriority("ID_VALUE", 13);
@@ -125,6 +128,7 @@ public class DependencySpecTest {
 			assertEquals(true, cached.getProperty("ID_MIDDLE").isOptionDisabled("ID_MIDDLE_B2"));		
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
+			assertEquals(true, false);
 		}
 		try {
 			engine.requestChange("ID_ROOT", "ID_ROOTB");
@@ -139,8 +143,10 @@ public class DependencySpecTest {
 			assertEquals("ID_MIDDLE_B1", cached.getProperty("ID_MIDDLE").getCurrentValue());
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
+			assertEquals(true, false);
 		}		
 		try {
+			store.getProperty("ID_MIDDLE").clearOptionMask();
 			engine.requestChange("ID_ROOT", "ID_ROOTA2");
 			CachedPropertyStore cached = engine.getCachedPropertyStore();
 
@@ -150,6 +156,7 @@ public class DependencySpecTest {
 			assertEquals(true, cached.getProperty("ID_MIDDLE").isOptionDisabled("ID_MIDDLE_B2"));			
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
+			assertEquals(true, false);
 		}		
 			
 	}
@@ -174,6 +181,7 @@ public class DependencySpecTest {
 			assertEquals(true, cached.getProperty("ID_MIDDLE").isEnabled());	
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
+			assertEquals(true, false);
 		}
 		
 		try {
@@ -183,6 +191,7 @@ public class DependencySpecTest {
 			assertEquals(false, cached.getProperty("ID_MIDDLE").isEnabled());	
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
+			assertEquals(true, false);
 		}
 	}
 	
@@ -211,6 +220,7 @@ public class DependencySpecTest {
 			
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
+			assertEquals(true, false);
 		}
 		
 		try {
@@ -220,6 +230,7 @@ public class DependencySpecTest {
 			
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
+			assertEquals(true, false);
 		}
 		
 		try {
@@ -229,6 +240,7 @@ public class DependencySpecTest {
 			
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
+			assertEquals(true, false);
 		}
 		
 		try {
@@ -238,6 +250,7 @@ public class DependencySpecTest {
 			
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
+			assertEquals(true, false);
 		}
 		
 		try {
@@ -247,6 +260,7 @@ public class DependencySpecTest {
 			
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
+			assertEquals(true, false);
 		}
 	}
 	
@@ -270,6 +284,7 @@ public class DependencySpecTest {
 			
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
+			assertEquals(true, false);
 		}
 		
 		try {
@@ -279,6 +294,7 @@ public class DependencySpecTest {
 			
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
+			assertEquals(true, false);
 		}
 		
 	}
@@ -305,6 +321,7 @@ public class DependencySpecTest {
 			
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
+			assertEquals(true, false);
 		}
 	}
 	
@@ -345,6 +362,7 @@ public class DependencySpecTest {
 			
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
+			assertEquals(true, false);
 		}
 	}
 	
@@ -374,6 +392,7 @@ public class DependencySpecTest {
 			assertEquals("100.0", cached.getProperty("ID_LEFT").getMax());	
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
+			assertEquals(true, false);
 		}
 		
 		try {
@@ -383,6 +402,7 @@ public class DependencySpecTest {
 			assertEquals("50.0", cached.getProperty("ID_LEFT").getMax());	
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
+			assertEquals(true, false);
 		}
 		
 		// input value over max
@@ -420,6 +440,7 @@ public class DependencySpecTest {
 			assertEquals("50.0", cached.getProperty("ID_LEFT").getCurrentValue());	
 		} catch (RequestRejectedException e) {
 		//	e.printStackTrace();
+			assertEquals(true, false);
 		}
 	}
 	
@@ -449,7 +470,7 @@ public class DependencySpecTest {
 		specHolder.addSpec(specMiddle);
 		specHolder.addSpec(specLeaf);
 		
-				DependencyEngine engine = createDependencyEngine(store, specHolder);
+		DependencyEngine engine = createDependencyEngine(store, specHolder);
 		try {
 			engine.requestChange("ID_ROOT", "ID_ROOT_B");
 			CachedPropertyStore cached = engine.getCachedPropertyStore();
@@ -458,6 +479,7 @@ public class DependencySpecTest {
 			assertEquals(true, cached.getProperty("ID_LEAF").isOptionDisabled("ID_LEAF_C"));	
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
+			assertEquals(true, false);
 		}
 		
 		{
@@ -469,6 +491,7 @@ public class DependencySpecTest {
 				
 			} catch (JsonGenerationException e) {
 				e.printStackTrace();
+				
 			} catch (JsonMappingException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -501,6 +524,7 @@ public class DependencySpecTest {
 			assertEquals("10", cached.getProperty("ID_VALUE").getCurrentValue());	
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
+			assertEquals(true, false);
 		}
 		
 		try {
@@ -511,6 +535,7 @@ public class DependencySpecTest {
 
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
+			assertEquals(true, false);
 		}
 		
 		DependencySpecAnalyzer analyzer = new DependencySpecAnalyzer(specHolder);
@@ -552,6 +577,7 @@ public class DependencySpecTest {
 
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
+			assertEquals(true, false);
 		}
 		
 		try {
@@ -563,6 +589,7 @@ public class DependencySpecTest {
 
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
+			assertEquals(true, false);
 		}
 	}
 	
@@ -601,6 +628,7 @@ public class DependencySpecTest {
 			assertEquals("ID_WEAK_B", cached.getProperty("ID_WEAK").getCurrentValue());
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
+			assertEquals(true, false);
 		}
 		
 		{
@@ -682,6 +710,7 @@ public class DependencySpecTest {
 			assertEquals("ID_A_1", store.getProperty("ID_A").getCurrentValue());	
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
+			assertEquals(true, false);
 		}
 		// if current is ID_A_4 ID_A_1 should be selected. (should not be selected ID_A_1
 		try {
@@ -691,6 +720,7 @@ public class DependencySpecTest {
 			assertEquals("ID_A_5", store.getProperty("ID_A").getCurrentValue());	
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
+			assertEquals(true, false);
 		}
 		
 		// Commit is accepted
@@ -705,6 +735,7 @@ public class DependencySpecTest {
 			assertEquals("ID_A_2", store.getProperty("ID_A").getCurrentValue());			
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
+			assertEquals(true, false);
 		}
 		
 		// Commit is rejected
@@ -721,6 +752,7 @@ public class DependencySpecTest {
 			assertEquals("ID_A_2", store.getProperty("ID_A").getCurrentValue());			
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
+			assertEquals(true, false);
 		}
 		
 		// Commit is pended
@@ -740,14 +772,15 @@ public class DependencySpecTest {
 			assertEquals("ID_A_5", store.getProperty("ID_A").getCurrentValue());
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
+			assertEquals(true, false);
 		}
 	}
 	
 	@Test
 	public void test() {
 		PropertyStoreForTest store = new PropertyStoreForTest();
-		store.addListProperty("ID_DIST", Arrays.asList("ID_DIST_1", "ID_DIST_2", "ID_DIST_3", "ID_DIST_4", "ID_DIST_5", "ID_DIST_6"), "ID_DIST_1");
-		store.addListProperty("ID_PULSE", Arrays.asList("ID_PULSE_1", "ID_PULSE_2", "ID_PULSE_3", "ID_PULSE_4", "ID_PULSE_5", "ID_PULSE_6"), "ID_PULSE_1");
+		store.addListProperty("ID_DIST", Arrays.asList("ID_DIST_1", "ID_DIST_2", "ID_DIST_3", "ID_DIST_4", "ID_DIST_5", "ID_DIST_6", "ID_DIST_7"), "ID_DIST_1");
+		store.addListProperty("ID_PULSE", Arrays.asList("ID_PULSE_1", "ID_PULSE_2", "ID_PULSE_3", "ID_PULSE_4", "ID_PULSE_5", "ID_PULSE_6", "ID_PULSE_7"), "ID_PULSE_1");
 		DependencySpecHolder specHolder = new DependencySpecHolder();
 		specHolder.newSpec("ID_PULSE")
 			.addOptionEnabled("ID_PULSE_1", DependencySpec.True, "$ID_DIST==%ID_DIST_1")
@@ -770,7 +803,10 @@ public class DependencySpecTest {
 			.addOptionEnabled("ID_PULSE_6", DependencySpec.True, "$ID_DIST==%ID_DIST_4")
 			.addOptionEnabled("ID_PULSE_6", DependencySpec.True, "$ID_DIST==%ID_DIST_5")
 			.addOptionEnabled("ID_PULSE_6", DependencySpec.True, "$ID_DIST==%ID_DIST_6")
-			.addOptionEnabled("ID_PULSE_6", DependencySpec.False, DependencySpec.Else);		
+			.addOptionEnabled("ID_PULSE_6", DependencySpec.False, DependencySpec.Else)	
+			.addOptionEnabled("ID_PULSE_7", DependencySpec.True, "$ID_DIST==%ID_DIST_7")
+			.addOptionEnabled("ID_PULSE_7", DependencySpec.False, DependencySpec.Else);	
+		
 		DependencyEngine engine = createDependencyEngine(store, specHolder);
 		
 		try {
@@ -807,8 +843,12 @@ public class DependencySpecTest {
 			engine.requestChange("ID_DIST", "ID_DIST_1");
 			assertEquals("ID_PULSE_3", store.getProperty("ID_PULSE").getCurrentValue());
 
+			engine.requestChange("ID_DIST", "ID_DIST_7");
+			assertEquals("ID_PULSE_7", store.getProperty("ID_PULSE").getCurrentValue());
+			
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
+			assertEquals(true, false);
 		}
 	}
 	
@@ -842,6 +882,7 @@ public class DependencySpecTest {
 			
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
+			assertEquals(true, false);
 		}
 		
 		try {
@@ -856,6 +897,7 @@ public class DependencySpecTest {
 			
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
+			assertEquals(true, false);
 		}
 		
 		try {
@@ -875,6 +917,7 @@ public class DependencySpecTest {
 			
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
+			assertEquals(true, false);
 		}
 	}
 }

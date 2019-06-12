@@ -480,10 +480,12 @@ class TextField extends Widget {
 		
 		$('#' + this.textId).prop('disabled', !property.enabled);
 		if (!property.enabled) {
-			$('#' + this.textId).css('background-color', 'lightgray');
+			$('#' + this.textId).css('background-color', '#E6E6E6');
+			$('#' + this.textId).css('color', '#808080');
 		}
 		else  {
 			$('#' + this.textId).css('background-color', 'white');
+			$('#' + this.textId).css('color', 'black');
 		}
 	}
 }
