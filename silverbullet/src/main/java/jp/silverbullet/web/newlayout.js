@@ -351,9 +351,12 @@ class Button extends Widget {
 				return;
 			}
 			
-			if (me.property.elements.length > 0) {
+			if (me.property.type == 'List') {
 				var next = me.nextItem(me.property);				
 				me.setter(me.widget.id, 0, next.id);
+			}
+			else {
+				me.setter(me.widget.id, 0, me.alternative(me.property));
 			}
 		});		
 		
@@ -410,6 +413,15 @@ class Button extends Widget {
 		}
 		
 		return property.elements[index];
+	}
+	
+	alternative(property) {
+		if (property.currentValue == 'true') { 
+			return 'false';
+		}
+		else {
+			return 'true';
+		}
 	}
 }
 

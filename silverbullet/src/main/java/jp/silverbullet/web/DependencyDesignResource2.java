@@ -1,5 +1,6 @@
 package jp.silverbullet.web;
 
+import java.net.URLDecoder;
 import java.util.List;
 import java.util.Map;
 
@@ -51,8 +52,8 @@ public class DependencyDesignResource2 {
 	@Path("setSpecValue")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String setSpecValue(@QueryParam("trigger") final String trigger, @QueryParam("target") final String target, 
-			@QueryParam("value") @Encoded final String value) {
-		
+			@QueryParam("value") /*@Encoded*/ final String value) {
+//		String val = URLDecoder.decode(value);
 		SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner().setSpecValue(trigger, target, value);
 		return "OK";
 	}

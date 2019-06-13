@@ -169,6 +169,7 @@ class DependencyDesign2 {
 				   url: "http://" + window.location.host + "/rest/dependencyDesign2/setSpecEnabled?trigger=" + trigger + "&target=" + target + "&enabled=" + enabled,
 				   success: function(msg){
 						priorityEditor.update();
+						getMatrix();
 				   }
 				});				
 			};
@@ -181,11 +182,13 @@ class DependencyDesign2 {
 				
 				var target = row;
 				var trigger = current.xTitle[k-1];
+				var encValue = encodeURIComponent(value);
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/dependencyDesign2/setSpecValue?trigger=" + trigger + "&target=" + target + "&value=" + value,
+				   url: "http://" + window.location.host + "/rest/dependencyDesign2/setSpecValue?trigger=" + trigger + "&target=" + target + "&value=" + encValue,
 				   success: function(msg){
 						priorityEditor.update();
+						getMatrix();
 				   }
 				});					
 			};
