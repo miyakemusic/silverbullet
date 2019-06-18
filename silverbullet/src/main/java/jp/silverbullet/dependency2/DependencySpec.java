@@ -89,7 +89,16 @@ public class DependencySpec {
 	}
 
 	public void addMin(double min, String trigger, String condition) {
-		this.dependencySpecDetail.add(DependencySpec.Min, String.valueOf(min), trigger, condition);
+		addMin(String.valueOf(min), trigger, condition);
+		//this.dependencySpecDetail.add(DependencySpec.Min, String.valueOf(min), trigger, condition);
+	}
+	
+	public void addMin(String min, String trigger) {
+		addMin(min, trigger, "");
+	}
+	
+	public void addMin(String min, String trigger, String condition) {
+		this.dependencySpecDetail.add(DependencySpec.Min, min, trigger, condition);
 	}
 	
 	public DependencySpec addMin(double min, String trigger) {
@@ -97,8 +106,16 @@ public class DependencySpec {
 		return this;
 	}
 
+	public void addMax(String max, String trigger) {
+		addMax(max, trigger, "");
+	}
+	
+	public void addMax(String max, String trigger, String condition) {
+		this.dependencySpecDetail.add(DependencySpec.Max, max, trigger, condition);
+	}
+	
 	public void addMax(double max, String trigger, String condition) {
-		this.dependencySpecDetail.add(DependencySpec.Max, String.valueOf(max), trigger, condition);
+		this.addMax(String.valueOf(max), trigger, condition);
 	}
 	
 	public DependencySpec addMax(double max, String trigger) {
@@ -176,5 +193,7 @@ public class DependencySpec {
 			this.dependencySpecDetail.add(targetElement, exp.getValue(), exp.getTrigger(), exp.getCondition());
 		}
 	}
+
+
 
 }

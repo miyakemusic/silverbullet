@@ -142,11 +142,11 @@ public class BuilderModelImpl {
 		}
 
 		public void requestChange(String id, String value) throws RequestRejectedException {
-			getSequencer().requestChange(id, value);
+			getSequencer().requestChange(id, value, false);
 		}
 		
 		public void requestChange(String id, int index, String value) throws RequestRejectedException {
-			getSequencer().requestChange(id, index, value);
+			getSequencer().requestChange(id, index, value, false);
 		}
 
 		@Override
@@ -172,7 +172,7 @@ public class BuilderModelImpl {
 		}
 
 		public void requestChange(String id, String value) throws RequestRejectedException {
-			sequencer.requestChange(id, value);
+			sequencer.requestChange(id, value, false);
 		}
 		
 		public List<RuntimeProperty> getProperties() {
@@ -249,11 +249,8 @@ public class BuilderModelImpl {
 		sequencer.addSequencerListener(testRecorder);
 		this.uiLayoutHolder.createDefault();
 		createDependencyEngine();
-		
-//		restrictionMatrix.load();
-//		this.setRegisterType(RegisterTypeEnum.Hardware);
 	}
-	
+
 	public RuntimePropertyStore getRuntimePropertyStore() {
 		return store;
 	}
@@ -495,11 +492,12 @@ public class BuilderModelImpl {
 		}
 	}
 
-	public ValueSetResult requestChange(String id, Integer index, String value) {
+	
+	public ValueSetResult requestChange(String id, int index, String value, boolean forceChange) {
 		ValueSetResult ret = new ValueSetResult();
 		
 		try {
-			sequencer.requestChange(id, index, value, new CommitListener() {
+			sequencer.requestChange(id, index, value, forceChange, new CommitListener() {
 				@Override
 				public Reply confirm(String message) {
 					return Reply.Accept;
@@ -516,6 +514,10 @@ public class BuilderModelImpl {
 		}
 
 		return ret;
+	}
+	
+	public ValueSetResult requestChange(String id, Integer index, String value) {
+		return requestChange(id, index, value, false);
 	}
 
 	public void setUiBuilder(UiBuilder ui) {
@@ -539,6 +541,22 @@ public class BuilderModelImpl {
 
 	public DependencyDesigner getDependencyDesigner() {
 		return this.dependencyDesigner;
+	}
+
+//	public void init() {
+//		this.getRuntimePropertyStore().getAllProperties().forEach(prop -> {
+//			this.requestChange(prop.getId(), prop.getIndex(), prop.getCurrentValue(), true);
+//		});
+//	}
+
+	public void setDefaultValues() {
+		this.getRuntimePropertyStore().getAllProperties().forEach(prop -> {
+			if (prop.isAction()) {
+				return;
+			}
+			prop.resetValue();
+			this.requestChange(prop.getId(), prop.getIndex(), prop.getCurrentValue(), true);
+		});
 	}
 
 }

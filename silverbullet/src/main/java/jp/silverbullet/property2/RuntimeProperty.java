@@ -26,6 +26,8 @@ public class RuntimeProperty implements Cloneable {
 	private boolean enabled = true;
 
 	private int index;
+
+	private boolean forceChange = false;
 	
 	public RuntimeProperty() {}
 	
@@ -104,7 +106,7 @@ public class RuntimeProperty implements Cloneable {
 	}
 	
 	public void setCurrentValue(String val) {
-		if (this.currentValue.equals(val)) {
+		if (!forceChange  && this.currentValue.equals(val)) {
 			return;
 		}
 		
@@ -117,7 +119,8 @@ public class RuntimeProperty implements Cloneable {
 			this.currentValue = val;
 		}
 
-		this.listeners.forEach(listener -> listener.onValueChange(property.getId(), property.getIndex(), this.currentValue));
+		this.listeners.forEach(listener -> listener.onValueChange(property.getId(), this.index, this.currentValue));
+	
 	}
 	
 	public void addListener(RuntimePropertyListener SvPropertyListener) {
@@ -151,15 +154,16 @@ public class RuntimeProperty implements Cloneable {
 	}
 	
 	public void setEnabled(boolean enabled2) {
-		if (this.enabled != enabled2) {
-			this.enabled = enabled2;
+		if (!forceChange  && this.enabled == enabled2) {
+			return;
 		}
+		this.enabled = enabled2;
 		this.listeners.forEach(listener -> listener.onEnableChange(getId(), getIndex(), this.enabled));
 	}
 
 	public void setMin(String min) {
 		double minv = Double.valueOf(min);
-		if (this.property.getMin() == minv) {
+		if (!forceChange  && this.property.getMin() == minv) {
 			return;
 		}
 		
@@ -169,7 +173,7 @@ public class RuntimeProperty implements Cloneable {
 
 	public void setMax(String max) {
 		double maxv = Double.valueOf(max);
-		if (this.property.getMax() == maxv) {
+		if (!forceChange  && this.property.getMax() == maxv) {
 			return;
 		}
 		
@@ -178,7 +182,7 @@ public class RuntimeProperty implements Cloneable {
 	}
 
 	public void setSize(Integer size) {
-		if (this.property.getArraySize() == size) {
+		if (!forceChange  && this.property.getArraySize() == size) {
 			return;
 		}
 		property.setArraySize(size);
@@ -292,7 +296,7 @@ public class RuntimeProperty implements Cloneable {
 
 	@JsonIgnore
 	public void setTitle(String string) {
-		if (string.equals(this.customTitle)) {
+		if (!forceChange  && string.equals(this.customTitle)) {
 			return;
 		}
 		this.customTitle = string;
@@ -301,7 +305,7 @@ public class RuntimeProperty implements Cloneable {
 
 	@JsonIgnore
 	public void setUnit(String string) {
-		if (string.equals(this.property.getUnit())) {
+		if (!forceChange  && string.equals(this.property.getUnit())) {
 			return;
 		}
 		this.property.setUnit(string);
@@ -310,6 +314,20 @@ public class RuntimeProperty implements Cloneable {
 
 	public void clearOptionMask() {
 		this.listMask.clear();
+	}
+
+	public void setForceChange(boolean forceChange2) {
+		this.forceChange = forceChange2;
+	}
+
+	public void resetValue() {
+		this.clearOptionMask();
+		if (this.getType().equals(PropertyType2.List)) {
+			this.setCurrentValue(this.property.getDefaultId());
+		}
+		else {
+			this.setCurrentValue(this.property.getDefaultValue());
+		}
 	}
 
 

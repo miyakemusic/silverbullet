@@ -61,7 +61,7 @@ public abstract class SilverBulletServer {
 			getUserSequencers(builderModel).forEach(sequencer -> {
 				builderModel.getSequencer().addUserSequencer(sequencer);
 			});	
-
+			builderModel.setDefaultValues();
 		});	
 
 		registerWebClientManager();
@@ -89,6 +89,11 @@ public abstract class SilverBulletServer {
 
 			@Override
 			public void onStart(Id id, String value) {
+			}
+
+			@Override
+			public void onRejected(Id id) {
+				WebSocketBroadcaster.getInstance().sendMessageAsync("VALUES", id.toString());
 			}		
 		});
 	

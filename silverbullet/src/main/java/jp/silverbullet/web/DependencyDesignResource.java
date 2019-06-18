@@ -61,7 +61,7 @@ public class DependencyDesignResource {
 	@Path("/build")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String build() {
-		SilverBulletServer.getStaticInstance().getBuilderModel().getRestrictionMatrix().build();
+//		SilverBulletServer.getStaticInstance().getBuilderModel().getRestrictionMatrix().build();
 		return "OK";
 	}
 	
@@ -112,22 +112,24 @@ public class DependencyDesignResource {
 	@Path("/getDefinedPriorities")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<Integer> getDefinedPriorities() {
-		return SilverBulletServer.getStaticInstance().getBuilderModel().getRestrictionMatrix().getDefinedPriorities();
+		//return SilverBulletServer.getStaticInstance().getBuilderModel().getRestrictionMatrix().getDefinedPriorities();
+		return null;
 	}
 	
 	@GET
 	@Path("/getPriorities")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public Map<Integer, List<String>> getPriorities() {
-		return SilverBulletServer.getStaticInstance().getBuilderModel().getRestrictionMatrix().getPriorities();
+		//return SilverBulletServer.getStaticInstance().getBuilderModel().getRestrictionMatrix().getPriorities();
+		return null;
 	}
 	
 	@GET
 	@Path("/setPriority")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setPriority(@QueryParam("id") final String id, @QueryParam("value") final Integer value) {
-		SilverBulletServer.getStaticInstance().getBuilderModel().getRestrictionMatrix().setPriority(id, value);
-		SilverBulletServer.getStaticInstance().getBuilderModel().getRestrictionMatrix().build();
+//		SilverBulletServer.getStaticInstance().getBuilderModel().getRestrictionMatrix().setPriority(id, value);
+//		SilverBulletServer.getStaticInstance().getBuilderModel().getRestrictionMatrix().build();
 		return "OK";
 	}
 }

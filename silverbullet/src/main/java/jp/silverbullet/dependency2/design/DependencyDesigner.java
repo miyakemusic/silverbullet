@@ -90,25 +90,27 @@ public abstract class DependencyDesigner {
 		this.defHolder = defHolder;
 	}
 
+	PropertyDefHolderListener listener = new PropertyDefHolderListener() {
+		@Override
+		public void onChange(String id, String field, Object value, Object prevValue) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onAdd(String id) {
+			registerNewId(defHolder.get(id));
+		}
+
+		@Override
+		public void onRemove(String id, String replacedId) {
+			// TODO Auto-generated method stub
+			
+		}
+	};
+	
 	public void init() {
-		defHolder.addListener(new PropertyDefHolderListener() {
-			@Override
-			public void onChange(String id, String field, Object value, Object prevValue) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void onAdd(String id) {
-				registerNewId(defHolder.get(id));
-			}
-
-			@Override
-			public void onRemove(String id, String replacedId) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
+		defHolder.addListener(listener);
 		
 		defHolder.getProperties().forEach(def -> {
 			registerNewId(def);
@@ -202,8 +204,6 @@ public abstract class DependencyDesigner {
 
 	public RestrictionMatrix getMatrix(String triggers, String targets) {
 		RestrictionMatrix matrix = createMatrix();	
-		//matrix.xTitle = Arrays.asList(triggers.split(","));
-		//matrix.yTitle = Arrays.asList(targets.split(","));
 		matrix.setTriggers(new HashSet<String>(Arrays.asList(triggers.split(","))));
 		matrix.setTargets(new HashSet<String>(Arrays.asList(targets.split(","))));
 		matrix.initValue();
@@ -251,8 +251,6 @@ public abstract class DependencyDesigner {
 
 	public void setSpecValue(String trigger, String target, String value) {
 		this.data.setValue(trigger, target, value);
-//		this.data.addPriorityIfNotExists(this.getMainId(trigger));
-//		this.data.addPriorityIfNotExists(this.getMainId(target));
 		buildSpec();
 	}
 
@@ -263,8 +261,6 @@ public abstract class DependencyDesigner {
 
 	public void setSpecEnabled(String trigger, String target, Boolean enabled) {
 		this.data.set(trigger, target, enabled);
-//		this.data.addPriorityIfNotExists(this.getMainId(trigger));
-//		this.data.addPriorityIfNotExists(this.getMainId(target));
 		buildSpec();
 	}
 

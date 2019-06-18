@@ -28,9 +28,9 @@ public class PropertySourceGenerator {
 		lines.add("package " + packageName + ";");
 		lines.add("public class ID {");
 		for (PropertyDef2 prop : properties.getProperties()) {
-			if (prop.getIndex() > 0) { // This is tentative code
-				continue;
-			}
+		//	if (prop.getIndex() > 0) { // This is tentative code
+		//		continue;
+		//	}
 			lines.add(createLine(prop.getId()));
 			if (prop.isList()) {
 				prop.getOptionIds().forEach(optionId -> lines.add(createLine(optionId)));
@@ -63,9 +63,9 @@ public class PropertySourceGenerator {
 		source.add("        this.model = model2;");
 		source.add("    }");
 		for (PropertyDef2 prop : properties.getProperties()) {
-			if (prop.getIndex() > 0) { // This is tentative code
-				continue;
-			}
+		//	if (prop.getIndex() > 0) { // This is tentative code
+		//		continue;
+		//	}
 			boolean array = prop.getArraySize() > 1;
 			if (prop.isNumeric() && prop.getDecimals() > 0) {
 				source.addAll(this.createSource(prop, "Double"));

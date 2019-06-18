@@ -79,7 +79,9 @@ public class PropertyDef2 implements Cloneable {
 	private String comment = "";
 	
 	private Set<PropertyDefListener2> listeners = new HashSet<>();
-	private int index;
+	
+//	@JsonIgnore
+//	private int index;
 
 	public PropertyDef2() {}
 	
@@ -429,9 +431,10 @@ public class PropertyDef2 implements Cloneable {
 		return this.getType().equals(PropertyType2.Numeric);
 	}
 
-	public int getIndex() {
-		return this.index;
-	}
+//	@JsonIgnore
+//	public int getIndex() {
+//		return this.index;
+//	}
 
 	@JsonIgnore
 	public List<String> getOptionIds() {

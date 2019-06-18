@@ -32,11 +32,20 @@ class NewLayoutProperty {
 		
 		this.fieldId = div + "_field";
 		$('#' + this.mainDiv).append('<div>Field Type: <select id="' + this.fieldId + '"></div>');
-		var field_options = ['VALUE', 'TITLE', 'UNIT'];
-		for (var option of field_options) {
-			$('#' + this.fieldId).append($('<option>').text(option).val(option));
-		}
-				
+//		var field_options = ['VALUE', 'TITLE', 'UNIT', 'MIN'];
+//		for (var option of field_options) {
+//			$('#' + this.fieldId).append($('<option>').text(option).val(option));
+//		}
+		$.ajax({
+		   type: "GET", 
+		   url: "http://" + window.location.host + "/rest/newGui/getFieldTypes",
+		   success: function(types){
+				for (var option of types) {
+					$('#' + me.fieldId).append($('<option>').text(option).val(option));
+				}
+		   }
+		});	
+						
 		this.typeId = div + "_type";
 		$('#' + this.mainDiv).append('<div>Widget Type: <select id="' + this.typeId + '"></div>');
 //		var type_options = ["CheckBox", "TextField", "ToggleButton", "TabPane", "Pane", "ComboBox", "Label", "StaticText", "Tab", "Button", "Chart", "Table", "Image", "Slider"];

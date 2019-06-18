@@ -44,38 +44,59 @@ public abstract class DependencyEngine {
 	public void requestChanges(List<IdValue> idValues) throws RequestRejectedException {
 		this.cachedPropertyStore = new CachedPropertyStore(store);
 		for (IdValue idValue : idValues) {
-			changeValue(idValue.getId(), idValue.getValue());
+			try {
+				changeValue(idValue.getId(), idValue.getValue(), false);
+			}
+			catch (RequestRejectedException e) {
+				e.setSource(idValue.getId());
+				throw e;
+			}
 		}
 		
 		this.cachedPropertyStore.commit();
 		fireCompleteEvent();
 	}
-	
+
 	public void requestChange(Id id, String value) throws RequestRejectedException {
+		requestChange(id, value, false);
+	}
+	
+	public void requestChange(Id id, String value, boolean forceChange) throws RequestRejectedException {
 		this.listeners.forEach(listener -> listener.onStart(id, value));
 
 		this.cachedPropertyStore = new CachedPropertyStore(store);
-		changeValue(id, value);
-		
-		if (this.commitListener != null) {
-			CommitListener.Reply reply = this.commitListener.confirm("");
-			if (reply.equals(CommitListener.Reply.Accept)) {
+
+		try {
+			changeValue(id, value, forceChange);
+			if (this.commitListener != null) {
+				CommitListener.Reply reply = this.commitListener.confirm("");
+				if (reply.equals(CommitListener.Reply.Accept)) {
+					this.cachedPropertyStore.commit();
+					fireCompleteEvent();					
+				}
+				else if (reply.equals(CommitListener.Reply.Reject)) {
+					// Do nothing
+				}
+				else if (reply.equals(CommitListener.Reply.Pend)) {
+					
+				}
+			}
+			else {
 				this.cachedPropertyStore.commit();
-				fireCompleteEvent();					
-			}
-			else if (reply.equals(CommitListener.Reply.Reject)) {
-				// Do nothing
-			}
-			else if (reply.equals(CommitListener.Reply.Pend)) {
-				
+				fireCompleteEvent();			
 			}
 		}
-		else {
-			this.cachedPropertyStore.commit();
-			fireCompleteEvent();			
+		catch (RequestRejectedException e) {
+			e.setSource(id);
+			fireRejectedEvent(e.getSource());
+			throw e;
 		}
 	}
 
+	private void fireRejectedEvent(Id sourceId) {
+		this.listeners.forEach(listener -> listener.onRejected(sourceId));
+	}
+	
 	private void fireCompleteEvent() {
 		String changedIds = this.getChangedIds().toString().replace("[", "").replace("]", "").replaceAll(" ", "");
 		if (!changedIds.isEmpty()) {
@@ -83,21 +104,21 @@ public abstract class DependencyEngine {
 		}
 	}
 
-	private void changeValue(Id id, String value) throws RequestRejectedException {
+	private void changeValue(Id id, String value, boolean forceChange) throws RequestRejectedException {
 		this.userChangedId = id;
 		ChangedProperties prevChangedProperties = new ChangedProperties(new ArrayList<Id>(Arrays.asList(id)));
 		this.cachedPropertyStore.addCachedPropertyStoreListener(prevChangedProperties);
-		setCurrentValue(cachedPropertyStore.getProperty(id.toString()), value);
+		setCurrentValue(cachedPropertyStore.getProperty(id.toString()), value, forceChange);
 		
 		Set<Id> needsFindSelection = new HashSet<>();
-		handle(id, value, needsFindSelection);
+		handle(id, value, forceChange, needsFindSelection);
 		selectAvailableOption(needsFindSelection);
 		
 		this.cachedPropertyStore.removeCachedPropertyStoreListener(prevChangedProperties);
 		
 		List<Id> done = new ArrayList<>();
 		while(prevChangedProperties.getIds().size() > 0) {
-			prevChangedProperties = handleNext(prevChangedProperties);
+			prevChangedProperties = handleNext(prevChangedProperties, forceChange);
 			
 			// avoids infinite loop. but this design is not the best
 			if (contains(done, prevChangedProperties.getIds())) {
@@ -118,14 +139,14 @@ public abstract class DependencyEngine {
 		return false;
 	}
 
-	private ChangedProperties handleNext(ChangedProperties prevChangedProperties) throws RequestRejectedException {
+	private ChangedProperties handleNext(ChangedProperties prevChangedProperties, boolean forceChange) throws RequestRejectedException {
 		ChangedProperties changedProperties2 = new ChangedProperties(prevChangedProperties.getIds());
 		this.cachedPropertyStore.addCachedPropertyStoreListener(changedProperties2);
 		
 		Set<Id> needsFindSelection = new HashSet<>();
 		
 		for (Id nextId :  prevChangedProperties.getIds()) {
-			handle(nextId, this.cachedPropertyStore.getProperty(nextId.toString()).getCurrentValue(), needsFindSelection);
+			handle(nextId, this.cachedPropertyStore.getProperty(nextId.toString()).getCurrentValue(), forceChange, needsFindSelection);
 		}
 		
 		selectAvailableOption(needsFindSelection);
@@ -139,12 +160,12 @@ public abstract class DependencyEngine {
 			
 			boolean reselected = reselectClosestValue(property);
 			if (!reselected) {
-				throw new RequestRejectedException(property.getId() + "Nothing can be selected"); 
+				throw new RequestRejectedException(id, property.getId() + "Nothing can be selected"); 
 			}
 		}
 	}
 	
-	private void handle(Id id, String value, Set<Id> needsFindSelection) throws RequestRejectedException {	
+	private void handle(Id id, String value, boolean forceChange, Set<Id> needsFindSelection) throws RequestRejectedException {	
 		List<RuntimeDependencySpec> specs = this.getSpecHolder().getRuntimeSpecs(id.getId());
 		specs = findSatisfiedSpecs(specs, id.getIndex());
 		for (RuntimeDependencySpec spec : specs) {	
@@ -175,11 +196,12 @@ public abstract class DependencyEngine {
 				
 				// selects other one if current is masked
 				if (property.isOptionDisabled(property.getCurrentValue())) {
+					Id targetId = new Id(property.getId(), property.getIndex());
 					if (spec.isReject()) {
-						throw new RequestRejectedException(property.getId() + "Selection is valid");
+						throw new RequestRejectedException(targetId, property.getId() + "Selection is valid");
 					}
 					else {
-						needsFindSelection.add(new Id(property.getId(), property.getIndex()));
+						needsFindSelection.add(targetId);
 //						boolean reselected = reselectClosestValue(property);
 //						if (!reselected) {
 //							throw new RequestRejectedException(property.getId() + "Nothing can be selected"); 
@@ -198,13 +220,16 @@ public abstract class DependencyEngine {
 				if (property.isList()) {
 					val = val.replace("%", "");
 				}
-				setCurrentValue(property, val);
+				setCurrentValue(property, val, forceChange);
 			}
 			else if (spec.isMin()) {
 				String min = spec.getExpression().getValue();
+				if (min.contains("$")) {
+					min = this.calculator.calculate(min);
+				}
 				if (this.isLeftLarger(min, property.getCurrentValue())) {
 					if (spec.isReject()) {
-						throw new RequestRejectedException(property.getId()+ ":  Changing Min. is rejected");
+						throw new RequestRejectedException(new Id(property.getId(), property.getIndex()), property.getId()+ ":  Changing Min. is rejected");
 					}
 					else {
 						property.setMin(min);
@@ -218,9 +243,12 @@ public abstract class DependencyEngine {
 			}
 			else if (spec.isMax()) {
 				String max = spec.getExpression().getValue();
+				if (max.contains("$")) {
+					max = this.calculator.calculate(max);
+				}
 				if (this.isLeftLarger(property.getCurrentValue(), max)) {
 					if (spec.isReject()) {
-						throw new RequestRejectedException(property.getId() + ": Changing Max. is rejected");
+						throw new RequestRejectedException(new Id(property.getId(), property.getIndex()), property.getId() + ": Changing Max. is rejected");
 					}
 					else {
 						property.setMax(max);
@@ -326,13 +354,15 @@ public abstract class DependencyEngine {
 
 	abstract protected DependencySpecHolder getSpecHolder();
 
-	private void setCurrentValue(RuntimeProperty property, String val) throws RequestRejectedException {
+	private void setCurrentValue(RuntimeProperty property, String val, boolean forceChange) throws RequestRejectedException {
+		property.setForceChange(forceChange);
 		if (property.isNumericProperty()) {
+			Id id = new Id(property.getId(), property.getIndex());
 			if (isLeftLarger(property.getMin(), val)) {
-				throw new RequestRejectedException(property.getId() + " Under Min. " + property.getMin());
+				throw new RequestRejectedException(id, property.getId() + " Under Min. " + property.getMin());
 			}
 			else if (isLeftLarger(val, property.getMax())) {
-				throw new RequestRejectedException(property.getId() + " Over Max. " + property.getMax());
+				throw new RequestRejectedException(id, property.getId() + " Over Max. " + property.getMax());
 			}
 			else {
 				property.setCurrentValue(val);
@@ -341,6 +371,7 @@ public abstract class DependencyEngine {
 		else {
 			property.setCurrentValue(val);
 		}
+		property.setForceChange(false);
 	}
 
 	private boolean isLeftLarger(String val1, String val2) {
@@ -411,12 +442,12 @@ public abstract class DependencyEngine {
 		this.commitListener = commitListener;
 	}
 
-	public void requestChange(String id, int index, String value) throws RequestRejectedException {
-		this.requestChange(new Id(id, index), value);
-	}
-
+//	public void requestChange(String id, int index, String value) throws RequestRejectedException {
+//		this.requestChange(new Id(id, index), value);
+//	}
+//
 	public void requestChange(String id, String value) throws RequestRejectedException {
-		requestChange(id, 0, value);
+		requestChange(new Id(id, 0), value);
 	}
 
 	public void setPendedReply(Reply accept) {

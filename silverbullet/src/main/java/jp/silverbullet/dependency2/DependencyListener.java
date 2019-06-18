@@ -12,5 +12,7 @@ public interface DependencyListener {
 	void onCompleted(String message);
 
 	void onStart(Id id, String value);
+	
+	void onRejected(Id id);
 
 }

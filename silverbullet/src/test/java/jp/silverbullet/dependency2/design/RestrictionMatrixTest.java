@@ -4,15 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import jp.silverbullet.dependency2.DependencySpec;
 import jp.silverbullet.dependency2.DependencySpecHolder;
 import jp.silverbullet.dependency2.Expression;
-import jp.silverbullet.dependency2.PropertyStoreForTest;
-import jp.silverbullet.dependency2.design.RestrictionMatrix.AxisType;
 import jp.silverbullet.property2.PropertyDef2;
 import jp.silverbullet.property2.PropertyFactory;
 import jp.silverbullet.property2.PropertyHolder2;
@@ -20,20 +17,13 @@ import jp.silverbullet.property2.RuntimeProperty;
 import jp.silverbullet.property2.RuntimePropertyStore;
 
 public class RestrictionMatrixTest {
-
-	@Test
-	public void test() throws Exception {
-		PropertyHolder2 holder = new PropertyHolder2();
-		PropertyFactory factory = new PropertyFactory();
-		RuntimePropertyStore store = new RuntimePropertyStore(holder);
-
-		holder.addProperty(factory.createList("ID_TRIGGER").option("ID_TRIGGER_A", "A", "").option("ID_TRIGGER_B", "B", "")
-				.option("ID_TRIGGER_C", "C", "").option("ID_TRIGGER_D", "D", ""));
-		holder.addProperty(factory.createList("ID_TARGET").option("ID_TARGET_A", "A", "").option("ID_TARGET_B", "B", "")
-				.option("ID_TARGET_C", "C", "").option("ID_TARGET_D", "D", ""));
-		holder.addProperty(factory.createList("ID_DUMMY").option("ID_DUMMY_A", "A", "").option("ID_DUMMY_B", "B", ""));
-		holder.addProperty(factory.createList("ID_DUMMY2").option("ID_DUMMY2_A", "A", "").option("ID_DUMMY2_B", "B", ""));
-		DependencySpecHolder depSpecHolder = new DependencySpecHolder();
+	
+	abstract class MatrixBuilder {
+		private PropertyHolder2 holder = new PropertyHolder2();
+		private PropertyFactory factory = new PropertyFactory();
+		private RuntimePropertyStore store = null;
+		private DependencySpecHolder depSpecHolder = new DependencySpecHolder();
+		private DependencyDesigner designer = null;
 		
 		RestrictionMatrix matrix = new RestrictionMatrix() {
 			@Override
@@ -68,35 +58,114 @@ public class RestrictionMatrixTest {
 			
 		};
 		
-		matrix.add("ID_TRIGGER", AxisType.X);
-		matrix.add("ID_DUMMY", AxisType.X);
-		matrix.add("ID_DUMMY2", AxisType.X);
-		matrix.add("ID_TARGET", AxisType.Y);
-		matrix.add("ID_DUMMY", AxisType.Y);
-		matrix.add("ID_DUMMY2", AxisType.Y);
+		abstract List<PropertyDef2> registerProperties(PropertyFactory factory);
+
+		public MatrixBuilder() {
+			for (PropertyDef2 propertyDef : registerProperties(factory)) {
+				this.holder.addProperty(propertyDef);
+			}
+			this.store = new RuntimePropertyStore(holder);	
+			
+			designer = new DependencyDesigner(holder) {
+				@Override
+				protected RuntimeProperty getRuntimeProperty(String id) {
+					return store.get(id);
+				}
+
+				@Override
+				protected List<PropertyDef2> getAllPropertieDefs() {
+					return new ArrayList<PropertyDef2>(holder.getProperties());
+				}
+
+				@Override
+				protected PropertyDef2 getPropertyDef(String id) {
+					return holder.get(id);
+				}
+
+				@Override
+				protected RuntimeProperty getRuntimeProperty(String id, int index) {
+					return store.get(id, index);
+				}
+
+				@Override
+				protected DependencySpecHolder getDependencySpecHolder() {
+					return depSpecHolder;
+				}
+
+				@Override
+				protected void resetMask() {
+
+				}
+				
+			};
+			designer.init();
+		}
+
+		public RestrictionMatrix getMatrix() {
+			return this.matrix;
+		}
+
+		public DependencyDesigner getDesigner() {
+			return designer;
+		}
+		
+		public void addProperty(AddProperty addProperty) {
+			for (PropertyDef2 propertyDef : addProperty.registerProperties(factory)) {
+				this.holder.addProperty(propertyDef);
+			}
+		}
+	}
+	interface AddProperty {
+		List<PropertyDef2> registerProperties(PropertyFactory factory);
+	}
+	
+	@Test
+	public void test() throws Exception {
+		MatrixBuilder builder = new MatrixBuilder() {
+			@Override
+			List<PropertyDef2> registerProperties(PropertyFactory factory) {
+				try {
+					return Arrays.asList(
+							factory.createList("ID_TRIGGER").option("ID_TRIGGER_A", "A", "").option("ID_TRIGGER_B", "B", "")
+									.option("ID_TRIGGER_C", "C", "").option("ID_TRIGGER_D", "D", ""),
+							factory.createList("ID_TARGET").option("ID_TARGET_A", "A", "").option("ID_TARGET_B", "B", "")
+									.option("ID_TARGET_C", "C", "").option("ID_TARGET_D", "D", ""),
+							factory.createList("ID_DUMMY").option("ID_DUMMY_A", "A", "").option("ID_DUMMY_B", "B", ""),
+							factory.createList("ID_DUMMY2").option("ID_DUMMY2_A", "A", "").option("ID_DUMMY2_B", "B", "")
+						);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				return null;
+			}
+		};
+		
+		DependencyDesigner designer = builder.getDesigner();
 		/*
-		|       |Trigger A|Trigger B|Trigger C|Trigger D|
+		|       |Trigger A|Trigger B|Trigger C|Trigger D| Dummy2_A
 		Target A|    x    |         |         |         |
 		Target B|    x    |    x    |         |         |
 		Target C|         |    x    |    x    |         |
 		Target D|         |         |    x    |    x    |
+		Dummy A |         |         |         |         |    x
 		 */
-		matrix.updateEnabled(matrix.yTitle.indexOf("ID_TARGET_A"), matrix.xTitle.indexOf("ID_TRIGGER_A"), true);
-		matrix.updateEnabled(matrix.yTitle.indexOf("ID_TARGET_B"), matrix.xTitle.indexOf("ID_TRIGGER_A"), true);
-		matrix.updateEnabled(matrix.yTitle.indexOf("ID_TARGET_B"), matrix.xTitle.indexOf("ID_TRIGGER_B"), true);
-		matrix.updateEnabled(matrix.yTitle.indexOf("ID_TARGET_C"), matrix.xTitle.indexOf("ID_TRIGGER_B"), true);
-		matrix.updateEnabled(matrix.yTitle.indexOf("ID_TARGET_C"), matrix.xTitle.indexOf("ID_TRIGGER_C"), true);
-		matrix.updateEnabled(matrix.yTitle.indexOf("ID_TARGET_D"), matrix.xTitle.indexOf("ID_TRIGGER_C"), true);
-		matrix.updateEnabled(matrix.yTitle.indexOf("ID_TARGET_D"), matrix.xTitle.indexOf("ID_TRIGGER_D"), true);
 		
-		matrix.updateEnabled(matrix.yTitle.indexOf("ID_DUMMY_A"), matrix.xTitle.indexOf("ID_DUMMY2_A"), true);
-		
+		designer.setSpecEnabled("ID_TRIGGER_A", "ID_TARGET_A", true);
+		designer.setSpecEnabled("ID_TRIGGER_A", "ID_TARGET_B", true);
+		designer.setSpecEnabled("ID_TRIGGER_B", "ID_TARGET_B", true);
+		designer.setSpecEnabled("ID_TRIGGER_B", "ID_TARGET_C", true);
+		designer.setSpecEnabled("ID_TRIGGER_C", "ID_TARGET_C", true);
+		designer.setSpecEnabled("ID_TRIGGER_C", "ID_TARGET_D", true);
+		designer.setSpecEnabled("ID_TRIGGER_D", "ID_TARGET_D", true);
+		designer.setSpecEnabled("ID_DUMMY2_A", "ID_DUMMY_A", true);
 		
 		// In case, TRIGGER is stronger than TARGET
-		matrix.setPriority("ID_TRIGGER", 10); 
-		matrix.setPriority("ID_TARGET", 0);
-		matrix.build();
+		designer.setPriority("ID_TRIGGER", 10); 
+		designer.setPriority("ID_TARGET", 0);
+		designer.buildSpec();
 	
+		DependencySpecHolder depSpecHolder = designer.getDependencySpecHolder();
 		DependencySpec spec = depSpecHolder.getSpec("ID_TARGET");
 		assertEquals(0, depSpecHolder.getSpec("ID_TRIGGER").getDependencySpecDetail().getExpressions().getExpressions().size());
 //		assertEquals(0, spec.getExpression(DependencySpec.Enable).size());
@@ -144,9 +213,9 @@ public class RestrictionMatrixTest {
 		assertEquals(0, depSpecHolder.getSpec("ID_TRIGGER").getDependencySpecDetail().getExpressions().getExpressions().size());
 		
 		// In case, Target is strong
-		matrix.setPriority("ID_TRIGGER", 10); 
-		matrix.setPriority("ID_TARGET", 20);
-		matrix.build();
+		designer.setPriority("ID_TRIGGER", 10); 
+		designer.setPriority("ID_TARGET", 20);
+		designer.buildSpec();
 		
 		assertEquals(0, depSpecHolder.getSpec("ID_TARGET").getDependencySpecDetail().getExpressions().getExpressions().size());
 		spec = depSpecHolder.getSpec("ID_TRIGGER");
@@ -185,9 +254,9 @@ public class RestrictionMatrixTest {
 		assertEquals(0, depSpecHolder.getSpec("ID_TARGET").getDependencySpecDetail().getExpressions().getTriggerIds().size());
 		
 		// In case, Target and Trigger are the same
-		matrix.setPriority("ID_TRIGGER", 10); 
-		matrix.setPriority("ID_TARGET", 10);
-		matrix.build();
+		designer.setPriority("ID_TRIGGER", 10); 
+		designer.setPriority("ID_TARGET", 10);
+		designer.buildSpec();
 		
 		spec = depSpecHolder.getSpec("ID_TRIGGER");
 		
@@ -208,11 +277,23 @@ public class RestrictionMatrixTest {
 		}
 		
 		// Trigger is strong. Mode and Trigger affect Target
-		holder.addProperty(factory.createNumeric("ID_MODE").option("ID_MODE_A", "A", "").option("ID_MODE_B", "B", ""));
-		matrix.add("ID_MODE", AxisType.X);
-		matrix.setPriority("ID_TRIGGER", 10); 
-		matrix.setPriority("ID_TARGET", 0);
-		matrix.setPriority("ID_MODE", 100);
+		builder.addProperty(new AddProperty() {
+			@Override
+			public List<PropertyDef2> registerProperties(PropertyFactory factory) {
+				try {
+					return Arrays.asList(factory.createList("ID_MODE").option("ID_MODE_A", "A", "").option("ID_MODE_B", "B", ""));
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					assertEquals(false, true);
+				}
+				return null;
+			}
+		});
+
+		designer.setPriority("ID_TRIGGER", 10); 
+		designer.setPriority("ID_TARGET", 0);
+		designer.setPriority("ID_MODE", 100);
 		
 
 		/*
@@ -222,15 +303,17 @@ public class RestrictionMatrixTest {
 		Target C|         |    x    |    x    |         |    x   |    x   |
 		Target D|         |         |    x    |    x    |        |    x   |
 		 */
-		matrix.updateEnabled(matrix.yTitle.indexOf("ID_TARGET_A"), matrix.xTitle.indexOf("ID_MODE_A"), true);
-		matrix.updateEnabled(matrix.yTitle.indexOf("ID_TARGET_B"), matrix.xTitle.indexOf("ID_MODE_A"), true);
-		matrix.updateEnabled(matrix.yTitle.indexOf("ID_TARGET_C"), matrix.xTitle.indexOf("ID_MODE_A"), true);
 		
-		matrix.updateEnabled(matrix.yTitle.indexOf("ID_TARGET_A"), matrix.xTitle.indexOf("ID_MODE_B"), true);
-		matrix.updateEnabled(matrix.yTitle.indexOf("ID_TARGET_B"), matrix.xTitle.indexOf("ID_MODE_B"), true);
-		matrix.updateEnabled(matrix.yTitle.indexOf("ID_TARGET_C"), matrix.xTitle.indexOf("ID_MODE_B"), true);
-		matrix.updateEnabled(matrix.yTitle.indexOf("ID_TARGET_D"), matrix.xTitle.indexOf("ID_MODE_B"), true);
-		matrix.build();		
+		designer.setSpecEnabled("ID_MODE_A", "ID_TARGET_A", true);
+		designer.setSpecEnabled("ID_MODE_A", "ID_TARGET_B", true);
+		designer.setSpecEnabled("ID_MODE_A", "ID_TARGET_C", true);
+
+		designer.setSpecEnabled("ID_MODE_B", "ID_TARGET_A", true);
+		designer.setSpecEnabled("ID_MODE_B", "ID_TARGET_B", true);
+		designer.setSpecEnabled("ID_MODE_B", "ID_TARGET_C", true);
+		designer.setSpecEnabled("ID_MODE_B", "ID_TARGET_D", true);
+
+		designer.buildSpec();		
 		
 		spec = depSpecHolder.getSpec("ID_TARGET");
 		{
@@ -278,9 +361,9 @@ public class RestrictionMatrixTest {
 		}		
 		
 		// Mode is strongest, Trigget and Target are the same
-		matrix.setPriority("ID_MODE", 100);
-		matrix.setPriority("ID_TRIGGER", 10);
-		matrix.setPriority("ID_TARGET", 10);
+		designer.setPriority("ID_MODE", 100);
+		designer.setPriority("ID_TRIGGER", 10);
+		designer.setPriority("ID_TARGET", 10);
 		{
 			assertEquals(4, spec.getExpression("ID_TARGET_D").size());
 			List<Expression> expected = Arrays.asList(
@@ -293,17 +376,24 @@ public class RestrictionMatrixTest {
 		}	
 		
 		// Not Options but it's enabled
-		holder.addProperty(factory.createNumeric("ID_NUMERIC").defaultValue(0).unit("Hz").min(-100).max(100));
-		matrix.add("ID_NUMERIC", AxisType.Y);
+		builder.addProperty(new AddProperty() {
+			@Override
+			public List<PropertyDef2> registerProperties(PropertyFactory factory) {
+				return Arrays.asList(factory.createNumeric("ID_NUMERIC").defaultValue(0).unit("Hz").min(-100).max(100));
+			}
+		});
+
 		/*
 		 * 
 		|       |Trigger A|Trigger B|Trigger C|Trigger D| 
 		NUMERIC |    x    |         |     x   |         | 
 		
 	 */
-		matrix.updateEnabled(matrix.yTitle.indexOf("ID_NUMERIC"), matrix.xTitle.indexOf("ID_TRIGGER_A"), true);
-		matrix.updateEnabled(matrix.yTitle.indexOf("ID_NUMERIC"), matrix.xTitle.indexOf("ID_TRIGGER_C"), true);
-		matrix.build();
+		
+		designer.setSpecEnabled("ID_TRIGGER_A", "ID_NUMERIC", true);
+		designer.setSpecEnabled("ID_TRIGGER_C", "ID_NUMERIC", true);
+		designer.buildSpec();
+		
 		spec = depSpecHolder.getSpec("ID_NUMERIC");
 		{
 			List<Expression> expected = Arrays.asList(
@@ -325,62 +415,29 @@ public class RestrictionMatrixTest {
 		}
 		assertEquals(0, exp2.size());
 	}
-
+	
 	@Test
 	public void testValue() throws Exception {
-		PropertyHolder2 holder = new PropertyHolder2();
-		PropertyFactory factory = new PropertyFactory();
-		RuntimePropertyStore store = new RuntimePropertyStore(holder);
-
-		holder.addProperty(factory.createList("ID_BAND").option("ID_BAND_A", "A", "").option("ID_BAND_B", "B", "")
-				.option("ID_BAND_C", "C", "").option("ID_BAND_D", "D", ""));
-		holder.addProperty(factory.createList("ID_OPTION").option("ID_OPTION_A", "A", "").option("ID_OPTION_B", "B", ""));
-		holder.addProperty(factory.createNumeric("ID_NUMERIC"));
-		holder.addProperty(factory.createNumeric("ID_NUMERIC2"));
-		
-		DependencySpecHolder depSpecHolder = new DependencySpecHolder();
-		
-		RestrictionMatrix matrix = new RestrictionMatrix() {
+		MatrixBuilder builder = new MatrixBuilder() {
 			@Override
-			protected DependencySpecHolder getDependencySpecHolder() {
-				return depSpecHolder;
+			List<PropertyDef2> registerProperties(PropertyFactory factory) {
+				try {
+					return Arrays.asList(
+							factory.createList("ID_BAND").option("ID_BAND_A", "A", "").option("ID_BAND_B", "B", "")
+									.option("ID_BAND_C", "C", "").option("ID_BAND_D", "D", ""),
+							factory.createList("ID_OPTION").option("ID_OPTION_A", "A", "").option("ID_OPTION_B", "B", ""),
+							factory.createNumeric("ID_NUMERIC"),
+							factory.createNumeric("ID_NUMERIC2")
+						);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				return null;
 			}
-
-			@Override
-			protected void resetMask() {
-
-			}
-
-			@Override
-			protected RuntimeProperty getRuntimeProperty(String id, int index) {
-				return store.get(id, index);
-			}
-
-			@Override
-			protected RuntimeProperty getRuntimeProperty(String id) {
-				return store.get(id);
-			}
-
-			@Override
-			protected PropertyDef2 getPropertyDef(String id) {
-				return holder.get(id);
-			}
-
-			@Override
-			protected List<PropertyDef2> getAllPropertieDefs() {
-				return new ArrayList<PropertyDef2>(holder.getProperties());
-			}
-			
 		};
 		
-		matrix.add("ID_BAND", AxisType.X);
-		matrix.add("ID_NUMERIC", AxisType.X);
-		matrix.add("ID_NUMERIC2", AxisType.X);
-		
-		matrix.add("ID_NUMERIC", AxisType.Y);
-		matrix.add("ID_BAND", AxisType.Y);
-		matrix.add("ID_OPTION", AxisType.Y);
-		matrix.add("ID_NUMERIC2", AxisType.Y);
+		DependencyDesigner designer = builder.getDesigner();
 		
 		/*
 		 * 
@@ -394,15 +451,14 @@ public class RestrictionMatrixTest {
 		| NUMERIC2|       |        |        |        |        |         |          |
 		
 	 */
-		matrix.updateValue(matrix.yTitle.indexOf("ID_NUMERIC"), matrix.xTitle.indexOf("ID_BAND_A"), "0");
-		matrix.updateValue(matrix.yTitle.indexOf("ID_NUMERIC"), matrix.xTitle.indexOf("ID_BAND_B"), "100");
-		matrix.updateValue(matrix.yTitle.indexOf("ID_NUMERIC"), matrix.xTitle.indexOf("ID_NUMERIC2"), "<");
+		designer.setSpecValue("ID_BAND_A", "ID_NUMERIC", "0");
+		designer.setSpecValue("ID_BAND_B", "ID_NUMERIC", "100");
+		designer.setSpecValue("ID_NUMERIC2", "ID_NUMERIC", "<");
+		designer.setSpecValue("ID_NUMERIC", "ID_BAND", "ID_BAND_C:*");
+		designer.setSpecValue("ID_BAND_A", "ID_OPTION", "ID_OPTION_A");	
+		designer.buildSpec();	
 		
-		matrix.updateValue(matrix.yTitle.indexOf("ID_BAND"), matrix.xTitle.indexOf("ID_NUMERIC"), "ID_BAND_C:*");
-		matrix.updateValue(matrix.yTitle.indexOf("ID_OPTION"), matrix.xTitle.indexOf("ID_BAND_A"), "ID_OPTION_A");
-		
-		matrix.build();	
-		
+		DependencySpecHolder depSpecHolder = designer.getDependencySpecHolder();
 		{
 			DependencySpec spec = depSpecHolder.getSpec("ID_NUMERIC");
 			List<Expression> expected = Arrays.asList(
@@ -434,54 +490,82 @@ public class RestrictionMatrixTest {
 			testSpec(spec, expected, DependencySpec.Value);	
 		}
 	}
-//	@Test
-//	public void testSamePriority() throws Exception {
-//		PropertyHolder2 holder = new PropertyHolder2();
-//		PropertyFactory factory = new PropertyFactory();
-//		RuntimePropertyStore store = new RuntimePropertyStore(holder);
-//		DependencySpecHolder depSpecHolder = new DependencySpecHolder();
-//		
-//		holder.addProperty(factory.createList("ID_MODE").option("ID_MODE_A", "Mode A", "").option("ID_MODE_B", "Mode B", ""));
-//		holder.addProperty(factory.createList("ID_PULSE").option("ID_PULSE_A", "Pulse A", "").option("ID_PULSE_B", "Pulse B", ""));
-//		holder.addProperty(factory.createList("ID_DISTANCE").option("ID_DISTANCE_A", "Distance A", "").option("ID_DISTANCE_B", "Distance B", ""));
-//
-//		RestrictionMatrix matrix = new RestrictionMatrix() {
-//			@Override
-//			protected DependencySpecHolder getDependencySpecHolder() {
-//				return depSpecHolder;
-//			}
-//
-//			@Override
-//			protected void resetMask() {
-//
-//			}
-//
-//			@Override
-//			protected RuntimeProperty getRuntimeProperty(String id, int index) {
-//				return store.get(id, index);
-//			}
-//
-//			@Override
-//			protected RuntimeProperty getRuntimeProperty(String id) {
-//				return store.get(id);
-//			}
-//
-//			@Override
-//			protected PropertyDef2 getPropertyDef(String id) {
-//				return holder.get(id);
-//			}
-//
-//			@Override
-//			protected List<PropertyDef2> getAllPropertieDefs() {
-//				return new ArrayList<PropertyDef2>(holder.getProperties());
-//			}
-//			
-//		};
-//		
-//		matrix.add("ID_DISTANCE", AxisType.X);
-//		matrix.add("ID_PULSE", AxisType.Y);
-//		matrix.setPriority("ID_MODE", 100);
-//		matrix.setPriority("ID_PULSE", 10);
-//		matrix.setPriority("ID_DISTANCE", 10);
-//	}
+
+	@Test 
+	void testMixMax() {
+		MatrixBuilder builder = new MatrixBuilder() {
+			@Override
+			List<PropertyDef2> registerProperties(PropertyFactory factory) {
+				return Arrays.asList(
+						factory.createNumeric("ID_LOWER_LIMIT"),
+						factory.createNumeric("ID_UPPER_LIMIT"),
+						factory.createNumeric("ID_CURSOR_LEFT"),
+						factory.createNumeric("ID_CURSOR_RIGHT")
+					);
+			}
+		};
+		
+		DependencyDesigner designer = builder.getDesigner();
+		
+		/*
+		 * 
+		|             | CURSOR_LEFT  | CURSOR_RIGHT | LOWER_LIMIT | UPPER_LIMIT | 
+		| CURSOR_LEFT |              |      <       |      >      |             |  
+		| CURSOR_RIGHT|      >       |              |             |      <      |      
+		| LOWER_LIMIT |      <       |              |             |             |      
+		| UPPER_LIMIT |              |      >       |             |             |      		
+	 */
+		
+		designer.setSpecValue("ID_CURSOR_LEFT", "ID_CURSOR_RIGHT", ">");
+		designer.setSpecValue("ID_CURSOR_LEFT", "ID_LOWER_LIMIT", "<");
+		designer.setSpecValue("ID_CURSOR_RIGHT", "ID_UPPER_LIMIT", ">");
+		
+		designer.setPriority("ID_CURSOR_LEFT", 0);
+		designer.setPriority("ID_CURSOR_RIGHT", 0);
+		designer.setPriority("ID_LOWER_LIMIT", 1);
+		designer.setPriority("ID_UPPER_LIMIT", 1);
+		
+		RestrictionMatrix matrix = designer.getMatrix(
+				"ID_CURSOR_LEFT,ID_CURSOR_RIGHT,ID_LOWER_LIMIT,ID_UPPER_LIMIT", 
+				"ID_CURSOR_LEFT,ID_CURSOR_RIGHT,ID_LOWER_LIMIT,ID_UPPER_LIMIT");
+				
+		assertEquals(">", matrix.valueMatrix[matrix.yTitle.indexOf("ID_CURSOR_RIGHT")][matrix.xTitle.indexOf("ID_CURSOR_LEFT")]);
+		assertEquals("<", matrix.valueMatrix[matrix.yTitle.indexOf("ID_LOWER_LIMIT")][matrix.xTitle.indexOf("ID_CURSOR_LEFT")]);
+		assertEquals("<", matrix.valueMatrix[matrix.yTitle.indexOf("ID_CURSOR_LEFT")][matrix.xTitle.indexOf("ID_CURSOR_RIGHT")]);
+		assertEquals(">", matrix.valueMatrix[matrix.yTitle.indexOf("ID_UPPER_LIMIT")][matrix.xTitle.indexOf("ID_CURSOR_RIGHT")]);
+		assertEquals("<", matrix.valueMatrix[matrix.yTitle.indexOf("ID_CURSOR_RIGHT")][matrix.xTitle.indexOf("ID_UPPER_LIMIT")]);
+		assertEquals(">", matrix.valueMatrix[matrix.yTitle.indexOf("ID_CURSOR_LEFT")][matrix.xTitle.indexOf("ID_LOWER_LIMIT")]);
+
+		
+		designer.buildSpec();
+		
+		DependencySpecHolder depSpecHolder = designer.getDependencySpecHolder();
+		{
+			DependencySpec spec = depSpecHolder.getSpec("ID_CURSOR_LEFT");
+			List<Expression> extected = Arrays.asList(
+					new Expression("$ID_CURSOR_RIGHT", "$ID_CURSOR_LEFT>$ID_CURSOR_RIGHT", ""),
+					new Expression("$ID_LOWER_LIMIT", "$ID_CURSOR_LEFT<$ID_LOWER_LIMIT", "")
+					);
+			testSpec(spec, extected, DependencySpec.Value);	
+			
+			extected = Arrays.asList(
+					new Expression("$ID_LOWER_LIMIT", "$ID_LOWER_LIMIT==$ID_LOWER_LIMIT", "")
+					);			
+			testSpec(spec, extected, DependencySpec.Min);	
+		}
+		{
+			DependencySpec spec = depSpecHolder.getSpec("ID_CURSOR_RIGHT");
+			List<Expression> expected = Arrays.asList(
+					new Expression("$ID_CURSOR_LEFT", "$ID_CURSOR_RIGHT<$ID_CURSOR_LEFT", ""),
+					new Expression("$ID_UPPER_LIMIT", "$ID_CURSOR_RIGHT>$ID_UPPER_LIMIT", "")
+					);
+			testSpec(spec, expected, DependencySpec.Value);	
+			
+			expected = Arrays.asList(
+					new Expression("$ID_UPPER_LIMIT", "$ID_UPPER_LIMIT==$ID_UPPER_LIMIT", "")
+					);			
+			testSpec(spec, expected, DependencySpec.Max);
+		}
+	}
+
 }

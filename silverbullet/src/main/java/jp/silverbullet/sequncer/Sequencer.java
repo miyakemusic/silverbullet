@@ -49,7 +49,7 @@ public abstract class Sequencer {
 		public void requestChange(String id, int index, String value) throws RequestRejectedException {
 			try {
 				fireChangeFromSystem(id, value);
-				getDependency().requestChange(id, index, value);
+				getDependency().requestChange(new Id(id, index), value, false);
 				debugDepLog.addAll(getDependency().getDebugLog());
 				
 			} catch (RequestRejectedException e) {
@@ -70,7 +70,11 @@ public abstract class Sequencer {
 	};
 			
 	public void requestChange(String id, String value) throws RequestRejectedException {
-		requestChange(id, 0, value);
+		requestChange(id, 0, value, false);
+	}
+	
+	public void requestChange(String id, String value, boolean forceChange) throws RequestRejectedException {
+		requestChange(id, 0, value, forceChange);
 	}
 	
 	private void storeBlob(String id, Object blobData) {
@@ -78,8 +82,9 @@ public abstract class Sequencer {
 	}
 	
 	protected abstract BlobStore getBlobStore();
-	public void requestChange(String id, Integer index, String value) throws RequestRejectedException {
-		requestChange(id, index, value, new CommitListener() {
+	
+	public void requestChange(String id, Integer index, String value, boolean forceChange) throws RequestRejectedException {
+		requestChange(id, index, value, forceChange, new CommitListener() {
 			@Override
 			public Reply confirm(String message) {
 				return Reply.Accept;
@@ -88,7 +93,7 @@ public abstract class Sequencer {
 	}
 	
 	RequestRejectedException exception = null;
-	public void requestChange(String id, Integer index, String value, CommitListener commitListener)
+	public void requestChange(String id, Integer index, String value, boolean forceChange, CommitListener commitListener)
 			throws RequestRejectedException {
 //		
 //		if (!isMainThread(Thread.currentThread().getId())) {
@@ -101,7 +106,7 @@ public abstract class Sequencer {
 		DependencyEngine engine = getDependency();
 		engine.setCommitListener(commitListener);
 		try {
-			engine.requestChange(new Id(id, index), value);
+			engine.requestChange(new Id(id, index), value, forceChange);
 		} catch (RequestRejectedException e1) {
 			exception = e1;
 			e1.printStackTrace();
@@ -164,10 +169,6 @@ public abstract class Sequencer {
 	public void addDependencyListener(DependencyListener dependencyListener) {
 		getDependency().addDependencyListener(dependencyListener);
 	}
-
-//	public void add(AbstractSvHandler handler) {
-//		this.handlers.add(handler);
-//	}
 	
 	public void addSequencerListener(SequencerListener sequencerListener) {
 		this.listeners.add(sequencerListener);

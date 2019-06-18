@@ -42,3 +42,7 @@
   overflow-y:auto;
   table-layout:fixed;
 }
+
+.selected {
+	background:red;
+}

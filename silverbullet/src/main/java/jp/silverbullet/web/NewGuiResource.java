@@ -80,6 +80,13 @@ public class NewGuiResource {
 		widget.fireFieldChange();
 		return "OK";
 	}
+		
+	@GET
+	@Path("/getFieldTypes")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<String> getFieldTypes() {
+		return SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().getFieldTypes();
+	}
 	
 	@GET
 	@Path("/setLayout")
@@ -280,4 +287,5 @@ public class NewGuiResource {
 		SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().changeRootName(oldName, newName);
 		return "OK";
 	}
+
 }

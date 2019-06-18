@@ -54,9 +54,15 @@ public abstract class SpecBuilder {
 				if (targetProp.isNumeric()) {
 					if (value.equals(">")) {
 						this.getDependencySpecHolder().getSpec(targetId).addValue("$" + triggerId, "$" + targetId + "<$" + triggerId);
+						if (this.getPriority(triggerId) > this.getPriority(targetId)) {
+							this.getDependencySpecHolder().getSpec(targetId).addMin("$" + triggerId, "$" + triggerId + "==" + "$" + triggerId);
+						}
 					}
 					else if (value.equals("<")) {
 						this.getDependencySpecHolder().getSpec(targetId).addValue("$" + triggerId, "$" + targetId + ">$" + triggerId);						
+						if (this.getPriority(triggerId) > this.getPriority(targetId)) {
+							this.getDependencySpecHolder().getSpec(targetId).addMax("$" + triggerId, "$" + triggerId + "==" + "$" + triggerId);							
+						}
 					}
 					else {
 						this.getDependencySpecHolder().getSpec(targetId).addValue(value, "$" + this.getMainId(triggerId) + "==" + attachSign(triggerId));

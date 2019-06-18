@@ -448,6 +448,12 @@ class Label extends Widget {
 		else if (this.widget.field == 'UNIT') {
 			$('#' + this.labelId).text(property.unit);	
 		}
+		else if (this.widget.field == 'MIN') {
+			$('#' + this.labelId).text(property.min);	
+		}
+		else if (this.widget.field == 'MAX') {
+			$('#' + this.labelId).text(property.max);	
+		}
 		$('#' + this.labelId).css('display', 'inline-block');
 	}
 }
@@ -467,10 +473,6 @@ class TextField extends Widget {
 			me.setter(me.widget.id, 0, $('#' + me.textId).val());
 			$(this).removeClass();
 		  }
-		});
-					
-		$('#' + this.textId).click(function() {
-
 		});
 	}
 	
@@ -772,7 +774,7 @@ class Table2 extends Widget {
 		var me = this;
 		this.table = new JsMyTable2(this.divid,
 			function() { // row count
-				return me.data.headers.length;
+				return me.data.data.length;
 			},
 			function() { // col count
 				return me.data.headers.length;
@@ -782,6 +784,11 @@ class Table2 extends Widget {
 			},
 			function(row, col) { // value
 				return me.data.data[row][col];
+			},
+			function(row, col) {
+				var obj = new Object();
+				obj.selectedRow = row;
+				me.setter(widget.id, 0, JSON.stringify(obj));
 			}
 		);
 	}
@@ -796,6 +803,8 @@ class Table2 extends Widget {
 			this.table.build();
 		}
 		this.table.update();
+		
+		this.table.selectRow(this.data.selectedRow);
 	}
 }
 
@@ -852,7 +861,19 @@ class NewLayout {
 			retreiveDesign();
 //			$('#' + linkId).prop('disabled', !$('#' + editId).prop('checked'));
 		});
-						
+				
+		var defaultValueId = div + "_default";
+		$('#' + div).append('<button id="' + defaultValueId + '">Default</button>');
+		$('#' + defaultValueId).click(function() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/runtime/defaultValues",
+			   success: function(widget){
+
+			   }
+			});	
+		});
+		
 		this.propertyWindow = new NewLayoutProperty(div);
 		
 		var mainDiv = div + "_mainDiv";

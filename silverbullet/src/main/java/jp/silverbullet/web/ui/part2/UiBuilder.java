@@ -20,7 +20,7 @@ public class UiBuilder {
 	
 	private UiBuilderListener listener;
 	public enum PropertyField {
-		VALUE, TITLE, UNIT, STATICTEXT, NONE
+		VALUE, TITLE, UNIT, MIN, MAX, STATICTEXT, NONE
 	}
 	
 	public UiBuilder() {
@@ -156,6 +156,15 @@ public class UiBuilder {
 			}
 		}
 		return null;
+	}
+
+	public List<String> getFieldTypes() {
+		List<String> ret = new ArrayList<>();
+		for (PropertyField field : PropertyField.values()) {
+			ret.add(field.toString());
+		}
+		
+		return ret;
 	}
 
 }

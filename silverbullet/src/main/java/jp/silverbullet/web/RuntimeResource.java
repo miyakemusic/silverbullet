@@ -49,5 +49,11 @@ public class RuntimeResource {
 		return SilverBulletServer.getStaticInstance().getBuilderModel().requestChange(id, index, value);
 	}
 	
-
+	@GET
+	@Path("/defaultValues")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String setDefaultValues() {
+		SilverBulletServer.getStaticInstance().getBuilderModel().setDefaultValues();
+		return "OK";
+	}
 }

@@ -194,18 +194,18 @@ class JsMyTable {
 }
 
 class JsMyTable2 {
-	constructor(div, rowCount, colCount, header, value) {
+	constructor(div, rowCount, colCount, header, value, onClick) {
 		this.div = div;
 		this.getRowCount = rowCount;
 		this.getColCount = colCount;
 		this.getHeader = header;
 		this.getValue = value;
+		this.onClick = onClick;
 		
 		this.tableId = div + "_table";
 		$('#' + div).append('<table class="mytable" id="' + this.tableId + '"><thead class="scrollHead"></thead><tbody class="scrollBody"></tbody></table>');
 
-		$('.scrollBody').css("height", "100%");
-		
+		$('.scrollBody').css("height", "100%");		
 	}
 	
 	
@@ -235,12 +235,25 @@ class JsMyTable2 {
 		var tbody = $('#' + this.tableId).find('tbody');
 
 		for (var row = 0; row < this.getRowCount(); row++) {
-			var tr = tbody.append($('<tr>'));
+			var html = '<tr>';
+//			var tr = tbody.append($('<tr>'));
 			for (var col = 0; col < this.getColCount(); col++) {
 				var id = this.createCellId(col, row);//'R' + row + 'C' + col;
-				tr.append('<td><label id="' + id + '"></lable></td>');
+//				tr.append('<td><label id="' + id + '"></lable></td>');
+				html += '<td><label id="' + id + '"></lable></td>';
 			}
+
+			html += '</tr>';
+			$('#' + this.tableId + ' tbody').append(html);
 		}
+				
+		var me = this;
+		$('#' + this.tableId + ' tbody tr').click(function() {
+			var rowIndex = $('#' + me.tableId + ' tbody tr').index(this);
+			//alert(rowIndex);
+			me.onClick(rowIndex, 0);
+		});
+
 	}
 	
 	updateBody() {
@@ -271,7 +284,12 @@ class JsMyTable2 {
 	update() {
 		this.updateHeader();
 		this.updateBody();
-				
+		
 		this.touched = true;
+	}
+	
+	selectRow(row) {
+	    $('.selected').removeClass('selected');
+        $('#' + this.tableId + ' tbody tr').eq(row).addClass("selected");
 	}
 }
