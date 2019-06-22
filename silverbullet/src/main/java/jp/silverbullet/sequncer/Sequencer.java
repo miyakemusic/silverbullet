@@ -15,17 +15,19 @@ import jp.silverbullet.dependency2.Id;
 import jp.silverbullet.dependency2.RequestRejectedException;
 import jp.silverbullet.property2.RuntimeProperty;
 import jp.silverbullet.property2.RuntimePropertyStore;
+import jp.silverbullet.property2.SvFileException;
 import jp.silverbullet.register2.RegisterAccessor;
 
 public abstract class Sequencer {
-	abstract protected RuntimePropertyStore getPropertiesStore();
-	abstract protected DependencyEngine getDependency();
-	abstract protected EasyAccessInterface getEasyAccessInterface();
-	abstract protected RegisterAccessor getRegisterAccessor();
+	protected abstract RuntimePropertyStore getPropertiesStore();
+	protected abstract DependencyEngine getDependency();
+	protected abstract EasyAccessInterface getEasyAccessInterface();
+	protected abstract RegisterAccessor getRegisterAccessor();
+
 	private Set<SequencerListener> listeners = new HashSet<SequencerListener>();
 	private List<UserSequencer> userSequencers = new ArrayList<>();
 	private List<String> debugDepLog;
-
+	
 	private SvHandlerModel model = new SvHandlerModel() {
 		@Override
 		public RegisterAccessor getRegisterAccessor() {
@@ -35,6 +37,11 @@ public abstract class Sequencer {
 		@Override
 		public EasyAccessInterface getEasyAccessInterface() {
 			return easyAccessInterface;
+		}
+
+		@Override
+		public SystemAccessor getSystem() {
+			return getSystemAccessor();
 		}
 
 	};
@@ -72,7 +79,8 @@ public abstract class Sequencer {
 	public void requestChange(String id, String value) throws RequestRejectedException {
 		requestChange(id, 0, value, false);
 	}
-	
+
+	protected abstract SystemAccessor getSystemAccessor();
 	public void requestChange(String id, String value, boolean forceChange) throws RequestRejectedException {
 		requestChange(id, 0, value, forceChange);
 	}
@@ -86,7 +94,7 @@ public abstract class Sequencer {
 	public void requestChange(String id, Integer index, String value, boolean forceChange) throws RequestRejectedException {
 		requestChange(id, index, value, forceChange, new CommitListener() {
 			@Override
-			public Reply confirm(String message) {
+			public Reply confirm(Map<String, List<ChangedItemValue>> map) {
 				return Reply.Accept;
 			}	
 		});
@@ -166,10 +174,10 @@ public abstract class Sequencer {
 		}
 	}
 
-	public void addDependencyListener(DependencyListener dependencyListener) {
-		getDependency().addDependencyListener(dependencyListener);
-	}
-	
+//	public void addDependencyListener(DependencyListener dependencyListener) {
+//		getDependency().addDependencyListener(dependencyListener);
+//	}
+//	
 	public void addSequencerListener(SequencerListener sequencerListener) {
 		this.listeners.add(sequencerListener);
 	}

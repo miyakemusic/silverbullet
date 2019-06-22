@@ -34,6 +34,14 @@ public class RuntimeResource {
 		SilverBulletServer.getStaticInstance().getBuilderModel().respondToMessage(id, type);
 		return "OK";
 	}
+
+	@GET
+	@Path("/replyDialog")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String replyDialog(@QueryParam("messageId") String messageId, @QueryParam("reply") String reply) {
+		SilverBulletServer.getStaticInstance().getBuilderModel().replyDialog(messageId, reply);
+		return "OK";
+	}
 	
 	@GET
 	@Path("/getProperties")

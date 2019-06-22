@@ -32,7 +32,7 @@
   background:#005ab3;
 }
 .mytable tbody tr:nth-child(odd){
-  background:#e6f2ff;
+ // background:#e6f2ff;
 }
 .mytable thead.scrollHead,tbody.scrollBody{
   display:block;
@@ -44,5 +44,5 @@
 }
 
 .selected {
-	background:red;
+	background:lightgreen;
 }

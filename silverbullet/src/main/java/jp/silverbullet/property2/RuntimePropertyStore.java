@@ -1,5 +1,6 @@
 package jp.silverbullet.property2;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -101,17 +102,26 @@ public class RuntimePropertyStore {
 		return ret;
 	}
 
-	public void save(String filename) {
+	public void save(String filename) throws SvFileException {
 		IdValues idValues = new IdValues();
 		this.runtimeProperties.getRuntimeProperties().forEach((id, value)->{
 			idValues.idValue.add(new IdValue(id, value.getCurrentValue()));
 		});
-		new JsonPersistent().saveJson(idValues, filename);
+		try {
+			new JsonPersistent().saveJson(idValues, filename);
+		} catch (IOException e) {
+			throw new SvFileException();
+		}
 	}
 
-	public IdValues load(String filename) {
-		IdValues loaded = new JsonPersistent().loadJson(IdValues.class, filename);
-		return loaded;
+	public IdValues load(String filename) throws SvFileException {
+		try {
+			return new JsonPersistent().loadJson(IdValues.class, filename);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	public void resetMask() {

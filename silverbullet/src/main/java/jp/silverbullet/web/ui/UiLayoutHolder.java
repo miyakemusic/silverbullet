@@ -68,7 +68,13 @@ public class UiLayoutHolder {
 	}
 
 	private UiLayout loadJson(Class<UiLayout> class1, String filename) {
-		return new JsonPersistent().loadJson(class1, filename);
+		try {
+			return new JsonPersistent().loadJson(class1, filename);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}	
 
 	public void save(String folder) {
@@ -76,7 +82,12 @@ public class UiLayoutHolder {
 	}
 		
 	private void saveJson(UiLayout uilayout, String filename) {
-		new JsonPersistent().saveJson(uilayout, filename);;
+		try {
+			new JsonPersistent().saveJson(uilayout, filename);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		};
 	}
 
 	public UiLayout getCurrentUi() {

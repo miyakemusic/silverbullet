@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -51,6 +52,9 @@ public abstract class DependencyEngine {
 				e.setSource(idValue.getId());
 				throw e;
 			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		
 		this.cachedPropertyStore.commit();
@@ -69,7 +73,7 @@ public abstract class DependencyEngine {
 		try {
 			changeValue(id, value, forceChange);
 			if (this.commitListener != null) {
-				CommitListener.Reply reply = this.commitListener.confirm("");
+				CommitListener.Reply reply = this.commitListener.confirm(this.cachedPropertyStore.getChangedHistory());
 				if (reply.equals(CommitListener.Reply.Accept)) {
 					this.cachedPropertyStore.commit();
 					fireCompleteEvent();					
@@ -106,7 +110,7 @@ public abstract class DependencyEngine {
 
 	private void changeValue(Id id, String value, boolean forceChange) throws RequestRejectedException {
 		this.userChangedId = id;
-		ChangedProperties prevChangedProperties = new ChangedProperties(new ArrayList<Id>(Arrays.asList(id)));
+		ChangedProperties prevChangedProperties = new ChangedProperties(new HashSet<Id>(Arrays.asList(id)));
 		this.cachedPropertyStore.addCachedPropertyStoreListener(prevChangedProperties);
 		setCurrentValue(cachedPropertyStore.getProperty(id.toString()), value, forceChange);
 		
@@ -116,7 +120,7 @@ public abstract class DependencyEngine {
 		
 		this.cachedPropertyStore.removeCachedPropertyStoreListener(prevChangedProperties);
 		
-		List<Id> done = new ArrayList<>();
+		Set<Id> done = new LinkedHashSet<>();
 		while(prevChangedProperties.getIds().size() > 0) {
 			prevChangedProperties = handleNext(prevChangedProperties, forceChange);
 			
@@ -128,7 +132,7 @@ public abstract class DependencyEngine {
 		}
 	}
 
-	private boolean contains(List<Id> done, List<Id> ids) {
+	private boolean contains(Set<Id> done, Set<Id> ids) {
 		for (Id id : ids) {
 			for (Id id2: done) {
 				if (id.equals(id2)) {

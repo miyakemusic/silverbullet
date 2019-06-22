@@ -80,51 +80,70 @@ public class WebSocketBroadcaster {
 	private Thread senderThread = new Thread() {
 		@Override
 		public void run() {
-			while(true) {
-				try {
-					String s = queue.take();
-					
-					Iterator<String> it = queue.iterator();
-					
-					String ids = s;
-					while(it.hasNext()) {	
-						for (int i = 0; i < queue.size(); i++) {
-							ids += "," + it.next();
-						}
-					}
-//					System.out.println(ids);
-					try {
-						String message = new ObjectMapper().writeValueAsString(new WebSocketMessage("VALUES", ids));
-						for(final WebSocketObject member: clients){
-							if (member != null) {
-								member.getSession().getRemote().sendStringByFuture(message);
-							}
-						}	
-					} catch (JsonGenerationException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (JsonMappingException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				} catch (InterruptedException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+			try {
 
+				while(true) {	
+					
+					TypeValue tv = queue.take();
+					
+					Iterator<TypeValue> it = queue.iterator();
+					
+					String ids = tv.value;
+					String currentType = tv.type;
+					while(it.hasNext()) {	
+						TypeValue tv2 = it.next();
+						if (!currentType.isEmpty() && !tv2.type.equals(currentType)) {
+							send(ids, currentType);							
+							ids = "";
+						}
+						for (int i = 0; i < queue.size(); i++) {
+							ids += "," + tv2.value;
+						}
+						
+						currentType = tv2.type;
+					}
+	
+					if (!ids.isEmpty()) {
+						send(ids, currentType);			
+					}
+				}
+			}
+			catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 	};
-	private BlockingQueue<String> queue = new LinkedBlockingQueue<>(10);
+	class TypeValue {
+		public TypeValue(String type, String value) {
+			this.type = type;
+			this.value = value;
+		}
+		public String type;
+		public String value;
+	}
+	private BlockingQueue<TypeValue> queue = new LinkedBlockingQueue<>(10);
 	public void sendMessageAsync(String type, String value) {
 //		System.out.println("--" + value);
 		try {
-			queue.put(value);
+			queue.put(new TypeValue(type, value));
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void send(String ids, String currentType) {
+		try {
+			String message = new ObjectMapper().writeValueAsString(new WebSocketMessage(currentType, ids));
+			for(final WebSocketObject member: clients){
+				if (member != null) {
+					member.getSession().getRemote().sendStringByFuture(message);
+				}
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 }

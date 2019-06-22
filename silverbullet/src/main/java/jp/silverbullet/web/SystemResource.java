@@ -8,6 +8,7 @@ import javax.ws.rs.core.MediaType;
 
 import jp.silverbullet.SilverBulletServer;
 import jp.silverbullet.StaticInstances;
+import jp.silverbullet.property2.SvFileException;
 
 @Path("/system")
 public class SystemResource {
@@ -31,7 +32,12 @@ public class SystemResource {
 	@Path("/saveParameters")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String saveParameters(@QueryParam("filename") final String filename) {
-		SilverBulletServer.getStaticInstance().getBuilderModel().saveParameters(filename);
+		try {
+			SilverBulletServer.getStaticInstance().getBuilderModel().saveParameters(filename);
+		} catch (SvFileException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return "OK";
 	}
 	
@@ -39,7 +45,12 @@ public class SystemResource {
 	@Path("/loadParameters")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String loadParameters(@QueryParam("filename") final String filename) {
-		SilverBulletServer.getStaticInstance().getBuilderModel().loadParameters(filename);
+		try {
+			SilverBulletServer.getStaticInstance().getBuilderModel().loadParameters(filename);
+		} catch (SvFileException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return "OK";
 	}
 }

@@ -45,20 +45,20 @@ public abstract class RestrictionMatrix {
 
 	protected abstract RuntimeProperty getRuntimeProperty(String id);
 
-	public void save(String folder) {
-		new JsonPersistent().saveJson(this.spec, folder + "/restriction.json");
-	}
-	
-	private void save() {
-		JsonPersistent json = new JsonPersistent();
-		json.saveJson(this.spec, "restriction.json");
-	}
-	
-	public void load(String folder) {
-		JsonPersistent json = new JsonPersistent();
-		this.spec = json.loadJson(RestrictionData2.class, folder + "/restriction.json");
-		initValue();
-	}
+//	public void save(String folder) {
+//		new JsonPersistent().saveJson(this.spec, folder + "/restriction.json");
+//	}
+//	
+//	private void save() {
+//		JsonPersistent json = new JsonPersistent();
+//		json.saveJson(this.spec, "restriction.json");
+//	}
+//	
+//	public void load(String folder) {
+//		JsonPersistent json = new JsonPersistent();
+//		this.spec = json.loadJson(RestrictionData2.class, folder + "/restriction.json");
+//		initValue();
+//	}
 	
 	public void initValue() {
 		collectId();

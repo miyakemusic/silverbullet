@@ -4,7 +4,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import javax.xml.bind.JAXBException;
 
 import jp.silverbullet.dependency2.DependencySpecRebuilder;
@@ -12,14 +16,17 @@ import jp.silverbullet.dependency2.IdValue;
 import jp.silverbullet.dependency2.RequestRejectedException;
 import jp.silverbullet.dependency2.design.DependencyDesigner;
 import jp.silverbullet.dependency2.design.RestrictionMatrix;
+import jp.silverbullet.dependency2.ChangedItemValue;
 import jp.silverbullet.dependency2.CommitListener;
 import jp.silverbullet.dependency2.DependencyEngine;
+import jp.silverbullet.dependency2.DependencySpec;
 import jp.silverbullet.dependency2.DependencySpecHolder;
 import jp.silverbullet.property2.PropertyDefHolderListener;
 import jp.silverbullet.property2.PropertyDef2;
 import jp.silverbullet.property2.PropertyHolder2;
 import jp.silverbullet.property2.RuntimeProperty;
 import jp.silverbullet.property2.RuntimePropertyStore;
+import jp.silverbullet.property2.SvFileException;
 import jp.silverbullet.register2.RegisterAccessor;
 import jp.silverbullet.register2.RegisterController;
 import jp.silverbullet.register2.RegisterShortCutHolder;
@@ -28,6 +35,8 @@ import jp.silverbullet.register2.RuntimeRegisterMap;
 import jp.silverbullet.register2.RuntimeRegisterMap.DeviceType;
 import jp.silverbullet.sequncer.EasyAccessInterface;
 import jp.silverbullet.sequncer.Sequencer;
+import jp.silverbullet.sequncer.SystemAccessor;
+import jp.silverbullet.sequncer.SystemAccessor.DialogAnswer;
 import jp.silverbullet.test.TestRecorder;
 import jp.silverbullet.test.TestRecorderInterface;
 import jp.silverbullet.web.ValueSetResult;
@@ -168,7 +177,12 @@ public class BuilderModelImpl {
 	private TestRecorder testRecorder = new TestRecorder(new TestRecorderInterface() {
 		
 		public void saveParameters(String filename) {
-			BuilderModelImpl.this.saveParameters(filename);
+			try {
+				BuilderModelImpl.this.saveParameters(filename);
+			} catch (SvFileException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 		public void requestChange(String id, String value) throws RequestRejectedException {
@@ -191,12 +205,40 @@ public class BuilderModelImpl {
 			return registerController;
 		}
 	});
+	
+	private SystemAccessor systemAccessor = new SystemAccessor() {
+		@Override
+		public void saveProperties(String fileName) throws SvFileException {
+			saveParameters(fileName);
+		}
+
+		@Override
+		public void loadProperties(String fileName) throws SvFileException {
+			loadParameters(fileName);
+		}
+
+		DialogAnswer ret = DialogAnswer.OK;
+		@Override
+		public DialogAnswer dialog(String message) {
+			
+			runtimeListeners.forEach(listener -> {
+				ret = listener.dialog(message);
+			});
+			return ret;
+		}
+
+		@Override
+		public void message(String message) {
+			runtimeListeners.forEach(listener -> listener.message(message));
+		}
+	};
 	private DependencySpecHolder defaultDependency;
 	private RegisterSpecHolder registerSpecHolder = new RegisterSpecHolder();
 	private List<RegisterAccessor> simulators;
 	private String sourceInfo;
 	private RegisterAccessor hardwareAccessor;
 	private UiBuilder uiBuilder  = null;
+	private Set<RuntimeListener> runtimeListeners = new HashSet<>();
 
 	public enum RegisterTypeEnum {
 		Simulator,
@@ -244,6 +286,11 @@ public class BuilderModelImpl {
 			protected BlobStore getBlobStore() {
 				return blobStore;
 			}
+
+			@Override
+			protected SystemAccessor getSystemAccessor() {
+				return systemAccessor;
+			}
 		};
 
 		sequencer.addSequencerListener(testRecorder);
@@ -268,7 +315,7 @@ public class BuilderModelImpl {
 		uiLayoutHolder.load(folder);
 	
 		registerSpecHolder.load(folder);// = load(RegisterSpecHolder.class, folder);
-		restrictionMatrix.load(folder);
+//		restrictionMatrix.load(folder);
 		
 		this.uiBuilder = this.load(UiBuilder.class, folder + "/" + UIBUILDER);
 		if (this.uiBuilder != null) {
@@ -297,7 +344,13 @@ public class BuilderModelImpl {
 
 	private <T> T  loadJson(
 			Class<T> clazz, String filename) {
-		return new JsonPersistent().loadJson(clazz, filename);
+		try {
+			return new JsonPersistent().loadJson(clazz, filename);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	
@@ -328,12 +381,17 @@ public class BuilderModelImpl {
 		this.registerSpecHolder.save(folder);
 		this.uiLayoutHolder.save(folder);
 		save(this.uiBuilder, UiBuilder.class, folder + "/" + UIBUILDER);
-		this.restrictionMatrix.save(folder);
+//		this.restrictionMatrix.save(folder);
 		this.dependencyDesigner.save(folder);
 	}
 
 	private void saveJson(Object object, String filename) {
-		new JsonPersistent().saveJson(object, filename);
+		try {
+			new JsonPersistent().saveJson(object, filename);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 
@@ -382,16 +440,17 @@ public class BuilderModelImpl {
 	}
 
 	
-	public void saveParameters(String filename) {
+	public void saveParameters(String filename) throws SvFileException {
 		this.getRuntimePropertyStore().save(filename);
 	}
 
 	
-	public void loadParameters(String filename) {
-		List<IdValue> changedIds = this.getRuntimePropertyStore().load(filename).idValue;
-
+	public void loadParameters(String filename) throws SvFileException {
 		try {
+			List<IdValue> changedIds = this.getRuntimePropertyStore().load(filename).idValue;
 			this.dependency.requestChanges(changedIds);
+		} catch (NullPointerException e) {
+			throw new SvFileException();
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
 		}
@@ -491,16 +550,56 @@ public class BuilderModelImpl {
 			e.printStackTrace();
 		}
 	}
-
 	
+	private DialogAnswer dialogReply = DialogAnswer.OK;
 	public ValueSetResult requestChange(String id, int index, String value, boolean forceChange) {
 		ValueSetResult ret = new ValueSetResult();
 		
 		try {
 			sequencer.requestChange(id, index, value, forceChange, new CommitListener() {
 				@Override
-				public Reply confirm(String message) {
-					return Reply.Accept;
+				public Reply confirm(Map<String, List<ChangedItemValue>> map) {
+					String tmp = createConfirmMessage(map);
+					if (tmp.isEmpty()) {
+						return Reply.Accept;
+					}
+					
+					String message = "Following parameters will be changed by this action.\nDo you continue?\n\n" 
+								+ tmp;
+
+					runtimeListeners.forEach(listener -> {
+						dialogReply = listener.dialog(message);
+					});
+					if (dialogReply.compareTo(DialogAnswer.OK) == 0) {
+						return Reply.Accept;
+					}
+					else {
+						return Reply.Reject;
+					}
+				}
+				
+				private String createConfirmMessage(Map<String, List<ChangedItemValue>> changedHistory) {
+					StringBuilder message = new StringBuilder();
+					boolean first = true;
+					for (String id : changedHistory.keySet()) {
+						if (first) {
+							first = false;
+							continue;
+						}
+						//message.append(id + ":");
+						List<ChangedItemValue> values = changedHistory.get(id);
+						for (ChangedItemValue v : values) {
+							if (v.getElement().equals(DependencySpec.Value)) {
+								RuntimeProperty prop = getRuntimePropertyStore().get(id);
+								String value = v.getValue();
+								if (prop.isList()) {
+									value = prop.getOptionTitle(value);
+								}
+								message.append(prop.getTitle() + " -> " + value + "\n");
+							}
+						}
+					}
+					return message.toString();
 				}
 			});
 			getUiLayoutHolder().getCurrentUi().doAutoDynamicPanel();
@@ -543,12 +642,6 @@ public class BuilderModelImpl {
 		return this.dependencyDesigner;
 	}
 
-//	public void init() {
-//		this.getRuntimePropertyStore().getAllProperties().forEach(prop -> {
-//			this.requestChange(prop.getId(), prop.getIndex(), prop.getCurrentValue(), true);
-//		});
-//	}
-
 	public void setDefaultValues() {
 		this.getRuntimePropertyStore().getAllProperties().forEach(prop -> {
 			if (prop.isAction()) {
@@ -557,6 +650,14 @@ public class BuilderModelImpl {
 			prop.resetValue();
 			this.requestChange(prop.getId(), prop.getIndex(), prop.getCurrentValue(), true);
 		});
+	}
+
+	public void addRuntimeListener(RuntimeListener runtimeListener) {
+		runtimeListeners.add(runtimeListener);
+	}
+
+	public void replyDialog(String messageId, String reply) {
+		this.runtimeListeners.forEach(listener -> listener.onReply(messageId, reply));
 	}
 
 }

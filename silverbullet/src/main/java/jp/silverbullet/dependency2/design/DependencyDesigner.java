@@ -1,5 +1,6 @@
 package jp.silverbullet.dependency2.design;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -275,14 +276,26 @@ public abstract class DependencyDesigner {
 		return folder + "/" + CONFIGFILENAME;
 	}
 	public void save(String folder) {
-		new JsonPersistent().saveJson(this.data, getFilename(folder));
-		new JsonPersistent().saveJson(this.configs, getConfigFilename(folder));
+		try {
+			new JsonPersistent().saveJson(this.data, getFilename(folder));
+			new JsonPersistent().saveJson(this.configs, getConfigFilename(folder));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 	public void load(String folder) {
-		this.data = new JsonPersistent().loadJson(RestrictionData2.class, getFilename(folder));
-		this.configs = new JsonPersistent().loadJson(DependencyDesignConfigs.class, getConfigFilename(folder));
-		init();
+		try {
+			this.data = new JsonPersistent().loadJson(RestrictionData2.class, getFilename(folder));
+			this.configs = new JsonPersistent().loadJson(DependencyDesignConfigs.class, getConfigFilename(folder));
+			init();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 	
 }

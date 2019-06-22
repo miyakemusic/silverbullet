@@ -20,6 +20,8 @@ import jp.silverbullet.register2.BitUpdates;
 import jp.silverbullet.register2.RegisterAccessor;
 import jp.silverbullet.register2.RegisterAccessorListener;
 import jp.silverbullet.register2.RegisterUpdates;
+import jp.silverbullet.sequncer.SequencerListener;
+import jp.silverbullet.sequncer.SystemAccessor.DialogAnswer;
 import jp.silverbullet.sequncer.UserSequencer;
 import jp.silverbullet.test.TestRecorderListener;
 import jp.silverbullet.web.BuilderServer;
@@ -70,8 +72,41 @@ public abstract class SilverBulletServer {
 		
 	}
 
+	private Object syncDialog = new Object();
+	private DialogAnswer answerDialog = null;
+	
 	private void registerWebClientManager() {
 
+		staticInstance.getBuilderModel().addRuntimeListener(new RuntimeListener() {
+			@Override
+			public DialogAnswer dialog(String message) {
+				message = message.replace("\n", "<br>");
+				WebSocketBroadcaster.getInstance().sendMessageAsync("MESSAGE", message);
+				
+				synchronized(syncDialog) {
+					try {
+						syncDialog.wait();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				return answerDialog;
+			}
+
+			@Override
+			public void onReply(String messageId, String reply) {
+				answerDialog = DialogAnswer.valueOf(reply);
+				synchronized(syncDialog) {
+					syncDialog.notify();
+				}
+			}
+
+			@Override
+			public void message(String message) {
+				WebSocketBroadcaster.getInstance().sendMessageAsync("MESSAGE", message);
+			}
+		});
+		
 		staticInstance.getBuilderModel().getDependency().addDependencyListener(new DependencyListener() {
 			@Override
 			public boolean confirm(String history) {

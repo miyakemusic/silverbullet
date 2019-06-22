@@ -465,14 +465,16 @@ class TextField extends Widget {
 		$('#' + this.parent).append('<div id="' + this.divid + '"><input type="' + type + '" id="' + this.textId + '"></div>');
 		$('#' + this.textId).css("width", "100%");
 		$('#' + this.textId).css("height", "100%");
-//		$('#' + this.textId).keyboard();
+
 		var me = this;
 		
 		$('#' + me.textId).keyboard({
-		  accepted : function(event, keyboard, el) {
-			me.setter(me.widget.id, 0, $('#' + me.textId).val());
-			$(this).removeClass();
-		  }
+			layout: 'qwerty',
+			openOn: 'click',
+			accepted : function(event, keyboard, el) {
+				me.setter(me.widget.id, 0, $('#' + me.textId).val());
+				$(this).removeClass();
+			}
 		});
 	}
 	
@@ -501,6 +503,7 @@ class TextField extends Widget {
 			$('#' + this.textId).css('background-color', 'white');
 			$('#' + this.textId).css('color', 'black');
 		}
+
 	}
 }
 
@@ -786,9 +789,8 @@ class Table2 extends Widget {
 				return me.data.data[row][col];
 			},
 			function(row, col) {
-				var obj = new Object();
-				obj.selectedRow = row;
-				me.setter(widget.id, 0, JSON.stringify(obj));
+				me.data.selectedRow = row;
+				me.setter(widget.id, 0, JSON.stringify(me.data));
 			}
 		);
 	}
@@ -799,11 +801,12 @@ class Table2 extends Widget {
 		}
 		this.data = JSON.parse(property.currentValue);
 		
-		if (this.data.newFlag) {
-			this.table.build();
+		if (this.data.dataChanged) {
+			if (this.data.newFlag) {
+				this.table.build();
+			}
+			this.table.update();
 		}
-		this.table.update();
-		
 		this.table.selectRow(this.data.selectedRow);
 	}
 }
@@ -923,7 +926,45 @@ class NewLayout {
 			}		
 
 		}, 'UIDESIGN');
-			
+
+		var messageDialogId = divBase + "_messageDialog";
+		var messageId = divBase + "_message";
+		new MyWebSocket(function(msg) {
+			$('#' + messageId).html(msg.replace('\n', '<br>'));
+			$('#' + messageDialogId).dialog('open');
+		}, 'MESSAGE');
+					
+		
+		$('#' + divBase).append('<div id="' + messageDialogId + '"><label id="' + messageId + '"></label></div>');
+		$('#' + messageDialogId).dialog({
+			  autoOpen: false,
+			  title: "Message",
+			  closeOnEscape: false,
+			  modal: false,
+			  buttons: {
+			    "OK": function(){
+			    	replyDialog("", "OK");
+			    	$(this).dialog('close');
+			    	
+			    },
+			    "Cancel": function(){
+			    	replyDialog("", "Cancel");
+			    	$(this).dialog('close');
+			    }
+			  },
+			width: 600,
+			height: 400
+		});
+		function replyDialog(messageId, reply) {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/runtime/replyDialog?messageId=" + messageId + "&reply=" + reply,
+			   success: function(widget){
+
+			   }
+			});	
+		}
+		
 		function retreiveWidget(divid, finished) {
 			$.ajax({
 			   type: "GET", 

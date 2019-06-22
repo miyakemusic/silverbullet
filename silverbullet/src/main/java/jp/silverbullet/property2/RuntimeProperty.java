@@ -330,5 +330,9 @@ public class RuntimeProperty implements Cloneable {
 		}
 	}
 
+	public String getOptionTitle(String optionId) {
+		return this.property.getOption(optionId).getTitle();
+	}
+
 
 }

@@ -141,7 +141,7 @@ class DependencySpecEditor {
 			}
 			else if (arg == 'options') {
 				if (col == 'Value') {
-					return ['True', 'False'];
+					return ['true', 'false'];
 				}
 			}
 			return '';

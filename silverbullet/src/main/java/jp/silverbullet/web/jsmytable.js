@@ -236,10 +236,8 @@ class JsMyTable2 {
 
 		for (var row = 0; row < this.getRowCount(); row++) {
 			var html = '<tr>';
-//			var tr = tbody.append($('<tr>'));
 			for (var col = 0; col < this.getColCount(); col++) {
-				var id = this.createCellId(col, row);//'R' + row + 'C' + col;
-//				tr.append('<td><label id="' + id + '"></lable></td>');
+				var id = this.createCellId(col, row);
 				html += '<td><label id="' + id + '"></lable></td>';
 			}
 
@@ -250,7 +248,6 @@ class JsMyTable2 {
 		var me = this;
 		$('#' + this.tableId + ' tbody tr').click(function() {
 			var rowIndex = $('#' + me.tableId + ' tbody tr').index(this);
-			//alert(rowIndex);
 			me.onClick(rowIndex, 0);
 		});
 

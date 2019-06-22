@@ -8,51 +8,28 @@ import java.util.Arrays;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JsonPersistent {
-	public void saveJson(Object object, String filename) {
+	public void saveJson(Object object, String filename) throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
-		try {
-			String s = mapper.writeValueAsString(object);
-			Files.write(Paths.get(filename), Arrays.asList(s));
-		} catch (JsonGenerationException e) {
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		String s = mapper.writeValueAsString(object);
+		Files.write(Paths.get(filename), Arrays.asList(s));
 	}
 	
-	public <T> T loadJson(Class<T> clazz, String filename) {
+	public <T> T loadJson(Class<T> clazz, String filename) throws JsonParseException, JsonMappingException, IOException {
 		ObjectMapper mapper = new ObjectMapper();
-		try {
-			T ret = mapper.readValue(new File(filename), clazz);
-			if (ret == null) {
-				try {
-					ret = clazz.newInstance();
-				} catch (InstantiationException | IllegalAccessException e) {
-					e.printStackTrace();
-				}
+	
+		T ret = mapper.readValue(new File(filename), clazz);
+		if (ret == null) {
+			try {
+				ret = clazz.newInstance();
+			} catch (InstantiationException | IllegalAccessException e) {
+				e.printStackTrace();
 			}
-			return ret;
-		} catch (JsonParseException e) {
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (Exception e2) {
-			e2.printStackTrace();
 		}
-
-		try {
-			return clazz.newInstance();
-		} catch (InstantiationException | IllegalAccessException e) {
-			e.printStackTrace();
-		}
-		return null;
+		return ret;
 	}
 }

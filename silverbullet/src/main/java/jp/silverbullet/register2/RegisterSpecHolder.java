@@ -1,5 +1,6 @@
 package jp.silverbullet.register2;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -226,15 +227,26 @@ public class RegisterSpecHolder {
 
 
 	public void load(String folder) {
-		RegisterSpecHolder loadded = new JsonPersistent().loadJson(this.getClass(), folder + "/registerspec.json");
-		this.registers = loadded.registers;
-		this.registerWidth = loadded.registerWidth;
-		
-		this.registers.values().forEach(register -> register.setRegisterInterface(registerInterface));
+		try {
+			RegisterSpecHolder loadded = new JsonPersistent().loadJson(this.getClass(), folder + "/registerspec.json");
+			this.registers = loadded.registers;
+			this.registerWidth = loadded.registerWidth;
+			
+			this.registers.values().forEach(register -> register.setRegisterInterface(registerInterface));
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 
 	public void save(String folder) {
-		new JsonPersistent().saveJson(this, folder + "/registerspec.json");
+		try {
+			new JsonPersistent().saveJson(this, folder + "/registerspec.json");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

@@ -8,4 +8,5 @@ public interface SvHandlerModel {
 
 	EasyAccessInterface getEasyAccessInterface();
 	RegisterAccessor getRegisterAccessor();
+	SystemAccessor getSystem();
 }

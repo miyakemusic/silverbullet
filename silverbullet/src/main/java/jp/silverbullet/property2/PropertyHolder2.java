@@ -1,5 +1,6 @@
 package jp.silverbullet.property2;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -98,12 +99,23 @@ public class PropertyHolder2 {
 	}
 
 	public void load(String filename) {
-		this.properties = new JsonPersistent().loadJson(Properties.class, filename);
-		this.properties.getProperties().forEach((key, value) -> value.addListener(listener));
+		try {
+			this.properties = new JsonPersistent().loadJson(Properties.class, filename);
+			this.properties.getProperties().forEach((key, value) -> value.addListener(listener));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 	public void save(String filename) {
-		new JsonPersistent().saveJson(this.properties, filename);
+		try {
+			new JsonPersistent().saveJson(this.properties, filename);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void addListener(PropertyDefHolderListener propertDefHolderListener) {

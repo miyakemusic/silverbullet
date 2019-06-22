@@ -105,6 +105,12 @@ public class SequencerTest {
 				// TODO Auto-generated method stub
 				return null;
 			}
+
+			@Override
+			protected SystemAccessor getSystemAccessor() {
+				// TODO Auto-generated method stub
+				return null;
+			}
 			
 		};
 		

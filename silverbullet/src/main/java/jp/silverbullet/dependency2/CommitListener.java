@@ -1,5 +1,8 @@
 package jp.silverbullet.dependency2;
 
+import java.util.List;
+import java.util.Map;
+
 public interface CommitListener {
 
 	public enum Reply {
@@ -8,6 +11,6 @@ public interface CommitListener {
 		Pend
 	}
 
-	public Reply confirm(String message);
+	public Reply confirm(Map<String, List<ChangedItemValue>> map);
 
 }

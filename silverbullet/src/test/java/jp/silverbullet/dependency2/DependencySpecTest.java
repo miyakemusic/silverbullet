@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
@@ -726,7 +727,7 @@ public class DependencySpecTest {
 		// Commit is accepted
 		engine.setCommitListener(new CommitListener() {
 			@Override
-			public Reply confirm(String message) {
+			public Reply confirm(Map<String, List<ChangedItemValue>> map) {
 				return Reply.Accept;
 			}
 		});
@@ -741,7 +742,7 @@ public class DependencySpecTest {
 		// Commit is rejected
 		engine.setCommitListener(new CommitListener() {
 			@Override
-			public Reply confirm(String message) {
+			public Reply confirm(Map<String, List<ChangedItemValue>> map) {
 				return Reply.Reject;
 			}
 		});
@@ -758,7 +759,7 @@ public class DependencySpecTest {
 		// Commit is pended
 		engine.setCommitListener(new CommitListener() {
 			@Override
-			public Reply confirm(String message) {
+			public Reply confirm(Map<String, List<ChangedItemValue>> map) {
 				return Reply.Pend;
 			}
 		});

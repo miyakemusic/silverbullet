@@ -55,7 +55,13 @@ public class RuntimePropertyStoreTest {
 		store.get("ID_NUMERIC").setCurrentValue("123.0");
 		store.get("ID_LIST").setCurrentValue("ID_LIST_B");
 		
-		store.save("unittest.json");
+		try {
+			store.save("unittest.json");
+		} catch (SvFileException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			assertEquals(false, true);
+		}
 		store.get("ID_BOOLEAN").setCurrentValue(PropertyDef2.True);
 		store.get("ID_BOOLEAN").setTitle("1111");
 		store.get("ID_NUMERIC").setCurrentValue("-123.0");
@@ -68,7 +74,14 @@ public class RuntimePropertyStoreTest {
 		assertEquals(false, store.get("ID_LIST").isOptionDisabled("ID_LIST_A"));
 		
 		// load
-		IdValues ret = store.load("unittest.json");
+		IdValues ret = null;
+		try {
+			ret = store.load("unittest.json");
+		} catch (SvFileException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			assertEquals(false, true);
+		}
 		
 		assertEquals(PropertyDef2.False,  ret.getValue("ID_BOOLEAN#0"));
 
