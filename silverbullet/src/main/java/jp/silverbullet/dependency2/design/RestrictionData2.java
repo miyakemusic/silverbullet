@@ -32,6 +32,9 @@ public class RestrictionData2 {
 		else if (value.equals("<")) {
 			this.values.get(trigger).put(target, ">");
 		}
+		else if (value.equals("=")) {
+			this.values.get(trigger).put(target, "=");
+		}
 	}
 	
 	public synchronized String getValue(String triggerId, String targetId) {

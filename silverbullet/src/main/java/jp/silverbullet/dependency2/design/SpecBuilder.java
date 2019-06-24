@@ -64,6 +64,9 @@ public abstract class SpecBuilder {
 							this.getDependencySpecHolder().getSpec(targetId).addMax("$" + triggerId, "$" + triggerId + "==" + "$" + triggerId);							
 						}
 					}
+					else if (value.equals("=")) {
+						this.getDependencySpecHolder().getSpec(targetId).addValue("$" + triggerId, "$" + triggerId + "==$" + triggerId);											
+					}
 					else {
 						this.getDependencySpecHolder().getSpec(targetId).addValue(value, "$" + this.getMainId(triggerId) + "==" + attachSign(triggerId));
 					}

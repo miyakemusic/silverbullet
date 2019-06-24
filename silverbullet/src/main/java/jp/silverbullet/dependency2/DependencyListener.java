@@ -15,4 +15,6 @@ public interface DependencyListener {
 	
 	void onRejected(Id id);
 
+	void onProgress(List<String> log);
+
 }

@@ -80,6 +80,7 @@ public abstract class DependencyEngine {
 				}
 				else if (reply.equals(CommitListener.Reply.Reject)) {
 					// Do nothing
+					fireRejectedEvent(id);
 				}
 				else if (reply.equals(CommitListener.Reply.Pend)) {
 					
@@ -114,22 +115,35 @@ public abstract class DependencyEngine {
 		this.cachedPropertyStore.addCachedPropertyStoreListener(prevChangedProperties);
 		setCurrentValue(cachedPropertyStore.getProperty(id.toString()), value, forceChange);
 		
+		fireProgress(this.cachedPropertyStore.getDebugLog());
+		
 		Set<Id> needsFindSelection = new HashSet<>();
 		handle(id, value, forceChange, needsFindSelection);
 		selectAvailableOption(needsFindSelection);
 		
 		this.cachedPropertyStore.removeCachedPropertyStoreListener(prevChangedProperties);
 		
+		fireProgress(this.cachedPropertyStore.getDebugLog());
+		
 		Set<Id> done = new LinkedHashSet<>();
 		while(prevChangedProperties.getIds().size() > 0) {
 			prevChangedProperties = handleNext(prevChangedProperties, forceChange);
-			
+			fireProgress(this.cachedPropertyStore.getDebugLog());
 			// avoids infinite loop. but this design is not the best
 			if (contains(done, prevChangedProperties.getIds())) {
 				break;
 			}
 			done.addAll(prevChangedProperties.getIds());
 		}
+		this.listeners.forEach(listener -> listener.onResult(this.cachedPropertyStore.getChangedHistory()));
+	}
+
+	private void fireProgress(List<String> log) {
+		if (log.size()==0) {
+			return;
+		}
+		this.listeners.forEach(listener -> listener.onProgress(log));
+		log.clear();
 	}
 
 	private boolean contains(Set<Id> done, Set<Id> ids) {
@@ -379,7 +393,13 @@ public abstract class DependencyEngine {
 	}
 
 	private boolean isLeftLarger(String val1, String val2) {
-		return Double.valueOf(val1) > Double.valueOf(val2);
+		try {
+			return Double.valueOf(val1) > Double.valueOf(val2);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return true;
 	}
 
 	private boolean reselectClosestValue(RuntimeProperty property) {

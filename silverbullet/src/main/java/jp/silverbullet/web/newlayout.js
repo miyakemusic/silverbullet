@@ -877,6 +877,8 @@ class NewLayout {
 			});	
 		});
 		
+		new DependencyHistory(div);
+		
 		this.propertyWindow = new NewLayoutProperty(div);
 		
 		var mainDiv = div + "_mainDiv";
@@ -926,12 +928,17 @@ class NewLayout {
 			}		
 
 		}, 'UIDESIGN');
-
+		
 		var messageDialogId = divBase + "_messageDialog";
 		var messageId = divBase + "_message";
 		new MyWebSocket(function(msg) {
-			$('#' + messageId).html(msg.replace('\n', '<br>'));
-			$('#' + messageDialogId).dialog('open');
+			if (msg == '@CLOSE@') {
+				$('#' + messageDialogId).dialog('close');
+			}
+			else {
+				$('#' + messageId).html(msg.replace('\n', '<br>'));
+				$('#' + messageDialogId).dialog('open');
+			}
 		}, 'MESSAGE');
 					
 		

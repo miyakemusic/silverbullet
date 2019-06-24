@@ -1,6 +1,7 @@
 package jp.silverbullet;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jp.silverbullet.dependency2.ChangedItemValue;
+import jp.silverbullet.dependency2.ChangedProperties;
 import jp.silverbullet.dependency2.DependencyListener;
 import jp.silverbullet.dependency2.Id;
 import jp.silverbullet.dependency2.design.RestrictionMatrixElement;
@@ -90,6 +92,7 @@ public abstract class SilverBulletServer {
 						e.printStackTrace();
 					}
 				}
+				WebSocketBroadcaster.getInstance().sendMessageAsync("MESSAGE", "@CLOSE@");
 				return answerDialog;
 			}
 
@@ -107,6 +110,7 @@ public abstract class SilverBulletServer {
 			}
 		});
 		
+		List<String> depHistory = new ArrayList<>();
 		staticInstance.getBuilderModel().getDependency().addDependencyListener(new DependencyListener() {
 			@Override
 			public boolean confirm(String history) {
@@ -115,23 +119,52 @@ public abstract class SilverBulletServer {
 
 			@Override
 			public void onResult(Map<String, List<ChangedItemValue>> changedHistory) {
+				System.out.println(changedHistory);
 			}
 
 			@Override
 			public void onCompleted(String message) {
 				WebSocketBroadcaster.getInstance().sendMessageAsync("VALUES", message);
+				WebSocketBroadcaster.getInstance().sendMessageAsync("DEBUG", toHtml(depHistory));
+			}
+
+			private String toHtml(List<String> lines) {
+				StringBuilder sb = new StringBuilder();
+				for (String s : lines) {
+					sb.append(s + "<br>"); 
+				}
+				return sb.toString();
 			}
 
 			@Override
 			public void onStart(Id id, String value) {
+				//depHistory.clear();
 			}
 
 			@Override
 			public void onRejected(Id id) {
 				WebSocketBroadcaster.getInstance().sendMessageAsync("VALUES", id.toString());
+			}
+
+			@Override
+			public void onProgress(List<String> log) {
+				depHistory.addAll(log);
+				depHistory.add("-----------------------------------------------");
 			}		
 		});
-	
+		staticInstance.getBuilderModel().getSequencer().addSequencerListener(new SequencerListener() {
+
+			@Override
+			public void onChangedBySystem(String id, String value) {
+				depHistory.add("--------------- by STSTEM -----------------");
+			}
+
+			@Override
+			public void onChangedByUser(String id, String value) {
+				depHistory.clear();
+			}
+			
+		});
 		staticInstance.getBuilderModel().getPropertiesHolder2().addListener(new PropertyDefHolderListener() {
 			@Override
 			public void onChange(String id, String fieldName, Object value, Object prevValue) {
