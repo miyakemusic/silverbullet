@@ -160,6 +160,21 @@ class JsMyTable {
 					}
 				});
 			}
+			else if (type == 'text_button') {
+				var key = new Object();
+				key.k = k;
+				key.row = row;
+				
+				var td2Id = tdId + "_2";
+				$('#' + tdId).append('<div id="' + td2Id + '"></div><button></button>');
+				key.id = tdId;
+				
+				var edit = new EditableText(td2Id, v, function(value) {
+					me.listenerChange(row, k, value);
+				});
+				
+				me.allTexts.set(key, edit);
+			}
 			else {			
 				var key = new Object();
 				key.k = k;

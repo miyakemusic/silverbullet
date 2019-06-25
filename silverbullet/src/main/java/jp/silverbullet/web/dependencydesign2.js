@@ -27,7 +27,7 @@ class DependencyDesign2 {
 		
 		var colDefValueTable = function(k, row, type) {
 			if (type == 'type') {
-				return 'text';
+				return 'text_button';
 			}
 			else if (type == 'checked') {
 
@@ -67,6 +67,19 @@ class DependencyDesign2 {
 			$('#' + nameId).val($('#' + configId).val());
 			$('#' + dialogId).dialog('open');
 		});
+		
+		var rotateId = div + "_rotate";
+		$('#' + div).append('<button id="' + rotateId + '">Rotate</button>');
+		$('#' + rotateId).click(function() {
+			rotate();	
+		});
+		
+		function rotate() {	
+			var tmp = targets;
+			targets = triggers;
+			triggers = tmp;
+			updateAll();
+		}
 		
 		getDependencyDesignConfigList();
 		

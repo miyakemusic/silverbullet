@@ -26,14 +26,14 @@ public class RestrictionData2 {
 		}
 		this.values.get(target).put(trigger, value);
 		
-		if (value.equals(">")) {
-			this.values.get(trigger).put(target, "<");
+		if (value.startsWith(">")) {
+			this.values.get(trigger).put(target, value.replace(">", "<"));
 		}
-		else if (value.equals("<")) {
-			this.values.get(trigger).put(target, ">");
+		else if (value.startsWith("<")) {
+			this.values.get(trigger).put(target, value.replace("<", ">"));
 		}
-		else if (value.equals("=")) {
-			this.values.get(trigger).put(target, "=");
+		else if (value.startsWith("=")) {
+			this.values.get(trigger).put(target, value);
 		}
 	}
 	

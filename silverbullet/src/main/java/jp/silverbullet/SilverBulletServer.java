@@ -119,7 +119,7 @@ public abstract class SilverBulletServer {
 
 			@Override
 			public void onResult(Map<String, List<ChangedItemValue>> changedHistory) {
-				System.out.println(changedHistory);
+			//	System.out.println(changedHistory);
 			}
 
 			@Override

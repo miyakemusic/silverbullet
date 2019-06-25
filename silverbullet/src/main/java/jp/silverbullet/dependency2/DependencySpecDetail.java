@@ -11,8 +11,10 @@ public class DependencySpecDetail {
 	
 	public DependencySpecDetail() {}
 	
-	public void add(String targetElement, String enabled, String trigger, String condition) {
-		expressions.add(targetElement, new Expression(enabled, trigger, condition));
+	public Expression add(String targetElement, String enabled, String trigger, String condition) {
+		Expression expression = new Expression(enabled, trigger, condition);
+		expressions.add(targetElement, expression);
+		return expression;
 	}
 
 	public ExpressionHolder qualifies(String id) {

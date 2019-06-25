@@ -71,8 +71,8 @@ public class DependencySpec {
 		addCalculation(calculation, "");
 	}
 	
-	public void addValue(String value, String trigger, String condition) {
-		this.dependencySpecDetail.add(DependencySpec.Value, value, trigger, condition);
+	public Expression addValue(String value, String trigger, String condition) {
+		return this.dependencySpecDetail.add(DependencySpec.Value, value, trigger, condition);
 	}
 
 	public DependencySpec addValue(String value, String trigger) {

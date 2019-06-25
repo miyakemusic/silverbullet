@@ -44,6 +44,10 @@ public abstract class SpecBuilder {
 		for (String targetId: this.getData().getValueTargetIds()) {
 			for (String triggerId : this.getData().getValueTriggerId(targetId)) {
 				String value = this.getData().getValue(triggerId, targetId);
+				String condition = "";
+				if (value.contains("@")) {
+					condition = value.split("@")[1];
+				}
 				if (value.isEmpty()) {
 					continue;
 				}
@@ -52,19 +56,19 @@ public abstract class SpecBuilder {
 				PropertyDef2 triggerProp = this.getPropertyDef(this.getMainId(triggerId));
 				
 				if (targetProp.isNumeric()) {
-					if (value.equals(">")) {
+					if (value.startsWith(">")) {
 						this.getDependencySpecHolder().getSpec(targetId).addValue("$" + triggerId, "$" + targetId + "<$" + triggerId);
 						if (this.getPriority(triggerId) > this.getPriority(targetId)) {
 							this.getDependencySpecHolder().getSpec(targetId).addMin("$" + triggerId, "$" + triggerId + "==" + "$" + triggerId);
 						}
 					}
-					else if (value.equals("<")) {
+					else if (value.startsWith("<")) {
 						this.getDependencySpecHolder().getSpec(targetId).addValue("$" + triggerId, "$" + targetId + ">$" + triggerId);						
 						if (this.getPriority(triggerId) > this.getPriority(targetId)) {
 							this.getDependencySpecHolder().getSpec(targetId).addMax("$" + triggerId, "$" + triggerId + "==" + "$" + triggerId);							
 						}
 					}
-					else if (value.equals("=")) {
+					else if (value.startsWith("=")) {
 						this.getDependencySpecHolder().getSpec(targetId).addValue("$" + triggerId, "$" + triggerId + "==$" + triggerId);											
 					}
 					else {
@@ -75,12 +79,21 @@ public abstract class SpecBuilder {
 					if (triggerProp.isList()) {
 						if (this.isOptionId(triggerId)) {
 							String value2 = value;
-							String condition = "";
 							if (value.contains("(")) {
 								String[] tmp = value.split("()");
 								value2 = value.split("\\(")[0];
 							}
 							this.getDependencySpecHolder().getSpec(targetId).addValue(value2, "$" + this.getMainId(triggerId) + "==%" + triggerId, condition);
+						}
+						else { // main ID
+							if (value.startsWith("=")) {
+								boolean silentChange = this.getPriority(targetProp.getId()) <= this.getPriority(triggerProp.getId());
+								for (String optionId : triggerProp.getOptionIds()) {
+									String targetValue = replaceCorrelationOption(targetProp, optionId);
+									this.getDependencySpecHolder().getSpec(targetId).addValue(targetValue, "$" + triggerId + "==%" + optionId, condition);
+								
+								}
+							}
 						}
 					}
 					else if (triggerProp.isNumeric()) {
@@ -107,6 +120,19 @@ public abstract class SpecBuilder {
 		}
 	}
 	
+	private String replaceCorrelationOption(PropertyDef2 targetProp, String triggerId) {
+		String tmp[] = triggerId.split("_");
+		String tail = tmp[tmp.length-1];
+		for (String s : targetProp.getOptionIds()) {
+			String[] tmp2 = s.split("_");
+			String tail2 = tmp2[tmp2.length-1];
+			if (tail2.equals(tail)) {
+				return s;
+			}
+		}
+		return null;
+	}
+
 	protected abstract Map<Integer, List<String>> getPriorities();
 
 	private List<String> getLowerPriorityIds(int priority) {
