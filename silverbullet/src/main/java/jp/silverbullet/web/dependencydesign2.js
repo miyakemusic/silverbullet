@@ -4,7 +4,7 @@ class DependencyDesign2 {
 		var targets = [];
 		var current;
 		var priorityEditor;
-		
+
 		var me = this;
 		var colDefEnabledTable = function(k, row, type) {
 			if (type == 'type') {
@@ -12,7 +12,7 @@ class DependencyDesign2 {
 					return 'check';
 				}
 				else {
-					return 'text';
+					return 'label';
 				}
 			}
 			else if (type == 'checked') {
@@ -27,6 +27,9 @@ class DependencyDesign2 {
 		
 		var colDefValueTable = function(k, row, type) {
 			if (type == 'type') {
+				if (k == 0 || row == 'title') {
+					return 'label';
+				}
 				return 'text_button';
 			}
 			else if (type == 'checked') {
@@ -36,9 +39,24 @@ class DependencyDesign2 {
 				if (row == 'title') {
 					return current.xTitle[current.xTitle.indexOf(k)];
 				}
-				var index = current.yTitle.indexOf(row);
-				return current.valueMatrix[index][k-1];
+				var index = current.yValueTitle.indexOf(row);
+				var value = current.valueMatrix[index][k-1];
+				if (value.includes('@')) {
+					return value.split('@')[0];	
+				}	
+				return value;
 			}		
+			else if (type == 'buttontext') {
+				if (k == 0 || row == 'title') {
+					return '';
+				}
+				var index = current.yValueTitle.indexOf(row);
+				var value = current.valueMatrix[index][k-1];		
+				if (value.includes('@')) {
+					return value.split('@')[1];	
+				}	
+				return "";
+			}
 		}		
 		new MyWebSocket(function(msg) {				
 				if (msg == 'MatrixChanged') {
@@ -206,6 +224,19 @@ class DependencyDesign2 {
 				});					
 			};
 			
+			var equationEditor = new EquationEditor(div);
+			valueTable.setButtonListener(function(row, k, v) {
+				equationEditor.show(v, function(value) {
+					var rowIndex = current.yValueTitle.indexOf(row);
+					var colIndex = k - 1;
+					
+					var target = row;
+					var trigger = current.xTitle[k-1];			
+					
+					setCondition(trigger, target, value);
+				});
+			});
+			
 			$.ajax({
 			   type: "GET", 
 			   url: "http://" + window.location.host + "/rest/dependencyDesign2/getSpec",
@@ -213,6 +244,10 @@ class DependencyDesign2 {
 	//				updateEnableList(msg);
 			   }
 			});	
+		}
+		
+		function setCondition(trigger, target, value) {
+			alert(trigger + " , " + target + " , " + value);
 		}
 		
 		function getDependencyDesignConfigList() {
@@ -305,6 +340,9 @@ class DependencyDesign2 {
 				val.push(col);
 				for (var i = 0; i < msg.xTitle.length; i++) {
 					var v = msg.valueMatrix[r][i];
+					if (v.includes('@')) {
+						v = v.split('@')[0];
+					}
 					val.push(v);
 				}
 				valueTable.appendRow(col, val);	
@@ -358,5 +396,6 @@ class DependencyDesign2 {
 			width: 400,
 			height: 300
 		});	
+				
 	}
 }

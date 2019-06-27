@@ -36,9 +36,7 @@ class DependencySpecEditor {
 			'	<button class="copyValue" value=" != ">!=</button>' +
 			'	<button class="copyValue" value=" || ">||</button>' +
 			'	<button class="copyValue" value=" ( ) ">()</button>' +
-//			'	<button class="copyValue" value="*Any">*Any</button>' +
 			'	<button class="copyValue" value="*Else">*Else</button>' +
-//			'	<button class="copyValue" value="*script">*SCRIPT()</button>' +
 			'	<button id="' + idSelector + '">ID Selector</button>' +
 			'	<button id="' + choiceSelector + '">Choice Selector</button>' +
 			'</div>');		

@@ -12,6 +12,7 @@ import jp.silverbullet.dependency2.CommitListener;
 import jp.silverbullet.dependency2.DependencyEngine;
 import jp.silverbullet.dependency2.DependencyListener;
 import jp.silverbullet.dependency2.Id;
+import jp.silverbullet.dependency2.IdValue;
 import jp.silverbullet.dependency2.RequestRejectedException;
 import jp.silverbullet.property2.RuntimeProperty;
 import jp.silverbullet.property2.RuntimePropertyStore;
@@ -94,7 +95,7 @@ public abstract class Sequencer {
 	public void requestChange(String id, Integer index, String value, boolean forceChange) throws RequestRejectedException {
 		requestChange(id, index, value, forceChange, new CommitListener() {
 			@Override
-			public Reply confirm(Map<String, List<ChangedItemValue>> map) {
+			public Reply confirm(Set<IdValue> message) {
 				return Reply.Accept;
 			}	
 		});

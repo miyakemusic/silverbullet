@@ -12,12 +12,14 @@ public class RuntimeDependencySpec {
 	private boolean executionConditionSatistied = true;
 	private boolean reject;
 	private RuntimeDependencySpec elseSpec;
+	private boolean silentChange;
 	
-	public RuntimeDependencySpec(String id, String target, Expression expression, boolean reject) {
+	public RuntimeDependencySpec(String id, String target, Expression expression, boolean reject, boolean silentChange) {
 		this.id = id;
 		this.target = target;
 		this.expression = expression.clone();
 		this.reject = reject;
+		this.silentChange = silentChange;
 	}
 
 	public String getId() {
@@ -113,5 +115,10 @@ public class RuntimeDependencySpec {
 	public String getTarget() {
 		return target;
 	}
+
+	public boolean isSilentChange() {
+		return silentChange;
+	}
+
 
 }

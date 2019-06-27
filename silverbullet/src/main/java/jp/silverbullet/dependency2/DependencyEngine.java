@@ -73,7 +73,7 @@ public abstract class DependencyEngine {
 		try {
 			changeValue(id, value, forceChange);
 			if (this.commitListener != null) {
-				CommitListener.Reply reply = this.commitListener.confirm(this.cachedPropertyStore.getChangedHistory());
+				CommitListener.Reply reply = this.commitListener.confirm(this.cachedPropertyStore.getConfirmationMessage());
 				if (reply.equals(CommitListener.Reply.Accept)) {
 					this.cachedPropertyStore.commit();
 					fireCompleteEvent();					
@@ -113,6 +113,8 @@ public abstract class DependencyEngine {
 		this.userChangedId = id;
 		ChangedProperties prevChangedProperties = new ChangedProperties(new HashSet<Id>(Arrays.asList(id)));
 		this.cachedPropertyStore.addCachedPropertyStoreListener(prevChangedProperties);
+		
+		this.cachedPropertyStore.setConfirmation(false); // Don't need to confirm change for self change.
 		setCurrentValue(cachedPropertyStore.getProperty(id.toString()), value, forceChange);
 		
 		fireProgress(this.cachedPropertyStore.getDebugLog());
@@ -187,6 +189,7 @@ public abstract class DependencyEngine {
 		List<RuntimeDependencySpec> specs = this.getSpecHolder().getRuntimeSpecs(id.getId());
 		specs = findSatisfiedSpecs(specs, id.getIndex());
 		for (RuntimeDependencySpec spec : specs) {	
+			this.cachedPropertyStore.setConfirmation(!spec.isSilentChange());
 			if (spec.getId().equals(this.userChangedId.getId())) {
 				continue;
 			}

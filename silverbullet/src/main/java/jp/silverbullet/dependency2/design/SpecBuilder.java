@@ -69,7 +69,8 @@ public abstract class SpecBuilder {
 						}
 					}
 					else if (value.startsWith("=")) {
-						this.getDependencySpecHolder().getSpec(targetId).addValue("$" + triggerId, "$" + triggerId + "==$" + triggerId);											
+						boolean silentChange = this.getPriority(targetProp.getId()) <= this.getPriority(triggerProp.getId());
+						this.getDependencySpecHolder().getSpec(targetId).addValue("$" + triggerId, "$" + triggerId + "==$" + triggerId, condition, silentChange);//.siletChange(silentChange);											
 					}
 					else {
 						this.getDependencySpecHolder().getSpec(targetId).addValue(value, "$" + this.getMainId(triggerId) + "==" + attachSign(triggerId));
@@ -90,7 +91,7 @@ public abstract class SpecBuilder {
 								boolean silentChange = this.getPriority(targetProp.getId()) <= this.getPriority(triggerProp.getId());
 								for (String optionId : triggerProp.getOptionIds()) {
 									String targetValue = replaceCorrelationOption(targetProp, optionId);
-									this.getDependencySpecHolder().getSpec(targetId).addValue(targetValue, "$" + triggerId + "==%" + optionId, condition);
+									this.getDependencySpecHolder().getSpec(targetId).addValue(targetValue, "$" + triggerId + "==%" + optionId, condition, silentChange);
 								
 								}
 							}

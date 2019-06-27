@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -18,6 +19,9 @@ public class CachedPropertyStore implements PropertyGetter {
 	private PropertyGetter  original;
 	private List<String> debugLog = new ArrayList<>();
 	private Map<String, List<ChangedItemValue>> changedHistory = new LinkedHashMap<>();
+	private Set<IdValue> confirmationMessage = new LinkedHashSet<>();
+	private Set<CachedPropertyStoreListener> cachedPropertyStoreListeners = new HashSet<>();
+	private boolean confirmation = true;
 	
 	private RuntimePropertyListener listener = new RuntimePropertyListener() {
 		@Override
@@ -58,7 +62,7 @@ public class CachedPropertyStore implements PropertyGetter {
 		}
 		
 	};
-	private Set<CachedPropertyStoreListener> cachedPropertyStoreListeners = new HashSet<>();
+
 	
 	public CachedPropertyStore(PropertyGetter  originalStore) {
 		original = originalStore;
@@ -68,8 +72,22 @@ public class CachedPropertyStore implements PropertyGetter {
 		getHistory(id.toString()).add(changedItemValue2);
 		this.debugLog.add(id + ":" + changedItemValue2.toString());
 		
+		appendConfirmLog(id, changedItemValue2);
+		
 		for (CachedPropertyStoreListener listener : cachedPropertyStoreListeners) {
 			listener.onChanged(id, changedItemValue2);
+		}
+	}
+
+	private void appendConfirmLog(Id id, ChangedItemValue changedItemValue2) {
+		if (this.confirmation && changedItemValue2.getElement().equals(DependencySpec.Value.toString())) {
+			IdValue item = new IdValue(id.toString(), changedItemValue2.getValue());
+			for (IdValue d : this.confirmationMessage) {
+				if (item.equals(d)) {
+					return;
+				}
+			}
+			this.confirmationMessage.add(item);
 		}
 	}
 
@@ -177,6 +195,7 @@ public class CachedPropertyStore implements PropertyGetter {
 
 	public void clearHistory() {
 		this.changedHistory.clear();
+		this.confirmationMessage.clear();
 	}
 
 	public void addCachedPropertyStoreListener(CachedPropertyStoreListener cachedPropertyStoreListener) {
@@ -186,4 +205,13 @@ public class CachedPropertyStore implements PropertyGetter {
 	public void removeCachedPropertyStoreListener(CachedPropertyStoreListener cachedPropertyStoreListener) {
 		cachedPropertyStoreListeners.remove(cachedPropertyStoreListener);
 	}
+
+	public void setConfirmation(boolean b) {
+		this.confirmation = b;
+	}
+
+	public Set<IdValue> getConfirmationMessage() {
+		return confirmationMessage;
+	}
+	
 }

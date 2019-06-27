@@ -558,17 +558,17 @@ public class BuilderModelImpl {
 		try {
 			sequencer.requestChange(id, index, value, forceChange, new CommitListener() {
 				@Override
-				public Reply confirm(Map<String, List<ChangedItemValue>> map) {
-					String tmp = createConfirmMessage(map);
-					if (tmp.isEmpty()) {
+				public Reply confirm(Set<IdValue> message) {
+					//String tmp = createConfirmMessage(map);
+					if (message.isEmpty()) {
 						return Reply.Accept;
 					}
 					
-					String message = "Following parameters will be changed by this action.\nDo you continue?\n\n" 
-								+ tmp;
+					String msg = "Following parameters will be changed by this action.\nDo you continue?\n\n" 
+								+createConfirmMessage(message);
 
 					runtimeListeners.forEach(listener -> {
-						dialogReply = listener.dialog(message);
+						dialogReply = listener.dialog(msg);
 					});
 					if (dialogReply.compareTo(DialogAnswer.OK) == 0) {
 						return Reply.Accept;
@@ -578,29 +578,19 @@ public class BuilderModelImpl {
 					}
 				}
 				
-				private String createConfirmMessage(Map<String, List<ChangedItemValue>> changedHistory) {
-					StringBuilder message = new StringBuilder();
-					boolean first = true;
-					for (String id : changedHistory.keySet()) {
-						if (first) {
-							first = false;
-							continue;
+				private String createConfirmMessage(Set<IdValue> message) {
+					StringBuilder sb = new StringBuilder();
+					for (IdValue s : message) {
+						RuntimeProperty prop = getRuntimePropertyStore().get(s.getId().toString());
+						String value = s.getValue();
+						if (prop.isList()) {
+							value = prop.getOptionTitle(value);
 						}
-						//message.append(id + ":");
-						List<ChangedItemValue> values = changedHistory.get(id);
-						for (ChangedItemValue v : values) {
-							if (v.getElement().equals(DependencySpec.Value)) {
-								RuntimeProperty prop = getRuntimePropertyStore().get(id);
-								String value = v.getValue();
-								if (prop.isList()) {
-									value = prop.getOptionTitle(value);
-								}
-								message.append(prop.getTitle() + " -> " + value + "\n");
-							}
-						}
+						sb.append(prop.getTitle() + " -> " + value + "\n");
 					}
-					return message.toString();
+					return sb.toString();
 				}
+				
 			});
 			getUiLayoutHolder().getCurrentUi().doAutoDynamicPanel();
 

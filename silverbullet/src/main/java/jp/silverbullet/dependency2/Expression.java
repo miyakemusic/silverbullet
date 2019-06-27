@@ -10,7 +10,12 @@ public class Expression implements Cloneable {
 	private String trigger = "";
 	private boolean valueCalculationEnabled = false;
 	private String condition = "";
+	private boolean silentChange = false;
 	
+	public boolean isSilentChange() {
+		return silentChange;
+	}
+
 	public Expression() {}
 	
 	public Expression(String value, String trigger, String condition) {
@@ -87,6 +92,11 @@ public class Expression implements Cloneable {
 		Expression obj = (Expression)obj2;
 		return this.condition.equals(obj.condition) && this.trigger.equals(obj.trigger) && this.value.equals(obj.value) &&
 				(this.valueCalculationEnabled == obj.valueCalculationEnabled);
+	}
+
+	public Expression silentChange(boolean silentChange) {
+		this.silentChange = silentChange;
+		return this;
 	}
 
 	

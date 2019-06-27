@@ -31,5 +31,16 @@ public class IdValue {
 	public Id getId() {
 		return id;
 	}
+
+	@Override
+	public boolean equals(Object arg0) {
+		return this.toString().equals(arg0.toString());
+	}
+
+	@Override
+	public String toString() {
+		return this.id.toString() + "." + value;
+	}
+	
 	
 }

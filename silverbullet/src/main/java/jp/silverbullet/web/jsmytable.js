@@ -75,7 +75,7 @@ class JsMyTable {
 	get listenerChange() {
 		return this._listenerChange;
 	}
-	
+		
 	appendRows(rows, canRemove) {
 		var me = this;
 		$('#' + me.tableId + ' > thead').append('<tr></tr>');
@@ -119,7 +119,7 @@ class JsMyTable {
 				
 				$('#' + buttonId).click(function() {
 					if (me.buttonListener != null) {
-						me.buttonListener(getRow(tdId), getCol(tdId), v);
+						me.buttonListener(getRow(tdId), getCol(tdId), $(this).text());
 					}
 				});
 			}
@@ -166,14 +166,30 @@ class JsMyTable {
 				key.row = row;
 				
 				var td2Id = tdId + "_2";
-				$('#' + tdId).append('<div id="' + td2Id + '"></div><button></button>');
+				var buttonId = "button_" + tdId;
+				$('#' + tdId).append('<div id="' + td2Id + '"></div><button id="' + buttonId + '"></button>');
 				key.id = tdId;
+				
+				$('#' + buttonId).text(me.colDef(k, row, 'buttontext'));
+				
+				$('#' + buttonId).css('width', '100%');
+				$('#' + buttonId).css('height', '20px');
+				
+				$('#' + buttonId).click(function() {
+					if (me.buttonListener != null) {
+						//me.buttonListener(getRow(tdId), getCol(tdId), v);
+						me.buttonListener(row, k, $(this).text());
+					}
+				});
 				
 				var edit = new EditableText(td2Id, v, function(value) {
 					me.listenerChange(row, k, value);
 				});
 				
 				me.allTexts.set(key, edit);
+			}
+			else if (type == 'label') {
+				$('#' + tdId).append('<label>' + v + '</label>');
 			}
 			else {			
 				var key = new Object();

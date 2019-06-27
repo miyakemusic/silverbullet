@@ -2,6 +2,7 @@ package jp.silverbullet.dependency2;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public interface CommitListener {
 
@@ -11,6 +12,6 @@ public interface CommitListener {
 		Pend
 	}
 
-	public Reply confirm(Map<String, List<ChangedItemValue>> map);
+	public Reply confirm(Set<IdValue> message);
 
 }
