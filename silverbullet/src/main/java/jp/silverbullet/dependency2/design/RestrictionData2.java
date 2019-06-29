@@ -1,10 +1,8 @@
 package jp.silverbullet.dependency2.design;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -15,35 +13,46 @@ public class RestrictionData2 {
 	private Map<String, Set<String>> enableRelation = new HashMap<>();
 	private Map<String, Integer> priority = new HashMap<>();
 	private Map<String, String> condition = new HashMap<>();
-	private Map<String, Map<String, String>> values = new HashMap<>();
+//	@JsonIgnore
+//	public Map<String, Map<String, String>> values = new HashMap<>();
+	private Map<String, Map<String, DependencyRelation>> relations = new HashMap<>();
+	
+
+	public void setValueCondition(String trigger, String target, String condition) {
+		this.setValue(trigger, target, this.getValue(trigger, target).relation, condition);
+	}
 	
 	public synchronized void setValue(String trigger, String target, String value) {
-		if (!this.values.containsKey(target)) {
-			this.values.put(target, new HashMap<String, String>());
+		this.setValue(trigger, target, value, this.getValue(trigger, target).condition);
+	}
+	
+	public synchronized void setValue(String trigger, String target, String value, String condition) {
+		if (!this.relations.containsKey(target)) {
+			this.relations.put(target, new HashMap<String, DependencyRelation>());
 		}
-		if (!this.values.containsKey(trigger)) {
-			this.values.put(trigger, new HashMap<String, String>());
+		if (!this.relations.containsKey(trigger)) {
+			this.relations.put(trigger, new HashMap<String, DependencyRelation>());
 		}
-		this.values.get(target).put(trigger, value);
+		this.relations.get(target).put(trigger, new DependencyRelation(value, condition));
 		
 		if (value.startsWith(">")) {
-			this.values.get(trigger).put(target, value.replace(">", "<"));
+			this.relations.get(trigger).put(target, new DependencyRelation(value.replace(">", "<")));
 		}
 		else if (value.startsWith("<")) {
-			this.values.get(trigger).put(target, value.replace("<", ">"));
+			this.relations.get(trigger).put(target, new DependencyRelation(value.replace("<", ">")));
 		}
 		else if (value.startsWith("=")) {
-			this.values.get(trigger).put(target, value);
+			this.relations.get(trigger).put(target, new DependencyRelation(value));
 		}
 	}
 	
-	public synchronized String getValue(String triggerId, String targetId) {
-		if (!this.values.containsKey(targetId)) {
-			return "";
+	public synchronized DependencyRelation getValue(String triggerId, String targetId) {
+		if (!this.relations.containsKey(targetId)) {
+			return new DependencyRelation();
 		}
-		String ret = this.values.get(targetId).get(triggerId);
+		DependencyRelation ret = this.relations.get(targetId).get(triggerId);
 		if (ret == null) {
-			return "";
+			return new DependencyRelation();
 		}
 		return ret;
 	}
@@ -77,9 +86,13 @@ public class RestrictionData2 {
 	public Map<String, Set<String>> getEnableRelation() {
 		return enableRelation;
 	}
+//
+//	public Map<String, Map<String, String>> getValues() {
+//		return values;
+//	}
 
-	public Map<String, Map<String, String>> getValues() {
-		return values;
+	public Map<String, Map<String, DependencyRelation>> getRelations() {
+		return relations;
 	}
 
 	public Set<String> getList(String id) {
@@ -139,24 +152,24 @@ public class RestrictionData2 {
 
 	@JsonIgnore
 	public Set<String> getValueTargetIds() {
-		return this.values.keySet();
+		return this.relations.keySet();
 	}
 
 	public Set<String> getValueTriggerId(String targetId) {
-		return this.values.get(targetId).keySet();
+		return this.relations.get(targetId).keySet();
 	}
 
 	@JsonIgnore
 	public  Set<String> getValueTriggerIds() {
 		Set<String> ret = new HashSet<>();
-		this.values.values().forEach(a -> ret.addAll(a.keySet()));
+		this.relations.values().forEach(a -> ret.addAll(a.keySet()));
 		return ret;
 	}
 
 	public Set<String> getValueTargetId(String triggerId) {
 		Set<String> ret = new HashSet<>();
-		for (String targetId : this.values.keySet()) {
-			for (String triggerOption : this.values.get(targetId).keySet()) {
+		for (String targetId : this.relations.keySet()) {
+			for (String triggerOption : this.relations.get(targetId).keySet()) {
 				if (triggerOption.contains(triggerId)) {
 					ret.add(targetId);
 				}
@@ -168,10 +181,10 @@ public class RestrictionData2 {
 	public Set<String> getUserdIds() {
 		Set<String> ret = new HashSet<>();
 		
-		Map<String, Map<String, String>> values = this.getValues();
+		Map<String, Map<String, DependencyRelation>> values = this.getRelations();
 		for (String id : values.keySet()) {
 			ret.add(id);
-			Map<String, String> id2VsValue = values.get(id);
+			Map<String, DependencyRelation> id2VsValue = values.get(id);
 			for (String id2 : id2VsValue.keySet()) {
 				ret.add(id2);
 			}
@@ -186,9 +199,22 @@ public class RestrictionData2 {
 		return ret;
 	}
 
-//	public void addPriorityIfNotExists(String mainId) {
-//		if (!this.priority.keySet().contains(mainId)) {
-//			this.setPriority(mainId, 0);
+//	public void tmp() {
+//		for (String id : this.values.keySet()) {
+//			Map<String, String> v = this.values.get(id);
+//			
+//			Map<String, DependencyRelation> depRel = new HashMap<>();
+//			this.relations.put(id, depRel);
+//			for (String id2: v.keySet()) {
+//				String r = v.get(id2);
+//				String[] tmp = r.split("@");
+//				if (tmp.length == 2) {
+//					depRel.put(id2, new DependencyRelation(tmp[0], tmp[1]));
+//				}
+//				else {
+//					depRel.put(id2, new DependencyRelation(tmp[0]));
+//				}
+//			}
 //		}
 //	}
 	

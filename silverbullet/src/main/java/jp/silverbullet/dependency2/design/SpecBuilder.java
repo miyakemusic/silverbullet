@@ -43,11 +43,8 @@ public abstract class SpecBuilder {
 		// Value
 		for (String targetId: this.getData().getValueTargetIds()) {
 			for (String triggerId : this.getData().getValueTriggerId(targetId)) {
-				String value = this.getData().getValue(triggerId, targetId);
-				String condition = "";
-				if (value.contains("@")) {
-					condition = value.split("@")[1];
-				}
+				DependencyRelation value = this.getData().getValue(triggerId, targetId);
+
 				if (value.isEmpty()) {
 					continue;
 				}
@@ -56,42 +53,44 @@ public abstract class SpecBuilder {
 				PropertyDef2 triggerProp = this.getPropertyDef(this.getMainId(triggerId));
 				
 				if (targetProp.isNumeric()) {
-					if (value.startsWith(">")) {
+					if (value.relation.startsWith(">")) {
 						this.getDependencySpecHolder().getSpec(targetId).addValue("$" + triggerId, "$" + targetId + "<$" + triggerId);
 						if (this.getPriority(triggerId) > this.getPriority(targetId)) {
 							this.getDependencySpecHolder().getSpec(targetId).addMin("$" + triggerId, "$" + triggerId + "==" + "$" + triggerId);
 						}
 					}
-					else if (value.startsWith("<")) {
+					else if (value.relation.startsWith("<")) {
 						this.getDependencySpecHolder().getSpec(targetId).addValue("$" + triggerId, "$" + targetId + ">$" + triggerId);						
 						if (this.getPriority(triggerId) > this.getPriority(targetId)) {
 							this.getDependencySpecHolder().getSpec(targetId).addMax("$" + triggerId, "$" + triggerId + "==" + "$" + triggerId);							
 						}
 					}
-					else if (value.startsWith("=")) {
+					else if (value.relation.startsWith("=")) {
 						boolean silentChange = this.getPriority(targetProp.getId()) <= this.getPriority(triggerProp.getId());
-						this.getDependencySpecHolder().getSpec(targetId).addValue("$" + triggerId, "$" + triggerId + "==$" + triggerId, condition, silentChange);//.siletChange(silentChange);											
+						this.getDependencySpecHolder().getSpec(targetId).addValue("$" + triggerId, "$" + triggerId + "==$" + triggerId, value.condition, silentChange);//.siletChange(silentChange);											
 					}
 					else {
-						this.getDependencySpecHolder().getSpec(targetId).addValue(value, "$" + this.getMainId(triggerId) + "==" + attachSign(triggerId));
+						this.getDependencySpecHolder().getSpec(targetId).addValue(value.relation, "$" + this.getMainId(triggerId) + "==" + attachSign(triggerId));
 					}
 				}
 				else if (targetProp.isList()) {
 					if (triggerProp.isList()) {
 						if (this.isOptionId(triggerId)) {
-							String value2 = value;
-							if (value.contains("(")) {
-								String[] tmp = value.split("()");
-								value2 = value.split("\\(")[0];
+							String value2 = value.relation;
+							if (value.relation.contains("(")) {
+								String[] tmp = value.relation.split("()");
+								value2 = value.relation.split("\\(")[0];
 							}
-							this.getDependencySpecHolder().getSpec(targetId).addValue(value2, "$" + this.getMainId(triggerId) + "==%" + triggerId, condition);
+							this.getDependencySpecHolder().getSpec(targetId).addValue(value2, 
+									"$" + this.getMainId(triggerId) + "==%" + triggerId, value.condition);
 						}
 						else { // main ID
-							if (value.startsWith("=")) {
+							if (value.relation.startsWith("=")) {
 								boolean silentChange = this.getPriority(targetProp.getId()) <= this.getPriority(triggerProp.getId());
 								for (String optionId : triggerProp.getOptionIds()) {
 									String targetValue = replaceCorrelationOption(targetProp, optionId);
-									this.getDependencySpecHolder().getSpec(targetId).addValue(targetValue, "$" + triggerId + "==%" + optionId, condition, silentChange);
+									this.getDependencySpecHolder().getSpec(targetId).addValue(targetValue, 
+											"$" + triggerId + "==%" + optionId, value.condition, silentChange);
 								
 								}
 							}
@@ -100,8 +99,8 @@ public abstract class SpecBuilder {
 					else if (triggerProp.isNumeric()) {
 						String val2 = "";
 						String triggerCond = "";
-						if (value.contains(":")) {
-							String[] tmp = value.split(":");
+						if (value.relation.contains(":")) {
+							String[] tmp = value.relation.split(":");
 							val2 = tmp[0];
 							if (tmp[1].equals("*")) {
 								triggerCond = "$" + this.getMainId(triggerId) + "==" +  "$" + this.getMainId(triggerId);

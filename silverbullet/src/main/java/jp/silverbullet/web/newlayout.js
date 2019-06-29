@@ -156,22 +156,27 @@ class Slider extends Widget {
 		
 		this.customId = divid + 'custom';
 		
-		$('#' + parent).append('<div id="' + divid + '"><div id="' + this.customId + '" class="ui-slider-handle"></div></div>');
+		this.sliderId = divid + "_slider";
+		//$('#' + parent).append('<div id="' + divid + '"><div id="' + this.customId + '" class="ui-slider-handle"></div></div>');
 
+		$('#' + parent).append('<div id="' + divid + '"><div id="' + this.sliderId + '"></div></div>');
+		
+		$('#' + this.sliderId).css("width", "100%");
+		$('#' + this.sliderId).css("height", "50%");
+		
 		this.prevMin = -100;
 		this.prevMax = 100;
 		
 		var me = this;
-	    this.handle = $( "#" + this.customId);
-	    $( "#" + divid ).slider({
+//	    this.handle = $( "#" + this.customId);
+	    $( "#" + this.sliderId ).slider({
 	    	value: 0,
 	    	min: me.prevMin,
 	    	max: me.prevMax,
 	      create: function() {
-	        me.handle.text( $( this ).slider( "value" ) );
+//	        me.handle.text( $( this ).slider( "value" ) );
 	      },
 	      slide: function( event, ui ) {
-	        //me.handle.text( ui.value );
 	        me.setter(me.widget.id, 0, ui.value);
 	      }
 	    });
@@ -180,17 +185,18 @@ class Slider extends Widget {
 	onUpdateValue(property) {
 		
 		var range = false;
-		if (this.prevMin != property.min) {
-			$('#' + this.divid).slider("option", "min", property.min);
-			range = true;
-		}
 		if (this.prevMax != property.max) {
-			$('#' + this.divid).slider("option", "max", property.max);
+			$('#' + this.sliderId).slider("option", "max", Number(property.max));
 			range = true;
 		}
-		$('#' + this.divid).slider("option", "value", property.currentValue);
+		if (this.prevMin != property.min) {
+			$('#' + this.sliderId).slider("option", "min", Number(property.min));
+			range = true;
+		}
+
+		$('#' + this.sliderId).slider("option", "value", Number(property.currentValue));
 		
-		this.handle.text($('#' + this.divid).slider('value'));
+//		this.handle.text($('#' + this.divid).slider('value'));
 		
 		if (range) {
 			$("input[type='range']").slider( "refresh" );

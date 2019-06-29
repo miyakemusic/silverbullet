@@ -57,6 +57,16 @@ public class DependencyDesignResource2 {
 		SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner().setSpecValue(trigger, target, value);
 		return "OK";
 	}
+
+	@GET
+	@Path("setSpecValueCondition")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String setSpecValueCondition(@QueryParam("trigger") final String trigger, @QueryParam("target") final String target, 
+			@QueryParam("condition") /*@Encoded*/ final String condition) {
+//		String val = URLDecoder.decode(value);
+		SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner().setSpecValueCondition(trigger, target, condition);
+		return "OK";
+	}
 	
 	@GET
 	@Path("setSpecEnabled")

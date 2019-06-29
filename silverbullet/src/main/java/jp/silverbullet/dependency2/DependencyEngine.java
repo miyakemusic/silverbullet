@@ -145,7 +145,7 @@ public abstract class DependencyEngine {
 			return;
 		}
 		this.listeners.forEach(listener -> listener.onProgress(log));
-		log.clear();
+		this.cachedPropertyStore.clearDebugLog();
 	}
 
 	private boolean contains(Set<Id> done, Set<Id> ids) {

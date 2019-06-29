@@ -42,6 +42,10 @@ class JsMyTable {
 		this.selectListener = selectListener;
 	}
 	
+	set selectListener(selectListener) {
+		this._selectListener = selectListener;
+	}
+	
 	set checkListener(checkListener) {
 		this._checkListener = checkListener;
 	}
@@ -160,7 +164,7 @@ class JsMyTable {
 					}
 				});
 			}
-			else if (type == 'text_button') {
+			else if (type == 'text_button' || type == 'select_button') {
 				var key = new Object();
 				key.k = k;
 				key.row = row;
@@ -182,11 +186,28 @@ class JsMyTable {
 					}
 				});
 				
-				var edit = new EditableText(td2Id, v, function(value) {
-					me.listenerChange(row, k, value);
-				});
-				
-				me.allTexts.set(key, edit);
+				if (type == 'text_button') {
+					var edit = new EditableText(td2Id, v, function(value) {
+						me.listenerChange(row, k, value);
+					});
+					
+					me.allTexts.set(key, edit);
+				}
+				else if (type == 'select_button') {
+					var listId = 'list_' + td2Id;
+					$('#' + td2Id).append('<select id="' + listId + '"></select>');
+					$('#' + listId).css('width', '100%');
+					var options = me.colDef(k, row, 'options');
+					for (var i = 0; i < options.length; i++) {
+						$('#' + listId).append($('<option>').html(options[i]).val(options[i]));
+					}
+					$('#' + listId).val(me.colDef(k, row, 'text'));
+					$('#' + listId).change(function() {
+						if (me.selectListener != null) {
+							me.selectListener(row, k, $(this).val());
+						}
+					});
+				}
 			}
 			else if (type == 'label') {
 				$('#' + tdId).append('<label>' + v + '</label>');

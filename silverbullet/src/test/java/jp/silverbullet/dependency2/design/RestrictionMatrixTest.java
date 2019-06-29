@@ -55,6 +55,12 @@ public class RestrictionMatrixTest {
 			protected List<PropertyDef2> getAllPropertieDefs() {
 				return new ArrayList<PropertyDef2>(holder.getProperties());
 			}
+
+			@Override
+			protected String getMainId(String option) {
+				// TODO Auto-generated method stub
+				return null;
+			}
 			
 		};
 		
@@ -529,12 +535,12 @@ public class RestrictionMatrixTest {
 				"ID_CURSOR_LEFT,ID_CURSOR_RIGHT,ID_LOWER_LIMIT,ID_UPPER_LIMIT", 
 				"ID_CURSOR_LEFT,ID_CURSOR_RIGHT,ID_LOWER_LIMIT,ID_UPPER_LIMIT");
 				
-		assertEquals(">", matrix.valueMatrix[matrix.yTitle.indexOf("ID_CURSOR_RIGHT")][matrix.xTitle.indexOf("ID_CURSOR_LEFT")]);
-		assertEquals("<", matrix.valueMatrix[matrix.yTitle.indexOf("ID_LOWER_LIMIT")][matrix.xTitle.indexOf("ID_CURSOR_LEFT")]);
-		assertEquals("<", matrix.valueMatrix[matrix.yTitle.indexOf("ID_CURSOR_LEFT")][matrix.xTitle.indexOf("ID_CURSOR_RIGHT")]);
-		assertEquals(">", matrix.valueMatrix[matrix.yTitle.indexOf("ID_UPPER_LIMIT")][matrix.xTitle.indexOf("ID_CURSOR_RIGHT")]);
-		assertEquals("<", matrix.valueMatrix[matrix.yTitle.indexOf("ID_CURSOR_RIGHT")][matrix.xTitle.indexOf("ID_UPPER_LIMIT")]);
-		assertEquals(">", matrix.valueMatrix[matrix.yTitle.indexOf("ID_CURSOR_LEFT")][matrix.xTitle.indexOf("ID_LOWER_LIMIT")]);
+		assertEquals(">", matrix.relationMatrix[matrix.yTitle.indexOf("ID_CURSOR_RIGHT")][matrix.xTitle.indexOf("ID_CURSOR_LEFT")].relation);
+		assertEquals("<", matrix.relationMatrix[matrix.yTitle.indexOf("ID_LOWER_LIMIT")][matrix.xTitle.indexOf("ID_CURSOR_LEFT")].relation);
+		assertEquals("<", matrix.relationMatrix[matrix.yTitle.indexOf("ID_CURSOR_LEFT")][matrix.xTitle.indexOf("ID_CURSOR_RIGHT")].relation);
+		assertEquals(">", matrix.relationMatrix[matrix.yTitle.indexOf("ID_UPPER_LIMIT")][matrix.xTitle.indexOf("ID_CURSOR_RIGHT")].relation);
+		assertEquals("<", matrix.relationMatrix[matrix.yTitle.indexOf("ID_CURSOR_RIGHT")][matrix.xTitle.indexOf("ID_UPPER_LIMIT")].relation);
+		assertEquals(">", matrix.relationMatrix[matrix.yTitle.indexOf("ID_CURSOR_LEFT")][matrix.xTitle.indexOf("ID_LOWER_LIMIT")].relation);
 
 		
 		designer.buildSpec();

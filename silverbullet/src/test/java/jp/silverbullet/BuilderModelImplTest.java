@@ -2,6 +2,7 @@ package jp.silverbullet;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +11,9 @@ import org.junit.jupiter.api.Test;
 
 import jp.silverbullet.BuilderModelImpl.RegisterTypeEnum;
 import jp.silverbullet.dependency2.ChangedItemValue;
+import jp.silverbullet.dependency2.DependencyListener;
 import jp.silverbullet.dependency2.DependencySpec;
+import jp.silverbullet.dependency2.Id;
 import jp.silverbullet.dependency2.RequestRejectedException;
 import jp.silverbullet.property2.PropertyFactory;
 import jp.silverbullet.property2.PropertyHolder2;
@@ -188,11 +191,51 @@ public class BuilderModelImplTest {
 		assertEquals("ID_PRODUCT2", builder.getTestRecorder().getScript(2).getTarget());
 		assertEquals("ID_PRODUCT2_A", builder.getTestRecorder().getScript(2).getValue());
 		
+		List<String> debugLog = new ArrayList<>();
+		builder.getDependency().addDependencyListener(new DependencyListener() {
+
+			@Override
+			public boolean confirm(String history) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+
+			@Override
+			public void onResult(Map<String, List<ChangedItemValue>> changedHistory) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onCompleted(String message) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onStart(Id id, String value) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onRejected(Id id) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onProgress(List<String> log) {
+				debugLog.addAll(log);
+			}
+			
+		});
 		// test from web server
 		builder.getRuntimePropertyStore().get("ID_START").setCurrentValue("ID_START_OFF");
 		ValueSetResult result = builder.requestChange("ID_NEWMODE", 0, "ID_NEWMODE_B");
-		assertEquals("ID_NEWMODE#0:Value:ID_NEWMODE_B", result.debugLog.get(0));
-		assertEquals("ID_START#0:Value:ID_START_ON", result.debugLog.get(1));
+
+		assertEquals("ID_NEWMODE#0:Value:ID_NEWMODE_B", debugLog.get(0));
+		assertEquals("ID_START#0:Value:ID_START_ON", debugLog.get(1));
 		
 	}
 	

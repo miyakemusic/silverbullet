@@ -213,5 +213,9 @@ public class CachedPropertyStore implements PropertyGetter {
 	public Set<IdValue> getConfirmationMessage() {
 		return confirmationMessage;
 	}
+
+	public void clearDebugLog() {
+		this.debugLog.clear();
+	}
 	
 }

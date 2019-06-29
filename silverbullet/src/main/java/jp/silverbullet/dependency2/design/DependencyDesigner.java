@@ -244,6 +244,11 @@ public abstract class DependencyDesigner {
 			protected List<PropertyDef2> getAllPropertieDefs() {
 				return DependencyDesigner.this.getAllPropertieDefs();
 			}
+
+			@Override
+			protected String getMainId(String option) {
+				return DependencyDesigner.this.getMainId(option);
+			}
 			
 		};
 		matrix.setData(this.data);
@@ -255,6 +260,12 @@ public abstract class DependencyDesigner {
 		buildSpec();
 	}
 
+
+	public void setSpecValueCondition(String trigger, String target, String condition) {
+		this.data.setValueCondition(trigger, target, condition);
+		buildSpec();
+	}
+	
 	public void buildSpec() {
 		this.specBuilder.buildSpec();
 		this.resetMask();
@@ -277,6 +288,7 @@ public abstract class DependencyDesigner {
 	}
 	public void save(String folder) {
 		try {
+//			this.data.tmp();
 			new JsonPersistent().saveJson(this.data, getFilename(folder));
 			new JsonPersistent().saveJson(this.configs, getConfigFilename(folder));
 		} catch (IOException e) {
@@ -289,6 +301,7 @@ public abstract class DependencyDesigner {
 	public void load(String folder) {
 		try {
 			this.data = new JsonPersistent().loadJson(RestrictionData2.class, getFilename(folder));
+//			this.data.tmp();
 			this.configs = new JsonPersistent().loadJson(DependencyDesignConfigs.class, getConfigFilename(folder));
 			init();
 		} catch (IOException e) {
@@ -297,5 +310,6 @@ public abstract class DependencyDesigner {
 		}
 
 	}
+
 	
 }

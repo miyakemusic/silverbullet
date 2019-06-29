@@ -26,9 +26,15 @@ class DependencyDesign2 {
 		}
 		
 		var colDefValueTable = function(k, row, type) {
+			var index = current.yValueTitle.indexOf(row);
+			
 			if (type == 'type') {
 				if (k == 0 || row == 'title') {
 					return 'label';
+				}
+				
+				if (current.relationMatrix[index][k-1].candidates.length > 0) {
+					return 'select_button';
 				}
 				return 'text_button';
 			}
@@ -39,24 +45,21 @@ class DependencyDesign2 {
 				if (row == 'title') {
 					return current.xTitle[current.xTitle.indexOf(k)];
 				}
-				var index = current.yValueTitle.indexOf(row);
-				var value = current.valueMatrix[index][k-1];
-				if (value.includes('@')) {
-					return value.split('@')[0];	
-				}	
-				return value;
+				
+				var value = current.relationMatrix[index][k-1];
+				return value.relation;
 			}		
 			else if (type == 'buttontext') {
 				if (k == 0 || row == 'title') {
 					return '';
 				}
-				var index = current.yValueTitle.indexOf(row);
-				var value = current.valueMatrix[index][k-1];		
-				if (value.includes('@')) {
-					return value.split('@')[1];	
-				}	
-				return "";
+				var value = current.relationMatrix[index][k-1];		
+				return value.condition;
 			}
+			else if (type == 'options') {
+				var value = current.relationMatrix[index][k-1];
+				return value.candidates;
+			}	
 		}		
 		new MyWebSocket(function(msg) {				
 				if (msg == 'MatrixChanged') {
@@ -224,6 +227,23 @@ class DependencyDesign2 {
 				});					
 			};
 			
+			valueTable.selectListener = function(row, k, value) {
+				var rowIndex = current.yTitle.indexOf(row);
+				var colIndex = k - 1;
+				
+				var target = row;
+				var trigger = current.xTitle[k-1];
+				var encValue = encodeURIComponent(value);
+				$.ajax({
+				   type: "GET", 
+				   url: "http://" + window.location.host + "/rest/dependencyDesign2/setSpecValue?trigger=" + trigger + "&target=" + target + "&value=" + encValue,
+				   success: function(msg){
+						priorityEditor.update();
+						getMatrix();
+				   }
+				});					
+			};
+			
 			var equationEditor = new EquationEditor(div);
 			valueTable.setButtonListener(function(row, k, v) {
 				equationEditor.show(v, function(value) {
@@ -246,8 +266,15 @@ class DependencyDesign2 {
 			});	
 		}
 		
-		function setCondition(trigger, target, value) {
-			alert(trigger + " , " + target + " , " + value);
+		function setCondition(trigger, target, condition) {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/dependencyDesign2/setSpecValueCondition?trigger=" + 
+			   	trigger + "&target=" + target + "&condition=" + condition,
+			   success: function(msg){
+					getMatrix();
+			   }
+			});	
 		}
 		
 		function getDependencyDesignConfigList() {
@@ -307,6 +334,7 @@ class DependencyDesign2 {
 		}
 
 		function updateTable(msg) {
+		current = msg;
 			var titleRowEnabled = ['Enabled'];
 			var titleRowValue = ['Value'];
 			
@@ -318,9 +346,7 @@ class DependencyDesign2 {
 			valueTable.clear();
 			
 			enabledTable.appendRow('title', titleRowEnabled);
-			valueTable.appendRow('title', titleRowValue);
-			
-			current = msg;
+			valueTable.appendRow('title', titleRowValue);	
 			
 			for (var r = 0; r < msg.yTitle.length; r++){
 				var col = msg.yTitle[r];
@@ -339,11 +365,8 @@ class DependencyDesign2 {
 				var val = [];
 				val.push(col);
 				for (var i = 0; i < msg.xTitle.length; i++) {
-					var v = msg.valueMatrix[r][i];
-					if (v.includes('@')) {
-						v = v.split('@')[0];
-					}
-					val.push(v);
+					var v = msg.relationMatrix[r][i];
+					val.push(v.relation);
 				}
 				valueTable.appendRow(col, val);	
 			}

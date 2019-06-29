@@ -275,17 +275,17 @@ public abstract class SilverBulletServer {
 			}
 		});
 		
-		staticInstance.getBuilderModel().getRestrictionMatrix().addListener(new RestrictionMatrixListener() {
-			@Override
-			public void onMatrixChanged(RestrictionMatrixElement[][] value) {
-				try {
-					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("DEPDESIGN", "MatrixChanged"));
-					WebSocketBroadcaster.getInstance().sendMessage(str);
-				} catch (JsonProcessingException e) {
-					e.printStackTrace();
-				}
-			}
-		});
+//		staticInstance.getBuilderModel().getRestrictionMatrix().addListener(new RestrictionMatrixListener() {
+//			@Override
+//			public void onMatrixChanged(RestrictionMatrixElement[][] value) {
+//				try {
+//					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("DEPDESIGN", "MatrixChanged"));
+//					WebSocketBroadcaster.getInstance().sendMessage(str);
+//				} catch (JsonProcessingException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
 		
 		staticInstance.getBuilderModel().getUiBuilder().addListener(new UiBuilderListener() {
 			@Override
