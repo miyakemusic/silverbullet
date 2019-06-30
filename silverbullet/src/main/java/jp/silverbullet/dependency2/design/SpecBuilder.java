@@ -11,6 +11,8 @@ import jp.silverbullet.dependency2.DependencySpecHolder;
 import jp.silverbullet.property2.PropertyDef2;
 
 public abstract class SpecBuilder {
+	private boolean confirmSamePriority = false;
+
 	public void buildSpec() {
 		DependencySpecHolder holder = getDependencySpecHolder();
 		holder.clear();
@@ -51,26 +53,37 @@ public abstract class SpecBuilder {
 				
 				PropertyDef2 targetProp = this.getPropertyDef(targetId);
 				PropertyDef2 triggerProp = this.getPropertyDef(this.getMainId(triggerId));
-				
+				boolean silentChange = this.getSilentChange(targetId, triggerId);
 				if (targetProp.isNumeric()) {
+					
 					if (value.relation.startsWith(">")) {
-						this.getDependencySpecHolder().getSpec(targetId).addValue("$" + triggerId, "$" + targetId + "<$" + triggerId);
+						if (value.relation.startsWith(">>")) {
+							
+						}
+						else {
+							this.getDependencySpecHolder().getSpec(targetId).addValue("$" + triggerId, "$" + targetId + "<$" + triggerId, value.condition, silentChange);							
+						}
 						if (this.getPriority(triggerId) > this.getPriority(targetId)) {
-							this.getDependencySpecHolder().getSpec(targetId).addMin("$" + triggerId, "$" + triggerId + "==" + "$" + triggerId);
+							this.getDependencySpecHolder().getSpec(targetId).addMin("$" + triggerId, "$" + triggerId + "==" + "$" + triggerId, value.condition, silentChange);
 						}
 					}
 					else if (value.relation.startsWith("<")) {
-						this.getDependencySpecHolder().getSpec(targetId).addValue("$" + triggerId, "$" + targetId + ">$" + triggerId);						
+						if (value.relation.startsWith("<<")) {
+						}
+						else {
+							this.getDependencySpecHolder().getSpec(targetId).addValue("$" + triggerId, "$" + targetId + ">$" + triggerId, value.condition, silentChange);													
+							
+						}
 						if (this.getPriority(triggerId) > this.getPriority(targetId)) {
-							this.getDependencySpecHolder().getSpec(targetId).addMax("$" + triggerId, "$" + triggerId + "==" + "$" + triggerId);							
+							this.getDependencySpecHolder().getSpec(targetId).addMax("$" + triggerId, "$" + triggerId + "==" + "$" + triggerId, value.condition, silentChange);							
 						}
 					}
 					else if (value.relation.startsWith("=")) {
-						boolean silentChange = this.getPriority(targetProp.getId()) <= this.getPriority(triggerProp.getId());
+		//				boolean silentChange = this.getSilentChange(targetProp.getId(), triggerProp.getId());
 						this.getDependencySpecHolder().getSpec(targetId).addValue("$" + triggerId, "$" + triggerId + "==$" + triggerId, value.condition, silentChange);//.siletChange(silentChange);											
 					}
 					else {
-						this.getDependencySpecHolder().getSpec(targetId).addValue(value.relation, "$" + this.getMainId(triggerId) + "==" + attachSign(triggerId));
+						this.getDependencySpecHolder().getSpec(targetId).addValue(value.relation, "$" + this.getMainId(triggerId) + "==" + attachSign(triggerId), value.condition, silentChange);
 					}
 				}
 				else if (targetProp.isList()) {
@@ -82,11 +95,10 @@ public abstract class SpecBuilder {
 								value2 = value.relation.split("\\(")[0];
 							}
 							this.getDependencySpecHolder().getSpec(targetId).addValue(value2, 
-									"$" + this.getMainId(triggerId) + "==%" + triggerId, value.condition);
+									"$" + this.getMainId(triggerId) + "==%" + triggerId, value.condition, silentChange);
 						}
 						else { // main ID
 							if (value.relation.startsWith("=")) {
-								boolean silentChange = this.getPriority(targetProp.getId()) <= this.getPriority(triggerProp.getId());
 								for (String optionId : triggerProp.getOptionIds()) {
 									String targetValue = replaceCorrelationOption(targetProp, optionId);
 									this.getDependencySpecHolder().getSpec(targetId).addValue(targetValue, 
@@ -110,7 +122,7 @@ public abstract class SpecBuilder {
 							}
 							
 						}
-						this.getDependencySpecHolder().getSpec(targetId).addValue(val2, triggerCond);
+						this.getDependencySpecHolder().getSpec(targetId).addValue(val2, triggerCond, value.condition, silentChange);
 					}
 					else {
 						System.out.println();
@@ -120,6 +132,12 @@ public abstract class SpecBuilder {
 		}
 	}
 	
+	private boolean getSilentChange(String targetId, String triggerId) {
+		boolean ret =  this.getPriority(targetId) < this.getPriority(triggerId);
+		ret |= !this.confirmSamePriority && (this.getPriority(targetId) == this.getPriority(triggerId));
+		return ret;
+	}
+
 	private String replaceCorrelationOption(PropertyDef2 targetProp, String triggerId) {
 		String tmp[] = triggerId.split("_");
 		String tail = tmp[tmp.length-1];
@@ -330,4 +348,8 @@ public abstract class SpecBuilder {
 	protected abstract boolean isMainId(String id);
 	
 	protected abstract RestrictionData2 getData();
+
+	public void setConfirmSamePriority(boolean confirmSamePriority) {
+		this.confirmSamePriority = confirmSamePriority;
+	}
 }

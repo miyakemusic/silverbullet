@@ -101,4 +101,13 @@ public class DependencyDesignResource2 {
 		return "OK";
 	}
 	
+	@GET
+	@Path("/confirmSamePriority")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String confirmSamePriority(@QueryParam("enabled") final boolean enabled) {
+		SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner().setConfirmSamePriority(enabled);
+		SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner().buildSpec();
+		return "OK";
+	}
+	
 }

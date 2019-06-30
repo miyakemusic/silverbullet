@@ -219,14 +219,14 @@ public class BuilderModelImplTest {
 			}
 
 			@Override
-			public void onRejected(Id id) {
-				// TODO Auto-generated method stub
-				
+			public void onProgress(List<String> log) {
+				debugLog.addAll(log);
 			}
 
 			@Override
-			public void onProgress(List<String> log) {
-				debugLog.addAll(log);
+			public void onRejected(Id id, String message) {
+				// TODO Auto-generated method stub
+				
 			}
 			
 		});

@@ -71,7 +71,9 @@ public abstract class DependencyEngine {
 		this.cachedPropertyStore = new CachedPropertyStore(store);
 
 		try {
+			long startTime = System.currentTimeMillis();
 			changeValue(id, value, forceChange);
+			System.out.println(System.currentTimeMillis() - startTime);
 			if (this.commitListener != null) {
 				CommitListener.Reply reply = this.commitListener.confirm(this.cachedPropertyStore.getConfirmationMessage());
 				if (reply.equals(CommitListener.Reply.Accept)) {
@@ -80,7 +82,7 @@ public abstract class DependencyEngine {
 				}
 				else if (reply.equals(CommitListener.Reply.Reject)) {
 					// Do nothing
-					fireRejectedEvent(id);
+					fireRejectedEvent(id, "");
 				}
 				else if (reply.equals(CommitListener.Reply.Pend)) {
 					
@@ -93,13 +95,13 @@ public abstract class DependencyEngine {
 		}
 		catch (RequestRejectedException e) {
 			e.setSource(id);
-			fireRejectedEvent(e.getSource());
+			fireRejectedEvent(e.getSource(), e.getMessage());
 			throw e;
 		}
 	}
 
-	private void fireRejectedEvent(Id sourceId) {
-		this.listeners.forEach(listener -> listener.onRejected(sourceId));
+	private void fireRejectedEvent(Id sourceId, String message) {
+		this.listeners.forEach(listener -> listener.onRejected(sourceId, message));
 	}
 	
 	private void fireCompleteEvent() {

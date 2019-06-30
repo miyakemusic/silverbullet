@@ -84,7 +84,7 @@ public abstract class SilverBulletServer {
 			public DialogAnswer dialog(String message) {
 				message = message.replace("\n", "<br>");
 				WebSocketBroadcaster.getInstance().sendMessageAsync("MESSAGE", message);
-				
+				System.out.println(message);
 				synchronized(syncDialog) {
 					try {
 						syncDialog.wait();
@@ -142,8 +142,10 @@ public abstract class SilverBulletServer {
 			}
 
 			@Override
-			public void onRejected(Id id) {
+			public void onRejected(Id id, String message) {
 				WebSocketBroadcaster.getInstance().sendMessageAsync("VALUES", id.toString());
+				WebSocketBroadcaster.getInstance().sendMessageAsync("MESSAGE", message);
+				
 			}
 
 			@Override

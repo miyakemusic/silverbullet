@@ -159,7 +159,29 @@ class Slider extends Widget {
 		this.sliderId = divid + "_slider";
 		//$('#' + parent).append('<div id="' + divid + '"><div id="' + this.customId + '" class="ui-slider-handle"></div></div>');
 
-		$('#' + parent).append('<div id="' + divid + '"><div id="' + this.sliderId + '"></div></div>');
+		this.minVal = divid + "_min";
+		this.maxVal = divid + "_max";
+		this.centerVal = divid + "_center";
+		
+		var tableId = divid + "_table";
+		$('#' + parent).append('<div id="' + divid + '"><div>');
+		$('#' + divid).append('<div><table id="' + tableId + '"><tr><td align="left" id="' + this.minVal + '"></td><td id="' + this.centerVal + '"></td><td align="right" id="' + this.maxVal + '"></td></tr></table></div>');
+		//$('#' + divid).append('<div><div id="' + this.minVal + '"></div><div id="' + this.maxVal + '"></div></div>');
+		
+		$('#' + tableId).css('width', '100%');
+		$('#' + tableId + " tr td").css('border-style', 'none');
+		
+		$('#' + divid).append('<div id="' + this.sliderId + '"></div>');
+		
+//		$('#' + this.minVal).css('text-aligh', 'left');
+//		$('#' + this.minVal).css('float', 'left');
+		$('#' + this.minVal).css('width', '33%');
+//		$('#' + this.minVal).css('display', 'inline');
+		
+//		$('#' + this.maxVal).css('text-aligh', 'right');
+		$('#' + this.maxVal).css('width', '33%');
+//		$('#' + this.maxVal).css('float', 'right');
+//		$('#' + this.maxVal).css('display', 'inline');
 		
 		$('#' + this.sliderId).css("width", "100%");
 		$('#' + this.sliderId).css("height", "50%");
@@ -169,6 +191,7 @@ class Slider extends Widget {
 		
 		var me = this;
 //	    this.handle = $( "#" + this.customId);
+		var stack = [];
 	    $( "#" + this.sliderId ).slider({
 	    	value: 0,
 	    	min: me.prevMin,
@@ -177,26 +200,43 @@ class Slider extends Widget {
 //	        me.handle.text( $( this ).slider( "value" ) );
 	      },
 	      slide: function( event, ui ) {
-	        me.setter(me.widget.id, 0, ui.value);
+	        //me.setter(me.widget.id, 0, ui.value);
+	        stack.push(me.widget.id + ";" + ui.value);
 	      }
 	    });
+	    
+	    var timer = setInterval(function() {
+	    	if (stack.length == 0) return;
+	    	var id = stack[stack.length - 1].split(';')[0];
+	    	var value = stack[stack.length - 1].split(';')[1];
+	    	me.setter(id, 0, value);
+	    	stack = [];
+	    }, 200);
 	}
 	
 	onUpdateValue(property) {
-		
+		if (this.dragging == true) {
+			return;
+		}
 		var range = false;
 		if (this.prevMax != property.max) {
 			$('#' + this.sliderId).slider("option", "max", Number(property.max));
+			$('#' + this.maxVal).text(property.max);
+//			$('#' + this.centerVal).text((property.min + property.max)/2.0);
 			range = true;
 		}
 		if (this.prevMin != property.min) {
 			$('#' + this.sliderId).slider("option", "min", Number(property.min));
+			$('#' + this.minVal).text(property.min);
+//			$('#' + this.centerVal).text((property.min + property.max)/2.0);
 			range = true;
 		}
 
 		$('#' + this.sliderId).slider("option", "value", Number(property.currentValue));
 		
 //		this.handle.text($('#' + this.divid).slider('value'));
+		
+		$('#' + this.centerVal).text(property.title + " " + property.currentValue);
 		
 		if (range) {
 			$("input[type='range']").slider( "refresh" );

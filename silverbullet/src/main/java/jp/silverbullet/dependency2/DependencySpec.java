@@ -104,7 +104,11 @@ public class DependencySpec {
 	}
 	
 	public void addMin(String min, String trigger, String condition) {
-		this.dependencySpecDetail.add(DependencySpec.Min, min, trigger, condition);
+		this.addMin(min, trigger, condition, false);
+	}
+	
+	public void addMin(String min, String trigger, String condition, boolean silentChange) {
+		this.dependencySpecDetail.add(DependencySpec.Min, min, trigger, condition).silentChange(silentChange);
 	}
 	
 	public DependencySpec addMin(double min, String trigger) {
@@ -117,7 +121,11 @@ public class DependencySpec {
 	}
 	
 	public void addMax(String max, String trigger, String condition) {
-		this.dependencySpecDetail.add(DependencySpec.Max, max, trigger, condition);
+		this.addMax(max, trigger, condition, false);
+	}
+	
+	public void addMax(String max, String trigger, String condition, boolean silentChange) {
+		this.dependencySpecDetail.add(DependencySpec.Max, max, trigger, condition).silentChange(silentChange);
 	}
 	
 	public void addMax(double max, String trigger, String condition) {

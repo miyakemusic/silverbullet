@@ -109,6 +109,7 @@ public abstract class DependencyDesigner {
 			
 		}
 	};
+	private boolean confirmSamePriority;
 	
 	public void init() {
 		defHolder.addListener(listener);
@@ -267,6 +268,7 @@ public abstract class DependencyDesigner {
 	}
 	
 	public void buildSpec() {
+		this.specBuilder.setConfirmSamePriority(this.confirmSamePriority);
 		this.specBuilder.buildSpec();
 		this.resetMask();
 	}
@@ -310,6 +312,10 @@ public abstract class DependencyDesigner {
 		}
 
 	}
+
+	public void setConfirmSamePriority(boolean enabled) {
+		this.confirmSamePriority = enabled;;
+	}	
 
 	
 }

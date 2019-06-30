@@ -102,6 +102,21 @@ class DependencyDesign2 {
 			updateAll();
 		}
 		
+		var confirmSamePriority = div + "_confirm";
+		$('#' + div).append('<input type="checkbox" id="' + confirmSamePriority + '">Confirm same priority');
+		$('#' + confirmSamePriority).change(function() {
+			setConfirmSamePriority($(this).prop('checked'));
+		});
+		function setConfirmSamePriority(enabled) {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/dependencyDesign2/confirmSamePriority?enabled=" + enabled,
+			   success: function(msg){
+	
+			   }
+			});			
+		}
+		
 		getDependencyDesignConfigList();
 		
 		// ID Pane //
@@ -257,13 +272,6 @@ class DependencyDesign2 {
 				});
 			});
 			
-			$.ajax({
-			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/dependencyDesign2/getSpec",
-			   success: function(msg){
-	//				updateEnableList(msg);
-			   }
-			});	
 		}
 		
 		function setCondition(trigger, target, condition) {

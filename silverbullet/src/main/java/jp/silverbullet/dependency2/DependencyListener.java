@@ -13,7 +13,7 @@ public interface DependencyListener {
 
 	void onStart(Id id, String value);
 	
-	void onRejected(Id id);
+	void onRejected(Id id, String message);
 
 	void onProgress(List<String> log);
 
