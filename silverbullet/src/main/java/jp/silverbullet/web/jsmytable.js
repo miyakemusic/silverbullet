@@ -11,6 +11,9 @@ class JsMyTable {
 		this.div = div;
 		this.tableId = div + '_table';
 		$('#' + div).append('<table id="' + this.tableId + '"><thead></thead><tbody></tbody></table>');
+		$('#' + this.tableId).css('overflow-x', 'scrolll');
+//		$('#' + this.tableId).css('width', '1200px');
+		
 		if (className == null) {
 			$('#' + this.tableId).addClass('smalltable');
 		}
@@ -46,6 +49,10 @@ class JsMyTable {
 		this._selectListener = selectListener;
 	}
 	
+	get selectListener() {
+		return this._selectListener;
+	}
+	
 	set checkListener(checkListener) {
 		this._checkListener = checkListener;
 	}
@@ -56,9 +63,7 @@ class JsMyTable {
 	
 	clear() {
 		$('#' + this.tableId + ' > thead').empty();
-		$('#' + this.tableId + ' > tbody').empty();
-//		$('#' + this.tableId).empty();
-		
+		$('#' + this.tableId + ' > tbody').empty();		
 		
 		this.allChecks = [];
 		this.allTexts.clear();
@@ -91,6 +96,8 @@ class JsMyTable {
 	   		var spec = rows[row];
 	   		this.appendRow(row, spec, canRemove);
 	   	}	
+	   	
+//	   	$('#' + this.tableId + ' tr td').css('width', '100px');
 	}
 	
 	appendRow(row, data, canRemove) {
@@ -106,6 +113,79 @@ class JsMyTable {
 	
 		$('#' + this.tableId  + '> tbody').append('<tr></tr>');
 		
+		function createSelect(tdId, k, row, v) {
+			var listId = 'list_' + tdId;
+			$('#' + tdId).append('<select id="' + listId + '"></select>');
+			var options = me.colDef(k, row, 'options');
+			for (var i = 0; i < options.length; i++) {
+				$('#' + listId).append($('<option>').html(options[i]).val(options[i]));
+			}
+			
+			if (v == null) {
+				v = me.colDef(k, row, 'text');
+			}
+			
+			$('#' + listId).val(v);
+			$('#' + listId).change(function() {
+				if (me.selectListener != null) {
+					me.selectListener(row, k, $(this).val());
+				}
+			});
+		}
+		
+		function createButton(tdId, k, row, v) {
+			var buttonId = 'button_' + tdId;
+			
+			if (v == null) {
+				v = me.colDef(k, row, 'buttontext');
+			}
+			$('#' + tdId).append('<button id="' + buttonId + '"></button>');
+			$('#' + buttonId).text(v);
+			$('#' + buttonId).css('width', '100%');
+			$('#' + buttonId).css('height', '20px');
+			$('#' + buttonId).css('text-align', 'left');
+			$('#' + buttonId).click(function() {
+				if (me.buttonListener != null) {
+					me.buttonListener(row, k, $(this).text());
+				}
+			});		
+		}
+		
+		function createEditableText(tdId, k, row, v) {
+			var edit = new EditableText(tdId, v, function(value) {
+				me.listenerChange(row, k, value);
+			});
+			
+			var key = new Object();
+			key.k = k;
+			key.row = row;
+			key.id = tdId;
+			me.allTexts.set(key, edit);
+		}
+		
+		function createCheckBox(tdId, k, row, v) {
+			var checkId = 'check_' + tdId;
+			var checkNameId = 'checkName_' + tdId;
+			
+			var obj = new Object();
+			obj.k = k;
+			obj.row = row;
+			obj.id = checkId;
+			me.allChecks.push(obj);
+			
+			$('#' + tdId).append('<input type="checkbox" id="' + checkId + '"><span id="' + checkNameId + '"></span>');
+			
+			var checked = me.colDef(k, row, 'checked');
+
+			$('#' + checkId).prop('checked', checked);
+
+			$('#' + checkId).click(function() {
+				if (me.checkListener != null) {
+					me.checkListener(k, row, $(this).prop('checked'));
+				}
+			});
+		}
+		
 		$.each(data, function(k, v) {
 			if (v == null || v == '') {
 				v = '';
@@ -117,111 +197,33 @@ class JsMyTable {
 			
 			var type = me.colDef(k, row, 'type');
 			if (type == 'button') {
-				var buttonId = 'button_' + tdId;
-				$('#' + tdId).append('<button id="' + buttonId + '">' + me.colDef(k, row, 'name') + '</button>');
-				$('#' + buttonId).text(v);
-				
-				$('#' + buttonId).click(function() {
-					if (me.buttonListener != null) {
-						me.buttonListener(getRow(tdId), getCol(tdId), $(this).text());
-					}
-				});
+				createButton(tdId, k, row, v);
 			}
 			else if (type == 'select') {
-				var listId = 'list_' + tdId;
-				$('#' + tdId).append('<select id="' + listId + '"></select>');
-				var options = me.colDef(k, row, 'options');
-				for (var i = 0; i < options.length; i++) {
-					$('#' + listId).append($('<option>').html(options[i]).val(options[i]));
-				}
-				$('#' + listId).val(v);
-				$('#' + listId).change(function() {
-					if (me.selectListener != null) {
-						me.selectListener(getRow(tdId), getCol(tdId), $(this).val());
-					}
-				});
-
+				createSelect(tdId, k, row, v);
 			}
 			else if (type == 'check') {
-				var checkId = 'check_' + tdId;
-				var checkNameId = 'checkName_' + tdId;
-				
-				var obj = new Object();
-				obj.k = k;
-				obj.row = row;
-				obj.id = checkId;
-				me.allChecks.push(obj);
-				
-				$('#' + tdId).append('<input type="checkbox" id="' + checkId + '"><span id="' + checkNameId + '"></span>');
-				
-				var checked = me.colDef(k, row, 'checked');
-	
-				$('#' + checkId).prop('checked', checked);
-
-				$('#' + checkId).click(function() {
-					if (me.checkListener != null) {
-						me.checkListener(k, row, $(this).prop('checked'));
-					}
-				});
+				createCheckBox(tdId, k, row, v);
 			}
-			else if (type == 'text_button' || type == 'select_button') {
-				var key = new Object();
-				key.k = k;
-				key.row = row;
-				
+			else if (type == 'text_button' || type == 'select_button') {				
 				var td2Id = tdId + "_2";
-				var buttonId = "button_" + tdId;
-				$('#' + tdId).append('<div id="' + td2Id + '"></div><button id="' + buttonId + '"></button>');
-				key.id = tdId;
-				
-				$('#' + buttonId).text(me.colDef(k, row, 'buttontext'));
-				
-				$('#' + buttonId).css('width', '100%');
-				$('#' + buttonId).css('height', '20px');
-				
-				$('#' + buttonId).click(function() {
-					if (me.buttonListener != null) {
-						//me.buttonListener(getRow(tdId), getCol(tdId), v);
-						me.buttonListener(row, k, $(this).text());
-					}
-				});
+
+				$('#' + tdId).append('<div id="' + td2Id + '"></div>');
 				
 				if (type == 'text_button') {
-					var edit = new EditableText(td2Id, v, function(value) {
-						me.listenerChange(row, k, value);
-					});
-					
-					me.allTexts.set(key, edit);
+					createEditableText(td2Id, k, row, v);
 				}
 				else if (type == 'select_button') {
-					var listId = 'list_' + td2Id;
-					$('#' + td2Id).append('<select id="' + listId + '"></select>');
-					$('#' + listId).css('width', '100%');
-					var options = me.colDef(k, row, 'options');
-					for (var i = 0; i < options.length; i++) {
-						$('#' + listId).append($('<option>').html(options[i]).val(options[i]));
-					}
-					$('#' + listId).val(me.colDef(k, row, 'text'));
-					$('#' + listId).change(function() {
-						if (me.selectListener != null) {
-							me.selectListener(row, k, $(this).val());
-						}
-					});
+					createSelect(td2Id, k, row);
 				}
+				
+				createButton(td2Id, k, row);
 			}
 			else if (type == 'label') {
 				$('#' + tdId).append('<label>' + v + '</label>');
 			}
-			else {			
-				var key = new Object();
-				key.k = k;
-				key.row = row;
-				key.id = tdId;	
-				var edit = new EditableText(tdId, v, function(value) {
-					me.listenerChange(row, k, value);
-				});
-				
-				me.allTexts.set(key, edit);
+			else {	
+				createEditableText(tdId, k, row, v);
 			}
 		});		
 			

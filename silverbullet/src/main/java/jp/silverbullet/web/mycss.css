@@ -15,13 +15,15 @@
 	border:1px solid;
 	table-layout:fixed;
 	border-collapse:collapse;
-	width: 100%;
+//	width: 100%;
+	overflow-x:scrolll;
 }
 
 .smalltable td {
 	border:1px solid;
 	font-size:10px;
 	overflow:hidden;
+	min-width:50px;
 }
 .smalltable th {
 	border:1px solid;

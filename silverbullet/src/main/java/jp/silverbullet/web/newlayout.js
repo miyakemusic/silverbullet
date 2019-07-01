@@ -188,6 +188,7 @@ class Slider extends Widget {
 		
 		this.prevMin = -100;
 		this.prevMax = 100;
+		this.prevStep = 1;
 		
 		var me = this;
 //	    this.handle = $( "#" + this.customId);
@@ -196,6 +197,7 @@ class Slider extends Widget {
 	    	value: 0,
 	    	min: me.prevMin,
 	    	max: me.prevMax,
+	    	step: me.prevStep,
 	      create: function() {
 //	        me.handle.text( $( this ).slider( "value" ) );
 	      },
@@ -232,6 +234,17 @@ class Slider extends Widget {
 			range = true;
 		}
 
+		if (this.prevStep != property.decimals) {
+			var step = "0.";
+			for (var i = 0; i < property.decimals - 1; i++) {
+				step += "0";
+			}
+			step += "1";
+			if (step == "0.") {
+				step = "0";
+			}
+			$('#' + this.sliderId).slider("option", "step", Number(step));
+		}
 		$('#' + this.sliderId).slider("option", "value", Number(property.currentValue));
 		
 //		this.handle.text($('#' + this.divid).slider('value'));
@@ -244,6 +257,7 @@ class Slider extends Widget {
 				
 		this.prevMin = property.min;
 		this.prevMax = property.max;
+		this.prevStep = property.decimals;
 	}
 }
 

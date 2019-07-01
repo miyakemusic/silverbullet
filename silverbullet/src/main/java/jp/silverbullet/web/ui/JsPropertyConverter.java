@@ -24,6 +24,7 @@ public class JsPropertyConverter {
 		ret.setElements(property.getDefOptions());
 		ret.setMin(property.getMin());
 		ret.setMax(property.getMax());
+		ret.setDecimals(property.getDecimals());
 		for (ListDetailElement eid : property.getDefOptions()) {
 			if (property.isOptionDisabled(eid.getId())) {
 				ret.addDisabledOption(eid.getId());	

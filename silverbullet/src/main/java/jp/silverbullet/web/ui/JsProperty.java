@@ -25,6 +25,7 @@ public class JsProperty {
 	private List<String> disabledOption = new ArrayList<>();
 	private String min;
 	private String max;
+	private int decimals;
 	
 	public boolean isEnabled() {
 		return enabled;
@@ -91,6 +92,12 @@ public class JsProperty {
 	}
 	public String getMax() {
 		return max;
+	}
+	public void setDecimals(int decimals) {
+		this.decimals = decimals;
+	}
+	public int getDecimals() {
+		return decimals;
 	}
 	
 }
