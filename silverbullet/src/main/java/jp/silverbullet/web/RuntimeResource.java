@@ -64,4 +64,13 @@ public class RuntimeResource {
 		SilverBulletServer.getStaticInstance().getBuilderModel().setDefaultValues();
 		return "OK";
 	}
+	
+	@GET
+	@Path("/dependencyDebug")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String dependencyDebug(@QueryParam("enabled") boolean enabled) {
+		SilverBulletServer.setDebugEnabled(enabled);
+		return "OK";
+	}
+	
 }

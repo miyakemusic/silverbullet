@@ -178,13 +178,13 @@ public class RuntimePropertyStoreTest {
 		property.setMin("-100");
 		cache.commit();
 		assertEquals("-100.000", store.get("ID_NUMERIC").getMin());
-		assertEquals("-100.000", store.get("ID_NUMERIC", 1).getMin());
+		assertEquals("-10.000", store.get("ID_NUMERIC", 1).getMin());
 		
 		// change max
 		property.setMax("100");
 		cache.commit();
 		assertEquals("100.000", store.get("ID_NUMERIC").getMax());
-		assertEquals("100.000", store.get("ID_NUMERIC", 1).getMax());
+		assertEquals("10.000", store.get("ID_NUMERIC", 1).getMax());
 		
 		// change unit
 		property.setUnit("MHz");

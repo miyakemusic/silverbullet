@@ -950,8 +950,6 @@ class NewLayout {
 		
 		this.divNumber = 0;
 		
-//		retreiveDesign();
-		
 		new MyWebSocket(function(msg) {
 			var ids = msg.split(',');
 			for (var idindex of ids) {

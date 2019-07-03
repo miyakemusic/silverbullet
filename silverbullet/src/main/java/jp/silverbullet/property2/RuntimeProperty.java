@@ -24,7 +24,9 @@ public class RuntimeProperty implements Cloneable {
 	private Set<RuntimePropertyListener> listeners = new HashSet<RuntimePropertyListener>();
 	private Map<String, Boolean> listMask = new HashMap<String, Boolean>();
 	private boolean enabled = true;
-
+	
+	@JsonIgnore	private double currentMin;
+	@JsonIgnore private double currentMax;
 	private int index;
 
 	private boolean forceChange = false;
@@ -44,6 +46,8 @@ public class RuntimeProperty implements Cloneable {
 			this.currentValue = property.getDefaultValue();
 		}
 		
+		this.currentMax = this.property.getMax();
+		this.currentMin = this.property.getMin();
 	}
 	
 	private String formatValue(String value) {
@@ -92,12 +96,14 @@ public class RuntimeProperty implements Cloneable {
 
 	@JsonIgnore
 	public String getMin() {
-		return formatNumeric(this.property.getMin());
+		//return formatNumeric(this.property.getMin());
+		return formatNumeric(this.currentMin);
 	}
 
 	@JsonIgnore
 	public String getMax() {
-		return formatNumeric(this.property.getMax());
+	//	return formatNumeric(this.property.getMax());
+		return formatNumeric(this.currentMax);
 	}
 	
 	@JsonIgnore
@@ -163,21 +169,23 @@ public class RuntimeProperty implements Cloneable {
 
 	public void setMin(String min) {
 		double minv = Double.valueOf(min);
-		if (!forceChange  && this.property.getMin() == minv) {
+		//if (!forceChange  && this.property.getMin() == minv) {
+		if (!forceChange  && this.currentMin == minv) {
 			return;
 		}
-		
-		this.property.setMin(minv);
+		this.currentMin = minv;
+//		this.property.setMin(minv);
 		this.listeners.forEach(listener -> listener.onFlagChange(getId(), getIndex(), Flag.MIN));
 	}
 
 	public void setMax(String max) {
 		double maxv = Double.valueOf(max);
-		if (!forceChange  && this.property.getMax() == maxv) {
+		//if (!forceChange  && this.property.getMax() == maxv) {
+		if (!forceChange  && this.currentMax == maxv) {
 			return;
 		}
-		
-		this.property.setMax(maxv);
+		this.currentMax = maxv;
+//		this.property.setMax(maxv);
 		this.listeners.forEach(listener -> listener.onFlagChange(getId(), getIndex(), Flag.MAX));
 	}
 

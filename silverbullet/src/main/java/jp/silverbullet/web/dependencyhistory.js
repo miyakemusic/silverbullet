@@ -6,6 +6,7 @@ class DependencyHistory {
 		
 		$('#' + div).append('<button id="' + depHistButton + '">Dependency Debug</button>');
 		$('#' + depHistButton).click(function() {
+			debugEnabled(true);
 			$('#' + dialogId).dialog('open');
 		});
 
@@ -18,11 +19,9 @@ class DependencyHistory {
 			  modal: false,
 			  buttons: {
 			    "OK": function(){
+			    	debugEnabled(false);
 			    	$(this).dialog('close');
 			    	
-			    },
-			    "Cancel": function(){
-			    	$(this).dialog('close');
 			    }
 			  },
 			width: 600,
@@ -32,6 +31,17 @@ class DependencyHistory {
 		new MyWebSocket(function(msg) {
 			$('#' + depHistLog).html(msg.replace('\n', '<br>'));
 		}, 'DEBUG');
+		
+		function debugEnabled(enabled) {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/runtime/dependencyDebug?enabled=" + enabled,
+			   success: function(widget){
+
+			   }
+			});	
+		}
+		
 	}
 	
 	

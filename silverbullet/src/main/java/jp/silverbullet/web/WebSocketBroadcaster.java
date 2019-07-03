@@ -3,8 +3,10 @@ package jp.silverbullet.web;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -78,34 +80,47 @@ public class WebSocketBroadcaster {
 
 //	private Object sync = new Object();
 	private Thread senderThread = new Thread() {
+		String toText(Set<String> set) {
+			return set.toString().replace("[", "").replace("]", "").replace("\\s", "");
+		}
 		@Override
 		public void run() {
 			try {
-
+				Set<String> tmp = new LinkedHashSet<>();
 				while(true) {	
 					
 					TypeValue tv = queue.take();
+					send(tv.value, tv.type);
 					
-					Iterator<TypeValue> it = queue.iterator();
 					
-					String ids = tv.value;
-					String currentType = tv.type;
-					while(it.hasNext()) {	
-						TypeValue tv2 = it.next();
-						if (!currentType.isEmpty() && !tv2.type.equals(currentType)) {
-							send(ids, currentType);							
-							ids = "";
-						}
-						for (int i = 0; i < queue.size(); i++) {
-							ids += "," + tv2.value;
-						}
-						
-						currentType = tv2.type;
-					}
-	
-					if (!ids.isEmpty()) {
-						send(ids, currentType);			
-					}
+//					Iterator<TypeValue> it = queue.iterator();
+//					
+//					//String ids = "";
+//					String currentType = "";
+//					
+//					Set<String> tmp = new LinkedHashSet<>();
+//					
+//					while(it.hasNext()) {	
+//						TypeValue tv2 = it.next();
+//						
+//						tmp.add(it.next().value);
+//						
+//						if (!currentType.isEmpty() && !tv2.type.equals(currentType)) {	
+//							String msg = toText(tmp);
+//							send(msg, currentType);							
+//							tmp.clear();
+//						}
+//						//for (int i = 0; i < queue.size(); i++) {
+//							//ids += "," + tv2.value;
+//						//	tmp.add(tv2.value);
+//						//}
+//						
+//						currentType = tv2.type;
+//					}
+//	
+//					if (!tmp.isEmpty()) {
+//						send(toText(tmp), currentType);			
+//					}
 				}
 			}
 			catch (InterruptedException e) {
@@ -133,6 +148,7 @@ public class WebSocketBroadcaster {
 	}
 
 	private void send(String ids, String currentType) {
+		System.out.println("sent   " + ids + "   " + currentType);
 		try {
 			String message = new ObjectMapper().writeValueAsString(new WebSocketMessage(currentType, ids));
 			for(final WebSocketObject member: clients){

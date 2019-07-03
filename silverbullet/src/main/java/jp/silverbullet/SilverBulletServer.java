@@ -45,6 +45,7 @@ public abstract class SilverBulletServer {
 	protected abstract List<UserSequencer> getUserSequencers(BuilderModelImpl model);
 	
 	private static StaticInstances staticInstance = new StaticInstances();
+	private static boolean debugEnabled;
 	
 	public static StaticInstances getStaticInstance() {
 		return staticInstance;
@@ -84,7 +85,7 @@ public abstract class SilverBulletServer {
 			public DialogAnswer dialog(String message) {
 				message = message.replace("\n", "<br>");
 				WebSocketBroadcaster.getInstance().sendMessageAsync("MESSAGE", message);
-				System.out.println(message);
+//				System.out.println(message);
 				synchronized(syncDialog) {
 					try {
 						syncDialog.wait();
@@ -125,7 +126,9 @@ public abstract class SilverBulletServer {
 			@Override
 			public void onCompleted(String message) {
 				WebSocketBroadcaster.getInstance().sendMessageAsync("VALUES", message);
-				WebSocketBroadcaster.getInstance().sendMessageAsync("DEBUG", toHtml(depHistory));
+				if (debugEnabled) {
+					WebSocketBroadcaster.getInstance().sendMessageAsync("DEBUG", toHtml(depHistory));
+				}
 			}
 
 			private String toHtml(List<String> lines) {
@@ -362,6 +365,9 @@ public abstract class SilverBulletServer {
 			
 			}
 		});
+	}
+	public static void setDebugEnabled(boolean enabled) {
+		debugEnabled = enabled;
 	}
 
 }

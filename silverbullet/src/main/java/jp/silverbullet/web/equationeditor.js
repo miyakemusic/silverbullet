@@ -65,8 +65,8 @@ class EquationEditor {
 				buttons: {
 					"OK": function(){
 						$(this).dialog('close');
-						var id = idSelector.currentId;
-						var subId = idSelector.selectionId;
+						var id = idSelector.getCurrentId();
+						var subId = idSelector.getSelectionId();
 						result(id, subId);
 				    }
 				    ,
