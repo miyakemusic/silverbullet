@@ -141,20 +141,60 @@ class RegisterMap {
 			   }
 			});	
 		}
-		
+				
+		$('#' + div).append('<div id="' + dialogId + '"><label id="' + idBitName + '"></label><br><input type="text" id="' + editValue + '"></div>');
+
+		$('#' + dialogId).dialog({
+		  autoOpen: false,
+		  title: 'Edit',
+		  closeOnEscape: false,
+		  modal: true,
+		  buttons: {
+		    "OK": function(event){
+		    	changeBitValue(me.selectedValueId, $('#' + editValue).val());
+		    	$(this).dialog('close');	
+//		    	$('#' + dialogId).empty();
+//		    	$('#' + dialogId).remove();
+		    }
+		    ,
+		    "Cancel": function(event){
+		    	$(this).dialog('close');
+		    //	$('#' + dialogId).empty();
+		    //	$('#' + dialogId).remove();
+		    }
+		    ,
+		    "Create Shortcut": function(event) {
+		    	createShortCut(me.selectedValueId);
+		    	$(this).dialog('close');	
+		    //	$('#' + dialogId).empty();
+		    //	$('#' + dialogId).remove();
+		    	
+		    }
+		    ,
+		    "Add to Test": function(event) {
+		    	addToTest(me.selectedValueId);
+		    	$(this).dialog('close');	
+		   // 	$('#' + dialogId).empty();
+		   // 	$('#' + dialogId).remove();
+		    }
+		  },
+		  width: 400,
+		  height: 300
+		});			
 		function createMapContent(obj) {
 			var mapTableId = 'mapTable';
 			$('#' + mainDiv).append('<table id="' + mapTableId + '"><thead></thead><tbody></tbody></table>');
 			
 			$('#' + mapTableId + ' > thead').append('<td>Address</td>'); 
 			$('#' + mapTableId + ' > thead').append('<td>Name</td>'); 
-			for (var i = 31; i >= 0; i--) {
+			var width = obj.regSize;
+			for (var i = width - 1; i >= 0; i--) {
 				$('#' + mapTableId + ' > thead').append('<td>' + i + '</td>'); 
 			}
 			$('#' + mapTableId).css("table-layout","fixed");
 			$('#' + mapTableId).append('<colgroup><col style="width:100px"></colgroup>');
 			$('#' + mapTableId).append('<colgroup><col style="width:200px"></colgroup>');
-			for (var i = 31; i>= 0; i--) {
+			for (var i = width - 1; i>= 0; i--) {
 				$('#' + mapTableId).append('<colgroup><col style="width:20px"></colgroup>');
 			}
 			for (var i = 0; i < obj.registers.length; i++) {
@@ -181,11 +221,11 @@ class RegisterMap {
 							
 					var name = '<div>' + bit.name + '</div><div><input type="file" id="' + register.name + '"class="blockData"></div>';
 
-					colSpan = 32;
+					colSpan = width;
 					row += '<td colspan="' + colSpan + '">' + name + '</td>';
 				}
 				else {
-					for (var j = 31; j >= 0; j--) {
+					for (var j = width - 1; j >= 0; j--) {
 						var startBit = getStartBit(bit.bit);
 						var endBit = getEndBit(bit.bit);
 					
@@ -229,82 +269,41 @@ class RegisterMap {
 				titleMap.forEach((value, key) => {
 				    $('#' + key).attr('title', value);
 				});
-				
-				$('.regButton').click(function() {
-					$('#' + div).append('<div id="' + dialogId + '"><label id="' + idBitName + '"></label><br><input type="text" id="' + editValue + '"></div>');
-	
-					var id = $(this).prop('id');
-					me.selectedValueId = id;
-					var text = $(this).text();
-					
-					var obj = me.bitInfo.get(id);
-					$('#'+ idBitName).html('Register: ' + obj.register + '(' + obj.address + ')' + '<br>' + 
-					'Bit: ' + obj.bitName + '[' + obj.bit + ']');
-					$('#' + editValue).val(text);
-					
-					$('#' + dialogId).dialog({
-					  autoOpen: false,
-					  title: 'Edit',
-					  closeOnEscape: false,
-					  modal: true,
-					  buttons: {
-					    "OK": function(event){
-					    	changeBitValue(me.selectedValueId, $('#' + editValue).val());
-					    	$(this).dialog('destroy');	
-					    	$('#' + dialogId).empty();
-					    	$('#' + dialogId).remove();
-					    }
-					    ,
-					    "Cancel": function(event){
-					    	$(this).dialog('destroy');
-					    	$('#' + dialogId).empty();
-					    	$('#' + dialogId).remove();
-					    }
-					    ,
-					    "Create Shortcut": function(event) {
-					    	createShortCut(me.selectedValueId);
-					    	$(this).dialog('destroy');	
-					    	$('#' + dialogId).empty();
-					    	$('#' + dialogId).remove();
-					    	
-					    }
-					    ,
-					    "Add to Test": function(event) {
-					    	addToTest(me.selectedValueId);
-					    	$(this).dialog('destroy');	
-					    	$('#' + dialogId).empty();
-					    	$('#' + dialogId).remove();
-					    }
-					  },
-					  width: 400,
-					  height: 300
-					});							
-					$('#' + dialogId).dialog('open');
-				});
-				
-				$('.blockData').change(function(e) {
-					e.stopImmediatePropagation();
-					var reg = $(this).prop('id');
-					var file = $(this)[0].files[0];
-					console.log(file.name);
-					var reader = new FileReader();
-				    reader.readAsDataURL(file);
-				    reader.onload = function(event) {
-						$.ajax({
-						   type: "POST", 
-		//				   contentType: 'application/octet-stream'
-						   contentType: 'text/plain',
-						   data: event.target.result,
-		//				   contentType: false,
-        				   processData: false,
-						   url: "http://" + window.location.host + "/rest/register2/setBlockData?regName=" + reg,
-						   success: function(msg){
-						   }
-						});	
-				    }
-//					$(this).val('');
-				});
 			}
+			
+			$('.regButton').click(function() {
+				var id = $(this).prop('id');
+				me.selectedValueId = id;
+				var text = $(this).text();
+				
+				var obj = me.bitInfo.get(id);
+				$('#'+ idBitName).html('Register: ' + obj.register + '(' + obj.address + ')' + '<br>' + 
+				'Bit: ' + obj.bitName + '[' + obj.bit + ']');
+				$('#' + editValue).val(text);
+										
+				$('#' + dialogId).dialog('open');
+			});
+			
+			$('.blockData').change(function(e) {
+				e.stopImmediatePropagation();
+				var reg = $(this).prop('id');
+				var file = $(this)[0].files[0];
+				console.log(file.name);
+				var reader = new FileReader();
+			    reader.readAsDataURL(file);
+			    reader.onload = function(event) {
+					$.ajax({
+					   type: "POST", 
+					   contentType: 'text/plain',
+					   data: event.target.result,
+    				   processData: false,
+					   url: "http://" + window.location.host + "/rest/register2/setBlockData?regName=" + reg,
+					   success: function(msg){
+					   }
+					});	
+			    }
+			});
+				
 		}
 		function changeBitValue(buttonId, value) {
 			var obj = me.bitInfo.get(buttonId);

@@ -3,6 +3,8 @@ class RegisterClass {
 		var selectId = div + '_depselect';		
 		var showExternalId = div + '_external';
 		
+		new ListBox(div, 'Register Size', "http://" + window.location.host + "/rest/register2", "RegSize");
+		
 		var hardOrSimId = div + '_hardOrSim';
 		
 		$('#' + div).append('<select id="' + hardOrSimId + '"></input>');
@@ -54,11 +56,6 @@ class RegisterClass {
 			  title: 'Register Map',
 			  closeOnEscape: false,
 			  modal: false,
-//			  buttons: {
-//			    "Close": function(){
-//			    	$(this).dialog('close');
-//			    }
-//			  },
 			width: 1200,
 			height: 300
 		});	

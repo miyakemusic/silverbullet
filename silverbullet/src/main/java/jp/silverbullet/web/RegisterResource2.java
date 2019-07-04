@@ -1,6 +1,7 @@
 package jp.silverbullet.web;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -200,6 +201,27 @@ public class RegisterResource2 {
 		SilverBulletServer.getStaticInstance().getBuilderModel().setRegisterType(RegisterTypeEnum.valueOf(type));
 		return "OK";
 	}
+
+	@GET
+	@Path("/getRegSize")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public int getRegSize() {
+		return SilverBulletServer.getStaticInstance().getBuilderModel().getRegisterSpecHolder().getRegSize();
+	}
+
+	@GET
+	@Path("/getRegSizeList")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public List<String> getRegSizeList() {
+		return Arrays.asList("8", "16", "32", "64", "128");
+	}
 	
+	@GET
+	@Path("/setRegSize")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String setRegSize(@QueryParam("value") final int value) {
+		SilverBulletServer.getStaticInstance().getBuilderModel().getRegisterSpecHolder().setRegSize(value);
+		return "OK";
+	}
 }
 

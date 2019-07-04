@@ -258,7 +258,7 @@ public class RegisterSpecHolderTest {
 		
 		RegisterSpecHolder newHolder = new RegisterSpecHolder();
 		newHolder.load(".");
-		assertEquals(holder.getRegisterWidth(), newHolder.getRegisterWidth());
+		assertEquals(holder.getRegSize(), newHolder.getRegSize());
 		assertEquals(holder.getRegisters().size(), newHolder.getRegisters().size());
 		assertEquals(holder.getRegisters().keySet().iterator().next(), newHolder.getRegisters().keySet().iterator().next());
 

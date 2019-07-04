@@ -69,7 +69,7 @@ public class RegisterBitArray {
 
 	public void add(String name, ReadWriteType rw, String description2, String definition2) {
 		int startBit = 0;
-		int endBit = this.registerInterface.getRegisterWidth() - 1;
+		int endBit = this.registerInterface.getRegSize() - 1;
 		if (this.bits.size() > 0) {
 			// Searches vacant bits
 			for (int i = this.bits.size()-1; i >= 0; i--) {
@@ -127,8 +127,8 @@ public class RegisterBitArray {
 		if (this.getBits().size() > 0) {
 			String bits = this.getBits().get(0).getBit();
 			int max = Integer.valueOf(bits.split(":")[0]);
-			if (max < this.registerInterface.getRegisterWidth()-1) {
-				RegisterBit bit = new RegisterBit(name, max + 1, this.registerInterface.getRegisterWidth()-1, ReadWriteType.RW, "Auto-added", "");
+			if (max < this.registerInterface.getRegSize()-1) {
+				RegisterBit bit = new RegisterBit(name, max + 1, this.registerInterface.getRegSize()-1, ReadWriteType.RW, "Auto-added", "");
 				this.add(bit);
 			}
 			else {

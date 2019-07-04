@@ -97,40 +97,7 @@ public class BuilderModelImpl {
 	};
 	
 	private RegisterAccessor currentRegisterAccessor = runtimeRegisterMap;
-//	private RestrictionMatrix restrictionMatrix = new RestrictionMatrix() {
-//
-//		@Override
-//		protected DependencySpecHolder getDependencySpecHolder() {
-//			return dependencySpecHolder2;
-//		}
-//
-//		@Override
-//		protected void resetMask() {
-//			store.resetMask();
-//		}
-//
-//		@Override
-//		protected RuntimeProperty getRuntimeProperty(String id, int index) {
-//			return store.get(id, index);
-//		}
-//
-//		@Override
-//		protected RuntimeProperty getRuntimeProperty(String id) {
-//			return store.get(id);
-//		}
-//
-//		@Override
-//		protected PropertyDef2 getPropertyDef(String id) {
-//			return propertiesHolder2.get(id);
-//		}
-//
-//		@Override
-//		protected List<PropertyDef2> getAllPropertieDefs() {
-//			return new ArrayList<PropertyDef2>(propertiesHolder2.getProperties());
-//		}
-//		
-//	};
-	
+
 	private UiLayoutHolder uiLayoutHolder = new UiLayoutHolder(new PropertyGetter() {
 		public RuntimeProperty getProperty(String id) {
 			return store.get(id);

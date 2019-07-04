@@ -16,7 +16,7 @@ import jp.silverbullet.JsonPersistent;
 @XmlRootElement
 public class RegisterSpecHolder {
 	private Map<Long, SvRegister> registers = new LinkedHashMap<>();
-	private int registerWidth = 32;
+	private int regSize = 32;
 	
 	private SvRegisterListener listener = new SvRegisterListener() {
 		@Override
@@ -31,7 +31,7 @@ public class RegisterSpecHolder {
 
 
 	public RegisterSpecHolder(int width){
-		this.registerWidth = width;
+		this.regSize = width;
 	}
 	
 	public SvRegister addRegister(String name, String address, String description) {
@@ -105,8 +105,8 @@ public class RegisterSpecHolder {
 		return this.getRegisterList().get(this.getRegisterList().size()-1).getDecAddress();
 	}
 
-	public int getRegisterWidth() {
-		return this.registerWidth ;
+	public int getRegSize() {
+		return this.regSize ;
 	}
 	public SvRegister newRegister(String name, long address, String description) {
 		SvRegister ret = createRegister();
@@ -141,7 +141,7 @@ public class RegisterSpecHolder {
 		int i = 1;
 		long address = 0;
 		while (true) {
-			address = toDecAddess(currentAddress) + (this.getRegisterWidth()/8) * i;		
+			address = toDecAddess(currentAddress) + (this.getRegSize()/8) * i;		
 			if (!this.registers.keySet().contains(address)) {
 				break;
 			}
@@ -158,8 +158,8 @@ public class RegisterSpecHolder {
 
 	private SvRegisterInterface registerInterface = new SvRegisterInterface() {
 		@Override
-		public int getRegisterWidth() {
-			return registerWidth;
+		public int getRegSize() {
+			return regSize;
 		}
 
 		@Override
@@ -230,7 +230,7 @@ public class RegisterSpecHolder {
 		try {
 			RegisterSpecHolder loadded = new JsonPersistent().loadJson(this.getClass(), folder + "/registerspec.json");
 			this.registers = loadded.registers;
-			this.registerWidth = loadded.registerWidth;
+			this.regSize = loadded.regSize;
 			
 			this.registers.values().forEach(register -> register.setRegisterInterface(registerInterface));
 
@@ -248,5 +248,10 @@ public class RegisterSpecHolder {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+
+	public void setRegSize(int width) {
+		this.regSize = width;
 	}
 }

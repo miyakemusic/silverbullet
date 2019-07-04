@@ -2,7 +2,7 @@ package jp.silverbullet.register2;
 
 public interface SvRegisterInterface {
 
-	int getRegisterWidth();
+	int getRegSize();
 
 	boolean conflictsName(String name, SvRegister svRegister);
 

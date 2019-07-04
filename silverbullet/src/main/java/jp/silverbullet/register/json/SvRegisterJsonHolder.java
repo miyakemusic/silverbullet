@@ -8,12 +8,13 @@ import jp.silverbullet.register2.SvRegister;
 
 public class SvRegisterJsonHolder {
 	private List<SvRegisterJson> registers = new ArrayList<>();
-
+	public int regSize = 0;
+	
 	public SvRegisterJsonHolder(RegisterSpecHolder holder) {
 		for (Long address : holder.getRegisters().keySet()) {
 			this.addRegister(this.convertRegister(holder.getRegisters().get(address)));			
 		}
-
+		this.regSize = holder.getRegSize();
 	}
 
 	public SvRegisterJsonHolder() {

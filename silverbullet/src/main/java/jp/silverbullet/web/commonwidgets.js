@@ -57,3 +57,49 @@ class EditableText {
 		this.text(text);
 	}
 }
+
+class ListBox {
+	constructor(parent, title, path, resource) {
+		var listId = parent + "_listbox";
+		$('#' + parent).append(title + '<select id="' + listId + '"></select>');
+		
+		var getPath = path + "/get" + resource;
+		var setPath = path + "/set" + resource;
+		var listPath = path + "/get" + resource + "List";
+		
+		getList();
+		
+		function getList() {
+			$.ajax({
+				type: "GET", 
+				url: listPath,
+				success: function(msg){
+					for (var option of msg) {
+						$('#' + listId).append($('<option />').val(option).html(option));
+					}
+					getValue();
+				}
+			});		
+		}
+		
+		function getValue() {
+			$.ajax({
+				type: "GET", 
+				url: getPath,
+				success: function(msg){
+					$('#' + listId).val(msg);
+				}
+			});
+		}
+		
+		$('#' + listId).change(function() {
+			$.ajax({
+				type: "GET", 
+				url: setPath + "?value=" + $(this).val(),
+				success: function(msg){
+
+				}
+			});	
+		});
+	}
+}
