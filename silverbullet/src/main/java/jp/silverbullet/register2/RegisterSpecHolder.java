@@ -98,7 +98,7 @@ public class RegisterSpecHolder {
 	}
 
 	@JsonIgnore
-	public int getLastDecAddess() {
+	public long getLastDecAddess() {
 		if (this.registers.size() == 0) {
 			return 0;
 		}

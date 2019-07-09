@@ -136,9 +136,12 @@ class DependencySpecEditor {
 				else if (col == 'Trigger' || col == 'Condition') {
 					return 'button';
 				}
+				else if (col == 'Silent Change') {
+					return "select";
+				}
 			}
 			else if (arg == 'options') {
-				if (col == 'Value') {
+				if (col == 'Value' || col == 'Silent Change') {
 					return ['true', 'false'];
 				}
 			}

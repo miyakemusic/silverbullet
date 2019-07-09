@@ -479,5 +479,10 @@ public class PropertyDef2 implements Cloneable {
 		return this.getType().equals(PropertyType2.Boolean);
 	}
 
+	@JsonIgnore
+	public boolean isAction() {
+		return this.getType().equals(PropertyType2.Action);
+	}
+
 	
 }

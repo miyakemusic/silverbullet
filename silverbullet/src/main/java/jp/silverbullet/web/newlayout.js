@@ -850,6 +850,7 @@ class Table2 extends Widget {
 			},
 			function(row, col) {
 				me.data.selectedRow = row;
+				me.data.dataChanged = false;
 				me.setter(widget.id, 0, JSON.stringify(me.data));
 			}
 		);
@@ -862,7 +863,7 @@ class Table2 extends Widget {
 		this.data = JSON.parse(property.currentValue);
 		
 		if (this.data.dataChanged) {
-			if (this.data.newFlag) {
+			if (this.data.structureChanged) {
 				this.table.build();
 			}
 			this.table.update();

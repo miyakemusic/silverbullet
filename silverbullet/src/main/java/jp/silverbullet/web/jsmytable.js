@@ -96,8 +96,6 @@ class JsMyTable {
 	   		var spec = rows[row];
 	   		this.appendRow(row, spec, canRemove);
 	   	}	
-	   	
-//	   	$('#' + this.tableId + ' tr td').css('width', '100px');
 	}
 	
 	appendRow(row, data, canRemove) {
@@ -192,6 +190,7 @@ class JsMyTable {
 			}
 			
 			var tdId = me.div + '_' + row + '_' + k;
+			tdId = tdId.replace(/\s/g, '');
 			
 			$('#' + me.tableId + ' > tbody tr:last').append('<td id="' + tdId + '"></td>');
 			

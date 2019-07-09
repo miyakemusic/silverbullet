@@ -128,6 +128,15 @@ public abstract class SpecBuilder {
 						System.out.println();
 					}
 				}
+				else if (targetProp.isAction()) {
+					if (triggerProp.isList()) {
+						if (value.relation.equals("Action")) {
+							String triggerCond = "$" + this.getMainId(triggerId) + "==" +  "%" + triggerId;
+							String val = "!$" + targetId;
+							this.getDependencySpecHolder().getSpec(targetId).addValue(val, triggerCond, value.condition, silentChange);
+						}
+					}
+				}
 			}
 		}
 	}
@@ -227,11 +236,11 @@ public abstract class SpecBuilder {
 				if (isMainId(triggerOption) && this.hasRelation(targetId, triggerId)) {
 					if (this.getPropertyDef(triggerId).isBoolean()) {
 						if (this.getData().contains(targetOption, triggerOption)) {
-				
+							
 							getDependencySpecHolder().getSpec(targetId).addOptionEnabled(targetOption, DependencySpec.True, 
-									"$" + triggerId + "==true", "");		
+									"$" + triggerId + "==true", "").silentChange(true);		
 							getDependencySpecHolder().getSpec(targetId).addOptionEnabled(targetOption, DependencySpec.False, 
-									"$" + triggerId + "==false", "");								
+									"$" + triggerId + "==false", "").silentChange(true);								
 						}
 						else {
 						//	String triggerExpression = "$" + triggerId + "==" + "$" + triggerId;
@@ -247,12 +256,12 @@ public abstract class SpecBuilder {
 						String triggerExpression = "$" + triggerId + "==%" + triggerOption;
 						if (isMainId(targetOption)) {
 							getDependencySpecHolder().getSpec(targetId).addEnable(DependencySpec.True, 
-									triggerExpression, condition);
+									triggerExpression, condition).silentChange(true);
 							enabledTouched = true;
 						}
 						else {
 							getDependencySpecHolder().getSpec(targetId).addOptionEnabled(targetOption, DependencySpec.True, 
-									triggerExpression, condition);
+									triggerExpression, condition).silentChange(true);
 							optionEnabledTouched = true;
 						}
 					}
@@ -260,10 +269,10 @@ public abstract class SpecBuilder {
 			}
 			if (optionEnabledTouched) {
 				getDependencySpecHolder().getSpec(targetId).addOptionEnabled(targetOption, DependencySpec.False, 
-						DependencySpec.Else);		
+						DependencySpec.Else, "").silentChange(true);		
 			}
 			if (enabledTouched) {
-				getDependencySpecHolder().getSpec(targetId).addEnable(DependencySpec.False, DependencySpec.Else);
+				getDependencySpecHolder().getSpec(targetId).addEnable(DependencySpec.False, DependencySpec.Else, "").silentChange(true);
 			}
 
 		}

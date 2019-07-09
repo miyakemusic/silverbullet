@@ -11,4 +11,7 @@ public class WebDependencyElement {
 	
 	@JsonProperty(DependencySpec.Condition)
 	public String condition;
+
+	@JsonProperty(DependencySpec.SilentChange)
+	public String silentChange;
 }

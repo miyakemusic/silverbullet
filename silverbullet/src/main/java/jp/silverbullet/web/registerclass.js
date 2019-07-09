@@ -42,7 +42,9 @@ class RegisterClass {
 			else {
 				$('#' + simDiv).hide();
 			}
+			setRegisterType($(this).val());
 		});
+		
 		$('#' + hardOrSimId).val('Simulator');
 		
 		new RegisterSpec(regDiv);

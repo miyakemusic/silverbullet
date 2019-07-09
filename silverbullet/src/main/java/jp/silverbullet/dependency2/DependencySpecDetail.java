@@ -11,7 +11,7 @@ public class DependencySpecDetail {
 	
 	public DependencySpecDetail() {}
 	
-	public Expression add(String targetElement, String enabled, String trigger, String condition) {
+	public Expression createExpression(String targetElement, String enabled, String trigger, String condition) {
 		Expression expression = new Expression(enabled, trigger, condition);
 		expressions.add(targetElement, expression);
 		return expression;
@@ -27,8 +27,10 @@ public class DependencySpecDetail {
 		expressions.add(option, expression);
 	}
 
-	public void add(String targetElement, String targetOption, String enabled, String trigger, String condition) {
-		expressions.add(targetElement, targetOption, new Expression(enabled, trigger, condition));
+	public Expression add(String targetElement, String targetOption, String enabled, String trigger, String condition) {
+		Expression expression = new Expression(enabled, trigger, condition);
+		expressions.add(targetElement, targetOption, expression);
+		return expression;
 	}
 
 	public List<Expression> get(String targetElement) {

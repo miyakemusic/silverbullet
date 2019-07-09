@@ -97,7 +97,7 @@ public class SvRegister {
 	}
 	
 	@JsonIgnore
-	public int getDecAddress() {
+	public long getDecAddress() {
 		String hexAddress = "";
 		if (this.getAddress().contains("-")) {
 			hexAddress = this.getAddress().split("-")[0];
@@ -105,7 +105,7 @@ public class SvRegister {
 		else {
 			hexAddress = this.getAddress();
 		}
-		return Integer.parseInt(hexAddress.replace("0x", ""), 16);
+		return Long.parseLong(hexAddress.replace("0x", ""), 16);
 	}
 
 	@JsonIgnore

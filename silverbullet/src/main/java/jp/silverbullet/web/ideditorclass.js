@@ -150,7 +150,7 @@ class IdEditorClass {
 					  	$("#" + idCurrentId).text("ID: " + currentId);
 					  	
 					  	currentType = getType(r);
-						updateSelectionTable(getId(r), currentType);
+						updateSelectionTable(getId(r));
 	      		      },
 	      		      beforeChange: function(change, source) {
 	      		      },
@@ -187,8 +187,8 @@ class IdEditorClass {
 			});	
 		}
 	
-		function updateSelectionTable(id, type) {
-			if (type != 'List') {
+		function updateSelectionTable(id) {
+			if (currentType != 'List') {
 				$("#" + idSubTable).handsontable('clear');
 				return;
 			}

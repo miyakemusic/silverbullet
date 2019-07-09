@@ -71,9 +71,9 @@ public abstract class DependencyEngine {
 		this.cachedPropertyStore = new CachedPropertyStore(store);
 
 		try {
-			long startTime = System.currentTimeMillis();
+//			long startTime = System.currentTimeMillis();
 			changeValue(id, value, forceChange);
-			System.out.println(System.currentTimeMillis() - startTime);
+//			System.out.println(System.currentTimeMillis() - startTime);
 			if (this.commitListener != null) {
 				CommitListener.Reply reply = this.commitListener.confirm(this.cachedPropertyStore.getConfirmationMessage());
 				if (reply.equals(CommitListener.Reply.Accept)) {

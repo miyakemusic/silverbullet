@@ -24,7 +24,7 @@ public class DependencySpec {
 		
 	public static final String Trigger = "Trigger";
 	public static final String Condition = "Condition";
-	
+	public static final String SilentChange = "Silent Change";
 
 	
 	private String id;
@@ -36,8 +36,8 @@ public class DependencySpec {
 		this.id = id;
 	}
 	
-	public void addOptionEnabled(String option, String enabled, String trigger, String condition) {
-		this.dependencySpecDetail.add(DependencySpec.OptionEnable, option, enabled, trigger, condition);
+	public Expression addOptionEnabled(String option, String enabled, String trigger, String condition) {
+		return this.dependencySpecDetail.add(DependencySpec.OptionEnable, option, enabled, trigger, condition);
 	}
 	
 	public DependencySpec addOptionEnabled(String option, String enabled, String trigger) {
@@ -45,16 +45,16 @@ public class DependencySpec {
 		return this;
 	}
 
-	public void addEnable(String enabled, String trigger, String condition) {
-		this.dependencySpecDetail.add(DependencySpec.Enable, enabled, trigger, condition);
+	public Expression addEnable(String enabled, String trigger, String condition) {
+		return this.dependencySpecDetail.createExpression(DependencySpec.Enable, enabled, trigger, condition);
 	}
 	
-	public void addEnable(String enabled, String trigger) {
-		addEnable(enabled, trigger, "");
+	public Expression addEnable(String enabled, String trigger) {
+		return addEnable(enabled, trigger, "");
 	}
 
 	public void addOptionSelect(String option, String trigger, String condition) {
-		this.dependencySpecDetail.add(DependencySpec.Value, option, trigger, condition);
+		this.dependencySpecDetail.createExpression(DependencySpec.Value, option, trigger, condition);
 	}
 	
 	public void addOptionSelect(String option, String trigger) {
@@ -72,12 +72,12 @@ public class DependencySpec {
 	}
 	
 	public DependencySpec addValue(String value, String trigger, String condition) {
-		this.dependencySpecDetail.add(DependencySpec.Value, value, trigger, condition);
+		this.dependencySpecDetail.createExpression(DependencySpec.Value, value, trigger, condition);
 		return this;
 	}
 
 	public DependencySpec addValue(String value, String trigger, String condition, boolean silentChange) {
-		this.dependencySpecDetail.add(DependencySpec.Value, value, trigger, condition).silentChange(silentChange);
+		this.dependencySpecDetail.createExpression(DependencySpec.Value, value, trigger, condition).silentChange(silentChange);
 		return this;
 	}
 	
@@ -108,7 +108,7 @@ public class DependencySpec {
 	}
 	
 	public void addMin(String min, String trigger, String condition, boolean silentChange) {
-		this.dependencySpecDetail.add(DependencySpec.Min, min, trigger, condition).silentChange(silentChange);
+		this.dependencySpecDetail.createExpression(DependencySpec.Min, min, trigger, condition).silentChange(silentChange);
 	}
 	
 	public DependencySpec addMin(double min, String trigger) {
@@ -125,7 +125,7 @@ public class DependencySpec {
 	}
 	
 	public void addMax(String max, String trigger, String condition, boolean silentChange) {
-		this.dependencySpecDetail.add(DependencySpec.Max, max, trigger, condition).silentChange(silentChange);
+		this.dependencySpecDetail.createExpression(DependencySpec.Max, max, trigger, condition).silentChange(silentChange);
 	}
 	
 	public void addMax(double max, String trigger, String condition) {
@@ -138,7 +138,7 @@ public class DependencySpec {
 	}
 
 	public void addArraySize(int size, String trigger, String condition) {
-		this.dependencySpecDetail.add(DependencySpec.ArraySize, String.valueOf(size), trigger, condition);
+		this.dependencySpecDetail.createExpression(DependencySpec.ArraySize, String.valueOf(size), trigger, condition);
 	}
 	
 	public List<Expression> getExpression(String targetElement) {
@@ -204,7 +204,7 @@ public class DependencySpec {
 
 	public void addSpecs(String targetElement, List<Expression> specs) {
 		for (Expression exp : specs) {
-			this.dependencySpecDetail.add(targetElement, exp.getValue(), exp.getTrigger(), exp.getCondition());
+			this.dependencySpecDetail.createExpression(targetElement, exp.getValue(), exp.getTrigger(), exp.getCondition());
 		}
 	}
 

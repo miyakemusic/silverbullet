@@ -84,12 +84,13 @@ public abstract class RestrictionMatrix {
 						
 					}
 				}
-				else if (targetProp.isNumeric() && triggerProp.isNumeric()) {
-//					dr.candidates.add("");
-//					dr.candidates.add("=");
-//					dr.candidates.add(">");
-//					dr.candidates.add("<");
+				else if (targetProp.isAction()) {
+					if (triggerProp.isList() && !triggerIsMain) {
+						dr.candidates.add("");
+						dr.candidates.add("Action");
+					}
 				}
+				
 			}
 		}
 	}

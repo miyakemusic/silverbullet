@@ -13,9 +13,7 @@ public class RegisterController implements RegisterAccessor {
 
 	@Override
 	public void write(Object regName, List<BitValue> data) {
-//		data.forEach(d  -> {
-//			updateValue(regName, d.bitName, d.value);
-//		});
+
 	}
 
 	@Override

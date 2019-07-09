@@ -54,6 +54,7 @@ public class WebDataConverter {
 		ret.value = DependencySpec.Null;
 		ret.condition = DependencySpec.Null;
 		ret.trigger = DependencySpec.Null;
+		ret.silentChange = "";
 		return ret;
 	}
 	private void create(String name, WebDependencySpec ret, Expression expression) {
@@ -61,6 +62,7 @@ public class WebDataConverter {
 		e.condition = expression.getCondition();
 		e.trigger = expression.getTrigger();
 		e.value = expression.getValue();
+		e.silentChange = String.valueOf(expression.isSilentChange());
 		ret.add(name, e);
 	}
 }
