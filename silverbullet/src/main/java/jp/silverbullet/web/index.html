@@ -49,6 +49,8 @@
 <script type="text/javascript" src="dependencyspeceditor.js"></script>
 <script type="text/javascript" src="dependencyclass2.js"></script>
 
+<script type="text/javascript" src="build.js"></script>
+
 <script type="text/javascript">
 $(function() {
 	$(document).ready(function(){
@@ -62,6 +64,7 @@ $(function() {
 		new DependencyClass2('tab_dependency2');
 		new NewLayout('tab_newgui');
 		new DependencyDesign2('tab_dependencydesign2');
+		new Build('tab_build');
 		
 		$('#save').click(function() {
 			$.ajax({
@@ -126,6 +129,7 @@ $(function() {
   	<li><a href="#tab_debug">Debug</a></li>
   	<li><a href="#tab_test">Test</a></li>
   	<li><a href="#tab_newgui">GUI</a></li>
+  	<li><a href="#tab_build">Build</a></li>
   </ul>
   <div id="tab_id"></div>
   <div id="tab_register"></div>
@@ -135,6 +139,7 @@ $(function() {
   <div id="tab_dependency2"></div>
   <div id="tab_newgui"></div>
   <div id="tab_dependencydesign2"></div>
+  <div id="tab_build"></div>
 </div>
 
 </body>

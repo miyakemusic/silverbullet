@@ -50,8 +50,7 @@ public class SampleMain extends SilverBulletServer {
 
 	@Override
 	protected int getInstanceCount() {
-		// TODO Auto-generated method stub
-		return 0;
+		return 1;
 	}
 
 	@Override

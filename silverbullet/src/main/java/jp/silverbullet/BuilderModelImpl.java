@@ -33,6 +33,7 @@ import jp.silverbullet.register2.RegisterShortCutHolder;
 import jp.silverbullet.register2.RegisterSpecHolder;
 import jp.silverbullet.register2.RuntimeRegisterMap;
 import jp.silverbullet.register2.RuntimeRegisterMap.DeviceType;
+import jp.silverbullet.selfbuild.SelfBuilder;
 import jp.silverbullet.sequncer.EasyAccessInterface;
 import jp.silverbullet.sequncer.Sequencer;
 import jp.silverbullet.sequncer.SystemAccessor;
@@ -52,13 +53,14 @@ public class BuilderModelImpl {
 	private static final String REGISTERSHORTCUT = "registershortcuts.xml";
 	private static final String DEPENDENCYSPEC3_XML = "dependencyspec3.xml";
 	private static final String UIBUILDER = "uibuilder.json";
-
+	
 	private RuntimePropertyStore store;
 	private Sequencer sequencer;
 	private PropertyHolder2 propertiesHolder2 = new PropertyHolder2();
 	private RegisterSpecHolder registerProperty = new RegisterSpecHolder();
 	private DependencySpecHolder dependencySpecHolder2 = new DependencySpecHolder();
 	private RegisterShortCutHolder registerShortCuts = new RegisterShortCutHolder();
+	private SelfBuilder selfBuilder = new SelfBuilder();
 	
 	private RegisterController registerController = new RegisterController();
 	private RuntimeRegisterMap runtimeRegisterMap = new RuntimeRegisterMap();
@@ -289,6 +291,7 @@ public class BuilderModelImpl {
 			this.uiBuilder.nameAll();
 		}
 		this.dependencyDesigner.load(folder);
+		this.selfBuilder.load(folder);
 	}
 
 	public void createDependencyEngine() {
@@ -350,6 +353,7 @@ public class BuilderModelImpl {
 		save(this.uiBuilder, UiBuilder.class, folder + "/" + UIBUILDER);
 //		this.restrictionMatrix.save(folder);
 		this.dependencyDesigner.save(folder);
+		this.selfBuilder.save(folder);
 	}
 
 	private void saveJson(Object object, String filename) {
@@ -615,6 +619,10 @@ public class BuilderModelImpl {
 
 	public void replyDialog(String messageId, String reply) {
 		this.runtimeListeners.forEach(listener -> listener.onReply(messageId, reply));
+	}
+
+	public SelfBuilder getSelfBuilder() {
+		return selfBuilder;
 	}
 
 }
