@@ -204,7 +204,7 @@ public class BuilderModelImpl {
 	private DependencySpecHolder defaultDependency;
 	private RegisterSpecHolder registerSpecHolder = new RegisterSpecHolder();
 	private List<RegisterAccessor> simulators;
-	private String sourceInfo;
+//	private String sourceInfo;
 	private RegisterAccessor hardwareAccessor;
 	private UiBuilder uiBuilder  = null;
 	private Set<RuntimeListener> runtimeListeners = new HashSet<>();
@@ -488,12 +488,12 @@ public class BuilderModelImpl {
 		return null;
 	}
 
-	public void setSourceInfo(String baseFolderAndPackage) {
-		this.sourceInfo = baseFolderAndPackage;
-	}
+//	public void setSourceInfo(String baseFolderAndPackage) {
+//		this.sourceInfo = baseFolderAndPackage;
+//	}
 
 	public String getSourceInfo() {
-		return sourceInfo;
+		return selfBuilder.getPath() + ";" + selfBuilder.getPackage();
 	}
 
 	public RuntimeRegisterMap getRuntimRegisterMap() {

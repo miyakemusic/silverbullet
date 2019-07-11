@@ -29,13 +29,7 @@ public class SampleMain extends SilverBulletServer {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	@Override
-	protected String getBaseFolderAndPackage() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	
 	@Override
 	protected RegisterAccessor getHardwareAccessor(BuilderModelImpl model) {
 		// TODO Auto-generated method stub

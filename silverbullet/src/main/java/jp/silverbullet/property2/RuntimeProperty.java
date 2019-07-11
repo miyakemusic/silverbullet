@@ -10,6 +10,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jp.silverbullet.dependency2.DependencySpec;
 import jp.silverbullet.property2.RuntimePropertyListener.Flag;
 
 public class RuntimeProperty implements Cloneable {
@@ -36,18 +37,7 @@ public class RuntimeProperty implements Cloneable {
 	public RuntimeProperty(PropertyDef2 property2) {
 		this.property = property2;
 		
-		if (this.property.getType().equals(PropertyType2.List)) {
-			this.currentValue = property.getDefaultId();
-		}
-		else if (this.property.getType().equals(PropertyType2.Numeric)) {
-			this.currentValue = formatValue(property.getDefaultValue());
-		}
-		else {
-			this.currentValue = property.getDefaultValue();
-		}
-		
-		this.currentMax = this.property.getMax();
-		this.currentMin = this.property.getMin();
+		this.resetValue();
 	}
 	
 	private String formatValue(String value) {
@@ -333,9 +323,18 @@ public class RuntimeProperty implements Cloneable {
 		if (this.getType().equals(PropertyType2.List)) {
 			this.setCurrentValue(this.property.getDefaultId());
 		}
+		else if (this.getType().equals(PropertyType2.Action)) {
+			this.setCurrentValue(DependencySpec.True);
+		}
+		else if (this.property.getType().equals(PropertyType2.Numeric)) {
+			this.currentValue = formatValue(property.getDefaultValue());
+		}
 		else {
 			this.setCurrentValue(this.property.getDefaultValue());
 		}
+		
+		this.currentMax = this.property.getMax();
+		this.currentMin = this.property.getMin();
 	}
 
 	public String getOptionTitle(String optionId) {

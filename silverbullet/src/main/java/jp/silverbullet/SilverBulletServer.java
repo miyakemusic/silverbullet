@@ -40,7 +40,6 @@ public abstract class SilverBulletServer {
 	protected abstract String getDefaultFilename();
 	protected abstract void onStart(BuilderModelImpl model);
 	protected abstract List<RegisterAccessor> getSimulators();
-	protected abstract String getBaseFolderAndPackage();
 	protected abstract RegisterAccessor getHardwareAccessor(BuilderModelImpl model);
 	protected abstract List<UserSequencer> getUserSequencers(BuilderModelImpl model);
 	
@@ -61,7 +60,7 @@ public abstract class SilverBulletServer {
 			builderModel.setUiBuilder(getUi());
 			onStart(builderModel);
 			builderModel.setSimulators(getSimulators());
-			builderModel.setSourceInfo(getBaseFolderAndPackage());
+//			builderModel.setSourceInfo(getBaseFolderAndPackage());
 			builderModel.setHardwareAccessor(getHardwareAccessor(builderModel));
 			getUserSequencers(builderModel).forEach(sequencer -> {
 				builderModel.getSequencer().addUserSequencer(sequencer);
