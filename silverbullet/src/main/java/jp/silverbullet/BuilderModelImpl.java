@@ -569,7 +569,11 @@ public class BuilderModelImpl {
 		} catch (RequestRejectedException e) {
 			ret.message = e.getMessage();
 			ret.result = "Rejected";
-		} finally {
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
 			ret.debugLog = sequencer.getDebugDepLog();		
 		}
 

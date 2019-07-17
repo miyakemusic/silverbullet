@@ -12,6 +12,10 @@ import jp.silverbullet.property2.PropertyDef2;
 import jp.silverbullet.property2.RuntimeProperty;
 
 public abstract class RestrictionMatrix {
+//	public static final String ACTION_AT_DIRECT = "ActionAtDirect";
+	public static final String ACTION = "Action";
+
+
 	abstract protected DependencySpecHolder getDependencySpecHolder() ;
 
 	abstract protected void resetMask();
@@ -87,7 +91,8 @@ public abstract class RestrictionMatrix {
 				else if (targetProp.isAction()) {
 					if (triggerProp.isList() && !triggerIsMain) {
 						dr.candidates.add("");
-						dr.candidates.add("Action");
+						dr.candidates.add(ACTION);
+//						dr.candidates.add(ACTION_AT_DIRECT);
 					}
 				}
 				

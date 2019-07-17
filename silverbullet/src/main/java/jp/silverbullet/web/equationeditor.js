@@ -35,6 +35,7 @@ class EquationEditor {
 			'	<button class="copyValue" value=" || ">||</button>' +
 			'	<button class="copyValue" value=" ( ) ">()</button>' +
 			'	<button class="copyValue" value="*Else">*Else</button>' +
+			'	<button class="copyValue" value="*BYUSER">*BYUSER</button>' +
 			'	<button id="' + idSelectorId + '">ID Selector</button>' +
 			'</div>');	
 			

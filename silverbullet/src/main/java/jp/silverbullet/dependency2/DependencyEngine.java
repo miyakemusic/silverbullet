@@ -121,17 +121,19 @@ public abstract class DependencyEngine {
 		
 		fireProgress(this.cachedPropertyStore.getDebugLog());
 		
+		int layer = 0;
 		Set<Id> needsFindSelection = new HashSet<>();
-		handle(id, value, forceChange, needsFindSelection);
+		handle(id, value, forceChange, needsFindSelection, layer++);
 		selectAvailableOption(needsFindSelection);
 		
 		this.cachedPropertyStore.removeCachedPropertyStoreListener(prevChangedProperties);
 		
 		fireProgress(this.cachedPropertyStore.getDebugLog());
 		
+		
 		Set<Id> done = new LinkedHashSet<>();
 		while(prevChangedProperties.getIds().size() > 0) {
-			prevChangedProperties = handleNext(prevChangedProperties, forceChange);
+			prevChangedProperties = handleNext(prevChangedProperties, forceChange, layer++);
 			fireProgress(this.cachedPropertyStore.getDebugLog());
 			// avoids infinite loop. but this design is not the best
 			if (contains(done, prevChangedProperties.getIds())) {
@@ -161,14 +163,14 @@ public abstract class DependencyEngine {
 		return false;
 	}
 
-	private ChangedProperties handleNext(ChangedProperties prevChangedProperties, boolean forceChange) throws RequestRejectedException {
+	private ChangedProperties handleNext(ChangedProperties prevChangedProperties, boolean forceChange, int layer) throws RequestRejectedException {
 		ChangedProperties changedProperties2 = new ChangedProperties(prevChangedProperties.getIds());
 		this.cachedPropertyStore.addCachedPropertyStoreListener(changedProperties2);
 		
 		Set<Id> needsFindSelection = new HashSet<>();
 		
 		for (Id nextId :  prevChangedProperties.getIds()) {
-			handle(nextId, this.cachedPropertyStore.getProperty(nextId.toString()).getCurrentValue(), forceChange, needsFindSelection);
+			handle(nextId, this.cachedPropertyStore.getProperty(nextId.toString()).getCurrentValue(), forceChange, needsFindSelection, layer);
 		}
 		
 		selectAvailableOption(needsFindSelection);
@@ -187,9 +189,9 @@ public abstract class DependencyEngine {
 		}
 	}
 	
-	private void handle(Id id, String value, boolean forceChange, Set<Id> needsFindSelection) throws RequestRejectedException {	
+	private void handle(Id id, String value, boolean forceChange, Set<Id> needsFindSelection, int layer) throws RequestRejectedException {	
 		List<RuntimeDependencySpec> specs = this.getSpecHolder().getRuntimeSpecs(id.getId());
-		specs = findSatisfiedSpecs(specs, id.getIndex());
+		specs = findSatisfiedSpecs(specs, id.getIndex(), layer);
 		for (RuntimeDependencySpec spec : specs) {	
 			this.cachedPropertyStore.setConfirmation(!spec.isSilentChange());
 			if (spec.getId().equals(this.userChangedId.getId())) {
@@ -291,10 +293,13 @@ public abstract class DependencyEngine {
 		}
 	}
 
-	private List<RuntimeDependencySpec> findSatisfiedSpecs(List<RuntimeDependencySpec> specs, int index) {
+	private List<RuntimeDependencySpec> findSatisfiedSpecs(List<RuntimeDependencySpec> specs, int index, int layer) {
 		List<RuntimeDependencySpec> ret = new ArrayList<RuntimeDependencySpec> ();
 		Map<String, Set<RuntimeDependencySpec>> values = new HashMap<String, Set<RuntimeDependencySpec>>();
 		for (RuntimeDependencySpec spec: specs) {	
+			if (spec.getExpression().getCondition().equals(DependencySpec.BYUSER) && (layer > 0)) {
+				continue;
+			}
 			spec.getExpression().setValue(applyIndex(spec.getExpression().getValue(), index));
 			spec.getExpression().setTrigger(applyIndex(spec.getExpression().getTrigger(), index));
 			spec.getExpression().setCondition(applyIndex(spec.getExpression().getCondition(), index));
@@ -309,7 +314,9 @@ public abstract class DependencyEngine {
 				//	satisfied &= Boolean.valueOf(calculator.calculate("ret=" + spec.getExpression().getValue()));
 				}
 				if (spec.getExpression().isConditionEnabled()) {
-					satisfied &= Boolean.valueOf(calculator.calculate("ret=" + spec.getExpression().getCondition()));
+					if (!spec.getExpression().getCondition().equals(DependencySpec.BYUSER)) {
+						satisfied &= Boolean.valueOf(calculator.calculate("ret=" + spec.getExpression().getCondition()));
+					}
 				}
 				
 				spec.setExecutionConditionSatistied(satisfied);

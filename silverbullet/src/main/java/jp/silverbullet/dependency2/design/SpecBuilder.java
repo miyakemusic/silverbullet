@@ -130,7 +130,7 @@ public abstract class SpecBuilder {
 				}
 				else if (targetProp.isAction()) {
 					if (triggerProp.isList()) {
-						if (value.relation.equals("Action")) {
+						if (value.relation.equals(RestrictionMatrix.ACTION)) {
 							String triggerCond = "$" + this.getMainId(triggerId) + "==" +  "%" + triggerId;
 							String val = "!$" + targetId;
 							this.getDependencySpecHolder().getSpec(targetId).addValue(val, triggerCond, value.condition, silentChange);

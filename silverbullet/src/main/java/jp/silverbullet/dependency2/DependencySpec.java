@@ -11,6 +11,7 @@ public class DependencySpec {
 	public static final String False = "false";
 	
 	public static final String Else = "*Else";
+	public static final String BYUSER = "*BYUSER";
 	
 	public static final String Value = "Value";
 	public static final String Enable = "Enable";
@@ -25,6 +26,7 @@ public class DependencySpec {
 	public static final String Trigger = "Trigger";
 	public static final String Condition = "Condition";
 	public static final String SilentChange = "Silent Change";
+	
 
 	
 	private String id;
