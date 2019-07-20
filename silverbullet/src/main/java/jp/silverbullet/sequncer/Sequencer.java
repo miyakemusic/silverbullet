@@ -2,9 +2,14 @@ package jp.silverbullet.sequncer;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
+import javax.swing.SwingUtilities;
 
 import jp.silverbullet.BlobStore;
 import jp.silverbullet.dependency2.ChangedItemValue;
@@ -16,7 +21,6 @@ import jp.silverbullet.dependency2.IdValue;
 import jp.silverbullet.dependency2.RequestRejectedException;
 import jp.silverbullet.property2.RuntimeProperty;
 import jp.silverbullet.property2.RuntimePropertyStore;
-import jp.silverbullet.property2.SvFileException;
 import jp.silverbullet.register2.RegisterAccessor;
 
 public abstract class Sequencer {
@@ -56,13 +60,15 @@ public abstract class Sequencer {
 		@Override
 		public void requestChange(String id, int index, String value) throws RequestRejectedException {
 			try {
-				fireChangeFromSystem(id, value);
-				getDependency().requestChange(new Id(id, index), value, false);
+			//	fireChangeFromSystem(id, value);
+			//	getDependency().requestChange(new Id(id, index), value, false);
+				Sequencer.this.requestChange(id, index, value, false, null, Actor.System);
 				debugDepLog.addAll(getDependency().getDebugLog());
 				
 			} catch (RequestRejectedException e) {
 				e.printStackTrace();
-			}			
+			}
+		
 		}
 		@Override
 		public RuntimeProperty getProperty(String id) {
@@ -77,6 +83,10 @@ public abstract class Sequencer {
 		
 	};
 			
+	public Sequencer() {
+		createDependencyThread();
+	}
+	
 	public void requestChange(String id, String value) throws RequestRejectedException {
 		requestChange(id, 0, value, false);
 	}
@@ -98,18 +108,69 @@ public abstract class Sequencer {
 			public Reply confirm(Set<IdValue> message) {
 				return Reply.Accept;
 			}	
-		});
+		}, Actor.User);
 	}
 	
+	public enum Actor {
+		User,
+		System
+	};
+	class DepenendencyRequest {
+		private Actor actor;
+		public DepenendencyRequest(String id2, Integer index, String value2, boolean forceChange2,
+				CommitListener commitListener2, Actor actor) {
+
+			this.id = new Id(id2, index);
+			this.value = value2;
+			this.forceChange = forceChange2;
+			this.commitListener = commitListener2;
+			this.actor = actor;
+			
+		}
+		Id id;
+		String value;
+		boolean forceChange;
+		CommitListener commitListener;
+	}
+	private BlockingQueue<DepenendencyRequest> dependencyQueue = new LinkedBlockingQueue<>();
 	RequestRejectedException exception = null;
-	public void requestChange(String id, Integer index, String value, boolean forceChange, CommitListener commitListener)
+	
+	private void createDependencyThread() {
+		new Thread() {
+			@Override
+			public void run() {
+				while(true) {
+					try {
+						DepenendencyRequest req = dependencyQueue.take();
+						handleRequestChange(req.id.getId(), req.id.getIndex(), req.value, req.forceChange, req.commitListener, req.actor);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					} catch (RequestRejectedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}.start();
+	}
+	
+	public void requestChange(String id, Integer index, String value, boolean forceChange, 
+			CommitListener commitListener, Actor actor)
 			throws RequestRejectedException {
-//		
-//		if (!isMainThread(Thread.currentThread().getId())) {
-//			System.out.println("Not main thread");
-//		}
-		fireRequestChangeByUser(id, value);
+	
+		dependencyQueue.add(new DepenendencyRequest(id, index, value, forceChange, commitListener, actor));
+	}
+	
+	public void handleRequestChange(String id, Integer index, String value, boolean forceChange, 
+			CommitListener commitListener, Actor actor)
+			throws RequestRejectedException {
 		
+		System.out.println("handleRequestChange " + id + " -> " + value + " ; " + dependencyQueue.size());
+		if (actor.equals(Actor.User)) {
+			fireRequestChangeByUser(id, value);
+		}
+		else if (actor.equals(Actor.System)) {
+			fireChangeFromSystem(id, value);
+		}
 		// resolves dependencies
 		
 		DependencyEngine engine = getDependency();
@@ -122,37 +183,32 @@ public abstract class Sequencer {
 		}
 		debugDepLog = engine.getDebugLog();
 		
-		List<String> changedIds = engine.getChangedIds();
+		List<String> changedIds = engine.getChangedIdsWithMaskingBlockPropagation();
 			
+//		Map<String, List<ChangedItemValue>> changes = deepCopy(getDependency().getChagedItems());
+		
 		for (UserSequencer us : userSequencers) {
 			if (matches(us.targetIds(), changedIds)) {
-				if (us.isAsync()) {
-					new Thread() {
-						@Override
-						public void run() {
-							try {
-								us.handle(model, getDependency().getChagedItems());
-							} catch (RequestRejectedException e) {
-								exception = e;
-								e.printStackTrace();
-							}
-						}
-					}.start();
-				}
-				else {
-					try {
-						us.handle(model, getDependency().getChagedItems());
-					} catch (RequestRejectedException e) {
-						exception = e;
-						e.printStackTrace();
-					}				
-				}
+				try {
+					us.handle(model, getDependency().getChagedItems());
+				} catch (RequestRejectedException e) {
+					exception = e;
+					e.printStackTrace();
+				}	
 
 			}
 		}	
 
 	}
 
+	private Map<String, List<ChangedItemValue>> deepCopy(Map<String, List<ChangedItemValue>> original) {
+		Map<String, List<ChangedItemValue>> ret = new LinkedHashMap<>();
+		for (String key : original.keySet()) {
+			ret.put(key, new ArrayList<>(original.get(key)));
+		}
+		return ret;
+	}
+	
 	private boolean matches(List<String> targetIds, List<String> changedIds) {
 		for (String id : changedIds) {
 			if (targetIds.contains(id.split(RuntimeProperty.INDEXSIGN)[0])) {

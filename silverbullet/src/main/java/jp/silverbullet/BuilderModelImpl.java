@@ -6,7 +6,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.xml.bind.JAXBException;
@@ -15,11 +14,8 @@ import jp.silverbullet.dependency2.DependencySpecRebuilder;
 import jp.silverbullet.dependency2.IdValue;
 import jp.silverbullet.dependency2.RequestRejectedException;
 import jp.silverbullet.dependency2.design.DependencyDesigner;
-import jp.silverbullet.dependency2.design.RestrictionMatrix;
-import jp.silverbullet.dependency2.ChangedItemValue;
 import jp.silverbullet.dependency2.CommitListener;
 import jp.silverbullet.dependency2.DependencyEngine;
-import jp.silverbullet.dependency2.DependencySpec;
 import jp.silverbullet.dependency2.DependencySpecHolder;
 import jp.silverbullet.property2.PropertyDefHolderListener;
 import jp.silverbullet.property2.PropertyDef2;
@@ -36,6 +32,7 @@ import jp.silverbullet.register2.RuntimeRegisterMap.DeviceType;
 import jp.silverbullet.selfbuild.SelfBuilder;
 import jp.silverbullet.sequncer.EasyAccessInterface;
 import jp.silverbullet.sequncer.Sequencer;
+import jp.silverbullet.sequncer.Sequencer.Actor;
 import jp.silverbullet.sequncer.SystemAccessor;
 import jp.silverbullet.sequncer.SystemAccessor.DialogAnswer;
 import jp.silverbullet.test.TestRecorder;
@@ -522,47 +519,53 @@ public class BuilderModelImpl {
 		}
 	}
 	
+	private CommitListener commitListener = new CommitListener() {
+		@Override
+		public Reply confirm(Set<IdValue> message) {
+			//String tmp = createConfirmMessage(map);
+			if (message.isEmpty()) {
+				return Reply.Accept;
+			}
+			
+			String msg = "Following parameters will be changed by this action.\nDo you continue?\n\n" 
+						+createConfirmMessage(message);
+
+			runtimeListeners.forEach(listener -> {
+				dialogReply = listener.dialog(msg);
+			});
+			if (dialogReply.compareTo(DialogAnswer.OK) == 0) {
+				return Reply.Accept;
+			}
+			else {
+				return Reply.Reject;
+			}
+		}
+		
+		private String createConfirmMessage(Set<IdValue> message) {
+			StringBuilder sb = new StringBuilder();
+			for (IdValue s : message) {
+				RuntimeProperty prop = getRuntimePropertyStore().get(s.getId().toString());
+				String value = s.getValue();
+				if (prop.isList()) {
+					value = prop.getOptionTitle(value);
+				}
+				sb.append(prop.getTitle() + " -> " + value + "\n");
+			}
+			return sb.toString();
+		}
+		
+	};
+	
 	private DialogAnswer dialogReply = DialogAnswer.OK;
-	public ValueSetResult requestChange(String id, int index, String value, boolean forceChange) {
+	public ValueSetResult requestChange(String id, int index, String value, 
+			boolean forceChange, Actor actor) {
+		
 		ValueSetResult ret = new ValueSetResult();
 		
 		try {
-			sequencer.requestChange(id, index, value, forceChange, new CommitListener() {
-				@Override
-				public Reply confirm(Set<IdValue> message) {
-					//String tmp = createConfirmMessage(map);
-					if (message.isEmpty()) {
-						return Reply.Accept;
-					}
-					
-					String msg = "Following parameters will be changed by this action.\nDo you continue?\n\n" 
-								+createConfirmMessage(message);
-
-					runtimeListeners.forEach(listener -> {
-						dialogReply = listener.dialog(msg);
-					});
-					if (dialogReply.compareTo(DialogAnswer.OK) == 0) {
-						return Reply.Accept;
-					}
-					else {
-						return Reply.Reject;
-					}
-				}
-				
-				private String createConfirmMessage(Set<IdValue> message) {
-					StringBuilder sb = new StringBuilder();
-					for (IdValue s : message) {
-						RuntimeProperty prop = getRuntimePropertyStore().get(s.getId().toString());
-						String value = s.getValue();
-						if (prop.isList()) {
-							value = prop.getOptionTitle(value);
-						}
-						sb.append(prop.getTitle() + " -> " + value + "\n");
-					}
-					return sb.toString();
-				}
-				
-			});
+			sequencer.requestChange(id, index, value, forceChange, 
+					forceChange ? null : commitListener, actor);
+			
 			getUiLayoutHolder().getCurrentUi().doAutoDynamicPanel();
 
 			ret.result = "Accepted";
@@ -580,8 +583,8 @@ public class BuilderModelImpl {
 		return ret;
 	}
 	
-	public ValueSetResult requestChange(String id, Integer index, String value) {
-		return requestChange(id, index, value, false);
+	public ValueSetResult requestChange(String id, Integer index, String value, Actor actor) {
+		return requestChange(id, index, value, false, actor);
 	}
 
 	public void setUiBuilder(UiBuilder ui) {
@@ -613,7 +616,7 @@ public class BuilderModelImpl {
 				return;
 			}
 			prop.resetValue();
-			this.requestChange(prop.getId(), prop.getIndex(), prop.getCurrentValue(), true);
+			this.requestChange(prop.getId(), prop.getIndex(), prop.getCurrentValue(), true, Actor.System);
 		});
 	}
 
@@ -627,6 +630,10 @@ public class BuilderModelImpl {
 
 	public SelfBuilder getSelfBuilder() {
 		return selfBuilder;
+	}
+
+	public ValueSetResult requestChangeByUser(String id, Integer index, String value) {
+		return this.requestChange(id, index, value, false, Actor.User);
 	}
 
 }

@@ -4,7 +4,8 @@ public class ChangedItemValue {
 
 	private String element;
 	private String value;
-
+	public boolean blockPropagation = false;
+	
 	public ChangedItemValue(String element, String value2) {
 		this.element = element;
 		this.value = value2;

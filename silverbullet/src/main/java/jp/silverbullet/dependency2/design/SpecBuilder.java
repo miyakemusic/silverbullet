@@ -54,6 +54,8 @@ public abstract class SpecBuilder {
 				PropertyDef2 targetProp = this.getPropertyDef(targetId);
 				PropertyDef2 triggerProp = this.getPropertyDef(this.getMainId(triggerId));
 				boolean silentChange = this.getSilentChange(targetId, triggerId);
+				boolean blockPropagation = this.getData().getBlockPropagation(targetId, triggerId);
+				
 				if (targetProp.isNumeric()) {
 					
 					if (value.relation.startsWith(">")) {
@@ -61,7 +63,7 @@ public abstract class SpecBuilder {
 							
 						}
 						else {
-							this.getDependencySpecHolder().getSpec(targetId).addValue("$" + triggerId, "$" + targetId + "<$" + triggerId, value.condition, silentChange);							
+							this.getDependencySpecHolder().getSpec(targetId).addValue("$" + triggerId, "$" + targetId + "<$" + triggerId, value.condition, silentChange, blockPropagation);							
 						}
 						if (this.getPriority(triggerId) > this.getPriority(targetId)) {
 							this.getDependencySpecHolder().getSpec(targetId).addMin("$" + triggerId, "$" + triggerId + "==" + "$" + triggerId, value.condition, silentChange);
@@ -71,7 +73,7 @@ public abstract class SpecBuilder {
 						if (value.relation.startsWith("<<")) {
 						}
 						else {
-							this.getDependencySpecHolder().getSpec(targetId).addValue("$" + triggerId, "$" + targetId + ">$" + triggerId, value.condition, silentChange);													
+							this.getDependencySpecHolder().getSpec(targetId).addValue("$" + triggerId, "$" + targetId + ">$" + triggerId, value.condition, silentChange, blockPropagation);													
 							
 						}
 						if (this.getPriority(triggerId) > this.getPriority(targetId)) {
@@ -80,10 +82,10 @@ public abstract class SpecBuilder {
 					}
 					else if (value.relation.startsWith("=")) {
 		//				boolean silentChange = this.getSilentChange(targetProp.getId(), triggerProp.getId());
-						this.getDependencySpecHolder().getSpec(targetId).addValue("$" + triggerId, "$" + triggerId + "==$" + triggerId, value.condition, silentChange);//.siletChange(silentChange);											
+						this.getDependencySpecHolder().getSpec(targetId).addValue("$" + triggerId, "$" + triggerId + "==$" + triggerId, value.condition, silentChange, blockPropagation);//.siletChange(silentChange);											
 					}
 					else {
-						this.getDependencySpecHolder().getSpec(targetId).addValue(value.relation, "$" + this.getMainId(triggerId) + "==" + attachSign(triggerId), value.condition, silentChange);
+						this.getDependencySpecHolder().getSpec(targetId).addValue(value.relation, "$" + this.getMainId(triggerId) + "==" + attachSign(triggerId), value.condition, silentChange, blockPropagation);
 					}
 				}
 				else if (targetProp.isList()) {
@@ -95,14 +97,14 @@ public abstract class SpecBuilder {
 								value2 = value.relation.split("\\(")[0];
 							}
 							this.getDependencySpecHolder().getSpec(targetId).addValue(value2, 
-									"$" + this.getMainId(triggerId) + "==%" + triggerId, value.condition, silentChange);
+									"$" + this.getMainId(triggerId) + "==%" + triggerId, value.condition, silentChange, blockPropagation);
 						}
 						else { // main ID
 							if (value.relation.startsWith("=")) {
 								for (String optionId : triggerProp.getOptionIds()) {
 									String targetValue = replaceCorrelationOption(targetProp, optionId);
 									this.getDependencySpecHolder().getSpec(targetId).addValue(targetValue, 
-											"$" + triggerId + "==%" + optionId, value.condition, silentChange);
+											"$" + triggerId + "==%" + optionId, value.condition, silentChange, blockPropagation);
 								
 								}
 							}
@@ -122,7 +124,11 @@ public abstract class SpecBuilder {
 							}
 							
 						}
-						this.getDependencySpecHolder().getSpec(targetId).addValue(val2, triggerCond, value.condition, silentChange);
+						this.getDependencySpecHolder().getSpec(targetId).addValue(val2, triggerCond, value.condition, silentChange, blockPropagation);
+					}
+					else if (triggerProp.isAction()) {
+						this.getDependencySpecHolder().getSpec(targetId).addValue(value.relation, "$" + triggerId + "==$" + triggerId, value.condition, 
+								silentChange, blockPropagation);
 					}
 					else {
 						System.out.println();
@@ -133,10 +139,12 @@ public abstract class SpecBuilder {
 						if (value.relation.equals(RestrictionMatrix.ACTION)) {
 							String triggerCond = "$" + this.getMainId(triggerId) + "==" +  "%" + triggerId;
 							String val = "!$" + targetId;
-							this.getDependencySpecHolder().getSpec(targetId).addValue(val, triggerCond, value.condition, silentChange);
+							this.getDependencySpecHolder().getSpec(targetId).addValue(val, triggerCond, value.condition, silentChange, blockPropagation);
 						}
 					}
 				}
+				
+				
 			}
 		}
 	}

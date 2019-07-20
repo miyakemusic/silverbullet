@@ -12,7 +12,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class RestrictionData2 {
 	private Map<String, Set<String>> enableRelation = new HashMap<>();
 	private Map<String, Integer> priority = new HashMap<>();
-	private Map<String, String> condition = new HashMap<>();
+//	private Map<String, String> condition = new HashMap<>();
+//	private Map<String, Boolean> blockPropagation = new HashMap<>();
 //	@JsonIgnore
 //	public Map<String, Map<String, String>> values = new HashMap<>();
 	private Map<String, Map<String, DependencyRelation>> relations = new HashMap<>();
@@ -20,6 +21,10 @@ public class RestrictionData2 {
 
 	public void setValueCondition(String trigger, String target, String condition) {
 		this.setValue(trigger, target, this.getValue(trigger, target).relation, condition);
+	}
+	
+	public void setValueBlockPropagation(String trigger, String target, Boolean enabled) {
+		this.getValue(trigger, target).blockPropagation = enabled;
 	}
 	
 	public synchronized void setValue(String trigger, String target, String value) {
@@ -114,20 +119,20 @@ public class RestrictionData2 {
 	public Map<String, Integer> getPriority() {
 		return priority;
 	}
-
-	public void setCondition(String option1, String option2, String text) {
-		this.condition.put(option1 + ";" + option2, text);
-	}
-
-	public String getCondition(String option1, String option2) {
-		String key = option1 + ";" + option2;
-		if (this.condition.containsKey(key)) {
-			return this.condition.get(key);
-		}
-		else {
-			return this.condition.get(option2 + ";" + option1);
-		}
-	}
+//
+//	public void setCondition(String option1, String option2, String text) {
+//		this.condition.put(option1 + ";" + option2, text);
+//	}
+//
+//	public String getCondition(String option1, String option2) {
+//		String key = option1 + ";" + option2;
+//		if (this.condition.containsKey(key)) {
+//			return this.condition.get(key);
+//		}
+//		else {
+//			return this.condition.get(option2 + ";" + option1);
+//		}
+//	}
 	
 	public int getPriority(String id) {
 		if (this.priority.containsKey(id)) {
@@ -198,6 +203,11 @@ public class RestrictionData2 {
 		}
 		return ret;
 	}
+
+	public boolean getBlockPropagation(String targetId, String triggerId) {
+		return this.getValue(triggerId, targetId).blockPropagation;
+	}
+
 
 //	public void tmp() {
 //		for (String id : this.values.keySet()) {

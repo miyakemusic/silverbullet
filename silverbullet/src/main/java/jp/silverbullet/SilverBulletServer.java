@@ -140,7 +140,7 @@ public abstract class SilverBulletServer {
 
 			@Override
 			public void onStart(Id id, String value) {
-				//depHistory.clear();
+//				depHistory.add("--------start-------------------------- "+ Thread.currentThread().getId());
 			}
 
 			@Override
@@ -153,14 +153,14 @@ public abstract class SilverBulletServer {
 			@Override
 			public void onProgress(List<String> log) {
 				depHistory.addAll(log);
-				depHistory.add("-----------------------------------------------");
+				depHistory.add("----------------------------------------------- "+ Thread.currentThread().getId());
 			}		
 		});
 		staticInstance.getBuilderModel().getSequencer().addSequencerListener(new SequencerListener() {
 
 			@Override
 			public void onChangedBySystem(String id, String value) {
-				depHistory.add("--------------- by STSTEM -----------------");
+				depHistory.add("--------------- by STSTEM ----------------- " + Thread.currentThread().getId());
 			}
 
 			@Override

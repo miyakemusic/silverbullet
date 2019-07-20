@@ -34,12 +34,15 @@ class DependencyDesign2 {
 				}
 				
 				if (current.relationMatrix[index][k-1].candidates.length > 0) {
-					return 'select_button';
+					return 'select;button;check';
 				}
-				return 'text_button';
+				return 'text;button;check';
 			}
 			else if (type == 'checked') {
-
+				return current.relationMatrix[index][k-1].blockPropagation;
+			}
+			else if (type == 'checkname') {
+				return "block propagation";
 			}
 			else if (type == 'text') {
 				if (row == 'title') {
@@ -49,7 +52,7 @@ class DependencyDesign2 {
 				var value = current.relationMatrix[index][k-1];
 				return value.relation;
 			}		
-			else if (type == 'buttontext') {
+			else if (type == 'button') {
 				if (k == 0 || row == 'title') {
 					return '';
 				}
@@ -207,7 +210,7 @@ class DependencyDesign2 {
 			
 			enabledTable = new JsMyTable(idEnabledTableDiv, colDefEnabledTable);
 			
-			enabledTable.checkListener = function(k, row, enabled) {
+			enabledTable.checkListener = function(row, k, enabled) {
 				var rowIndex = current.yTitle.indexOf(row);
 				var colIndex = k - 1;
 				
@@ -258,6 +261,22 @@ class DependencyDesign2 {
 				   }
 				});					
 			};
+			
+			valueTable.checkListener = function(row, k, value) {
+				var rowIndex = current.yTitle.indexOf(row);
+				var colIndex = k - 1;
+				var target = row;
+				var trigger = current.xTitle[k-1];
+				var enabled = value;
+				$.ajax({
+				   type: "GET", 
+				   url: "http://" + window.location.host + "/rest/dependencyDesign2/setBlockPropagation?trigger=" + trigger + "&target=" + target + "&enabled=" + enabled,
+				   success: function(msg){
+						priorityEditor.update();
+						getMatrix();
+				   }
+				});	
+			}
 			
 			var equationEditor = new EquationEditor(div);
 			valueTable.setButtonListener(function(row, k, v) {
@@ -342,7 +361,7 @@ class DependencyDesign2 {
 		}
 
 		function updateTable(msg) {
-		current = msg;
+			current = msg;
 			var titleRowEnabled = ['Enabled'];
 			var titleRowValue = ['Value'];
 			

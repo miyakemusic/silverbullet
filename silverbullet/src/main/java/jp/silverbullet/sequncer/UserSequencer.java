@@ -10,5 +10,4 @@ public interface UserSequencer {
 
 	void handle(SvHandlerModel model, Map<String, List<ChangedItemValue>> changed) throws RequestRejectedException;
 	List<String> targetIds();
-	boolean isAsync();
 }

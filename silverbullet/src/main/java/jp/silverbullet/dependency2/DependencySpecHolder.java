@@ -39,7 +39,8 @@ public class DependencySpecHolder {
 			for (String target : expressionHolder.getExpressions().keySet()) {
 				List<RuntimeDependencySpec> tmp = new ArrayList<>();
 				for (Expression expression : expressionHolder.getExpressions().get(target)) {
-					tmp.add(new RuntimeDependencySpec(spec.getId(), target, expression, triggerPriority < this.getPriority(spec.getId()), expression.isSilentChange()));
+					tmp.add(new RuntimeDependencySpec(spec.getId(), target, expression, triggerPriority < this.getPriority(spec.getId()), 
+							expression.isSilentChange(), expression.isBlockPropagation()));
 				}
 				processElse(tmp);
 				ret.addAll(tmp);

@@ -197,6 +197,9 @@ public abstract class DependencyEngine {
 			if (spec.getId().equals(this.userChangedId.getId())) {
 				continue;
 			}
+			
+			this.cachedPropertyStore.setBlockPropagation(spec.isBlockPropagation());
+			
 			if (spec.isElse()) {
 				if (!spec.otherConsumed()) {
 					spec.setExecutionConditionSatistied(true);
@@ -227,10 +230,6 @@ public abstract class DependencyEngine {
 					}
 					else {
 						needsFindSelection.add(targetId);
-//						boolean reselected = reselectClosestValue(property);
-//						if (!reselected) {
-//							throw new RequestRejectedException(property.getId() + "Nothing can be selected"); 
-//						}
 					}
 				}
 			}
@@ -462,6 +461,10 @@ public abstract class DependencyEngine {
 		return cachedPropertyStore.getChangedIds();
 	}
 
+	public List<String> getChangedIdsWithMaskingBlockPropagation() {
+		return cachedPropertyStore.getChangedIdsWithMaskingBlockPropagation();
+	}
+	
 	public Map<String, List<ChangedItemValue>> getChagedItems() {
 		return cachedPropertyStore.getChangedHistory();
 	}

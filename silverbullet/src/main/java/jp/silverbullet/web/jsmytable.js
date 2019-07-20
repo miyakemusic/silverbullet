@@ -12,6 +12,7 @@ class JsMyTable {
 		this.tableId = div + '_table';
 		$('#' + div).append('<table id="' + this.tableId + '"><thead></thead><tbody></tbody></table>');
 		$('#' + this.tableId).css('overflow-x', 'scrolll');
+		$('#' + this.tableId).css('word-wrap', 'break-word');
 //		$('#' + this.tableId).css('width', '1200px');
 		
 		if (className == null) {
@@ -134,9 +135,14 @@ class JsMyTable {
 		function createButton(tdId, k, row, v) {
 			var buttonId = 'button_' + tdId;
 			
-			if (v == null) {
-				v = me.colDef(k, row, 'buttontext');
+			var v2 = me.colDef(k, row, 'button');
+			if (v2 != null ) {
+				v = v2;
 			}
+			
+//			if (v == null) {
+//				v = me.colDef(k, row, 'button');
+//			}
 			$('#' + tdId).append('<button id="' + buttonId + '"></button>');
 			$('#' + buttonId).text(v);
 			$('#' + buttonId).css('width', '100%');
@@ -171,15 +177,17 @@ class JsMyTable {
 			obj.id = checkId;
 			me.allChecks.push(obj);
 			
-			$('#' + tdId).append('<input type="checkbox" id="' + checkId + '"><span id="' + checkNameId + '"></span>');
+			$('#' + tdId).append('<input type="checkbox" id="' + checkId + '"><label id="' + checkNameId + '"></label>');
 			
 			var checked = me.colDef(k, row, 'checked');
-
+			var checkName = me.colDef(k, row, 'checkname');
+			$('#' + checkNameId).text(checkName);
+			
 			$('#' + checkId).prop('checked', checked);
 
 			$('#' + checkId).click(function() {
 				if (me.checkListener != null) {
-					me.checkListener(k, row, $(this).prop('checked'));
+					me.checkListener(row, k, $(this).prop('checked'));
 				}
 			});
 		}
@@ -194,7 +202,26 @@ class JsMyTable {
 			
 			$('#' + me.tableId + ' > tbody tr:last').append('<td id="' + tdId + '"></td>');
 			
-			var type = me.colDef(k, row, 'type');
+			var types = me.colDef(k, row, 'type');
+			
+			for (var type of types.split(';')) {
+				if (type == 'button') {
+					createButton(tdId, k, row, v);
+				}
+				else if (type == 'select') {
+					createSelect(tdId, k, row, v);
+				}
+				else if (type == 'check') {
+					createCheckBox(tdId, k, row, v);
+				}	
+				else if (type == 'label') {
+					$('#' + tdId).append('<label>' + v + '</label>');
+				}
+				else {	
+					createEditableText(tdId, k, row, v);
+				}		
+			}
+/*			
 			if (type == 'button') {
 				createButton(tdId, k, row, v);
 			}
@@ -224,6 +251,7 @@ class JsMyTable {
 			else {	
 				createEditableText(tdId, k, row, v);
 			}
+*/
 		});		
 			
 		if (canRemove != null && canRemove == true) {

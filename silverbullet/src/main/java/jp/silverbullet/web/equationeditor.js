@@ -18,6 +18,7 @@ class EquationEditor {
 		});
 		
 		var idSelector = new IdEditorClass(idSelectorDialogContent);
+		var idClear = div + "_clear";
 		
 //		$('#' + div).append('<div id="' + equationDialogId + '"></div>');
 		$('#' + div).append('<div id="' + newSpecDiv+ '">' + 
@@ -37,12 +38,18 @@ class EquationEditor {
 			'	<button class="copyValue" value="*Else">*Else</button>' +
 			'	<button class="copyValue" value="*BYUSER">*BYUSER</button>' +
 			'	<button id="' + idSelectorId + '">ID Selector</button>' +
+			'	<button id="' + idClear + '">Clear</button>' +
 			'</div>');	
 			
-			$('.copyValue').on('click', function(e){
+		$('.copyValue').on('click', function(e){
 			var curValue = $('#' + valueText).val();
-			$('#' + valueText).val(curValue + $(this).val()); 
-		});		
+			$('#' + valueText).val(curValue + $(this).val()); 			
+		});	
+		
+		$('#' + idClear).click(function() {
+			$('#' + valueText).val('');
+		});
+				
 		$("#" + idSelectorId).on('click', function(e) {
 			showIdSelectDialog(function(id, subid) {
 				var text;

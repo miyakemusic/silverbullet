@@ -62,13 +62,14 @@ public class CachedPropertyStore implements PropertyGetter {
 		}
 		
 	};
-
+	private boolean blockPropagation;
 	
 	public CachedPropertyStore(PropertyGetter  originalStore) {
 		original = originalStore;
 	}
 	
 	protected void appendChange(Id id, ChangedItemValue changedItemValue2) {
+		changedItemValue2.blockPropagation = this.blockPropagation;
 		getHistory(id.toString()).add(changedItemValue2);
 		this.debugLog.add(id + ":" + changedItemValue2.toString());
 		
@@ -189,6 +190,21 @@ public class CachedPropertyStore implements PropertyGetter {
 		return new ArrayList<String>(this.changedHistory.keySet());
 	}
 
+	public List<String> getChangedIdsWithMaskingBlockPropagation() {
+		List<String> ret = new ArrayList<>();
+		
+		for (String id : this.changedHistory.keySet()) {
+			boolean b = false;
+			for (ChangedItemValue v : this.changedHistory.get(id)) {
+				b |= !v.blockPropagation;
+			}
+			if (b) {
+				ret.add(id);
+			}
+		}
+		return ret;		
+	}
+	
 	public List<ChangedItemValue> getChanged(String id) {
 		return this.changedHistory.get(id);
 	}
@@ -217,5 +233,9 @@ public class CachedPropertyStore implements PropertyGetter {
 	public void clearDebugLog() {
 		this.debugLog.clear();
 	}
-	
+
+	public void setBlockPropagation(boolean blockPropagation) {
+		this.blockPropagation = blockPropagation;
+	}
+
 }

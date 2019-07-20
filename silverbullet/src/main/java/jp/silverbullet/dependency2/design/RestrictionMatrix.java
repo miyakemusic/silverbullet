@@ -76,7 +76,7 @@ public abstract class RestrictionMatrix {
 				
 				
 				if (targetProp.isList()) {
-					if (!triggerIsMain) {
+					if (!triggerIsMain || triggerProp.isAction()) {
 						dr.candidates.add("");
 						dr.candidates.addAll(targetProp.getOptionIds());
 					}
@@ -131,7 +131,7 @@ public abstract class RestrictionMatrix {
 				
 				// Enable
 				if (spec.getList(targetId).contains(triggerId)) {
-					this.enableMatrix[r][c] = new RestrictionMatrixElement(true, spec.getCondition(triggerId, targetId));
+					this.enableMatrix[r][c] = new RestrictionMatrixElement(true, ""/*spec.getCondition(triggerId, targetId)*/);
 				}
 				else {
 					this.enableMatrix[r][c] = new RestrictionMatrixElement();

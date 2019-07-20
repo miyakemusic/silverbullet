@@ -148,7 +148,7 @@ public class WebSocketBroadcaster {
 	}
 
 	private void send(String ids, String currentType) {
-		System.out.println("sent   " + ids + "   " + currentType);
+//		System.out.println("sent   " + ids + "   " + currentType);
 		try {
 			String message = new ObjectMapper().writeValueAsString(new WebSocketMessage(currentType, ids));
 			for(final WebSocketObject member: clients){

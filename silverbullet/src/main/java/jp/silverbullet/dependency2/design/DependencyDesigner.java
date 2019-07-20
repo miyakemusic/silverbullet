@@ -267,6 +267,11 @@ public abstract class DependencyDesigner {
 		buildSpec();
 	}
 	
+	public void setSpecValueBlockPropagation(String trigger, String target, Boolean enabled) {
+		this.data.setValueBlockPropagation(trigger, target, enabled);
+		buildSpec();
+	}	
+	
 	public void buildSpec() {
 		this.specBuilder.setConfirmSamePriority(this.confirmSamePriority);
 		this.specBuilder.buildSpec();
@@ -315,7 +320,7 @@ public abstract class DependencyDesigner {
 
 	public void setConfirmSamePriority(boolean enabled) {
 		this.confirmSamePriority = enabled;;
-	}	
+	}
 
 	
 }

@@ -69,6 +69,16 @@ public class DependencyDesignResource2 {
 	}
 	
 	@GET
+	@Path("setBlockPropagation")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String setBlockPropagation(@QueryParam("trigger") final String trigger, @QueryParam("target") final String target, 
+			@QueryParam("enabled") final Boolean enabled) {
+		SilverBulletServer.getStaticInstance().getBuilderModel().getDependencyDesigner().setSpecValueBlockPropagation(trigger, target, enabled);
+		
+		return "OK";
+	}
+	
+	@GET
 	@Path("setSpecEnabled")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String setSpecEnabled(@QueryParam("trigger") final String trigger, @QueryParam("target") final String target, 
@@ -110,4 +120,5 @@ public class DependencyDesignResource2 {
 		return "OK";
 	}
 	
+
 }

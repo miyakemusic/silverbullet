@@ -78,8 +78,8 @@ public class DependencySpec {
 		return this;
 	}
 
-	public DependencySpec addValue(String value, String trigger, String condition, boolean silentChange) {
-		this.dependencySpecDetail.createExpression(DependencySpec.Value, value, trigger, condition).silentChange(silentChange);
+	public DependencySpec addValue(String value, String trigger, String condition, boolean silentChange, boolean blockPropagation) {
+		this.dependencySpecDetail.createExpression(DependencySpec.Value, value, trigger, condition).silentChange(silentChange).blockPropagation(blockPropagation);
 		return this;
 	}
 	

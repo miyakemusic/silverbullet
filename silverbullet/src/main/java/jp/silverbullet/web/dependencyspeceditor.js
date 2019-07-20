@@ -145,13 +145,13 @@ class DependencySpecEditor {
 					return ['true', 'false'];
 				}
 			}
-			return '';
+			return null;
 		}
 		var textFunction = function(col, row, arg) {
 			if (arg == 'type') {
 				return 'button';
 			}
-			return '';
+			return null;
 		}
 		
 		var textDef = ['Value', 'Condition', 'Min', 'Max', 'ArraySize'];

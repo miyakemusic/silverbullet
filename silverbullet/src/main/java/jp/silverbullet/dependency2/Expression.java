@@ -11,6 +11,7 @@ public class Expression implements Cloneable {
 	private boolean valueCalculationEnabled = false;
 	private String condition = "";
 	private boolean silentChange = false;
+	private boolean blockPropagation;
 	
 	public boolean isSilentChange() {
 		return silentChange;
@@ -97,6 +98,15 @@ public class Expression implements Cloneable {
 	public Expression silentChange(boolean silentChange) {
 		this.silentChange = silentChange;
 		return this;
+	}
+
+	public Expression blockPropagation(boolean b) {
+		this.blockPropagation = b;
+		return this;
+	}
+
+	public boolean isBlockPropagation() {
+		return this.blockPropagation;
 	}
 
 	

@@ -2,6 +2,7 @@ package jp.silverbullet.web;
 
 import java.util.List;
 
+import javax.swing.SwingUtilities;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -54,7 +55,7 @@ public class RuntimeResource {
 	@Path("/setValue")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public ValueSetResult setCurrentValue(@QueryParam("id") String id, @QueryParam("index") Integer index, @QueryParam("value") String value) {
-		return SilverBulletServer.getStaticInstance().getBuilderModel().requestChange(id, index, value);
+		return SilverBulletServer.getStaticInstance().getBuilderModel().requestChangeByUser(id, index, value);
 	}
 	
 	@GET

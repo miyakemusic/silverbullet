@@ -24,6 +24,7 @@ import jp.silverbullet.register2.BitValue;
 import jp.silverbullet.register2.RegisterAccessor;
 import jp.silverbullet.register2.RegisterAccessorListener;
 import jp.silverbullet.register2.RuntimeRegisterMap.DeviceType;
+import jp.silverbullet.sequncer.Sequencer.Actor;
 import jp.silverbullet.sequncer.SvHandlerModel;
 import jp.silverbullet.sequncer.UserSequencer;
 import jp.silverbullet.web.ValueSetResult;
@@ -90,11 +91,6 @@ public class BuilderModelImplTest {
 			public List<String> targetIds() {
 				return Arrays.asList("ID_START");
 			}
-
-			@Override
-			public boolean isAsync() {
-				return false;
-			}
 		});
 		UiLayout layout = builder.getUiLayoutHolder().createNewFile("newUi.ui");
 		builder.getUiLayoutHolder().switchFile("newUi.ui");
@@ -112,6 +108,7 @@ public class BuilderModelImplTest {
 			e.printStackTrace();
 		}
 		
+		Thread.sleep(1000);
 		assertEquals("START", written);
 		
 		builder.save("testFoler");
@@ -139,6 +136,8 @@ public class BuilderModelImplTest {
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
 		}
+		
+		Thread.sleep(1000);
 		assertEquals(true, hardware.isWritten());
 		
 		// Test ID edited
@@ -232,8 +231,9 @@ public class BuilderModelImplTest {
 		});
 		// test from web server
 		builder.getRuntimePropertyStore().get("ID_START").setCurrentValue("ID_START_OFF");
-		ValueSetResult result = builder.requestChange("ID_NEWMODE", 0, "ID_NEWMODE_B");
+		ValueSetResult result = builder.requestChange("ID_NEWMODE", 0, "ID_NEWMODE_B", Actor.User);
 
+		Thread.sleep(1000);
 		assertEquals("ID_NEWMODE#0:Value:ID_NEWMODE_B", debugLog.get(0));
 		assertEquals("ID_START#0:Value:ID_START_ON", debugLog.get(1));
 		
@@ -306,7 +306,6 @@ public class BuilderModelImplTest {
 	@Test
 	public void testSource() {
 		BuilderModelImpl builder = new BuilderModelImpl();
-		builder.setSourceInfo("tmp/src:mypackage");
 		builder.getSourceInfo();
 	}
 }

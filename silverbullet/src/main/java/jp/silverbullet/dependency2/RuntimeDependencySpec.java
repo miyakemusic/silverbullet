@@ -13,13 +13,16 @@ public class RuntimeDependencySpec {
 	private boolean reject;
 	private RuntimeDependencySpec elseSpec;
 	private boolean silentChange;
+	private boolean blockPropagation;
 	
-	public RuntimeDependencySpec(String id, String target, Expression expression, boolean reject, boolean silentChange) {
+	public RuntimeDependencySpec(String id, String target, Expression expression, boolean reject, 
+			boolean silentChange, boolean blockPropagation) {
 		this.id = id;
 		this.target = target;
 		this.expression = expression.clone();
 		this.reject = reject;
 		this.silentChange = silentChange;
+		this.blockPropagation = blockPropagation;
 	}
 
 	public String getId() {
@@ -118,6 +121,10 @@ public class RuntimeDependencySpec {
 
 	public boolean isSilentChange() {
 		return silentChange;
+	}
+
+	public boolean isBlockPropagation() {
+		return blockPropagation;
 	}
 
 
