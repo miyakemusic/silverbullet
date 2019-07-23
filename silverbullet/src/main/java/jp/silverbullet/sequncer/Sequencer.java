@@ -3,6 +3,7 @@ package jp.silverbullet.sequncer;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -187,18 +188,20 @@ public abstract class Sequencer {
 			
 //		Map<String, List<ChangedItemValue>> changes = deepCopy(getDependency().getChagedItems());
 		
+		Set<UserSequencer> matchedSequencer = new LinkedHashSet<>();
 		for (UserSequencer us : userSequencers) {
 			if (matches(us.targetIds(), changedIds)) {
-				try {
-					us.handle(model, getDependency().getChagedItems());
-				} catch (RequestRejectedException e) {
-					exception = e;
-					e.printStackTrace();
-				}	
-
+				matchedSequencer.add(us);	
 			}
 		}	
-
+		for (UserSequencer us : matchedSequencer) {
+			try {
+				us.handle(model, getDependency().getChagedItemsWithMaskingBlockPropagation());
+			} catch (RequestRejectedException e) {
+				exception = e;
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private Map<String, List<ChangedItemValue>> deepCopy(Map<String, List<ChangedItemValue>> original) {

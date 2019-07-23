@@ -4,7 +4,15 @@ class DependencyClass2 {
 		this.rootId = div + "_root";
 		this.idsId = me.rootId + '_ids';
 		$('#' + div).append('<select id="' + this.idsId + '"></select>');
-		
+		$('#' + me.idsId).change(function() {
+			updateAll();
+		});
+				
+		new MyWebSocket(function(msg) {
+			updateIdList();
+		}
+		, 'ID');
+				
 		this.priorityId = div + '_priority';
 		$('#' + div).append('Priority: <input type="text" id="' + this.priorityId + '"></input>');
 		$('#' + this.priorityId).keydown(function(event) {
@@ -90,22 +98,28 @@ class DependencyClass2 {
 //			height: 600
 		});	
 				
-		$.ajax({
-		   type: "GET", 
-//		   url: "http://" + window.location.host + "/rest/dependencySpec2/getIds",
-		   url: "http://" + window.location.host + "/rest/id2/ids",
+		updateIdList();
 
-		   success: function(msg) {
-		   		for (var i = 0; i < msg.length; i++) {
-					var id = msg[i];
-					$('#' + me.idsId).append($('<option>').text(id).val(id));
-				}
-				$('#' + me.idsId).change(function() {
-					updateAll();
-				});
-		   }
-		});	
+							
+		function updateIdList() {
+			$.ajax({
+			   type: "GET", 
+			   url: "http://" + window.location.host + "/rest/id2/ids",
+	
+			   success: function(msg) {
+			   		var current = $('#' + me.idsId).val();
+			   		$('#' + me.idsId).empty();
+			   		for (var i = 0; i < msg.length; i++) {
+						var id = msg[i];
+						$('#' + me.idsId).append($('<option>').text(id).val(id));
+					}
 
+					
+					$('#' + me.idsId).val(current);
+			   }
+			});	
+		}
+		
 		$('#' + div).append('<div id="' + me.rootId + '"></div>');
 		var editor = new DependencySpecEditor(me.rootId);
 		

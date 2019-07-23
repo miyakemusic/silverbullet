@@ -172,6 +172,34 @@ public class CachedPropertyStore implements PropertyGetter {
 		return changedHistory;
 	}
 
+
+	abstract class BlockPropagationOmitter {
+		public BlockPropagationOmitter(Map<String, List<ChangedItemValue>> changed) {
+			for (String id : changed.keySet()) {
+				for (ChangedItemValue v : changed.get(id)) {
+					if (!v.blockPropagation) {
+						handle(id, v);	
+					}
+				}
+			}			
+		}
+
+		protected abstract void handle(String id, ChangedItemValue v);
+	}
+	public Map<String, List<ChangedItemValue>> getChangedHistoryWithMaskingBlockPropagation() {
+		Map<String, List<ChangedItemValue>> ret = new LinkedHashMap<>();
+		new BlockPropagationOmitter(this.changedHistory) {
+			@Override
+			protected void handle(String id, ChangedItemValue v) {
+				if (!ret.keySet().contains(id)) {
+					ret.put(id, new ArrayList<ChangedItemValue>());
+				}
+				ret.get(id).add(v);
+			}
+		};		
+		return ret;
+	}
+	
 	public String getMessage(String id) {
 		String ret = "";
 		for (String key : this.changedHistory.keySet()) {
@@ -192,17 +220,13 @@ public class CachedPropertyStore implements PropertyGetter {
 
 	public List<String> getChangedIdsWithMaskingBlockPropagation() {
 		List<String> ret = new ArrayList<>();
-		
-		for (String id : this.changedHistory.keySet()) {
-			boolean b = false;
-			for (ChangedItemValue v : this.changedHistory.get(id)) {
-				b |= !v.blockPropagation;
-			}
-			if (b) {
+		new BlockPropagationOmitter(this.changedHistory) {
+			@Override
+			protected void handle(String id, ChangedItemValue v) {
 				ret.add(id);
 			}
-		}
-		return ret;		
+		};
+		return ret;
 	}
 	
 	public List<ChangedItemValue> getChanged(String id) {
@@ -237,5 +261,6 @@ public class CachedPropertyStore implements PropertyGetter {
 	public void setBlockPropagation(boolean blockPropagation) {
 		this.blockPropagation = blockPropagation;
 	}
+
 
 }

@@ -32,22 +32,29 @@ public class RestrictionData2 {
 	}
 	
 	public synchronized void setValue(String trigger, String target, String value, String condition) {
-		if (!this.relations.containsKey(target)) {
+/*		if (!this.relations.containsKey(target)) {
 			this.relations.put(target, new HashMap<String, DependencyRelation>());
 		}
 		if (!this.relations.containsKey(trigger)) {
 			this.relations.put(trigger, new HashMap<String, DependencyRelation>());
 		}
 		this.relations.get(target).put(trigger, new DependencyRelation(value, condition));
+*/
+		DependencyRelation relation = this.getValue(trigger, target);
+		relation.relation = value;
+		relation.condition = condition;
 		
 		if (value.startsWith(">")) {
-			this.relations.get(trigger).put(target, new DependencyRelation(value.replace(">", "<")));
+			//this.relations.get(trigger).put(target, new DependencyRelation(value.replace(">", "<")));
+			this.getValue(target, trigger).relation = value.replace(">", "<");
 		}
 		else if (value.startsWith("<")) {
-			this.relations.get(trigger).put(target, new DependencyRelation(value.replace("<", ">")));
+			//this.relations.get(trigger).put(target, new DependencyRelation(value.replace("<", ">")));
+			this.getValue(target, trigger).relation = value.replace("<", ">");
 		}
 		else if (value.startsWith("=")) {
-			this.relations.get(trigger).put(target, new DependencyRelation(value));
+			//this.relations.get(trigger).put(target, new DependencyRelation(value));
+			this.getValue(target, trigger).relation = value;
 		}
 	}
 	

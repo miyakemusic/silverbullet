@@ -139,6 +139,9 @@ public class ExpressionHolder {
 			exp = list.get(row);
 		}
 		else {
+			if (value.isEmpty() || value.equals(DependencySpec.Null)) {
+				return;
+			}
 			exp = new Expression();
 			list.add(exp);
 		}

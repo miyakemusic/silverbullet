@@ -2,7 +2,6 @@ class EquationEditor {
 	constructor(div) {
 		var me = this;
 		var idSelectorId = div + "_idselector";
-		var choiceSelector = div + "_choice";
 		var idSelectorDialog = div + '_idSelectorDialog';
 		var idSelectorDialogContent = div + '_idSelectorDialogContent';
 		var newSpecDiv = div + "_newSpec";
@@ -20,7 +19,6 @@ class EquationEditor {
 		var idSelector = new IdEditorClass(idSelectorDialogContent);
 		var idClear = div + "_clear";
 		
-//		$('#' + div).append('<div id="' + equationDialogId + '"></div>');
 		$('#' + div).append('<div id="' + newSpecDiv+ '">' + 
 			'<textarea id="' + valueText + '" rows=5 cols=100></textarea>' +
 			'<br>' +
@@ -86,7 +84,7 @@ class EquationEditor {
 			$('#' + idSelectorDialog).dialog("open");
 			idSelector.update();
 		}
-	
+				
 		$('#' + newSpecDiv).dialog({
 //			  dialogClass: "no-titlebar", 
 			  autoOpen: false,

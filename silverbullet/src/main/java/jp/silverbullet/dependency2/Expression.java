@@ -109,5 +109,12 @@ public class Expression implements Cloneable {
 		return this.blockPropagation;
 	}
 
+	@JsonIgnore
+	public boolean isEmpty() {
+		return (this.value.isEmpty() || this.value.equals(DependencySpec.Null)) &&
+				(this.condition.isEmpty() || this.condition.equals(DependencySpec.Null)) &&
+				(this.trigger.isEmpty() || this.trigger.equals(DependencySpec.Null))
+				;
+	}
 	
 }

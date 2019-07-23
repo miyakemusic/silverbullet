@@ -468,7 +468,11 @@ public abstract class DependencyEngine {
 	public Map<String, List<ChangedItemValue>> getChagedItems() {
 		return cachedPropertyStore.getChangedHistory();
 	}
-
+	
+	public Map<String, List<ChangedItemValue>> getChagedItemsWithMaskingBlockPropagation() {
+		return cachedPropertyStore.getChangedHistoryWithMaskingBlockPropagation();
+	}
+	
 	public void addDependencyListener(DependencyListener dependencyListener) {
 		listeners .add(dependencyListener);
 	}
