@@ -9,9 +9,12 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jp.silverbullet.SilverBulletServer;
-import jp.silverbullet.StaticInstances;
 import jp.silverbullet.dependency2.DependencySpec;
 import jp.silverbullet.dependency2.DependencySpecAnalyzer;
 import jp.silverbullet.dependency2.DependencySpecHolder;
@@ -31,7 +34,7 @@ public class DependencySpecResource2 {
 	@GET
 	@Path("/getSpec")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public WebDependencySpec getSpec(@QueryParam("id") final String id) {
+	public Response getSpec(@QueryParam("id") final String id) {
 		DependencySpecHolder holder = SilverBulletServer.getStaticInstance().getBuilderModel().getDependencySpecHolder2();
 		WebDataConverter converter = new WebDataConverter(holder, new PropertyGetter() {
 			@Override
@@ -44,7 +47,8 @@ public class DependencySpecResource2 {
 				return SilverBulletServer.getStaticInstance().getBuilderModel().getRuntimePropertyStore().get(RuntimeProperty.createIdText(id, index));
 			}			
 		});
-		return converter.getSpec(id);
+				
+		return Response.ok().entity(converter.getSpec(id)).build();
 	}
 	
 	@GET

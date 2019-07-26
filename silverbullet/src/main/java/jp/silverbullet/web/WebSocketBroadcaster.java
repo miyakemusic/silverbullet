@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class WebSocketBroadcaster {
     private static WebSocketBroadcaster INSTANCE = new WebSocketBroadcaster();

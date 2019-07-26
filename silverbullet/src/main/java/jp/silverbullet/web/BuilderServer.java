@@ -41,10 +41,6 @@ public class BuilderServer {
 	        sslContextFactory.setKeyStorePassword("mypassword");
 	        ServerConnector httpsConnector = new ServerConnector(server, sslContextFactory);
 	        httpsConnector.setPort(port);
-	
-	        ResourceHandler resourceHandler = new ResourceHandler();
-	        resourceHandler.setResourceBase(System.getProperty("user.dir") +  "/htdocs");
-	        server.setConnectors(new Connector[] { httpsConnector });
 		}
 		
 		String xml = this.getClass().getPackage().getName().replace(".", "/") + "/web.xml";

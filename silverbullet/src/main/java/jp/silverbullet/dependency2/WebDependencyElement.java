@@ -1,6 +1,6 @@
 package jp.silverbullet.dependency2;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class WebDependencyElement {
 	@JsonProperty(DependencySpec.Value)

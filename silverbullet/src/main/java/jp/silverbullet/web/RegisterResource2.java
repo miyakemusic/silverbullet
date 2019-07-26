@@ -2,6 +2,7 @@ package jp.silverbullet.web;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 import java.util.Set;
 
@@ -12,8 +13,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-
-import com.sun.jersey.core.util.Base64;
 
 import jp.silverbullet.BuilderModelImpl.RegisterTypeEnum;
 import jp.silverbullet.SilverBulletServer;
@@ -101,7 +100,7 @@ public class RegisterResource2 {
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_PLAIN)
 	public String setBlockData(String data, @QueryParam("regName") final String regName) {
-		byte[] b = Base64.decode(data.split(",")[1]);//data.replace("data:application/octet-stream;base64,", ""));
+		byte[] b = Base64.getDecoder().decode(data.split(",")[1]);//data.replace("data:application/octet-stream;base64,", ""));
 		SilverBulletServer.getStaticInstance().getBuilderModel().getRuntimRegisterMap().getRegisterController().updateValue(regName, b);
 		return "OK";
 	}

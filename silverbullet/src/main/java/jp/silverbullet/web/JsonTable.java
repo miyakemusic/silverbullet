@@ -12,14 +12,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class JsonTable {
 	public String[] header = new String[0];
 	public Integer[] widths = new Integer[0];
-	public List<String[]> table = new ArrayList<>();
+	public List<List<String>> table = new ArrayList<>();
 	private Map<String, List<String>> options = new HashMap<>();
 	
 	public void addRow(String header, String[] row) {
 		List<String> t = new ArrayList<>();
 		t.add(header);
 		t.addAll(Arrays.asList(row));
-		this.table.add(t.toArray(new String[0]));
+		this.table.add(t);
 	}
 
 	public void setHeader(String header, String[] headers) {
@@ -34,7 +34,7 @@ public class JsonTable {
 	}
 
 	public void addRow(List<String> values) {
-		this.table.add(values.toArray(new String[0]));
+		this.table.add(values);
 	}
 
 	public void setHeader(String[] header2) {
@@ -42,18 +42,18 @@ public class JsonTable {
 	}
 
 	public void addRow(String[] val) {
-		this.table.add(val);
+		this.table.add(new ArrayList<String>(Arrays.asList(val)));
 	}
 
 	public String[] getHeader() {
 		return header;
 	}
 
-	public List<String[]> getTable() {
+	public List<List<String>> getTable() {
 		return table;
 	}
 
-	public void setTable(List<String[]> table) {
+	public void setTable(List<List<String>> table) {
 		this.table = table;
 	}
 

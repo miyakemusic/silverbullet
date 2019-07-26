@@ -9,6 +9,8 @@ public class GenericLinks {
 	private List<GenericLink> links;
 	private Set<String> loops;
 
+	public GenericLinks() {}
+	
 	public GenericLinks(List<GenericLink> links) {
 		this.links = links;
 		this.loops = new HashSet<>();

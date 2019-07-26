@@ -10,7 +10,6 @@ public class DependencyRelation {
 	public String condition = "";
 	public boolean blockPropagation = false;
 	
-	@JsonIgnore
 	public List<String> candidates = new ArrayList<>();
 	
 	public DependencyRelation() {
