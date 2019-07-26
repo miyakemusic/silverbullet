@@ -57,7 +57,7 @@ class DependencySpec {
 						
 		$.ajax({
 			type: "GET", 
-			url: "http://" + window.location.host + "/rest/dependencySpec/specTable?id=" + me.id,
+			url: "//" + window.location.host + "/rest/dependencySpec/specTable?id=" + me.id,
 			success: function(msg) {
 				me.data = [];
 				for (var i = 0; i < msg.length; i++) {

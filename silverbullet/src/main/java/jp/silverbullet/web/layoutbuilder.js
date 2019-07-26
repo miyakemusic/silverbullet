@@ -34,7 +34,7 @@ class LayoutBuilder {
 		function getSubDesign(div) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/design/getSubDesign?div=" + div,
+			   url: "//" + window.location.host + "/rest/design/getSubDesign?div=" + div,
 			   success: function(msg){
 			   		me.createWidget(msg.parent, msg);
 			   }
@@ -104,7 +104,7 @@ class LayoutBuilder {
 		function addTestQuery() {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/test/addPropertyTest?div=" + me.getSelectedDiv(),
+			   url: "//" + window.location.host + "/rest/test/addPropertyTest?div=" + me.getSelectedDiv(),
 			   success: function(msg){
 			   }
 			});	
@@ -112,7 +112,7 @@ class LayoutBuilder {
 		function addPropertyCommand() {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/test/addPropertyCommand?div=" + me.getSelectedDiv(),
+			   url: "//" + window.location.host + "/rest/test/addPropertyCommand?div=" + me.getSelectedDiv(),
 			   success: function(msg){
 			   }
 			});	
@@ -127,7 +127,7 @@ class LayoutBuilder {
 		
 		$.ajax({
 		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/design/getDesign?root=" + me.root,
+		   url: "//" + window.location.host + "/rest/design/getDesign?root=" + me.root,
 		   success: function(msg) {
 		   		$('#' + me.base).empty();
 		   		if (msg != null) {
@@ -203,7 +203,7 @@ class LayoutBuilder {
 			function(id, index, value) {
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/runtime/setValue?id="+id + "&index=" + index + "&value=" + value,
+				   url: "//" + window.location.host + "/rest/runtime/setValue?id="+id + "&index=" + index + "&value=" + value,
 				   success: function(msg){
 						me.debugCallback(msg.debugLog);
 						if (msg.result == 'Rejected') {

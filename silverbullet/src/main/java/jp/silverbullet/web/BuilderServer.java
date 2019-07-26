@@ -1,13 +1,17 @@
 package jp.silverbullet.web;
 
+import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.webapp.WebAppContext;
 
 public class BuilderServer {
 	
 	public static void main(String[] arg) {
-		new BuilderServer(8081, new BuilderServerListener() {
+		new BuilderServer(8081, "http", new BuilderServerListener() {
 			@Override
 			public void onStarted() {
 				// TODO Auto-generated method stub
@@ -18,19 +22,31 @@ public class BuilderServer {
 
 	private BuilderServerListener listener;
 	
-	public BuilderServer(final int port, BuilderServerListener listener) {
+	public BuilderServer(final int port, String protocol, BuilderServerListener listener) {
 		this.listener = listener;
 		new Thread() {
 			@Override
 			public void run() {
-				initializeWebServer(port);
+				initializeWebServer(port, protocol);
 			}
 		}.start();
 	}
 	
-	private void initializeWebServer(int port) {
+	private void initializeWebServer(int port, String protocol) {
 		Server server = new Server(port);
-        	
+        
+		if (protocol.equals("https")) {
+			SslContextFactory sslContextFactory = new SslContextFactory();
+	        sslContextFactory.setKeyStorePath(System.getProperty("user.dir") + "/mykeystore.jks");
+	        sslContextFactory.setKeyStorePassword("mypassword");
+	        ServerConnector httpsConnector = new ServerConnector(server, sslContextFactory);
+	        httpsConnector.setPort(port);
+	
+	        ResourceHandler resourceHandler = new ResourceHandler();
+	        resourceHandler.setResourceBase(System.getProperty("user.dir") +  "/htdocs");
+	        server.setConnectors(new Connector[] { httpsConnector });
+		}
+		
 		String xml = this.getClass().getPackage().getName().replace(".", "/") + "/web.xml";
 		String resource = this.getClass().getPackage().getName().replace(".", "/");
         String xmlPath = "";
@@ -56,8 +72,8 @@ public class BuilderServer {
         webAppContext.setResourceBase(resourcePath);
         webAppContext.setServer(server);
         webAppContext.setContextPath("/");
-        handlers.addHandler(webAppContext);
-            
+        handlers.addHandler(webAppContext);  
+        
         server.setHandler(handlers);
 
         try {

@@ -50,7 +50,7 @@ public abstract class SilverBulletServer {
 		return staticInstance;
 	}
 
-	public void start(String port) {
+	public void start(String port, String protocol) {
 		String filename = getDefaultFilename();
 		
 		staticInstance.createInstances(getInstanceCount(), Thread.currentThread().getId());
@@ -70,7 +70,7 @@ public abstract class SilverBulletServer {
 
 		registerWebClientManager();
 		
-		startWebServer(Integer.valueOf(port));
+		startWebServer(Integer.valueOf(port), protocol);
 		
 	}
 
@@ -356,9 +356,9 @@ public abstract class SilverBulletServer {
 		return 1;
 	}
 	
-	protected void startWebServer(Integer port) {
+	protected void startWebServer(Integer port, String protocol) {
 		
-		new BuilderServer(port, new BuilderServerListener() {
+		new BuilderServer(port, protocol, new BuilderServerListener() {
 			@Override
 			public void onStarted() {
 			

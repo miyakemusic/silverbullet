@@ -165,7 +165,7 @@ public abstract class Sequencer {
 			CommitListener commitListener, Actor actor)
 			throws RequestRejectedException {
 		
-		System.out.println("handleRequestChange " + id + " -> " + value + " ; " + dependencyQueue.size());
+//		System.out.println("handleRequestChange " + id + " -> " + value + " ; " + dependencyQueue.size());
 		if (actor.equals(Actor.User)) {
 			fireRequestChangeByUser(id, value);
 		}

@@ -3,7 +3,12 @@ class MyWebSocket {
 	constructor(callback, type) {
 		this.type = type;
 		////////// WebSocket //////////
-		var connection  = new WebSocket("ws://" + window.location.host + "/websocket");
+		var wsHeader = "ws";
+		if(location.protocol == 'https:'){
+			wsHeader = "wss";
+		}
+
+		var connection  = new WebSocket(wsHeader + "://" + window.location.host + "/websocket");
 		// When the connection is open, send some data to the server
 		connection.onopen = function () {
 		};

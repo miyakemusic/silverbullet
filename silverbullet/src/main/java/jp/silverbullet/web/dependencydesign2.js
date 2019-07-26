@@ -113,7 +113,7 @@ class DependencyDesign2 {
 		function setConfirmSamePriority(enabled) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/dependencyDesign2/confirmSamePriority?enabled=" + enabled,
+			   url: "//" + window.location.host + "/rest/dependencyDesign2/confirmSamePriority?enabled=" + enabled,
 			   success: function(msg){
 	
 			   }
@@ -218,7 +218,7 @@ class DependencyDesign2 {
 				var trigger = current.xTitle[k-1];
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/dependencyDesign2/setSpecEnabled?trigger=" + trigger + "&target=" + target + "&enabled=" + enabled,
+				   url: "//" + window.location.host + "/rest/dependencyDesign2/setSpecEnabled?trigger=" + trigger + "&target=" + target + "&enabled=" + enabled,
 				   success: function(msg){
 						priorityEditor.update();
 						getMatrix();
@@ -237,7 +237,7 @@ class DependencyDesign2 {
 				var encValue = encodeURIComponent(value);
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/dependencyDesign2/setSpecValue?trigger=" + trigger + "&target=" + target + "&value=" + encValue,
+				   url: "//" + window.location.host + "/rest/dependencyDesign2/setSpecValue?trigger=" + trigger + "&target=" + target + "&value=" + encValue,
 				   success: function(msg){
 						priorityEditor.update();
 						getMatrix();
@@ -254,7 +254,7 @@ class DependencyDesign2 {
 				var encValue = encodeURIComponent(value);
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/dependencyDesign2/setSpecValue?trigger=" + trigger + "&target=" + target + "&value=" + encValue,
+				   url: "//" + window.location.host + "/rest/dependencyDesign2/setSpecValue?trigger=" + trigger + "&target=" + target + "&value=" + encValue,
 				   success: function(msg){
 						priorityEditor.update();
 						getMatrix();
@@ -270,7 +270,7 @@ class DependencyDesign2 {
 				var enabled = value;
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/dependencyDesign2/setBlockPropagation?trigger=" + trigger + "&target=" + target + "&enabled=" + enabled,
+				   url: "//" + window.location.host + "/rest/dependencyDesign2/setBlockPropagation?trigger=" + trigger + "&target=" + target + "&enabled=" + enabled,
 				   success: function(msg){
 						priorityEditor.update();
 						getMatrix();
@@ -296,7 +296,7 @@ class DependencyDesign2 {
 		function setCondition(trigger, target, condition) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/dependencyDesign2/setSpecValueCondition?trigger=" + 
+			   url: "//" + window.location.host + "/rest/dependencyDesign2/setSpecValueCondition?trigger=" + 
 			   	trigger + "&target=" + target + "&condition=" + condition,
 			   success: function(msg){
 					getMatrix();
@@ -307,7 +307,7 @@ class DependencyDesign2 {
 		function getDependencyDesignConfigList() {
 			$.ajax({
 				type: "GET", 
-				url: "http://" + window.location.host + "/rest/dependencyDesign2/getDependencyDesignConfigList",
+				url: "//" + window.location.host + "/rest/dependencyDesign2/getDependencyDesignConfigList",
 				success: function(response) {
 					$('#' + configId).empty();
 					for (var config of response) {
@@ -327,7 +327,7 @@ class DependencyDesign2 {
 		function getDependencyDesignConfig(name) {
 			$.ajax({
 				type: "GET", 
-				url: "http://" + window.location.host + "/rest/dependencyDesign2/getDependencyDesignConfig?name=" + name,
+				url: "//" + window.location.host + "/rest/dependencyDesign2/getDependencyDesignConfig?name=" + name,
 				success: function(response) {
 					triggers = response.triggers;
 					targets = response.targets;
@@ -352,7 +352,7 @@ class DependencyDesign2 {
 			
 			$.ajax({
 				type: "GET", 
-				url: "http://" + window.location.host + "/rest/dependencyDesign2/getMatrix?triggers=" + 
+				url: "//" + window.location.host + "/rest/dependencyDesign2/getMatrix?triggers=" + 
 					triggersText + "&targets=" + targetsText,
 				success: function(response) {
 					updateTable(response);
@@ -402,7 +402,7 @@ class DependencyDesign2 {
 		function initIdSelection() {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/id2/ids",
+			   url: "//" + window.location.host + "/rest/id2/ids",
 			   success: function(msg) {
 			   		$('#' + idsId).empty();
 			   		
@@ -419,7 +419,7 @@ class DependencyDesign2 {
 			currentConfig = name;
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/dependencyDesign2/updateDependencyDesignConfig?name=" + name +
+			   url: "//" + window.location.host + "/rest/dependencyDesign2/updateDependencyDesignConfig?name=" + name +
 			   	"&triggers=" + triggers + "&targets=" + targets,
 			   success: function(msg) {
 					getDependencyDesignConfigList();

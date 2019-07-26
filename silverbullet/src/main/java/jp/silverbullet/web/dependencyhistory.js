@@ -35,7 +35,7 @@ class DependencyHistory {
 		function debugEnabled(enabled) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/runtime/dependencyDebug?enabled=" + enabled,
+			   url: "//" + window.location.host + "/rest/runtime/dependencyDebug?enabled=" + enabled,
 			   success: function(widget){
 
 			   }

@@ -19,7 +19,7 @@ class DependencyClass2 {
 			if (event.which == 13) { // Enter
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/dependencySpec2/setPriority?id=" + $('#' + me.idsId).val() + "&priority=" + $(this).val(),
+				   url: "//" + window.location.host + "/rest/dependencySpec2/setPriority?id=" + $('#' + me.idsId).val() + "&priority=" + $(this).val(),
 				   success: function(msg){
 				   }
 				});				
@@ -31,7 +31,7 @@ class DependencyClass2 {
 		$('#' + alternativeId).change(function() {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/dependencySpec2/setAlternative?enabled=" + $('#' + alternativeId).prop('checked'),
+			   url: "//" + window.location.host + "/rest/dependencySpec2/setAlternative?enabled=" + $('#' + alternativeId).prop('checked'),
 			   success: function(msg){
 				updateAll();
 			   }
@@ -63,7 +63,7 @@ class DependencyClass2 {
 		$('#' + idRestriction).click(function() {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/dependencySpec2/getRestrictions",
+			   url: "//" + window.location.host + "/rest/dependencySpec2/getRestrictions",
 			   success: function(msg) {
 			   }
 			});			
@@ -104,7 +104,7 @@ class DependencyClass2 {
 		function updateIdList() {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/id2/ids",
+			   url: "//" + window.location.host + "/rest/id2/ids",
 	
 			   success: function(msg) {
 			   		var current = $('#' + me.idsId).val();
@@ -177,7 +177,7 @@ class DependencyClass2 {
 		var id = $('#' + this.idsId).val();
 		$.ajax({
 		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/dependencySpec2/getPriority?id=" + id,
+		   url: "//" + window.location.host + "/rest/dependencySpec2/getPriority?id=" + id,
 		   success: function(msg){
 		   	$('#' + me.priorityId).val(msg);
 		   }
@@ -195,7 +195,7 @@ class DependencyClass2 {
 		var me = this;
 		$.ajax({
 		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/dependencySpec2/getLinks?id=" + id,
+		   url: "//" + window.location.host + "/rest/dependencySpec2/getLinks?id=" + id,
 		   success: function(msg){
 			   var link = [];
 			   var links = msg.links;

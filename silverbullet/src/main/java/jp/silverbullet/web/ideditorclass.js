@@ -63,7 +63,7 @@ class IdEditorClass {
 		$("#" + idAdd).on('click', function() {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/id2/addNew?type=" + $("#" + idPropType).val(),
+			   url: "//" + window.location.host + "/rest/id2/addNew?type=" + $("#" + idPropType).val(),
 			   success: function(msg){
 			   }
 			});		
@@ -71,7 +71,7 @@ class IdEditorClass {
 		$("#" + idRemove).on('click', function() {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/id2/remove?id=" + currentId,
+			   url: "//" + window.location.host + "/rest/id2/remove?id=" + currentId,
 			   success: function(msg){
 			   }
 			});		
@@ -80,7 +80,7 @@ class IdEditorClass {
 		$("#" + idAddChoice).on('click', function() {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/id2/addChoice?id=" + currentId,
+			   url: "//" + window.location.host + "/rest/id2/addChoice?id=" + currentId,
 			   success: function(msg){
 
 			   },
@@ -92,7 +92,7 @@ class IdEditorClass {
 		
 		$.ajax({
 		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/id2/typeNames",
+		   url: "//" + window.location.host + "/rest/id2/typeNames",
 		   success: function(msg){		
 				var v = "";
 				
@@ -115,7 +115,7 @@ class IdEditorClass {
 			var me = this;
 			$.ajax({
 				type: "GET", 
-				url: "http://" + window.location.host + "/rest/id2/selection?id=" + id,
+				url: "//" + window.location.host + "/rest/id2/selection?id=" + id,
 				success: function(msg) {
 					selectionMap[id] = msg;
 					if (callback != null) {
@@ -130,7 +130,7 @@ class IdEditorClass {
 			var me = this;
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/id2/properties?type=" + propType,
+			   url: "//" + window.location.host + "/rest/id2/properties?type=" + propType,
 			   success: function(msg){
 			   		headers = msg.header;	
 			   		
@@ -244,7 +244,7 @@ class IdEditorClass {
 		function updateValue(id, paramName, value) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/id2/update?id=" + id + "&paramName=" + paramName + "&value=" + value,
+			   url: "//" + window.location.host + "/rest/id2/update?id=" + id + "&paramName=" + paramName + "&value=" + value,
 			   success: function(msg){
 			   }
 			});			
@@ -254,7 +254,7 @@ class IdEditorClass {
 			var me = this;
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/id2/updateChoice?id=" + id + "&selectionId=" + selectionId + "&paramName=" + paramName + "&value=" + value,
+			   url: "//" + window.location.host + "/rest/id2/updateChoice?id=" + id + "&selectionId=" + selectionId + "&paramName=" + paramName + "&value=" + value,
 			   success: function(msg){
 			   		updateSelectionTable(currentId);
 			   		updateSelectionTable(currentId);

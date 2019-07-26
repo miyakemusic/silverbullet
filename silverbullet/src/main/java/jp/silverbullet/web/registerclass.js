@@ -3,7 +3,7 @@ class RegisterClass {
 		var selectId = div + '_depselect';		
 		var showExternalId = div + '_external';
 		
-		new ListBox(div, 'Register Size', "http://" + window.location.host + "/rest/register2", "RegSize");
+		new ListBox(div, 'Register Size', "//" + window.location.host + "/rest/register2", "RegSize");
 		
 		var hardOrSimId = div + '_hardOrSim';
 		
@@ -71,7 +71,7 @@ class RegisterClass {
 		function setRegisterType(type) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/register2/setRegisterType?type=" + type,
+			   url: "//" + window.location.host + "/rest/register2/setRegisterType?type=" + type,
 			   success: function(msg){
 			   }
 			});		

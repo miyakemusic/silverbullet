@@ -13,7 +13,7 @@ class PriorityEditor {
 		function buildNew() {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/" + url + "/getDefinedPriorities",
+			   url: "//" + window.location.host + "/rest/" + url + "/getDefinedPriorities",
 			   success: function(priorities){
 					build2(priorities);
 			   }
@@ -24,7 +24,7 @@ class PriorityEditor {
 		function build2(priorities) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/" + url + "/getPriorities",
+			   url: "//" + window.location.host + "/rest/" + url + "/getPriorities",
 			   success: function(msg){
 			   	build(priorities, msg);
 			   }
@@ -83,7 +83,7 @@ class PriorityEditor {
 			function setPriority(id, num) {
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/" + url + "/setPriority?id=" + id + "&value=" + num,
+				   url: "//" + window.location.host + "/rest/" + url + "/setPriority?id=" + id + "&value=" + num,
 				   success: function(msg){
 						buildNew();
 				   }

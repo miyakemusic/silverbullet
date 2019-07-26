@@ -5,7 +5,7 @@ class NewLayoutLibrary {
 		$('#' + addId).click(function() {			
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/newGui/addRootPane",
+			   url: "//" + window.location.host + "/rest/newGui/addRootPane",
 			   success: function(types){
 			   		updateList();
 			   }
@@ -31,7 +31,7 @@ class NewLayoutLibrary {
 		function updateList() {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/newGui/getRootPanes",
+			   url: "//" + window.location.host + "/rest/newGui/getRootPanes",
 			   success: function(types){
 			   		$('#' + listId).empty();
 					for (var option of types) {
@@ -55,7 +55,7 @@ class NewLayoutLibrary {
 		function changeName(oldName, newName) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/newGui/changeName?oldName=" + oldName + "&newName=" + newName,
+			   url: "//" + window.location.host + "/rest/newGui/changeName?oldName=" + oldName + "&newName=" + newName,
 			   success: function(types){
 			   		updateList();
 			   }

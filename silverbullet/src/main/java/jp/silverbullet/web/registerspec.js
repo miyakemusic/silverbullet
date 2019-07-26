@@ -14,7 +14,7 @@ class RegisterSpec {
 		function getListAsync() {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/register2/getRegisters",
+			   url: "//" + window.location.host + "/rest/register2/getRegisters",
 			   success: function(msg){
 					getList(msg);
 			   }
@@ -166,7 +166,7 @@ class RegisterSpec {
 		function addRow(row) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/register2/addRow?row=" + row,
+			   url: "//" + window.location.host + "/rest/register2/addRow?row=" + row,
 			   success: function(msg){
 					getListAsync();
 			   }
@@ -175,7 +175,7 @@ class RegisterSpec {
 		function delRow(row) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/register2/deleteRow?row=" + row,
+			   url: "//" + window.location.host + "/rest/register2/deleteRow?row=" + row,
 			   success: function(msg){
 					getListAsync();
 			   }
@@ -184,7 +184,7 @@ class RegisterSpec {
 		function addBitRow(row) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/register2/addBitRow?row=" + row,
+			   url: "//" + window.location.host + "/rest/register2/addBitRow?row=" + row,
 			   success: function(msg){
 					getListAsync();
 			   }
@@ -202,7 +202,7 @@ class RegisterSpec {
 			
 			$.ajax({
 			   type: "POST", 
-			   url: "http://" + window.location.host + "/rest/register2/postChanges",
+			   url: "//" + window.location.host + "/rest/register2/postChanges",
 			   contentType: 'application/json',
 			   data :JSON.stringify(changesList),
 			   success: function(msg){
@@ -223,7 +223,7 @@ class RegisterSpec {
 		$('#addNew').click(function() {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/register2/addNew",
+			   url: "//" + window.location.host + "/rest/register2/addNew",
 			   success: function(msg){
 					getListAsync();
 			   }

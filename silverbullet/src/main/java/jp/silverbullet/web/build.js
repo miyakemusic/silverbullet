@@ -15,7 +15,7 @@ class Build {
 		$('#' + submitId).click(function() {
 			$.ajax({
 				type: "GET", 
-				url: "http://" + window.location.host + "/rest/selfbuild/setInfo?path=" + $('#' + pathId).val() + "&package=" + 
+				url: "//" + window.location.host + "/rest/selfbuild/setInfo?path=" + $('#' + pathId).val() + "&package=" + 
 					$('#' + packageId).val(),
 					success: function(msg) {
 
@@ -28,7 +28,7 @@ class Build {
 		$('#' + buildId).click(function() {
 			$.ajax({
 				type: "GET", 
-				url: "http://" + window.location.host + "/rest/selfbuild/build",
+				url: "//" + window.location.host + "/rest/selfbuild/build",
 					success: function(msg) {
 
 					}		
@@ -38,7 +38,7 @@ class Build {
 		function getInfo(id, res) {
 			$.ajax({
 				type: "GET", 
-				url: "http://" + window.location.host + "/rest/selfbuild/" + res,
+				url: "://" + window.location.host + "/rest/selfbuild/" + res,
 					success: function(msg) {
 						$('#' + id).val(msg);
 					}		

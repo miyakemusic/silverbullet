@@ -51,7 +51,7 @@ class RegisterShortcut extends Widget {
 			
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/register2/triggerShortcut?regName=" + addr + "&bitName=" + bit,
+			   url: "//" + window.location.host + "/rest/register2/triggerShortcut?regName=" + addr + "&bitName=" + bit,
 			   success: function(options){
 		
 			   }
@@ -721,7 +721,7 @@ class ChartMine extends Widget {
 			if (property.currentValue == 'REQUEST_AGAIN') {
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/runtime/getProperty?id=" + widget.id + '&index=' + index + '&ext=' + chart.getDataPoints(),
+				   url: "//" + window.location.host + "/rest/runtime/getProperty?id=" + widget.id + '&index=' + index + '&ext=' + chart.getDataPoints(),
 				   success: function(property){
 				   		if (property == null) {
 				   			return;
@@ -764,7 +764,7 @@ class Chart extends Widget {
 		if (property.currentValue == 'REQUEST_AGAIN') {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/runtime/getProperty?id=" + me.widget.id + '&index=' + index + '&ext=1001',
+			   url: "//" + window.location.host + "/rest/runtime/getProperty?id=" + me.widget.id + '&index=' + index + '&ext=1001',
 			   success: function(property){
 			   		if (property == null) {
 			   			return;
@@ -931,7 +931,7 @@ class NewLayout {
 		$('#' + defaultValueId).click(function() {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/runtime/defaultValues",
+			   url: "//" + window.location.host + "/rest/runtime/defaultValues",
 			   success: function(widget){
 
 			   }
@@ -1024,7 +1024,7 @@ class NewLayout {
 		function replyDialog(messageId, reply) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/runtime/replyDialog?messageId=" + messageId + "&reply=" + reply,
+			   url: "//" + window.location.host + "/rest/runtime/replyDialog?messageId=" + messageId + "&reply=" + reply,
 			   success: function(widget){
 
 			   }
@@ -1034,7 +1034,7 @@ class NewLayout {
 		function retreiveWidget(divid, finished) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/newGui/getWidget?divid=" + divid,
+			   url: "//" + window.location.host + "/rest/newGui/getWidget?divid=" + divid,
 			   success: function(widget){
 			   		divMap.set(divid, widget);
 			   		me.propertyWindow.update(divMap.get(divid));
@@ -1072,7 +1072,7 @@ class NewLayout {
 			var link = $('#' + linkId).prop('checked') || !$('#' + editId).prop('checked');
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/newGui/getDesign?root=" + me.currentRoot + "&link=" + link,
+			   url: "//" + window.location.host + "/rest/newGui/getDesign?root=" + me.currentRoot + "&link=" + link,
 			   success: function(pane){
 			   		build(pane, mainDiv);
 			   		if (finished != null) {
@@ -1086,7 +1086,7 @@ class NewLayout {
 			var link = $('#' + linkId).prop('checked') || !$('#' + editId).prop('checked');
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/newGui/getDesignByName?name=" + name + "&link=" + link,
+			   url: "//" + window.location.host + "/rest/newGui/getDesignByName?name=" + name + "&link=" + link,
 			   success: function(pane){
 			   		build(pane, div);
 			   }
@@ -1108,7 +1108,7 @@ class NewLayout {
 		function retrieveProperty(id, index, callback) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/runtime/getProperty?id="  +  id + "&index=" + index,
+			   url: "//" + window.location.host + "/rest/runtime/getProperty?id="  +  id + "&index=" + index,
 			   success: function(property){
 			   		callback(property);
 			   }
@@ -1131,7 +1131,7 @@ class NewLayout {
 		function setValue(id, index, value) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/runtime/setValue?id=" + id + "&index=" + index + "&value=" + value,
+			   url: "//" + window.location.host + "/rest/runtime/setValue?id=" + id + "&index=" + index + "&value=" + value,
 			   success: function(property){
 			   }
 			});			
@@ -1294,7 +1294,7 @@ class NewLayout {
 		function changeParent(divid, parentId) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/newGui/changeParent?divid=" + divid + "&parent=" + parentId,
+			   url: "//" + window.location.host + "/rest/newGui/changeParent?divid=" + divid + "&parent=" + parentId,
 			   success: function(ret){
 			   }
 			});	
@@ -1303,7 +1303,7 @@ class NewLayout {
 		function updateSize(divid, width, height) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/newGui/setSize?divid=" + divid + "&width=" + width + "&height=" + height,
+			   url: "//" + window.location.host + "/rest/newGui/setSize?divid=" + divid + "&width=" + width + "&height=" + height,
 			   success: function(ret){
 			   }
 			});	
@@ -1312,7 +1312,7 @@ class NewLayout {
 		function updatePosition(divid, top, left) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/newGui/move?divid=" + divid + "&top=" + top + "&left=" + left,
+			   url: "//" + window.location.host + "/rest/newGui/move?divid=" + divid + "&top=" + top + "&left=" + left,
 			   success: function(ret){
 			   }
 			});	

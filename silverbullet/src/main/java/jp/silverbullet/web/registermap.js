@@ -33,7 +33,7 @@ class RegisterMap {
 		function interrupt() {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/register2/interrupt",
+			   url: "//" + window.location.host + "/rest/register2/interrupt",
 			   success: function(msg){
 			   }
 			});		
@@ -43,7 +43,7 @@ class RegisterMap {
 		function getAddesSimulators() {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/register2/getAddedSimulators",
+			   url: "//" + window.location.host + "/rest/register2/getAddedSimulators",
 			   success: function(msg){
 			   		$('#' + idEnabledSimulators).empty();
 			   		$('#' + idEnabledSimulators).append('Loaded Simulators:');
@@ -64,7 +64,7 @@ class RegisterMap {
 		function unloadSimulator(sim) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/register2/unloadSimulator?simulator=" + sim,
+			   url: "//" + window.location.host + "/rest/register2/unloadSimulator?simulator=" + sim,
 			   success: function(msg){
 					getAddesSimulators();
 			   }
@@ -75,7 +75,7 @@ class RegisterMap {
 			$('#' + simButton).click(function() {
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/register2/loadSimulator?simulator=" + $('#' + idSimulator).val(),
+				   url: "//" + window.location.host + "/rest/register2/loadSimulator?simulator=" + $('#' + idSimulator).val(),
 				   success: function(msg){
 				   		for (var i = 0; i < msg.length; i++) {
 							var sim = msg[i];
@@ -88,7 +88,7 @@ class RegisterMap {
 			
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/register2/getSimulators",
+			   url: "//" + window.location.host + "/rest/register2/getSimulators",
 			   success: function(msg){
 			   		for (var i = 0; i < msg.length; i++) {
 						var sim = msg[i];
@@ -135,7 +135,7 @@ class RegisterMap {
 			$('#' + mainDiv).empty();
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/register2/getRegisters",
+			   url: "//" + window.location.host + "/rest/register2/getRegisters",
 			   success: function(msg){
 					createMapContent(msg);
 			   }
@@ -297,7 +297,7 @@ class RegisterMap {
 					   contentType: 'text/plain',
 					   data: event.target.result,
     				   processData: false,
-					   url: "http://" + window.location.host + "/rest/register2/setBlockData?regName=" + reg,
+					   url: "//" + window.location.host + "/rest/register2/setBlockData?regName=" + reg,
 					   success: function(msg){
 					   }
 					});	
@@ -309,7 +309,7 @@ class RegisterMap {
 			var obj = me.bitInfo.get(buttonId);
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/register2/setCurrentValue?regName=" + obj.register + '&bitName=' + obj.bitName + '&value=' + value,
+			   url: "//" + window.location.host + "/rest/register2/setCurrentValue?regName=" + obj.register + '&bitName=' + obj.bitName + '&value=' + value,
 			   success: function(msg){
 			   }
 			});		
@@ -318,7 +318,7 @@ class RegisterMap {
 			var obj = me.bitInfo.get(buttonId);
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/register2/createShortCut?regName=" + obj.register + '&bitName=' + obj.bitName,
+			   url: "//" + window.location.host + "/rest/register2/createShortCut?regName=" + obj.register + '&bitName=' + obj.bitName,
 			   success: function(msg){
 			   }
 			});		
@@ -327,7 +327,7 @@ class RegisterMap {
 			var obj = me.bitInfo.get(buttonId);
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/register2/addToTest?regName=" + obj.register + '&bitName=' + obj.bitName,
+			   url: "//" + window.location.host + "/rest/register2/addToTest?regName=" + obj.register + '&bitName=' + obj.bitName,
 			   success: function(msg){
 			   }
 			});		
@@ -335,7 +335,7 @@ class RegisterMap {
 		function getCurrentValue(id, regName, bitName) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/register2/getCurrentValue?regName=" + regName + '&bitName=' + bitName,
+			   url: "//" + window.location.host + "/rest/register2/getCurrentValue?regName=" + regName + '&bitName=' + bitName,
 			   success: function(msg){
 					$('#' + id).html(msg);
 			   }

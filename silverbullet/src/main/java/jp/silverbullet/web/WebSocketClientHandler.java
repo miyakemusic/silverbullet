@@ -26,7 +26,7 @@ public abstract class WebSocketClientHandler {
 			InterruptedException, ExecutionException {
 
 		URI uri = URI.create("ws://" + optBridge + ":" + port + "/websocket/");
-
+	
         client.start();
         // The socket that receives events
         WebSocketAdapter socket = new WebSocketAdapter() {
