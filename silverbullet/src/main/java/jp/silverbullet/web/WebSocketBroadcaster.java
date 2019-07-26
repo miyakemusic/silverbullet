@@ -2,20 +2,13 @@ package jp.silverbullet.web;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Queue;
 import java.util.Set;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.eclipse.jetty.util.ArrayQueue;
-import org.eclipse.jetty.util.BlockingArrayQueue;
 
 public class WebSocketBroadcaster {
     private static WebSocketBroadcaster INSTANCE = new WebSocketBroadcaster();

@@ -97,42 +97,42 @@
     <dependency>
 		<groupId>org.eclipse.jetty.websocket</groupId>
 		<artifactId>websocket-api</artifactId>
-		<version>9.0.4.v20130625</version>
+		<version>9.4.19.v20190610</version>
 	</dependency>
 	<dependency>
 		<groupId>org.eclipse.jetty.websocket</groupId>
 		<artifactId>websocket-client</artifactId>
-		<version>9.0.4.v20130625</version>
+		<version>9.4.19.v20190610</version>
 	</dependency>
 	<dependency>
 		<groupId>org.eclipse.jetty.websocket</groupId>
 		<artifactId>websocket-common</artifactId>
-		<version>9.0.4.v20130625</version>
+		<version>9.4.19.v20190610</version>
 	</dependency>
 	<dependency>
 		<groupId>org.eclipse.jetty.websocket</groupId>
 		<artifactId>websocket-server</artifactId>
-		<version>9.0.4.v20130625</version>
+		<version>9.4.19.v20190610</version>
 	</dependency>
 	<dependency>
 		<groupId>org.eclipse.jetty.websocket</groupId>
 		<artifactId>websocket-servlet</artifactId>
-		<version>9.0.4.v20130625</version>
+		<version>9.4.19.v20190610</version>
 	</dependency>
 	<dependency>
 		<groupId>org.eclipse.jetty</groupId>
 		<artifactId>jetty-server</artifactId>
-		<version>9.0.4.v20130625</version>
+		<version>9.4.19.v20190610</version>
 	</dependency>
 	    <dependency>
     	<groupId>org.eclipse.jetty</groupId>
     	<artifactId>jetty-servlet</artifactId>
-    	<version>9.0.4.v20130625</version>
+    	<version>9.4.19.v20190610</version>
     </dependency>
     <dependency>
     	<groupId>org.eclipse.jetty</groupId>
     	<artifactId>jetty-webapp</artifactId>
-    	<version>9.0.4.v20130625</version>
+    	<version>9.4.19.v20190610</version>
     </dependency>
     <dependency>
     	<groupId>de.jplanets.utils.fileutils</groupId>
