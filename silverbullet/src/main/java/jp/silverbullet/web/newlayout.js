@@ -322,7 +322,7 @@ class Dialog extends Widget {
 		
 		var width = 600;
 		var height = 400;
-		
+/*		
 		for (var s of widget.volatileInfo) {
 			if (s.startsWith('width=')) {
 				width = s.split('=')[1];
@@ -331,7 +331,7 @@ class Dialog extends Widget {
 				height = s.split('=')[1];
 			}			
 		}
-		
+*/		
 		var me = this;
 				
 				
