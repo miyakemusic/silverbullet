@@ -33,11 +33,12 @@ public class BuilderServer {
 	}
 	
 	private void initializeWebServer(int port, String protocol) {
-		Server server = new Server(port);
+		Server server = null;//new Server(port);
         
 		System.out.println(protocol);
 		
 		if (protocol.equals("https")) {
+			server = new Server();
 			SslContextFactory sslContextFactory = new SslContextFactory();
 	        sslContextFactory.setKeyStorePath(System.getProperty("user.dir") + "/mykeystore.jks");
 	        sslContextFactory.setKeyStorePassword("mypassword");
@@ -45,7 +46,9 @@ public class BuilderServer {
 	        httpsConnector.setPort(port);
 	        server.addConnector(httpsConnector);
 		}
-		
+		else {
+			server = new Server(port);
+		}
 		String xml = this.getClass().getPackage().getName().replace(".", "/") + "/web.xml";
 		String resource = this.getClass().getPackage().getName().replace(".", "/");
         String xmlPath = "";
