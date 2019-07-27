@@ -35,6 +35,8 @@ public class BuilderServer {
 	private void initializeWebServer(int port, String protocol) {
 		Server server = new Server(port);
         
+		System.out.println(protocol);
+		
 		if (protocol.equals("https")) {
 			SslContextFactory sslContextFactory = new SslContextFactory();
 	        sslContextFactory.setKeyStorePath(System.getProperty("user.dir") + "/mykeystore.jks");
