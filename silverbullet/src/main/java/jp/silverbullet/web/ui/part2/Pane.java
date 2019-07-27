@@ -26,7 +26,6 @@ public class Pane implements Cloneable {
 	public String text;
 	public String optional = "";
 	
-	@JsonIgnore
 	public List<String> volatileInfo = new ArrayList<>();
 	
 	public String widgetId;
