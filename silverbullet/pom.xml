@@ -184,5 +184,12 @@
 	    <artifactId>jna</artifactId>
 	    <version>5.2.0</version>
 	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.glassfish.jersey.security/oauth2-client -->
+	<dependency>
+	    <groupId>org.glassfish.jersey.security</groupId>
+	    <artifactId>oauth2-client</artifactId>
+	    <version>2.4</version>
+	</dependency>
+
   </dependencies>
 </project>

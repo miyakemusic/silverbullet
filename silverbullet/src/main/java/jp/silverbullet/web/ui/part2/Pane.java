@@ -1,6 +1,7 @@
 package jp.silverbullet.web.ui.part2;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -355,6 +356,23 @@ public class Pane implements Cloneable {
 			}
 		}.walkThrough(this, null);
 		return foundPane;
+	}
+	
+	@JsonIgnore
+	public List<String> getNameList() {
+		List<String> ret = new ArrayList<>();
+		new PaneWalkThrough() {
+
+			@Override
+			protected boolean handle(Pane widget, Pane parent) {
+				if (widget.optional.startsWith("$NAME")) {
+					ret.add(widget.optional.split("=")[1]);
+				}
+				return false;
+			}
+			
+		}.walkThrough(this, null);
+		return ret;
 	}
 	
 }

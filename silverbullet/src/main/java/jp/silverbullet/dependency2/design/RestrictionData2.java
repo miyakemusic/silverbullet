@@ -1,8 +1,11 @@
 package jp.silverbullet.dependency2.design;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -40,10 +43,12 @@ public class RestrictionData2 {
 		}
 		this.relations.get(target).put(trigger, new DependencyRelation(value, condition));
 */
+		String prev = this.getValue(trigger, target).relation;
+		
 		DependencyRelation relation = this.getValue(trigger, target);
 		relation.relation = value;
 		relation.condition = condition;
-		
+				
 		if (value.startsWith(">")) {
 			//this.relations.get(trigger).put(target, new DependencyRelation(value.replace(">", "<")));
 			this.getValue(target, trigger).relation = value.replace(">", "<");
@@ -56,16 +61,26 @@ public class RestrictionData2 {
 			//this.relations.get(trigger).put(target, new DependencyRelation(value));
 			this.getValue(target, trigger).relation = value;
 		}
+		else if (value.isEmpty() && isSyncValue(prev)) {
+			this.getValue(target, trigger).relation = value;
+		}
 	}
 	
+	private static final List<String> syncValues = Arrays.asList(">", "<", "=");
+	private boolean isSyncValue(String v) {
+		return syncValues.contains(v);
+	}
+
 	public synchronized DependencyRelation getValue(String triggerId, String targetId) {
 		if (!this.relations.containsKey(targetId)) {
-			return new DependencyRelation();
+			this.relations.put(targetId, new LinkedHashMap<String, DependencyRelation>());
+		}
+		
+		if (!this.relations.get(targetId).containsKey(triggerId)) {
+			this.relations.get(targetId).put(triggerId, new DependencyRelation());
 		}
 		DependencyRelation ret = this.relations.get(targetId).get(triggerId);
-		if (ret == null) {
-			return new DependencyRelation();
-		}
+
 		return ret;
 	}
 	

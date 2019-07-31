@@ -873,7 +873,11 @@ class Table2 extends Widget {
 }
 
 class NewLayout {
-	constructor(divParent) {
+	constructor(divParent, rootName) {
+		var propertyMap = new Map();
+		var widgetMap = new Map();
+		var divMap = new Map();
+		
 		var me = this;
 		var divBase = divParent + "_newLayout";
 		$('#' + divParent).append('<div id="' + divBase + '"></div>');
@@ -884,14 +888,20 @@ class NewLayout {
 		var linkId = divBase + "_link";
 		
 		var div = divBase + "_right";
-		var divLeft = divParent + "_left";
 		
-		$('#' + divBase).append('<div id="' + divLeft + '"></div><div id="' + div + '"></div>');
-		$('#' + divLeft).css('display', 'inline-block');
-		$('#' + divLeft).css('width', '100px');
-		$('#' + divLeft).css('height', '1000px');
-		$('#' + divLeft).css('vertical-align', 'top');
-		$('#' + divLeft).css('border-style', 'solid');
+		if (rootName == null) {
+			var divLeft = divParent + "_left";
+			
+			$('#' + divBase).append('<div id="' + divLeft + '"></div><div id="' + div + '"></div>');
+			$('#' + divLeft).css('display', 'inline-block');
+			$('#' + divLeft).css('width', '100px');
+			$('#' + divLeft).css('height', '1000px');
+			$('#' + divLeft).css('vertical-align', 'top');
+			$('#' + divLeft).css('border-style', 'solid');
+		}
+		else {
+			$('#' + divBase).append('<div id="' + div + '"></div>');
+		}
 		
 		$('#' + div).css('display', 'inline-block');
 		$('#' + div).css('width', '90%');
@@ -900,54 +910,55 @@ class NewLayout {
 		$('#' + div).css('border-style', 'solid');
 		
 		me.currentRoot = "";
-		new NewLayoutLibrary(divLeft, function(selectedRoot) {
-			me.currentRoot = selectedRoot;
-			retreiveDesign();
-		});
-
 		
-		$('#' + div).append('<input type="checkbox" id="' + editId + '"><label>Edit</label>');
-		$('#' + editId).click(function() {
-			retreiveDesign();
-			$('#' + actionId).prop('disabled', !$('#' + editId).prop('checked'));
-		});		
-		
-		$('#' + div).append('<input type="checkbox" id="' + actionId + '"><label>Action</label>');
-		$('#' + actionId).prop('checked', true);
-		$('#' + actionId).click(function() {
-			retreiveDesign();
-			//$('#' + actionId).prop('disabled', !$('#' + editId).prop('checked'));
-		});	
-
-		$('#' + div).append('<input type="checkbox" id="' + linkId + '"><label>Link</label>');
-		$('#' + linkId).prop('checked', false);
-		$('#' + linkId).click(function() {
-			retreiveDesign();
-//			$('#' + linkId).prop('disabled', !$('#' + editId).prop('checked'));
-		});
-				
-		var defaultValueId = div + "_default";
-		$('#' + div).append('<button id="' + defaultValueId + '">Default</button>');
-		$('#' + defaultValueId).click(function() {
-			$.ajax({
-			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/runtime/defaultValues",
-			   success: function(widget){
-
-			   }
+		if (rootName == null) {
+			new NewLayoutLibrary(divLeft, function(selectedRoot) {
+				me.currentRoot = selectedRoot;
+				retreiveDesign();
+			});
+	
+			
+			$('#' + div).append('<input type="checkbox" id="' + editId + '"><label>Edit</label>');
+			$('#' + editId).click(function() {
+				retreiveDesign();
+				$('#' + actionId).prop('disabled', !$('#' + editId).prop('checked'));
+			});		
+			
+			$('#' + div).append('<input type="checkbox" id="' + actionId + '"><label>Action</label>');
+			$('#' + actionId).prop('checked', true);
+			$('#' + actionId).click(function() {
+				retreiveDesign();
 			});	
-		});
+	
+			$('#' + div).append('<input type="checkbox" id="' + linkId + '"><label>Link</label>');
+			$('#' + linkId).prop('checked', false);
+			$('#' + linkId).click(function() {
+				retreiveDesign();
+			});
+					
+			var defaultValueId = div + "_default";
+			$('#' + div).append('<button id="' + defaultValueId + '">Default</button>');
+			$('#' + defaultValueId).click(function() {
+				$.ajax({
+				   type: "GET", 
+				   url: "//" + window.location.host + "/rest/runtime/defaultValues",
+				   success: function(widget){
+	
+				   }
+				});	
+			});
+			
+			new DependencyHistory(div);
+			
+			this.propertyWindow = new NewLayoutProperty(div);
 		
-		new DependencyHistory(div);
-		
-		this.propertyWindow = new NewLayoutProperty(div);
+		}
+		else {
+			getDesignByName(rootName, true);
+		}
 		
 		var mainDiv = div + "_mainDiv";
 		$('#' + div).append('<div id="' + mainDiv + '"></div>');
-		
-		var propertyMap = new Map();
-		var widgetMap = new Map();
-		var divMap = new Map();
 		
 		this.divNumber = 0;
 		
@@ -1084,6 +1095,10 @@ class NewLayout {
 		
 		function retreiveDesignDialog(name, div) {			
 			var link = $('#' + linkId).prop('checked') || !$('#' + editId).prop('checked');
+			getDesignByName(name, link);
+		}
+				
+		function getDesignByName(name, link) {
 			$.ajax({
 			   type: "GET", 
 			   url: "//" + window.location.host + "/rest/newGui/getDesignByName?name=" + name + "&link=" + link,
@@ -1092,7 +1107,7 @@ class NewLayout {
 			   }
 			});	
 		}
-				
+		
 		function getProperty(id, index, callback) {
 			if (propertyMap[id] != null) {
 				callback(propertyMap[id]);
@@ -1172,7 +1187,9 @@ class NewLayout {
 				});
 			}
 			else {
-				me.propertyWindow.hide();
+				if (me.propertyWindow != null) {
+					me.propertyWindow.hide();
+				}
 			}
 		}
 		

@@ -1,12 +1,12 @@
 package jp.silverbullet.web;
 
-import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.HandlerCollection;
-import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.webapp.WebAppContext;
+
+import jp.silverbullet.auth.AuthenticationFilter;
 
 public class BuilderServer {
 	
@@ -33,6 +33,8 @@ public class BuilderServer {
 	}
 	
 	private void initializeWebServer(int port, String protocol) {
+		new AuthenticationFilter();
+		
 		Server server = null;//new Server(port);
         
 		System.out.println(protocol);

@@ -167,4 +167,12 @@ public class UiBuilder {
 		return ret;
 	}
 
+	public List<String> getNameList() {
+		List<String> ret = new ArrayList<>();
+		for (Pane pane : this.panes.values()) {
+			ret.addAll(pane.getNameList());
+		}
+		return ret;
+	}
+
 }

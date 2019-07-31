@@ -287,4 +287,10 @@ public class NewGuiResource {
 		return "OK";
 	}
 
+	@GET
+	@Path("/getRuntimeList")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<String> getRuntimeList() {
+		return SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().getNameList();
+	}
 }

@@ -10,10 +10,20 @@
 <script type="text/javascript" src="mychart.js"></script>
 <script type="text/javascript" src="newlayout.js"></script> 
 <script type="text/javascript" src="mywebsocket.js"></script>
-
+<script type="text/javascript">
 $(function() {
 	$(document).ready(function(){
-
+		$.ajax({
+		   type: "GET", 
+		   url: "//" + window.location.host + "/rest/newGui/getRuntimeList",
+		   success: function(result) {
+				for (var option of result) {
+					$('#main').append('<div><a href="./rest/newGui/getDesignByName?name=' + option + '&link=true">' +  option + '</a></div>'); 
+				}	
+		   }
+		});		
+		
+		new NewLayout('main', 'MAIN');
 	});
 })
 </script>
@@ -32,10 +42,7 @@ $(function() {
 <meta charset="UTF-8">
 <title>Users</title>
 </head>
-<body> 
-<!---
-<input type="text" id="root"></input><button id="ok">OK</button>
--->
+<body>
 <div id="main"></div>
 </body>
 </html>

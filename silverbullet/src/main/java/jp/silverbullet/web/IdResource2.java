@@ -4,6 +4,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.security.DenyAll;
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -12,15 +14,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import jp.silverbullet.SilverBulletServer;
-import jp.silverbullet.StaticInstances;
 import jp.silverbullet.property2.PropertyFactory;
 import jp.silverbullet.property2.PropertyType2;
 import jp.silverbullet.property2.WebTableConverter;
 
-
 @Path("/id2")
 public class IdResource2 {
 	@GET
+	@RolesAllowed("ADMIN")
 	@Path("/selection")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public JsonTable getSelections(@QueryParam("id") final String id) {
