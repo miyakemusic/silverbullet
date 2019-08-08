@@ -13,30 +13,41 @@
 <script type="text/javascript">
 $(function() {
 	$(document).ready(function(){
-		$.ajax({
-		   type: "GET", 
-		   url: "//" + window.location.host + "/rest/newGui/getRuntimeList",
-		   success: function(result) {
-				for (var option of result) {
-					$('#main').append('<div><a href="./rest/newGui/getDesignByName?name=' + option + '&link=true">' +  option + '</a></div>'); 
-				}	
-		   }
-		});		
-		
-		new NewLayout('main', 'MAIN');
+		if (location.search == "") {
+			$.ajax({
+			   type: "GET", 
+			   url: "//" + window.location.host + "/rest/newGui/getRuntimeList",
+			   success: function(result) {
+					for (var option of result) {
+						
+						//$('#main').append('<button id="' + option + '">' + option + '</button>');
+						//$('#' + option).click(function() {
+						//	$('#main').empty();
+						//	new NewLayout('main', $(this).prop('id'));
+						//});
+						
+						$('#main').append('<div><a href="' + location.href + '?name=' +  option + '">' + option + '</a></div>'); 
+					}	
+			   }
+			});		
+		}
+		else {
+			new NewLayout('main', location.search.split('=')[1]);
+		}
 	});
 })
 </script>
 <link rel="stylesheet" media="screen" href="lib/handsontable.full.css">
 <link rel="stylesheet" media="screen" href="lib/jquery.dataTables.min.css">
 
-<link rel="stylesheet" type="text/css" href="mywidget.css">
 <link rel="stylesheet" type="text/css" href="lib/jquery-ui.css">
 <link rel="stylesheet" type="text/css" href="lib/fancyknob.css">
+<link rel="stylesheet" type="text/css" href="lib/keyboard.min.css">
+<link rel="stylesheet" type="text/css" href="mywidget.css">
 <link rel="stylesheet" type="text/css" href="mycss.css">
 <link rel="stylesheet" type="text/css" href="table.css">
 <link rel="stylesheet" type="text/css" href="jsmytable.css">
-<link rel="stylesheet" type="text/css" href="lib/keyboard.min.css">
+
 
 <head>
 <meta charset="UTF-8">

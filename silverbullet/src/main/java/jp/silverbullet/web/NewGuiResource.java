@@ -29,8 +29,10 @@ public class NewGuiResource {
 	@GET
 	@Path("/getDesignByName")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public Pane getDesignByName(@QueryParam("name") final String name, @QueryParam("link") final boolean link) {
-		return SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().getPaneByName(name, link);
+	public Pane getDesignByName(@QueryParam("name") final String name, @QueryParam("link") final boolean link,
+			@QueryParam("initPos") final boolean initPos) {
+		
+		return SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().getPaneByName(name, link, initPos);
 	}
 	
 	@GET
@@ -101,7 +103,7 @@ public class NewGuiResource {
 	@Path("/getCssKeys")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<String> getCssKeys() {
-		return Arrays.asList("font", "font-weight", "font-size", "border-style", "border-width", "border-color", "border-radius", "color", 
+		return Arrays.asList("font", "font-family","font-weight", "font-size", "border-style", "border-width", "border-color", "border-radius", "color", 
 				"background-color", "background-image", "background-size", "padding", "margin", "top", "left", "width", "height", 
 				"vertical-align", "text-align", "position");
 	}

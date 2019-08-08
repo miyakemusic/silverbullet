@@ -20,13 +20,13 @@
 	        <param-value>
 	            org.glassfish.jersey.jackson.JacksonFeature
 	        </param-value>
-	    </init-param>  
- <!--   Basic authentication
-        <init-param>
-            <param-name>javax.ws.rs.Application</param-name>
-            <param-value>jp.silverbullet.auth.CustomApplication</param-value>
-        </init-param>
-  -->
+	    </init-param> 
+	    <!--  
+		<init-param>
+			<param-name>javax.ws.rs.container.ContainerRequestFilter</param-name>
+			<param-value>jp.silverbullet.auth.AuthenticationFilter</param-value>
+		</init-param>
+		 -->
         <load-on-startup>1</load-on-startup>
     </servlet>
 

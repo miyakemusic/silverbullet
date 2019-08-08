@@ -191,5 +191,10 @@
 	    <version>2.4</version>
 	</dependency>
 
+	<dependency>
+		<groupId>com.google.oauth-client</groupId>
+		<artifactId>google-oauth-client</artifactId>
+		<version>1.23.0</version>
+	</dependency>
   </dependencies>
 </project>

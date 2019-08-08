@@ -879,15 +879,23 @@ class NewLayout {
 		var divMap = new Map();
 		
 		var me = this;
-		var divBase = divParent + "_newLayout";
-		$('#' + divParent).append('<div id="' + divBase + '"></div>');
 		
+		var div;
 		
-		var editId = divBase + "_edit";
-		var actionId = divBase + "_action";
-		var linkId = divBase + "_link";
-		
-		var div = divBase + "_right";
+		if (rootName == null) {
+			var divBase = divParent + "_newLayout";
+			$('#' + divParent).append('<div id="' + divBase + '"></div>');
+			
+			var editId = divBase + "_edit";
+			var actionId = divBase + "_action";
+			var linkId = divBase + "_link";
+			
+			div = divBase + "_right";
+		}
+		else {
+			div = divParent + "_div";
+			$('#' + divParent).append('<div id="' + div + '"></div>');
+		}
 		
 		if (rootName == null) {
 			var divLeft = divParent + "_left";
@@ -898,16 +906,20 @@ class NewLayout {
 			$('#' + divLeft).css('height', '1000px');
 			$('#' + divLeft).css('vertical-align', 'top');
 			$('#' + divLeft).css('border-style', 'solid');
+			
+			$('#' + div).css('display', 'inline-block');
+			$('#' + div).css('width', '90%');
+			$('#' + div).css('height', '1000px');
+			$('#' + div).css('vertical-align', 'top');
+			$('#' + div).css('border-style', 'solid');
 		}
 		else {
-			$('#' + divBase).append('<div id="' + div + '"></div>');
+//			$('#' + div).css('display', 'inline-block');
+//			$('#' + div).css('width', '90%');
+//			$('#' + div).css('height', '1000px');
+//			$('#' + div).css('vertical-align', 'top');
+//			$('#' + div).css('border-style', 'solid');
 		}
-		
-		$('#' + div).css('display', 'inline-block');
-		$('#' + div).css('width', '90%');
-		$('#' + div).css('height', '1000px');
-		$('#' + div).css('vertical-align', 'top');
-		$('#' + div).css('border-style', 'solid');
 		
 		me.currentRoot = "";
 		
@@ -954,7 +966,7 @@ class NewLayout {
 		
 		}
 		else {
-			getDesignByName(rootName, true);
+			getDesignByName(rootName, true, true);
 		}
 		
 		var mainDiv = div + "_mainDiv";
@@ -1095,13 +1107,13 @@ class NewLayout {
 		
 		function retreiveDesignDialog(name, div) {			
 			var link = $('#' + linkId).prop('checked') || !$('#' + editId).prop('checked');
-			getDesignByName(name, link);
+			getDesignByName(name, link, false);
 		}
 				
-		function getDesignByName(name, link) {
+		function getDesignByName(name, link, initPos) {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/newGui/getDesignByName?name=" + name + "&link=" + link,
+			   url: "//" + window.location.host + "/rest/newGui/getDesignByName?name=" + name + "&link=" + link + "&initPos=" + initPos,
 			   success: function(pane){
 			   		build(pane, div);
 			   }

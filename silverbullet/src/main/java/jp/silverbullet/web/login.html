@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<script type="text/javascript" src="lib/jquery-3.3.1.min.js"></script> 
+<script type="text/javascript" src="lib/jquery-ui.js"></script>
+
+<script type="text/javascript" src="login.js"></script>
+
+<script type="text/javascript">
+$(function() {
+	$(document).ready(function(){
+		var arguments = window.location.search;
+		var login = new Login('loginMain');		
+	});
+});
+</script>
+<link rel="stylesheet" type="text/css" href="lib/jquery-ui.css">
+
+<head>
+<meta charset="UTF-8">
+<title>Login</title>
+</head>
+<body> 
+<div id="loginMain"></div>
+</body>
+</html>

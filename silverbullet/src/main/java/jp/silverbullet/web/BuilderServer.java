@@ -6,8 +6,6 @@ import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.webapp.WebAppContext;
 
-import jp.silverbullet.auth.AuthenticationFilter;
-
 public class BuilderServer {
 	
 	public static void main(String[] arg) {

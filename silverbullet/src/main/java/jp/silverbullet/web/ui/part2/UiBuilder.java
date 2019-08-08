@@ -85,7 +85,7 @@ public class UiBuilder {
 				if (widget.type.equals(WidgetType.Dialog)) {
 					if (widget.optional.startsWith("$CONTENT")) {
 						String linkId = widget.optional.split("=")[1];
-						Pane content = getPaneByName(linkId, false);
+						Pane content = getPaneByName(linkId, false, true);
 
 						widget.volatileInfo.add("width="  + String.valueOf((Integer.valueOf(content.css("width")) + 100)));
 						widget.volatileInfo.add("height="  + String.valueOf((Integer.valueOf(content.css("height")) + 150)));
@@ -144,7 +144,7 @@ public class UiBuilder {
 		this.panes.remove(oldName);
 	}
 
-	public Pane getPaneByName(String name, boolean link) {
+	public Pane getPaneByName(String name, boolean link, boolean initPos) {
 		for (Pane pane : this.panes.values()) {
 			Pane ret = pane.findLink(name);
 			
@@ -152,10 +152,21 @@ public class UiBuilder {
 				if (link) {
 					ret = new LinkResolver(panes).resolve(ret);
 				}
-				return ret;
+				if (!initPos) {
+					return ret;
+				}
+				else {
+					return removePosition(ret.clone());
+				}
 			}
 		}
 		return null;
+	}
+
+	private Pane removePosition(Pane clone) {
+		clone.removeCss("top");
+		clone.removeCss("left");
+		return clone;
 	}
 
 	public List<String> getFieldTypes() {

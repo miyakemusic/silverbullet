@@ -327,6 +327,7 @@ public class Pane implements Cloneable {
 		try {
 			Pane pane = (Pane)super.clone();
 			pane.widgets = new ArrayList<Pane>(this.widgets);
+			pane.css = new ArrayList<KeyValue>(this.css);
 //			pane.volatileInfo = new ArrayList<String>();
 			return pane;
 			
@@ -368,11 +369,19 @@ public class Pane implements Cloneable {
 				if (widget.optional.startsWith("$NAME")) {
 					ret.add(widget.optional.split("=")[1]);
 				}
-				return false;
+				return true;
 			}
 			
 		}.walkThrough(this, null);
 		return ret;
+	}
+	public void removeCss(String string) {
+		Iterator<KeyValue> it = this.css.iterator();
+		while (it.hasNext()) {
+			if (it.next().getKey().equals(string)) {
+				it.remove();
+			}
+		}
 	}
 	
 }

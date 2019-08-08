@@ -13,6 +13,7 @@
 <script type="text/javascript" src="lib/jquery.keyboard.min.js"></script>
 <script type="text/javascript" src="lib/jquery.keyboard.extension-all.min.js"></script>
 
+<script type="text/javascript" src="login.js"></script>
 <script type="text/javascript" src="commondialogs.js"></script>
 <script type="text/javascript" src="commonwidgets.js"></script>
 <script type="text/javascript" src="jsmytable.js"></script>
@@ -54,50 +55,65 @@
 <script type="text/javascript">
 $(function() {
 	$(document).ready(function(){
-		$('#tab').tabs();
+		$('#mainFunction').hide();
+		var login = new Login('login', function(name) {
+			$('#loginName').append('Hello <label id="username">' + name + ' : </label>');
+			$('#username').css('font-weight', 'bold');
+			$('#loginName').append('<button id="logout">Logout</button>');
+			$('#logout').click(function() {
+				login.logout();
+			});
+			createPane();
+		});
 				
-		new IdEditorClass('tab_id');
-		new RegisterClass('tab_register');
-		new ControllerClass('tab_control');
-		new DebugClass('tab_debug');
-		new TestClass('tab_test');
-		new DependencyClass2('tab_dependency2');
-		new NewLayout('tab_newgui');
-		new DependencyDesign2('tab_dependencydesign2');
-		new Build('tab_build');
+		function createPane() {
+			$('#mainFunction').show();
 		
-		$('#save').click(function() {
-			$.ajax({
-			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/system/save",
-			   success: function(property){
-			   }
+			$('#tab').tabs();
+					
+			new IdEditorClass('tab_id');
+			new RegisterClass('tab_register');
+			new ControllerClass('tab_control');
+			new DebugClass('tab_debug');
+			new TestClass('tab_test');
+			new DependencyClass2('tab_dependency2');
+			new NewLayout('tab_newgui');
+			new DependencyDesign2('tab_dependencydesign2');
+			new Build('tab_build');
+			
+			$('#save').click(function() {
+				$.ajax({
+				   type: "GET", 
+				   url: "http://" + window.location.host + "/rest/system/save",
+				   success: function(property){
+				   }
+				});
 			});
-		});
-		$('#generateSource').click(function() {
-			$.ajax({
-			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/system/generateSource",
-			   success: function(property){
-			   }
+			$('#generateSource').click(function() {
+				$.ajax({
+				   type: "GET", 
+				   url: "http://" + window.location.host + "/rest/system/generateSource",
+				   success: function(property){
+				   }
+				});
 			});
-		});
-		$('#saveParameters').click(function() {
-			$.ajax({
-			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/system/saveParameters?filename=data.txt",
-			   success: function(property){
-			   }
+			$('#saveParameters').click(function() {
+				$.ajax({
+				   type: "GET", 
+				   url: "http://" + window.location.host + "/rest/system/saveParameters?filename=data.txt",
+				   success: function(property){
+				   }
+				});
 			});
-		});
-		$('#loadParameters').click(function() {
-			$.ajax({
-			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/system/loadParameters?filename=data.txt",
-			   success: function(property){
-			   }
+			$('#loadParameters').click(function() {
+				$.ajax({
+				   type: "GET", 
+				   url: "http://" + window.location.host + "/rest/system/loadParameters?filename=data.txt",
+				   success: function(property){
+				   }
+				});
 			});
-		});
+		}
 	});
 })
 </script>
@@ -111,36 +127,41 @@ $(function() {
 <link rel="stylesheet" type="text/css" href="table.css">
 <link rel="stylesheet" type="text/css" href="jsmytable.css">
 <link rel="stylesheet" type="text/css" href="lib/keyboard.min.css">
-
+<link rel="stylesheet" type="text/css" href="login.css">
 <head>
 <meta charset="UTF-8">
 <title>Users</title>
 </head>
 <body> 
-<button id="save">Save</button><button id="generateSource">Generate Source</button>
-<button id="saveParameters">Save Parameters</button><button id="loadParameters">Load Parameters</button>
-<div id="tab">
-  <ul>
-  	<li><a href="#tab_id">ID</a></li>
-  	<li><a href="#tab_register">Register</a></li>
-  	<li><a href="#tab_dependency2">Dependency Spec</a></li>
-  	<li><a href="#tab_dependencydesign2">Dependency Designer2</a></li>
-  	<li><a href="#tab_control">Control</a></li>
-  	<li><a href="#tab_debug">Debug</a></li>
-  	<li><a href="#tab_test">Test</a></li>
-  	<li><a href="#tab_newgui">GUI</a></li>
-  	<li><a href="#tab_build">Build</a></li>
-  </ul>
-  <div id="tab_id"></div>
-  <div id="tab_register"></div>
-  <div id="tab_control"></div>
-  <div id="tab_debug"></div>
-  <div id="tab_test"></div>
-  <div id="tab_dependency2"></div>
-  <div id="tab_newgui"></div>
-  <div id="tab_dependencydesign2"></div>
-  <div id="tab_build"></div>
-</div>
 
+<div id="mainFunction">
+	<button id="save">Save</button><button id="generateSource">Generate Source</button>
+	<button id="saveParameters">Save Parameters</button><button id="loadParameters">Load Parameters</button>
+	<span id="loginName"></span>
+	<div id="tab">
+	  <ul>
+	  	<li><a href="#tab_id">ID</a></li>
+	  	<li><a href="#tab_register">Register</a></li>
+	  	<li><a href="#tab_dependency2">Dependency Spec</a></li>
+	  	<li><a href="#tab_dependencydesign2">Dependency Designer2</a></li>
+	  	<li><a href="#tab_control">Control</a></li>
+	  	<li><a href="#tab_debug">Debug</a></li>
+	  	<li><a href="#tab_test">Test</a></li>
+	  	<li><a href="#tab_newgui">GUI</a></li>
+	  	<li><a href="#tab_build">Build</a></li>
+	  </ul>
+	  <div id="tab_id"></div>
+	  <div id="tab_register"></div>
+	  <div id="tab_control"></div>
+	  <div id="tab_debug"></div>
+	  <div id="tab_test"></div>
+	  <div id="tab_dependency2"></div>
+	  <div id="tab_newgui"></div>
+	  <div id="tab_dependencydesign2"></div>
+	  <div id="tab_build"></div>
+	</div>
+</div>
+<div id="login">
+</div>
 </body>
 </html>

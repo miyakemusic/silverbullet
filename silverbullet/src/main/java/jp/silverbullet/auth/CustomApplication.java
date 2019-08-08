@@ -2,6 +2,8 @@ package jp.silverbullet.auth;
 
 import org.glassfish.jersey.server.ResourceConfig;
 
+import jp.silverbullet.web.AuthenticationFilter;
+
 public class CustomApplication extends ResourceConfig 
 {
     public CustomApplication() 
