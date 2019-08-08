@@ -66,75 +66,6 @@ public class SystemResource {
 	public static AuthStore authMap = new AuthStore();
 	
 	private Client client = ClientBuilder.newClient();
-	@GET
-	@Path("/login2")
-	@Produces(MediaType.APPLICATION_JSON)
-	public KeyValue login(@QueryParam("code") final String code, @QueryParam("scope") final String scope) throws URISyntaxException {
-
-		System.out.println(code);
-		KeyValue ret = new KeyValue();
-		
-		String redirectUri = "http://localhost:8081";///login.html";		
-		String url = "https://accounts.google.com/o/oauth2/auth?response_type=code&client_id=1095025795016-u18jdnil89cmp2841a67n5jumoigk6fm.apps.googleusercontent.com&redirect_uri=" + redirectUri + "&scope=https://www.googleapis.com/auth/userinfo.profile&access_type=offline&approval_prompt=force";
-		ret.setKey("RedirectAuth");
-		ret.setValue(url);
-
-		if (!code.isEmpty()) {
-			
-			
-			String client_id = "1095025795016-u18jdnil89cmp2841a67n5jumoigk6fm.apps.googleusercontent.com";
-			String client_secret = "TFOM1Sz4CdjFxuGg9xvK4bBH";
-			
-	        MultivaluedHashMap<String, String> formParams = new MultivaluedHashMap<>();
-	        
-	        formParams.putSingle("client_id", client_id);
-	        formParams.putSingle("client_secret", client_secret);
-	       // formParams.putSingle("redirect_uri", "urn:ietf:wg:oauth:2.0:oob");
-	        formParams.putSingle("redirect_uri", redirectUri);
-	        
-	        formParams.putSingle("grant_type", "authorization_code");
-	        formParams.putSingle("access_type", "offline");
-	        formParams.putSingle("code", code);
-	        
-	        try {
-		        GoogleAccressTokenResponse response = client
-		                .target("https://www.googleapis.com")
-		                .path("/oauth2/v4/token")
-		                .request()
-		                .post(Entity.entity(formParams, MediaType.APPLICATION_FORM_URLENCODED_TYPE), GoogleAccressTokenResponse.class);
-		                
-		        System.out.println("access token=" + response.access_token);
-		           
-		        // get user info
-		        WebTarget target = client.target("https://www.googleapis.com")
-		        	.path("/oauth2/v1/userinfo")
-		        	.queryParam("alt", "json")
-		        	.queryParam("access_token", response.access_token);
-		        
-				try {
-					GooglePersonalResponse personal = target.request().get(GooglePersonalResponse.class);
-					ret.setKey("Complete");
-					ret.setValue(personal.name);
-//					System.out.println("ID:" + personal.id);
-					
-					personal.access_token = response.access_token;
-					personal.auth_code = code;
-					
-					authMap.add(personal);
-					return ret;
-				    
-				} catch (Exception e) {
-//				    e.printStackTrace();
-				}		        
-			        	
-	        }
-	        catch (Exception e) {
-//	        	e.printStackTrace();
-	        }
-		}
-
-		return ret;
-	}
 	
 	@GET
 	@Path("/login")
@@ -166,8 +97,8 @@ public class SystemResource {
 	}
 	
 	private GoogleAccressTokenResponse retrieveAccessToken(String code, String redirectUri) {
-		String client_id = "1095025795016-u18jdnil89cmp2841a67n5jumoigk6fm.apps.googleusercontent.com";
-		String client_secret = "TFOM1Sz4CdjFxuGg9xvK4bBH";
+		String client_id = "";
+		String client_secret = "";
 		
         MultivaluedHashMap<String, String> formParams = new MultivaluedHashMap<>();
         
