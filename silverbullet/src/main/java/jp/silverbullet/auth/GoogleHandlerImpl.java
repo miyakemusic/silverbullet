@@ -43,6 +43,10 @@ public class GoogleHandlerImpl implements GoogleHanlder {
         formParams.putSingle("access_type", "offline");
         formParams.putSingle("code", code);
         
+        System.out.println("client_id=" + client_id);
+        System.out.println("client_secret=" + client_secret);
+        System.out.println("code=" + code);
+        
         GoogleAccressTokenResponse response = client
                 .target("https://www.googleapis.com")
                 .path("/oauth2/v4/token")
