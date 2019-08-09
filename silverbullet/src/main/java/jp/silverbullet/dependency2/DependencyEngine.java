@@ -14,11 +14,11 @@ import jp.silverbullet.property2.RuntimeProperty;
 import jp.silverbullet.web.ui.PropertyGetter;
 
 /**
- * @author NG
+ * @author
  *
  */
 /**
- * @author NG
+ * @author
  *
  */
 public abstract class DependencyEngine {
