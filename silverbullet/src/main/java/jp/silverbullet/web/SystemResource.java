@@ -90,6 +90,7 @@ public class SystemResource {
 			return new KeyValue("Complete", personal.name);	
 		}
 		catch (Exception e) {
+			e.printStackTrace();
 			String url = googleHandler.getAuthUri(redirectUri);
 			//String url = "https://accounts.google.com/o/oauth2/auth?response_type=code&client_id=1095025795016-u18jdnil89cmp2841a67n5jumoigk6fm.apps.googleusercontent.com&redirect_uri=" + redirectUri + "&scope=https://www.googleapis.com/auth/userinfo.profile&access_type=offline&approval_prompt=force";	
 			return new KeyValue("RedirectAuth", url);
