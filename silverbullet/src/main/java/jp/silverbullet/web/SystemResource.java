@@ -70,8 +70,7 @@ public class SystemResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public KeyValue login2(@QueryParam("code") final String code, @QueryParam("scope") final String scope,
 			@QueryParam("redirectUri") final String redirectUri) throws URISyntaxException {
-//		String redirectUri = googleHandler.getRedirectUri();//"http://localhost:8081";
-		
+	System.out.println("code=" + code);
 		try {
 			String access_token;
 
@@ -92,7 +91,6 @@ public class SystemResource {
 		catch (Exception e) {
 			e.printStackTrace();
 			String url = googleHandler.getAuthUri(redirectUri);
-			//String url = "https://accounts.google.com/o/oauth2/auth?response_type=code&client_id=1095025795016-u18jdnil89cmp2841a67n5jumoigk6fm.apps.googleusercontent.com&redirect_uri=" + redirectUri + "&scope=https://www.googleapis.com/auth/userinfo.profile&access_type=offline&approval_prompt=force";	
 			return new KeyValue("RedirectAuth", url);
 		}
 	}
