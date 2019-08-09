@@ -36,6 +36,7 @@ class RegisterShortcut extends Widget {
 		super(widget, parent, divid);
 		
 		$('#' + parent).append('<div id="' + divid + '"></div>');
+		
 //		$('#' + parent).css('border-style', 'dashed');
 //		$('#' + parent).css('border-width', '1');
 //		$('#' + parent).css('border-color', 'yellow');
@@ -900,6 +901,7 @@ class NewLayout {
 		if (rootName == null) {
 			var divLeft = divParent + "_left";
 			
+//			$('#' + divBase).append('<a href="./runtime.html">runtime</a>');
 			$('#' + divBase).append('<div id="' + divLeft + '"></div><div id="' + div + '"></div>');
 			$('#' + divLeft).css('display', 'inline-block');
 			$('#' + divLeft).css('width', '100px');
@@ -912,13 +914,6 @@ class NewLayout {
 			$('#' + div).css('height', '1000px');
 			$('#' + div).css('vertical-align', 'top');
 			$('#' + div).css('border-style', 'solid');
-		}
-		else {
-//			$('#' + div).css('display', 'inline-block');
-//			$('#' + div).css('width', '90%');
-//			$('#' + div).css('height', '1000px');
-//			$('#' + div).css('vertical-align', 'top');
-//			$('#' + div).css('border-style', 'solid');
 		}
 		
 		me.currentRoot = "";

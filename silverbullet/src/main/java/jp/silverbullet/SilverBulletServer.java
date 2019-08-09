@@ -12,11 +12,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jp.silverbullet.dependency2.ChangedItemValue;
-import jp.silverbullet.dependency2.ChangedProperties;
 import jp.silverbullet.dependency2.DependencyListener;
 import jp.silverbullet.dependency2.Id;
-import jp.silverbullet.dependency2.design.RestrictionMatrixElement;
-import jp.silverbullet.dependency2.design.RestrictionMatrixListener;
 import jp.silverbullet.property2.PropertyDefHolderListener;
 import jp.silverbullet.register2.BitUpdates;
 import jp.silverbullet.register2.RegisterAccessor;
@@ -53,20 +50,28 @@ public abstract class SilverBulletServer {
 	public void start(String port, String protocol) {
 		String filename = getDefaultFilename();
 		
-		staticInstance.createInstances(getInstanceCount(), Thread.currentThread().getId());
+//		staticInstance.createInstances(getInstanceCount());
 		staticInstance.load(filename);
 
-		staticInstance.getBuilderModels().forEach(builderModel -> {
-			builderModel.setUiBuilder(getUi());
-			onStart(builderModel);
-			builderModel.setSimulators(getSimulators());
-//			builderModel.setSourceInfo(getBaseFolderAndPackage());
-			builderModel.setHardwareAccessor(getHardwareAccessor(builderModel));
-			getUserSequencers(builderModel).forEach(sequencer -> {
-				builderModel.getSequencer().addUserSequencer(sequencer);
-			});	
-			builderModel.setDefaultValues();
+		BuilderModelImpl model = staticInstance.getBuilderModel();
+		this.onStart(model);
+		model.setSimulators(getSimulators());
+		model.setHardwareAccessor(getHardwareAccessor(model));
+		getUserSequencers(model).forEach(sequencer -> {
+			model.addUserSequencer(sequencer);
 		});	
+		model.setDefaultValues();
+		
+//		staticInstance.getBuilderModels().forEach(builderModel -> {
+//			builderModel.setUiBuilder(getUi());
+//			onStart(builderModel);
+//			builderModel.setSimulators(getSimulators());
+//			builderModel.setHardwareAccessor(getHardwareAccessor(builderModel));
+//			getUserSequencers(builderModel).forEach(sequencer -> {
+//				builderModel.getSequencer().addUserSequencer(sequencer);
+//			});	
+//			builderModel.setDefaultValues();
+//		});	
 
 		registerWebClientManager();
 		
@@ -84,7 +89,6 @@ public abstract class SilverBulletServer {
 			public DialogAnswer dialog(String message) {
 				message = message.replace("\n", "<br>");
 				WebSocketBroadcaster.getInstance().sendMessageAsync("MESSAGE", message);
-//				System.out.println(message);
 				synchronized(syncDialog) {
 					try {
 						syncDialog.wait();

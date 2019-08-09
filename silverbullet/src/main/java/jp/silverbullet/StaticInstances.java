@@ -3,25 +3,18 @@ package jp.silverbullet;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-
 import jp.silverbullet.sourcegenerator.PropertySourceGenerator;
 import jp.silverbullet.sourcegenerator.RegisterSourceGenerator;
 
 public class StaticInstances {
 	public static final String TMP_FOLDER = "./sv_tmp";
 
-	private List<BuilderModelImpl> builderModels = new ArrayList<>();
+	private BuilderModelImpl builderModel = new BuilderModelImpl();// = new ArrayList<>();
 	private String currentFilename = "";
 		
-	public BuilderModelImpl getBuilderModel(int index) {
-		return builderModels.get(index);
-	}
-
 	public void save() {
 		createTmpFolderIfNotExists();
-		getBuilderModel(0).save(StaticInstances.TMP_FOLDER);
+		getBuilderModel().save(StaticInstances.TMP_FOLDER);
 		Zip.zip(StaticInstances.TMP_FOLDER, currentFilename);
 	}
 
@@ -45,27 +38,16 @@ public class StaticInstances {
 	}
 
 	public BuilderModelImpl getBuilderModel() {
-		return this.getBuilderModel(0);
+		return this.builderModel;
 	}
 
 	public void generateSource() {
-		String info = getBuilderModel(0).getSourceInfo();
+		String info = getBuilderModel().getSourceInfo();
 		String folder = info.split(";")[0];
 		String packageName = info.split(";")[1];
 		new PropertySourceGenerator(getBuilderModel().getPropertiesHolder2()).generate(folder, packageName);
 		new RegisterSourceGenerator(getBuilderModel().getRegisterSpecHolder()).
 			exportFile(folder, packageName);
-	}
-
-	public void createInstances(int instanceCount, long mainThreadId) {
-		for (int i = 0; i < instanceCount; i++) {
-			BuilderModelImpl builderModel = new BuilderModelImpl();
-			this.builderModels.add(builderModel);
-		}
-	}
-
-	public List<BuilderModelImpl> getBuilderModels() {
-		return this.builderModels;
 	}
 
 }

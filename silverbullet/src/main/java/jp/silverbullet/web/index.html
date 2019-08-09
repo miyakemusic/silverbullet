@@ -56,16 +56,16 @@
 $(function() {
 	$(document).ready(function(){
 		$('#mainFunction').hide();
-		var login = new Login('login', function(name) {
-			$('#loginName').append('Hello <label id="username">' + name + ' : </label>');
-			$('#username').css('font-weight', 'bold');
-			$('#loginName').append('<button id="logout">Logout</button>');
-			$('#logout').click(function() {
-				login.logout();
-			});
-			createPane();
-		});
+		var login = new Login('login', 'loginName');
 				
+		login.loginListener = function(name) {
+			createPane();
+		};
+		
+		login.logoutListener = function() {
+
+		}
+		
 		function createPane() {
 			$('#mainFunction').show();
 		

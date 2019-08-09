@@ -35,6 +35,7 @@ import jp.silverbullet.sequncer.Sequencer;
 import jp.silverbullet.sequncer.Sequencer.Actor;
 import jp.silverbullet.sequncer.SystemAccessor;
 import jp.silverbullet.sequncer.SystemAccessor.DialogAnswer;
+import jp.silverbullet.sequncer.UserSequencer;
 import jp.silverbullet.test.TestRecorder;
 import jp.silverbullet.test.TestRecorderInterface;
 import jp.silverbullet.web.ValueSetResult;
@@ -634,6 +635,10 @@ public class BuilderModelImpl {
 
 	public ValueSetResult requestChangeByUser(String id, Integer index, String value) {
 		return this.requestChange(id, index, value, false, Actor.User);
+	}
+
+	public void addUserSequencer(UserSequencer sequencer2) {
+		this.getSequencer().addUserSequencer(sequencer2);
 	}
 
 }

@@ -10,22 +10,27 @@
 <script type="text/javascript" src="mychart.js"></script>
 <script type="text/javascript" src="newlayout.js"></script> 
 <script type="text/javascript" src="mywebsocket.js"></script>
+<script type="text/javascript" src="login.js"></script>
 <script type="text/javascript">
 $(function() {
 	$(document).ready(function(){
-		if (location.search == "") {
+		var login = new Login('login');
+				
+			
+		var argMap = getArgMap();
+		
+		login.loginListener = function(name) {
+		};
+		
+		login.logoutListener = function() {
+		};
+		
+		if (argMap.get('name') == null) {
 			$.ajax({
 			   type: "GET", 
 			   url: "//" + window.location.host + "/rest/newGui/getRuntimeList",
 			   success: function(result) {
-					for (var option of result) {
-						
-						//$('#main').append('<button id="' + option + '">' + option + '</button>');
-						//$('#' + option).click(function() {
-						//	$('#main').empty();
-						//	new NewLayout('main', $(this).prop('id'));
-						//});
-						
+					for (var option of result) {						
 						$('#main').append('<div><a href="' + location.href + '?name=' +  option + '">' + option + '</a></div>'); 
 					}	
 			   }
@@ -47,13 +52,14 @@ $(function() {
 <link rel="stylesheet" type="text/css" href="mycss.css">
 <link rel="stylesheet" type="text/css" href="table.css">
 <link rel="stylesheet" type="text/css" href="jsmytable.css">
-
+<link rel="stylesheet" type="text/css" href="login.css">
 
 <head>
 <meta charset="UTF-8">
 <title>Users</title>
 </head>
 <body>
+<span id="login"></span><span id="loginName"></span>
 <div id="main"></div>
 </body>
 </html>

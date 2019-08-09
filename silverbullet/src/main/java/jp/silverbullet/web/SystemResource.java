@@ -1,21 +1,18 @@
 package jp.silverbullet.web;
 
 import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedHashMap;
 import jp.silverbullet.SilverBulletServer;
 import jp.silverbullet.auth.GoogleAccressTokenResponse;
+import jp.silverbullet.auth.GoogleHandlerForTest;
+import jp.silverbullet.auth.GoogleHandlerImpl;
+import jp.silverbullet.auth.GoogleHanlder;
 import jp.silverbullet.auth.GooglePersonalResponse;
 import jp.silverbullet.property2.SvFileException;
 
@@ -65,13 +62,15 @@ public class SystemResource {
 	
 	public static AuthStore authMap = new AuthStore();
 	
-	private Client client = ClientBuilder.newClient();
-	
+	private Client client = ClientBuilder.newClient();	
+//	private GoogleHanlder googleHandler = new GoogleHandlerForTest();//new GoogleHandlerImpl(client);
+	private GoogleHanlder googleHandler = new GoogleHandlerImpl(client);
 	@GET
 	@Path("/login")
 	@Produces(MediaType.APPLICATION_JSON)
-	public KeyValue login2(@QueryParam("code") final String code, @QueryParam("scope") final String scope) throws URISyntaxException {
-		String redirectUri = "http://localhost:8081";
+	public KeyValue login2(@QueryParam("code") final String code, @QueryParam("scope") final String scope,
+			@QueryParam("redirectUri") final String redirectUri) throws URISyntaxException {
+//		String redirectUri = googleHandler.getRedirectUri();//"http://localhost:8081";
 		
 		try {
 			String access_token;
@@ -80,10 +79,10 @@ public class SystemResource {
 				access_token = authMap.getByCode(code).access_token;
 			}
 			else {
-				GoogleAccressTokenResponse accessToken = retrieveAccessToken(code, redirectUri);
+				GoogleAccressTokenResponse accessToken = googleHandler.retrieveAccessToken(code, redirectUri);
 				access_token = accessToken.access_token;
 			}
-			GooglePersonalResponse personal = retrievePersonal(access_token);
+			GooglePersonalResponse personal = googleHandler.retrievePersonal(access_token);
 			personal.access_token = access_token;
 			personal.auth_code = code;
 			
@@ -91,45 +90,46 @@ public class SystemResource {
 			return new KeyValue("Complete", personal.name);	
 		}
 		catch (Exception e) {
-			String url = "https://accounts.google.com/o/oauth2/auth?response_type=code&client_id=1095025795016-u18jdnil89cmp2841a67n5jumoigk6fm.apps.googleusercontent.com&redirect_uri=" + redirectUri + "&scope=https://www.googleapis.com/auth/userinfo.profile&access_type=offline&approval_prompt=force";	
+			String url = googleHandler.getAuthUri(redirectUri);
+			//String url = "https://accounts.google.com/o/oauth2/auth?response_type=code&client_id=1095025795016-u18jdnil89cmp2841a67n5jumoigk6fm.apps.googleusercontent.com&redirect_uri=" + redirectUri + "&scope=https://www.googleapis.com/auth/userinfo.profile&access_type=offline&approval_prompt=force";	
 			return new KeyValue("RedirectAuth", url);
 		}
 	}
 	
-	private GoogleAccressTokenResponse retrieveAccessToken(String code, String redirectUri) {
-		String client_id = "";
-		String client_secret = "";
-		
-        MultivaluedHashMap<String, String> formParams = new MultivaluedHashMap<>();
-        
-        formParams.putSingle("client_id", client_id);
-        formParams.putSingle("client_secret", client_secret);
-       // formParams.putSingle("redirect_uri", "urn:ietf:wg:oauth:2.0:oob");
-        formParams.putSingle("redirect_uri", redirectUri);
-        
-        formParams.putSingle("grant_type", "authorization_code");
-        formParams.putSingle("access_type", "offline");
-        formParams.putSingle("code", code);
-        
-        GoogleAccressTokenResponse response = client
-                .target("https://www.googleapis.com")
-                .path("/oauth2/v4/token")
-                .request()
-                .post(Entity.entity(formParams, MediaType.APPLICATION_FORM_URLENCODED_TYPE), GoogleAccressTokenResponse.class);
-                
-        System.out.println("access token=" + response.access_token);
-        return response;
-
-	}
-	
-	private GooglePersonalResponse retrievePersonal(String accessToken) {
-        // get user info
-        WebTarget target = client.target("https://www.googleapis.com")
-        	.path("/oauth2/v1/userinfo")
-        	.queryParam("alt", "json")
-        	.queryParam("access_token", accessToken);
-        
-		GooglePersonalResponse personal = target.request().get(GooglePersonalResponse.class);			
-		return personal;	
-	}
+//	private GoogleAccressTokenResponse retrieveAccessToken(String code, String redirectUri) {
+//		String client_id = "";
+//		String client_secret = "";
+//		
+//        MultivaluedHashMap<String, String> formParams = new MultivaluedHashMap<>();
+//        
+//        formParams.putSingle("client_id", client_id);
+//        formParams.putSingle("client_secret", client_secret);
+//       // formParams.putSingle("redirect_uri", "urn:ietf:wg:oauth:2.0:oob");
+//        formParams.putSingle("redirect_uri", redirectUri);
+//        
+//        formParams.putSingle("grant_type", "authorization_code");
+//        formParams.putSingle("access_type", "offline");
+//        formParams.putSingle("code", code);
+//        
+//        GoogleAccressTokenResponse response = client
+//                .target("https://www.googleapis.com")
+//                .path("/oauth2/v4/token")
+//                .request()
+//                .post(Entity.entity(formParams, MediaType.APPLICATION_FORM_URLENCODED_TYPE), GoogleAccressTokenResponse.class);
+//                
+//        System.out.println("access token=" + response.access_token);
+//        return response;
+//
+//	}
+//	
+//	private GooglePersonalResponse retrievePersonal(String accessToken) {
+//        // get user info
+//        WebTarget target = client.target("https://www.googleapis.com")
+//        	.path("/oauth2/v1/userinfo")
+//        	.queryParam("alt", "json")
+//        	.queryParam("access_token", accessToken);
+//        
+//		GooglePersonalResponse personal = target.request().get(GooglePersonalResponse.class);			
+//		return personal;	
+//	}
 }

@@ -31,7 +31,7 @@ public class BuilderServer {
 	}
 	
 	private void initializeWebServer(int port, String protocol) {
-		new AuthenticationFilter();
+//		new AuthenticationFilter();
 		
 		Server server = null;//new Server(port);
         
