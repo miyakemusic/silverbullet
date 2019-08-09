@@ -50,7 +50,7 @@ public class GoogleHandlerImpl implements GoogleHanlder {
         GoogleAccressTokenResponse response = client
                 .target("https://www.googleapis.com")
                 .path("/oauth2/v4/token")
-                .request()
+                .request(MediaType.APPLICATION_JSON)
                 .post(Entity.entity(formParams, MediaType.APPLICATION_FORM_URLENCODED_TYPE), GoogleAccressTokenResponse.class);
                 
         System.out.println("access token=" + response.access_token);
