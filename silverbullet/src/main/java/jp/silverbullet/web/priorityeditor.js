@@ -4,13 +4,13 @@ class PriorityEditor {
 		var mainId = divid + "_main";
 		$('#' + divid).append('<div class="priorityArea" id="' + mainId + '"></div>');
 		
-		this.onUpdate = function() {
-			buildNew();
+		this.onUpdate = function(ids) {
+			buildNew(ids);
 		};
 		
 		buildNew();
 		
-		function buildNew() {
+		function buildNew(ids) {
 			$.ajax({
 			   type: "GET", 
 			   url: "//" + window.location.host + "/rest/" + url + "/getDefinedPriorities",
@@ -92,7 +92,7 @@ class PriorityEditor {
 		}
 	}
 	
-	update() {
-		this.onUpdate();
+	update(ids) {
+		this.onUpdate(ids);
 	}
 }

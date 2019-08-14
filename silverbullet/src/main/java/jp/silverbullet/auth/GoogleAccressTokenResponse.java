@@ -9,4 +9,5 @@ public class GoogleAccressTokenResponse {
 	public String token_type;
 	public String id_token;
 	
+	public GoogleAccressTokenResponse() {}
 }

@@ -62,9 +62,8 @@ public class SystemResource {
 	
 	public static AuthStore authMap = new AuthStore();
 	
-	private Client client = ClientBuilder.newClient();	
 //	private GoogleHanlder googleHandler = new GoogleHandlerForTest();//new GoogleHandlerImpl(client);
-	private GoogleHanlder googleHandler = new GoogleHandlerImpl(client);
+	private GoogleHanlder googleHandler = new GoogleHandlerImpl(ClientBuilder.newClient());
 	@GET
 	@Path("/login")
 	@Produces(MediaType.APPLICATION_JSON)

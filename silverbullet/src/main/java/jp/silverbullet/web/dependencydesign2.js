@@ -66,7 +66,7 @@ class DependencyDesign2 {
 		}		
 		new MyWebSocket(function(msg) {				
 				if (msg == 'MatrixChanged') {
-					priorityEditor.update();
+					updatePriorityEditor();
 				}
 			}
 			, 'DEPDESIGN');
@@ -202,7 +202,14 @@ class DependencyDesign2 {
 		var idPriority = div + "_priority";
 		$('#' + div).append('<div id="' + idPriority + '"></div>');	
 		priorityEditor = new PriorityEditor(idPriority, 'dependencyDesign2');
-		priorityEditor.update();
+		
+		function updatePriorityEditor() {
+			var prioTargets = [];
+			prioTargets.push(triggers);
+			prioTargets.push(targets);
+			priorityEditor.update(prioTargets);
+		}
+		
 		
 		function initTable() {
 			$('#' + idEnabledTableDiv).empty();
@@ -220,7 +227,7 @@ class DependencyDesign2 {
 				   type: "GET", 
 				   url: "//" + window.location.host + "/rest/dependencyDesign2/setSpecEnabled?trigger=" + trigger + "&target=" + target + "&enabled=" + enabled,
 				   success: function(msg){
-						priorityEditor.update();
+						updatePriorityEditor();
 						getMatrix();
 				   }
 				});				
@@ -239,7 +246,7 @@ class DependencyDesign2 {
 				   type: "GET", 
 				   url: "//" + window.location.host + "/rest/dependencyDesign2/setSpecValue?trigger=" + trigger + "&target=" + target + "&value=" + encValue,
 				   success: function(msg){
-						priorityEditor.update();
+						updatePriorityEditor();
 						getMatrix();
 				   }
 				});					
@@ -256,7 +263,7 @@ class DependencyDesign2 {
 				   type: "GET", 
 				   url: "//" + window.location.host + "/rest/dependencyDesign2/setSpecValue?trigger=" + trigger + "&target=" + target + "&value=" + encValue,
 				   success: function(msg){
-						priorityEditor.update();
+						updatePriorityEditor();
 						getMatrix();
 				   }
 				});					
@@ -272,7 +279,7 @@ class DependencyDesign2 {
 				   type: "GET", 
 				   url: "//" + window.location.host + "/rest/dependencyDesign2/setBlockPropagation?trigger=" + trigger + "&target=" + target + "&enabled=" + enabled,
 				   success: function(msg){
-						priorityEditor.update();
+						updatePriorityEditor();
 						getMatrix();
 				   }
 				});	
