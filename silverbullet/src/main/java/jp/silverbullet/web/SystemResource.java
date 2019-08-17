@@ -93,41 +93,4 @@ public class SystemResource {
 			return new KeyValue("RedirectAuth", url);
 		}
 	}
-	
-//	private GoogleAccressTokenResponse retrieveAccessToken(String code, String redirectUri) {
-//		String client_id = "";
-//		String client_secret = "";
-//		
-//        MultivaluedHashMap<String, String> formParams = new MultivaluedHashMap<>();
-//        
-//        formParams.putSingle("client_id", client_id);
-//        formParams.putSingle("client_secret", client_secret);
-//       // formParams.putSingle("redirect_uri", "urn:ietf:wg:oauth:2.0:oob");
-//        formParams.putSingle("redirect_uri", redirectUri);
-//        
-//        formParams.putSingle("grant_type", "authorization_code");
-//        formParams.putSingle("access_type", "offline");
-//        formParams.putSingle("code", code);
-//        
-//        GoogleAccressTokenResponse response = client
-//                .target("https://www.googleapis.com")
-//                .path("/oauth2/v4/token")
-//                .request()
-//                .post(Entity.entity(formParams, MediaType.APPLICATION_FORM_URLENCODED_TYPE), GoogleAccressTokenResponse.class);
-//                
-//        System.out.println("access token=" + response.access_token);
-//        return response;
-//
-//	}
-//	
-//	private GooglePersonalResponse retrievePersonal(String accessToken) {
-//        // get user info
-//        WebTarget target = client.target("https://www.googleapis.com")
-//        	.path("/oauth2/v1/userinfo")
-//        	.queryParam("alt", "json")
-//        	.queryParam("access_token", accessToken);
-//        
-//		GooglePersonalResponse personal = target.request().get(GooglePersonalResponse.class);			
-//		return personal;	
-//	}
 }

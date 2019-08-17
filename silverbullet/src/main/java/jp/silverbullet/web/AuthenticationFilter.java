@@ -9,8 +9,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 
-import jp.silverbullet.auth.GooglePersonalResponse;
-
 @Provider
 public class AuthenticationFilter implements ContainerRequestFilter
 {

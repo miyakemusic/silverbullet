@@ -38,7 +38,7 @@ class Build {
 		function getInfo(id, res) {
 			$.ajax({
 				type: "GET", 
-				url: "://" + window.location.host + "/rest/selfbuild/" + res,
+				url: "//" + window.location.host + "/rest/selfbuild/" + res,
 					success: function(msg) {
 						$('#' + id).val(msg);
 					}		
