@@ -186,4 +186,11 @@ public class UiBuilder {
 		return ret;
 	}
 
+	public void changeId(String prevId, String newId) {
+		this.panes.forEach((k,v) -> {
+			v.changeId(prevId, newId);
+		});
+		System.out.println();
+	}
+
 }

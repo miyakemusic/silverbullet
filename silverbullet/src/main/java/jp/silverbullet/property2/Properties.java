@@ -48,5 +48,21 @@ public class Properties {
 	public void setProperties(Map<String, PropertyDef2> properties) {
 		this.properties = properties;
 	}
+
+	public void changeId(String newId, String oldId) {
+		Map<String, PropertyDef2> tmp = new LinkedHashMap<>();
+		
+		this.properties.forEach((k,v) -> {
+			tmp.put(k, v);
+			if (k.equals(oldId)) {
+				tmp.put(newId, v);
+			}
+		});
+		tmp.remove(oldId);
+		//this.properties.put(newId, this.get(oldId));
+		//this.properties.remove(oldId);
+		this.properties = tmp;
+	}
+	
 	
 }

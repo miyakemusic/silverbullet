@@ -17,9 +17,11 @@ public class PropertyHolder2 {
 
 		@Override
 		public void onIdChanged(String newId, String oldId) {
-			PropertyDef2 prop = properties.get(oldId);
-			remove(oldId);
-			addProperty(prop);
+			changeId(newId, oldId);
+			
+//			PropertyDef2 prop = properties.get(oldId);
+//			remove(oldId);
+//			addProperty(prop);
 		}
 
 		@Override
@@ -45,6 +47,15 @@ public class PropertyHolder2 {
 
 	private Set<PropertyDefHolderListener> listeners = new HashSet<>();
 	
+	private void changeId(String newId, String oldId) {
+		properties.changeId(newId, oldId);
+		this.fireIdChanged(newId, oldId);
+	}
+	
+	private void fireIdChanged(String newId, String oldId) {
+		this.listeners.forEach(listener -> listener.onChange(newId, PropertyDef2.ID, newId, oldId));
+	}
+
 	public void addProperty(PropertyDef2 propertyDef) {
 		propertyDef.addListener(listener);
 		this.properties.put(propertyDef.getId(), propertyDef);
@@ -102,6 +113,7 @@ public class PropertyHolder2 {
 		try {
 			this.properties = new JsonPersistent().loadJson(Properties.class, filename);
 			this.properties.getProperties().forEach((key, value) -> value.addListener(listener));
+			this.listeners.forEach(listener -> listener.onLoad());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -124,6 +136,10 @@ public class PropertyHolder2 {
 	
 	public void removeListener(PropertyDefHolderListener propertDefHolderListener) {
 		this.listeners .remove(propertDefHolderListener);
+	}
+
+	public void addOption(String id, String optionId) throws Exception {
+		this.get(id).option(optionId, "", "");
 	}
 
 }

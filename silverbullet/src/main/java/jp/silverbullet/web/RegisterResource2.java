@@ -16,7 +16,6 @@ import javax.ws.rs.core.MediaType;
 
 import jp.silverbullet.BuilderModelImpl.RegisterTypeEnum;
 import jp.silverbullet.SilverBulletServer;
-import jp.silverbullet.StaticInstances;
 import jp.silverbullet.register.json.SvRegisterJsonHolder;
 import jp.silverbullet.register2.RegisterAccessor;
 import jp.silverbullet.register2.RegisterJsonController;

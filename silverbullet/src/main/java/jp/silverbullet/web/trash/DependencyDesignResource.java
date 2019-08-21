@@ -1,4 +1,4 @@
-package jp.silverbullet.web;
+package jp.silverbullet.web.trash;
 
 import java.util.List;
 import java.util.Map;

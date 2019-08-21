@@ -203,19 +203,26 @@ public abstract class SilverBulletServer {
 					e.printStackTrace();
 				}
 			}
+
+			@Override
+			public void onLoad() {
+				// TODO Auto-generated method stub
+				
+			}
+
 		});
 		
-		staticInstance.getBuilderModel().getUiLayoutHolder().addListener(new UiLayoutListener() {
-			@Override
-			public void onLayoutChange(String div, String currentFilename) {
-				try {
-					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("DESIGN", "layoutChanged:" + div));
-					WebSocketBroadcaster.getInstance().sendMessage(str);
-				} catch (JsonProcessingException e) {
-					e.printStackTrace();
-				}
-			}
-		});
+//		staticInstance.getBuilderModel().getUiLayoutHolder().addListener(new UiLayoutListener() {
+//			@Override
+//			public void onLayoutChange(String div, String currentFilename) {
+//				try {
+//					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("DESIGN", "layoutChanged:" + div));
+//					WebSocketBroadcaster.getInstance().sendMessage(str);
+//				} catch (JsonProcessingException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
 
 		staticInstance.getBuilderModel().getRegisterAccessor().addListener(new RegisterAccessorListener() {
 			@Override

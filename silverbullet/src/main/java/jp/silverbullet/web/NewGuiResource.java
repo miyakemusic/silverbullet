@@ -23,7 +23,8 @@ public class NewGuiResource {
 	@Path("/getDesign")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public Pane getDesign(@QueryParam("root") final String root, @QueryParam("link") final boolean link) {
-		return SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().getRootPane(root, link);
+		Pane pane = SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().getRootPane(root, link);
+		return pane;
 	}	
 
 	@GET
@@ -32,7 +33,8 @@ public class NewGuiResource {
 	public Pane getDesignByName(@QueryParam("name") final String name, @QueryParam("link") final boolean link,
 			@QueryParam("initPos") final boolean initPos) {
 		
-		return SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().getPaneByName(name, link, initPos);
+		Pane pane = SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder().getPaneByName(name, link, initPos);
+		return pane;
 	}
 	
 	@GET

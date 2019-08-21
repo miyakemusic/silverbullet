@@ -53,9 +53,13 @@ class Login {
 		$('#' + beforeDiv).append('<div id="loginDiv"></div>');
 		$('#loginDiv').append('<div class="subtitle">Login with:</div>');
 		$('#loginDiv').append('<button id="google" class="loginButton">Google</button>');
-		$('#loginDiv').append('<button class="loginButton">Facebook</button>');
-		$('#loginDiv').append('<button class="loginButton">Twitter</button>');
-		$('#loginDiv').append('<button class="loginButton">Yahoo</button>');
+		$('#loginDiv').append('<button id="facebook">Facebook</button>');
+		$('#loginDiv').append('<button id="twitter">Twitter</button>');
+		$('#loginDiv').append('<button id="yahoo">Yahoo</button>');
+		
+		$('#facebook').prop('disabled', true);
+		$('#twitter').prop('disabled', true);
+		$('#yahoo').prop('disabled', true);
 		
 		$('#google').click(function() {
 			login();
@@ -138,6 +142,6 @@ $.ajaxPrefilter( function( options, originalOptions, jqXHR ) {
 });
 $.ajaxSetup({
     error: function(event, jqXHR, ajaxSettings, thrownError) {
-		window.location.href = window.location.origin;
+//		window.location.href = window.location.origin;
     }
 });

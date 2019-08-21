@@ -40,8 +40,6 @@ import jp.silverbullet.test.TestRecorder;
 import jp.silverbullet.test.TestRecorderInterface;
 import jp.silverbullet.web.ValueSetResult;
 import jp.silverbullet.web.ui.PropertyGetter;
-import jp.silverbullet.web.ui.UiLayout;
-import jp.silverbullet.web.ui.UiLayoutHolder;
 import jp.silverbullet.web.ui.part2.UiBuilder;
 
 public class BuilderModelImpl {
@@ -63,6 +61,8 @@ public class BuilderModelImpl {
 	private RegisterController registerController = new RegisterController();
 	private RuntimeRegisterMap runtimeRegisterMap = new RuntimeRegisterMap();
 	private BlobStore blobStore = new BlobStore();
+	private UndoManager undoManager = new UndoManager();
+	
 	private DependencyDesigner dependencyDesigner = new DependencyDesigner(propertiesHolder2) {
 
 		@Override
@@ -98,19 +98,19 @@ public class BuilderModelImpl {
 	
 	private RegisterAccessor currentRegisterAccessor = runtimeRegisterMap;
 
-	private UiLayoutHolder uiLayoutHolder = new UiLayoutHolder(new PropertyGetter() {
-		public RuntimeProperty getProperty(String id) {
-			return store.get(id);
-		}
-		
-		public RuntimeProperty getProperty(String id, int index) {
-			return store.get(id, index);
-		}
-	});
-
-	public UiLayoutHolder getUiLayoutHolder() {
-		return uiLayoutHolder;
-	}
+//	private UiLayoutHolder uiLayoutHolder = new UiLayoutHolder(new PropertyGetter() {
+//		public RuntimeProperty getProperty(String id) {
+//			return store.get(id);
+//		}
+//		
+//		public RuntimeProperty getProperty(String id, int index) {
+//			return store.get(id, index);
+//		}
+//	});
+//
+//	public UiLayoutHolder getUiLayoutHolder() {
+//		return uiLayoutHolder;
+//	}
 
 	private EasyAccessInterface easyAccessInterface = new EasyAccessInterface() {
 		public RuntimeProperty getProperty(String id) {
@@ -202,9 +202,8 @@ public class BuilderModelImpl {
 	private DependencySpecHolder defaultDependency;
 	private RegisterSpecHolder registerSpecHolder = new RegisterSpecHolder();
 	private List<RegisterAccessor> simulators;
-//	private String sourceInfo;
 	private RegisterAccessor hardwareAccessor;
-	private UiBuilder uiBuilder  = null;
+	private UiBuilder uiBuilder  = new UiBuilder();
 	private Set<RuntimeListener> runtimeListeners = new HashSet<>();
 
 	public enum RegisterTypeEnum {
@@ -214,22 +213,6 @@ public class BuilderModelImpl {
 
 	public BuilderModelImpl() {
 		store = new RuntimePropertyStore(propertiesHolder2);
-		propertiesHolder2.addListener(new PropertyDefHolderListener() {
-			@Override
-			public void onChange(String id, String field, Object value, Object prevValue) {
-//				restrictionMatrix.initValue();
-			}
-
-			@Override
-			public void onAdd(String id) {
-//				restrictionMatrix.initValue();
-			}
-
-			@Override
-			public void onRemove(String id, String replacedId) {
-//				restrictionMatrix.initValue();
-			}
-		});
 		this.getRegisterAccessor().addListener(this.testRecorder);
 		this.getRuntimRegisterMap().addDevice(DeviceType.CONTROLLER, this.registerController);
 		this.sequencer = new Sequencer() {
@@ -261,8 +244,10 @@ public class BuilderModelImpl {
 		};
 
 		sequencer.addSequencerListener(testRecorder);
-		this.uiLayoutHolder.createDefault();
+//		this.uiLayoutHolder.createDefault();
 		createDependencyEngine();
+		
+		this.undoManager.set(propertiesHolder2, dependencySpecHolder2, uiBuilder, this.testRecorder);
 	}
 
 	public RuntimePropertyStore getRuntimePropertyStore() {
@@ -273,13 +258,13 @@ public class BuilderModelImpl {
 
 		propertiesHolder2.load(folder + "/" + ID_DEF_JSON);
 		
-		this.store = new RuntimePropertyStore(propertiesHolder2);
+		//this.store = new RuntimePropertyStore(propertiesHolder2);
 		this.registerProperty = load(RegisterSpecHolder.class, folder + "/" + REGISTER_XML);
 		this.registerShortCuts = load(RegisterShortCutHolder.class, folder + "/" + REGISTERSHORTCUT);
 		this.dependencySpecHolder2 = loadJson(DependencySpecHolder.class, folder + "/" + DEPENDENCYSPEC3_XML);
 		defaultDependency = this.dependencySpecHolder2;
 	
-		uiLayoutHolder.load(folder);
+//		uiLayoutHolder.load(folder);
 	
 		registerSpecHolder.load(folder);// = load(RegisterSpecHolder.class, folder);
 //		restrictionMatrix.load(folder);
@@ -290,6 +275,8 @@ public class BuilderModelImpl {
 		}
 		this.dependencyDesigner.load(folder);
 		this.selfBuilder.load(folder);
+		
+		this.undoManager.set(propertiesHolder2, dependencySpecHolder2, uiBuilder, this.testRecorder);
 	}
 
 	public void createDependencyEngine() {
@@ -347,7 +334,7 @@ public class BuilderModelImpl {
 		saveJson(this.dependencySpecHolder2, folder + "/" + DEPENDENCYSPEC3_XML);
 
 		this.registerSpecHolder.save(folder);
-		this.uiLayoutHolder.save(folder);
+//		this.uiLayoutHolder.save(folder);
 		save(this.uiBuilder, UiBuilder.class, folder + "/" + UIBUILDER);
 //		this.restrictionMatrix.save(folder);
 		this.dependencyDesigner.save(folder);
@@ -401,12 +388,12 @@ public class BuilderModelImpl {
 		return this.registerShortCuts;
 	}
 	
-	public void changeId(String prevId, String newId) {
-		this.propertiesHolder2.get(prevId).setId(newId);
-		this.dependencySpecHolder2.changeId(prevId, newId);
-		this.uiLayoutHolder.changeId(prevId, newId);
-		this.testRecorder.changeId(prevId, newId);
-	}
+//	public void changeId(String prevId, String newId) {
+//		this.propertiesHolder2.get(prevId).setId(newId);
+//		this.dependencySpecHolder2.changeId(prevId, newId);
+//		this.uiBuilder.changeId(prevId, newId);
+//		this.testRecorder.changeId(prevId, newId);
+//	}
 
 	
 	public void saveParameters(String filename) throws SvFileException {
@@ -426,9 +413,9 @@ public class BuilderModelImpl {
 	}
 
 		
-	public UiLayout switchUiFile(String filename) {
-		return this.uiLayoutHolder.switchFile(filename);
-	}
+//	public UiLayout switchUiFile(String filename) {
+//		return this.uiLayoutHolder.switchFile(filename);
+//	}
 
 	public TestRecorder getTestRecorder() {
 		return this.testRecorder;
@@ -567,7 +554,7 @@ public class BuilderModelImpl {
 			sequencer.requestChange(id, index, value, forceChange, 
 					forceChange ? null : commitListener, actor);
 			
-			getUiLayoutHolder().getCurrentUi().doAutoDynamicPanel();
+//			getUiLayoutHolder().getCurrentUi().doAutoDynamicPanel();
 
 			ret.result = "Accepted";
 		} catch (RequestRejectedException e) {
@@ -588,12 +575,12 @@ public class BuilderModelImpl {
 		return requestChange(id, index, value, false, actor);
 	}
 
-	public void setUiBuilder(UiBuilder ui) {
-		if (this.uiBuilder == null) {
-			this.uiBuilder = ui;
-			
-		}
-	}
+//	public void setUiBuilder(UiBuilder ui) {
+//		if (this.uiBuilder == null) {
+//			this.uiBuilder = ui;
+//			
+//		}
+//	}
 
 	public UiBuilder getUiBuilder() {
 		return uiBuilder;

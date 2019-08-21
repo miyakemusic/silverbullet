@@ -15,9 +15,7 @@ public class RuntimePropertyStore {
 	
 	public RuntimePropertyStore(PropertyHolder2 propertyHolder) {
 		this.holder = propertyHolder;
-		propertyHolder.getProperties().forEach(property -> {
-			addProperty(property);
-		});
+		init();
 		
 		propertyHolder.addListener(new PropertyDefHolderListener() {
 			@Override
@@ -26,6 +24,9 @@ public class RuntimePropertyStore {
 					updateSize(id, 
 							Double.valueOf(value.toString()).intValue(), 
 							Double.valueOf(prevValue.toString()).intValue());
+				}
+				else if (field.equals(PropertyDef2.ID)) {
+					runtimeProperties.changeId(value.toString(), prevValue.toString());
 				}
 
 			}
@@ -43,6 +44,18 @@ public class RuntimePropertyStore {
 					  }
 				}
 			}
+
+			@Override
+			public void onLoad() {
+				init();
+			}
+		});
+	}
+
+	private void init() {
+		this.runtimeProperties.clear();
+		this.holder.getProperties().forEach(property -> {
+			addProperty(property);
 		});
 	}
 
@@ -61,9 +74,7 @@ public class RuntimePropertyStore {
 	}
 
 	private void addProperty(PropertyDef2 property) {
-		for (int i = 0; i < property.getArraySize(); i++) {
-			runtimeProperties.put(RuntimeProperty.createIdText(property.getId(), i), new RuntimeProperty(property));
-		}
+		runtimeProperties.add(property);
 	}
 
 	public RuntimeProperty get(String id) {
@@ -128,5 +139,10 @@ public class RuntimePropertyStore {
 		this.runtimeProperties.getRuntimeProperties().forEach((id, prop) -> {
 			prop.clearOptionMask();
 		});
+	}
+
+	public void rebuild() {
+		// TODO Auto-generated method stub
+		
 	}
 }

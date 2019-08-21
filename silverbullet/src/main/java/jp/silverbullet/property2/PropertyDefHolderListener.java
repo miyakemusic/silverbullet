@@ -8,4 +8,5 @@ public interface PropertyDefHolderListener {
 
 	void onRemove(String id, String replacedId);
 
+	void onLoad();
 }

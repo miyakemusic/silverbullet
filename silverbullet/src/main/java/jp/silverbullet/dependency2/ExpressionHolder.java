@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.SwingUtilities;
+
 import jp.silverbullet.property2.RuntimeProperty;
 
 public class ExpressionHolder {
@@ -170,8 +172,15 @@ public class ExpressionHolder {
 				if (IdUtility.isValidOption(prevId, id)) {
 					String value = id.replace(prevId, "");
 					List<Expression> expression = this.expressions.get(targetElement);
-					this.expressions.put(DependencySpec.OptionEnable + RuntimeProperty.INDEXSIGN + newId + value, expression);
-					this.expressions.remove(targetElement);
+					
+					SwingUtilities.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+							expressions.put(DependencySpec.OptionEnable + RuntimeProperty.INDEXSIGN + newId + value, expression);
+							expressions.remove(targetElement);
+						}
+					});
+
 				}
 			}
 		}

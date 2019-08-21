@@ -384,4 +384,21 @@ public class Pane implements Cloneable {
 		}
 	}
 	
+	public void changeId(String prevId, String newId) {
+		
+		new PaneWalkThrough() {
+
+			@Override
+			protected boolean handle(Pane widget, Pane parent) {
+
+				if (widget.id.equals(prevId)) {
+					widget.id = newId;
+					widget.subId = widget.subId.replace(prevId, newId);
+				}
+				return true;
+			}
+			
+		}.walkThrough(this, null);
+	}
+	
 }

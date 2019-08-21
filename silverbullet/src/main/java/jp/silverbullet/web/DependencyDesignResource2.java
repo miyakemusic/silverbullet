@@ -1,10 +1,8 @@
 package jp.silverbullet.web;
 
-import java.net.URLDecoder;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.Encoded;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;

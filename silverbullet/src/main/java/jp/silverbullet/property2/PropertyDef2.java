@@ -329,6 +329,7 @@ public class PropertyDef2 implements Cloneable {
 	protected PropertyDef2 clone() {
 		try {
 			PropertyDef2 ret = (PropertyDef2)super.clone();
+			ret.clearListeners();
 			ret.options = new LinkedHashMap<String, ListDetailElement>();
 			for (String optionId : this.options.keySet()) {
 				ListDetailElement e = this.options.get(optionId).clone();

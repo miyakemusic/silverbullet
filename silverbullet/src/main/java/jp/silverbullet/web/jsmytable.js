@@ -285,7 +285,12 @@ class JsMyTable2 {
 		
 		this.tableId = div + "_table";
 		$('#' + div).append('<table class="mytable" id="' + this.tableId + '"><thead class="scrollHead"></thead><tbody class="scrollBody"></tbody></table>');
+//		$('#' + div).append('<table class="resizable" id="' + this.tableId + '"><thead></thead><tbody></tbody></table>');
 
+
+//		$('#' + this.tableId).resizableColumns();
+//		$('table.resizable').resizableColumns();
+		
 		$('.scrollBody').css("height", "100%");		
 	}
 	
@@ -362,7 +367,7 @@ class JsMyTable2 {
 	update() {
 		this.updateHeader();
 		this.updateBody();
-		
+//		$('#' + this.tableId).resizableColumns();
 		this.touched = true;
 	}
 	

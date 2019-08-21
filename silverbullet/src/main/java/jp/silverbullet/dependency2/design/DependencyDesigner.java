@@ -108,6 +108,12 @@ public abstract class DependencyDesigner {
 			// TODO Auto-generated method stub
 			
 		}
+
+		@Override
+		public void onLoad() {
+			// TODO Auto-generated method stub
+			
+		}
 	};
 	private boolean confirmSamePriority;
 	

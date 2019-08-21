@@ -16,7 +16,7 @@
 .mytable {
   border-collapse:collapse;
   margin:0 auto;
-  table-layout:fixed;
+  /*table-layout:fixed;*/
   width:100%;
   height:100%;
   font:inherit;
@@ -24,7 +24,7 @@
 .mytable  td,th{
   padding:2px;
   table-layout:fixed;
-  width: 50px;
+/*  width: 50px;*/ 
   font:inherit;
 }
 .mytable thead th{
@@ -36,11 +36,11 @@
 }
 .mytable thead.scrollHead,tbody.scrollBody{
   display:block;
-  table-layout:fixed;
+/*  table-layout:fixed; */
 }
 .mytable tbody.scrollBody{
   overflow-y:auto;
-  table-layout:fixed;
+/*  table-layout:fixed; */
 }
 
 .selected {

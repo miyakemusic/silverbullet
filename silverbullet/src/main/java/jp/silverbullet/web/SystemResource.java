@@ -5,7 +5,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.MediaType;
 import jp.silverbullet.SilverBulletServer;
@@ -62,8 +61,8 @@ public class SystemResource {
 	
 	public static AuthStore authMap = new AuthStore();
 	
-//	private GoogleHanlder googleHandler = new GoogleHandlerForTest();//new GoogleHandlerImpl(client);
-	private GoogleHanlder googleHandler = new GoogleHandlerImpl(ClientBuilder.newClient());
+	private GoogleHanlder googleHandler = new GoogleHandlerForTest();
+//	private GoogleHanlder googleHandler = new GoogleHandlerImpl(ClientBuilder.newClient());
 	@GET
 	@Path("/login")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -92,5 +91,17 @@ public class SystemResource {
 			String url = googleHandler.getAuthUri(redirectUri);
 			return new KeyValue("RedirectAuth", url);
 		}
+	}
+	
+	@GET
+	@Path("/undo")
+	public String undo() {
+		return "OK";
+	}
+	
+	@GET
+	@Path("/redo")
+	public String redo() {
+		return "OK";
 	}
 }

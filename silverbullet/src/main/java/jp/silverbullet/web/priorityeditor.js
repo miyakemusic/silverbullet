@@ -10,23 +10,27 @@ class PriorityEditor {
 		
 		buildNew();
 		
+		var filterIds = [];
 		function buildNew(ids) {
+			if (ids != null) {
+				filterIds = ids;
+			}
 			$.ajax({
 			   type: "GET", 
 			   url: "//" + window.location.host + "/rest/" + url + "/getDefinedPriorities",
 			   success: function(priorities){
-					build2(priorities);
+					build2(priorities, filterIds);
 			   }
 			});		
 	
 		}
 		
-		function build2(priorities) {
+		function build2(priorities, ids) {
 			$.ajax({
 			   type: "GET", 
 			   url: "//" + window.location.host + "/rest/" + url + "/getPriorities",
 			   success: function(msg){
-			   	build(priorities, msg);
+			   	build(priorities, msg, ids);
 			   }
 			});	
 		}
@@ -36,7 +40,7 @@ class PriorityEditor {
 			return s[s.length - 1];
 		}
 		
-		function build(priorities, msg) {
+		function build(priorities, msg, filterIds) {
 			$('#' + mainId).empty();
 			var firstIndex = priorities[0];
 			var number = msg[firstIndex].value;
@@ -60,6 +64,9 @@ class PriorityEditor {
 				var ids = msg[priority];
 				
 				for (var id of ids) {
+					if (!filterIds.includes(id)) {
+						continue;
+					}
 					$('#' + rowName).append('<div class="priorityItem" id="' + id + '">' + id + '</div>');
 				}
 			}

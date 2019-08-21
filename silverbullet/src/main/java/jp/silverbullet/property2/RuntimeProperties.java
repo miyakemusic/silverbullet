@@ -44,6 +44,24 @@ public class RuntimeProperties {
 	public void remove(String id, int index) {
 		this.runtimeProperties.remove(RuntimeProperty.createIdText(id, index));
 	}
+
+	public void changeId(String newId, String oldId) {
+		RuntimeProperty prop = this.get(RuntimeProperty.createIdText(oldId, 0));
+		for (int i = 0; i < prop.getSize(); i++) {
+			this.runtimeProperties.put(RuntimeProperty.createIdText(newId, i), prop);
+			this.runtimeProperties.remove(RuntimeProperty.createIdText(oldId, i));
+		}
+	}
+
+	public void add(PropertyDef2 property) {
+		for (int i = 0; i < property.getArraySize(); i++) {
+			runtimeProperties.put(RuntimeProperty.createIdText(property.getId(), i), new RuntimeProperty(property));
+		}
+	}
+
+	public void clear() {
+		this.runtimeProperties.clear();
+	}
 	
 	
 }

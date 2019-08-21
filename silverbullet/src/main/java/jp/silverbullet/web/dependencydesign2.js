@@ -140,6 +140,7 @@ class DependencyDesign2 {
 			triggers.push(id);
 			getMatrix();
 			updateIdsPane();
+			updatePriorityEditor();
 		});
 		
 		var idAddTarget = div + "_addTarget";
@@ -152,6 +153,7 @@ class DependencyDesign2 {
 			targets.push($('#' + idsId).val());
 			getMatrix();
 			updateIdsPane();
+			updatePriorityEditor();
 		});
 			
 		var triggerIdsPaneId = div + "_triggerIdsPane";
@@ -163,6 +165,7 @@ class DependencyDesign2 {
 		function updateAll() {
 			getMatrix();
 			updateIdsPane();
+			updatePriorityEditor();
 		}
 		
 		function updateIdsPane() {
@@ -205,8 +208,12 @@ class DependencyDesign2 {
 		
 		function updatePriorityEditor() {
 			var prioTargets = [];
-			prioTargets.push(triggers);
-			prioTargets.push(targets);
+			for (var v of triggers) {
+				prioTargets.push(v);
+			}
+			for (var v of targets) {
+				prioTargets.push(v);
+			}
 			priorityEditor.update(prioTargets);
 		}
 		
@@ -340,6 +347,7 @@ class DependencyDesign2 {
 					targets = response.targets;
 					getMatrix();
 					updateIdsPane();
+					updatePriorityEditor();
 				}
 			});			
 		}			

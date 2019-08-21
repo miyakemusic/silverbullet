@@ -70,23 +70,23 @@ public class TestResource {
 		return "OK";
 	}
 	
-	@GET
-	@Path("/addPropertyTest")
-	@Produces(MediaType.APPLICATION_JSON) 
-	public String addPropertyTest(@QueryParam("div") final String div) {
-		JsWidget widget = SilverBulletServer.getStaticInstance().getBuilderModel().getUiLayoutHolder().getCurrentUi().getWidget(div);
-		SilverBulletServer.getStaticInstance().getBuilderModel().getTestRecorder().addPropertyTest(widget.getId());
-		return "OK";
-	}
-
-	@GET
-	@Path("/addPropertyCommand")
-	@Produces(MediaType.APPLICATION_JSON) 
-	public String addCommand(@QueryParam("div") final String div) {
-		JsWidget widget = SilverBulletServer.getStaticInstance().getBuilderModel().getUiLayoutHolder().getCurrentUi().getWidget(div);
-		SilverBulletServer.getStaticInstance().getBuilderModel().getTestRecorder().addPropertyCommand(widget.getId());
-		return "OK";
-	}
+//	@GET
+//	@Path("/addPropertyTest")
+//	@Produces(MediaType.APPLICATION_JSON) 
+//	public String addPropertyTest(@QueryParam("div") final String div) {
+//		JsWidget widget = SilverBulletServer.getStaticInstance().getBuilderModel().getUiLayoutHolder().getCurrentUi().getWidget(div);
+//		SilverBulletServer.getStaticInstance().getBuilderModel().getTestRecorder().addPropertyTest(widget.getId());
+//		return "OK";
+//	}
+//
+//	@GET
+//	@Path("/addPropertyCommand")
+//	@Produces(MediaType.APPLICATION_JSON) 
+//	public String addCommand(@QueryParam("div") final String div) {
+//		JsWidget widget = SilverBulletServer.getStaticInstance().getBuilderModel().getUiLayoutHolder().getCurrentUi().getWidget(div);
+//		SilverBulletServer.getStaticInstance().getBuilderModel().getTestRecorder().addPropertyCommand(widget.getId());
+//		return "OK";
+//	}
 	
 	@GET
 	@Path("/addCommand")
