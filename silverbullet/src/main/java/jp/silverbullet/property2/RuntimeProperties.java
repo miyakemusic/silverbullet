@@ -48,6 +48,7 @@ public class RuntimeProperties {
 	public void changeId(String newId, String oldId) {
 		RuntimeProperty prop = this.get(RuntimeProperty.createIdText(oldId, 0));
 		for (int i = 0; i < prop.getSize(); i++) {
+			prop.setCurrentValue(prop.getCurrentValue().replace(oldId, newId));
 			this.runtimeProperties.put(RuntimeProperty.createIdText(newId, i), prop);
 			this.runtimeProperties.remove(RuntimeProperty.createIdText(oldId, i));
 		}

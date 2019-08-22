@@ -328,7 +328,6 @@ public class Pane implements Cloneable {
 			Pane pane = (Pane)super.clone();
 			pane.widgets = new ArrayList<Pane>(this.widgets);
 			pane.css = new ArrayList<KeyValue>(this.css);
-//			pane.volatileInfo = new ArrayList<String>();
 			return pane;
 			
 		} catch (CloneNotSupportedException e) {

@@ -22,7 +22,7 @@ public class RuntimeResource {
 	public JsProperty getProperty(@QueryParam("id") String id, @QueryParam("index") Integer index, @QueryParam("ext") String ext) {
 		RuntimeProperty property = SilverBulletServer.getStaticInstance().getBuilderModel().getRuntimePropertyStore().get(RuntimeProperty.createIdText(id,index));
 		if (property == null) {
-			System.out.println();
+			System.err.println(id);
 		}
 		return JsPropertyConverter.convert(property, ext, SilverBulletServer.getStaticInstance().getBuilderModel().getBlobStore());
 	}
