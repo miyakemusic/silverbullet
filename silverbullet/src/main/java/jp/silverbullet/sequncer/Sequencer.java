@@ -33,6 +33,7 @@ public abstract class Sequencer {
 	private Set<SequencerListener> listeners = new HashSet<SequencerListener>();
 	private List<UserSequencer> userSequencers = new ArrayList<>();
 	private List<String> debugDepLog;
+	private Object sync = new Object();
 	
 	private SvHandlerModel model = new SvHandlerModel() {
 		@Override
@@ -143,7 +144,12 @@ public abstract class Sequencer {
 				while(true) {
 					try {
 						DepenendencyRequest req = dependencyQueue.take();
-						handleRequestChange(req.id.getId(), req.id.getIndex(), req.value, req.forceChange, req.commitListener, req.actor);
+						String id = req.id.getId();
+						int index = req.id.getIndex();
+						handleRequestChange(id, index, req.value, req.forceChange, req.commitListener, req.actor);
+						synchronized(sync) {
+							sync.notify();
+						}
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					} catch (RequestRejectedException e) {
@@ -250,6 +256,16 @@ public abstract class Sequencer {
 	}
 	public void addUserSequencer(UserSequencer testSequencer) {
 		this.userSequencers.add(testSequencer);
+	}
+	public void syncDependency() {
+		synchronized(sync) {
+			try {
+				sync.wait();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 }

@@ -112,20 +112,20 @@ public class DependencySpecResource2 {
 	}
 	
 	
-	@GET
-	@Path("/setAlternative")
-	@Produces(MediaType.TEXT_PLAIN)
-	public String setAlternative(@QueryParam("enabled") final Boolean enabled) {
-		String type = "";
-		if (enabled) {
-			type = "Alternative";
-		}
-		else {
-			type = "Normal";
-		}
-		SilverBulletServer.getStaticInstance().getBuilderModel().switchDependency(type);
-		return "OK";
-	}
+//	@GET
+//	@Path("/setAlternative")
+//	@Produces(MediaType.TEXT_PLAIN)
+//	public String setAlternative(@QueryParam("enabled") final Boolean enabled) {
+//		String type = "";
+//		if (enabled) {
+//			type = "Alternative";
+//		}
+//		else {
+//			type = "Normal";
+//		}
+//		SilverBulletServer.getStaticInstance().getBuilderModel().switchDependency(type);
+//		return "OK";
+//	}
 	
 	@GET
 	@Path("/copySpec")

@@ -1,4 +1,4 @@
-package jp.silverbullet.dependency2;
+package jp.silverbullet.obsolute;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -6,6 +6,15 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+
+import jp.silverbullet.dependency2.CachedPropertyStore;
+import jp.silverbullet.dependency2.DependencyEngine;
+import jp.silverbullet.dependency2.DependencySpec;
+import jp.silverbullet.dependency2.DependencySpecHolder;
+import jp.silverbullet.dependency2.Expression;
+import jp.silverbullet.dependency2.PropertyStoreForTest;
+import jp.silverbullet.dependency2.RequestRejectedException;
+import jp.silverbullet.web.trash.DependencySpecRebuilder;
 
 public class TestAlternativeDependency {
 

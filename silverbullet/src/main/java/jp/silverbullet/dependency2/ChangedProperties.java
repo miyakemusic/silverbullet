@@ -1,8 +1,6 @@
 package jp.silverbullet.dependency2;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 
@@ -38,8 +36,8 @@ public class ChangedProperties implements CachedPropertyStoreListener {
 		//return new ArrayList<Id>(ids);
 	}
 
-	public void clear() {
-		this.ids.clear();
-	}
+//	public void clear() {
+//		this.ids.clear();
+//	}
 
 }

@@ -121,6 +121,7 @@ public class DependencySpecHolder {
 	}
 
 	public void changeId(String prevId, String newId) {
+//		System.out.println("DependencySpecHolder.changeId " + prevId + " -> " + newId);
 		// change id
 		if (this.specs.keySet().contains(prevId)) {
 			DependencySpec spec = this.specs.get(prevId);

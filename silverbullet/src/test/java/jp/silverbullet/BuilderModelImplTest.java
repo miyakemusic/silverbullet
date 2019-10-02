@@ -25,6 +25,7 @@ import jp.silverbullet.register2.RegisterAccessor;
 import jp.silverbullet.register2.RegisterAccessorListener;
 import jp.silverbullet.register2.RuntimeRegisterMap.DeviceType;
 import jp.silverbullet.sequncer.Sequencer.Actor;
+import jp.silverbullet.sequncer.SequencerListener;
 import jp.silverbullet.sequncer.SvHandlerModel;
 import jp.silverbullet.sequncer.UserSequencer;
 import jp.silverbullet.web.ValueSetResult;
@@ -33,7 +34,7 @@ import jp.silverbullet.web.ui.UiLayout;
 public class BuilderModelImplTest {
 
 	protected Object written;
-
+	
 	@Test
 	public void test() throws Exception {
 		BuilderModelImpl builder = new BuilderModelImpl();
@@ -104,11 +105,13 @@ public class BuilderModelImplTest {
 
 		try {
 			builder.getSequencer().requestChange("ID_MODE", "ID_MODE_B");
+			builder.getSequencer().syncDependency();
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
 		}
 		
-		Thread.sleep(1000);
+		
+
 		assertEquals("START", written);
 		
 		builder.save("testFoler");
@@ -121,6 +124,7 @@ public class BuilderModelImplTest {
 		builder.saveParameters("param");
 		
 		builder.getSequencer().requestChange("ID_MODE", "ID_MODE_A");
+		builder.getSequencer().syncDependency();
 		
 		builder.loadParameters("param");
 		assertEquals("ID_MODE_B", builder.getRuntimePropertyStore().get("ID_MODE").getCurrentValue());
@@ -133,11 +137,13 @@ public class BuilderModelImplTest {
 		builder.setRegisterType(RegisterTypeEnum.Hardware);
 		try {
 			builder.getSequencer().requestChange("ID_MODE", "ID_MODE_B");
+			builder.getSequencer().syncDependency();
+//			Thread.sleep(1000);
+			
 		} catch (RequestRejectedException e) {
 			e.printStackTrace();
 		}
-		
-		Thread.sleep(1000);
+
 		assertEquals(true, hardware.isWritten());
 		
 		// Test ID edited
@@ -170,8 +176,21 @@ public class BuilderModelImplTest {
 			assertEquals("ID_PRODUCT2", builder.getTestRecorder().getScript(2).getTarget());
 			assertEquals("ID_PRODUCT2_A", builder.getTestRecorder().getScript(2).getValue());
 		}
-//		builder.changeId("ID_PRODUCT", "ID_NEWPRODUCT");
+
+
+		{
+			DependencySpec spec = builder.getDependencySpecHolder2().getSpec("ID_PRODUCT");
+			assertEquals("ID_PRODUCT", spec.getId());
+			assertEquals("$ID_PRODUCT==%ID_PRODUCT_A", spec.getExpression("ID_PRODUCT_A").get(0).getTrigger());
+			assertEquals("$ID_PRODUCT==%ID_PRODUCT_B", spec.getExpression("ID_PRODUCT_A").get(0).getCondition());
+		}
+
+		Thread.sleep(1000);
+		
+		// Change ID
 		builder.getPropertiesHolder2().get("ID_PRODUCT").setId("ID_NEWPRODUCT");
+//		Thread.sleep(1000);
+//		System.out.println("Taisuke");
 		{
 			DependencySpec spec = builder.getDependencySpecHolder2().getSpec("ID_NEWPRODUCT");
 			assertEquals("ID_NEWPRODUCT", spec.getId());
@@ -233,8 +252,8 @@ public class BuilderModelImplTest {
 		// test from web server
 		builder.getRuntimePropertyStore().get("ID_START").setCurrentValue("ID_START_OFF");
 		ValueSetResult result = builder.requestChange("ID_NEWMODE", 0, "ID_NEWMODE_B", Actor.User);
-
-		Thread.sleep(1000);
+		builder.getSequencer().syncDependency();
+		
 		assertEquals("ID_NEWMODE#0:Value:ID_NEWMODE_B", debugLog.get(0));
 		assertEquals("ID_START#0:Value:ID_START_ON", debugLog.get(1));
 		
@@ -249,7 +268,9 @@ public class BuilderModelImplTest {
 		builder.getPropertiesHolder2().addProperty(factory.create("ID_MESSAGE", PropertyType2.List).
 				option("ID_MESSAGE_NONE", "", "").option("ID_MESSAGE_ERROR", "ERROR", "").defaultId("ID_MESSAGE_NONE"));
 
-		builder.getDependency().requestChange("ID_MESSAGE", "ID_MESSAGE_ERROR");
+		builder.getSequencer().requestChange("ID_MESSAGE", "ID_MESSAGE_ERROR");
+		builder.getSequencer().syncDependency();
+		
 		builder.respondToMessage("ID_MESSAGE", "OK");
 		assertEquals("ID_MESSAGE_NONE", builder.getRuntimePropertyStore().get("ID_MESSAGE").getCurrentValue());
 	}

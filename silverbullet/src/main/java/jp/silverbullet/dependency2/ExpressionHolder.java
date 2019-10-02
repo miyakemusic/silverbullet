@@ -45,7 +45,8 @@ public class ExpressionHolder {
 	}
 
 	public void add(String targetElement, String targetOption, Expression expression) {
-		this.add(targetElement + "#" + targetOption, expression);
+//		System.out.println(targetElement);
+		this.add(DependencySpec.createOptionId(targetElement, targetOption), expression);
 	}	
 	
 	public ExpressionHolder qualifies(String id) {
@@ -77,7 +78,7 @@ public class ExpressionHolder {
 		List<String> ret = new ArrayList<>();
 		for (String option : this.expressions.keySet()) {
 			if (option.startsWith(DependencySpec.OptionEnable)) {
-				ret.add(option.split("#")[1]);
+				ret.add(option.split(DependencySpec.SEPARATOR)[1]);
 			}
 		}
 		return ret;
@@ -85,8 +86,8 @@ public class ExpressionHolder {
 
 	public boolean containsTarget(String targetElement) {
 		for (String te : this.expressions.keySet()) {
-			if (te.contains("#")) {
-				if (te.split("#")[0].equals(targetElement)) {
+			if (te.contains(DependencySpec.SEPARATOR)) {
+				if (te.split(DependencySpec.SEPARATOR)[0].equals(targetElement)) {
 					return true;
 				}
 			}
@@ -165,6 +166,10 @@ public class ExpressionHolder {
 	}
 
 	public void changeId(String prevId, String newId) {
+//		System.out.println("ExpressionHolder.changeId " + prevId + " -> " + newId);
+		
+		List<String> oldTargetElements = new ArrayList<>();
+		Map<String, List<Expression>> newTargetElements = new HashMap<>();
 		
 		for (String targetElement : this.expressions.keySet()) {
 			if (targetElement.startsWith(DependencySpec.OptionEnable)) {
@@ -172,17 +177,28 @@ public class ExpressionHolder {
 				if (IdUtility.isValidOption(prevId, id)) {
 					String value = id.replace(prevId, "");
 					List<Expression> expression = this.expressions.get(targetElement);
+					String newOption = DependencySpec.OptionEnable + RuntimeProperty.INDEXSIGN + newId + value;
 					
-					SwingUtilities.invokeLater(new Runnable() {
-						@Override
-						public void run() {
-							expressions.put(DependencySpec.OptionEnable + RuntimeProperty.INDEXSIGN + newId + value, expression);
-							expressions.remove(targetElement);
-						}
-					});
+					oldTargetElements.add(targetElement);
+					newTargetElements.put(newOption, expression);
+//					SwingUtilities.invokeLater(new Runnable() {
+//						@Override
+//						public void run() {
+//							expressions.put(newOption, expression);
+//							expressions.remove(targetElement);
+//						}
+//					});
 
 				}
 			}
+		}
+		
+		for (String e : oldTargetElements) {
+			this.expressions.remove(e);
+		}
+		
+		for (Map.Entry<String, List<Expression>> entry : newTargetElements.entrySet()) {
+			expressions.put(entry.getKey(), entry.getValue());
 		}
 		
 		for (List<Expression> expression : this.expressions.values()) {

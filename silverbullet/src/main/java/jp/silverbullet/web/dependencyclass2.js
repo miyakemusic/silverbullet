@@ -26,17 +26,17 @@ class DependencyClass2 {
 			}
 		});
 		
-		var alternativeId = div + '_alternative';
-		$('#' + div).append('Alternative<input type="checkbox" id="' + alternativeId + '">');
-		$('#' + alternativeId).change(function() {
-			$.ajax({
-			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/dependencySpec2/setAlternative?enabled=" + $('#' + alternativeId).prop('checked'),
-			   success: function(msg){
-				updateAll();
-			   }
-			});					
-		});
+//		var alternativeId = div + '_alternative';
+//		$('#' + div).append('Alternative<input type="checkbox" id="' + alternativeId + '">');
+//		$('#' + alternativeId).change(function() {
+//			$.ajax({
+//			   type: "GET", 
+//			   url: "//" + window.location.host + "/rest/dependencySpec2/setAlternative?enabled=" + $('#' + alternativeId).prop('checked'),
+//			   success: function(msg){
+//				updateAll();
+//			   }
+//			});					
+//		});
 		
 		var diagramActive = false;
 		

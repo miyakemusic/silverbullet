@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class DependencySpec {
 
+	public static final String SEPARATOR = "#";
 	public static final String True = "true";
 	public static final String False = "false";
 	
@@ -148,11 +149,11 @@ public class DependencySpec {
 		return this.dependencySpecDetail.get(targetElement);
 	}
 
-	private String convertTargetElement(String targetElement) {
-		if (targetElement.startsWith(this.id)) {
-			targetElement = DependencySpec.OptionEnable + "#" + targetElement;
+	private String convertTargetElement(String optionId) {
+		if (optionId.startsWith(this.id)) {
+			optionId = DependencySpec.createOptionEnableId(optionId);
 		}
-		return targetElement;
+		return optionId;
 	}
 
 	@JsonIgnore
@@ -179,7 +180,7 @@ public class DependencySpec {
 
 	public void update(String element, Integer row, String field, String value) {
 		if (element.startsWith(id)) {
-			element = DependencySpec.OptionEnable + "#" + element;
+			element = DependencySpec.createOptionEnableId(element);
 		}
 		this.dependencySpecDetail.update(element, row, field, value);
 	}
@@ -208,6 +209,14 @@ public class DependencySpec {
 		for (Expression exp : specs) {
 			this.dependencySpecDetail.createExpression(targetElement, exp.getValue(), exp.getTrigger(), exp.getCondition());
 		}
+	}
+	
+	public static String createOptionEnableId(String optionId) {
+		return createOptionId(DependencySpec.OptionEnable, optionId);
+	}
+
+	public static String createOptionId(String targetElement, String optionId) {
+		return targetElement + SEPARATOR + optionId;
 	}
 
 

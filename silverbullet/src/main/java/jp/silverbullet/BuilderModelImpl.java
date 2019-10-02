@@ -10,7 +10,6 @@ import java.util.Set;
 
 import javax.xml.bind.JAXBException;
 
-import jp.silverbullet.dependency2.DependencySpecRebuilder;
 import jp.silverbullet.dependency2.IdValue;
 import jp.silverbullet.dependency2.RequestRejectedException;
 import jp.silverbullet.dependency2.design.DependencyDesigner;
@@ -39,6 +38,7 @@ import jp.silverbullet.sequncer.UserSequencer;
 import jp.silverbullet.test.TestRecorder;
 import jp.silverbullet.test.TestRecorderInterface;
 import jp.silverbullet.web.ValueSetResult;
+import jp.silverbullet.web.trash.DependencySpecRebuilder;
 import jp.silverbullet.web.ui.PropertyGetter;
 import jp.silverbullet.web.ui.part2.UiBuilder;
 
@@ -61,7 +61,7 @@ public class BuilderModelImpl {
 	private RegisterController registerController = new RegisterController();
 	private RuntimeRegisterMap runtimeRegisterMap = new RuntimeRegisterMap();
 	private BlobStore blobStore = new BlobStore();
-	private UndoManager undoManager = new UndoManager();
+	private RefactorManager undoManager = new RefactorManager();
 	
 	private DependencyDesigner dependencyDesigner = new DependencyDesigner(propertiesHolder2) {
 
@@ -421,27 +421,27 @@ public class BuilderModelImpl {
 		return this.testRecorder;
 	}
 	
-	public void switchDependency(String type) {
-		this.store.resetMask();
-		
-		if (type.equals("Normal")) {
-			this.dependencySpecHolder2 = this.defaultDependency;
-		}
-		else if (type.equals("Alternative")) {
-			PropertyGetter getter = new PropertyGetter() {
-				
-				public RuntimeProperty getProperty(String id) {
-					return store.get(id);
-				}
-
-				
-				public RuntimeProperty getProperty(String id, int index) {
-					return store.get(id, index);
-				}
-			};
-			this.dependencySpecHolder2 = new DependencySpecRebuilder(this.dependencySpecHolder2, getter).getNewHolder();
-		}
-	}
+//	public void switchDependency(String type) {
+//		this.store.resetMask();
+//		
+//		if (type.equals("Normal")) {
+//			this.dependencySpecHolder2 = this.defaultDependency;
+//		}
+//		else if (type.equals("Alternative")) {
+//			PropertyGetter getter = new PropertyGetter() {
+//				
+//				public RuntimeProperty getProperty(String id) {
+//					return store.get(id);
+//				}
+//
+//				
+//				public RuntimeProperty getProperty(String id, int index) {
+//					return store.get(id, index);
+//				}
+//			};
+//			this.dependencySpecHolder2 = new DependencySpecRebuilder(this.dependencySpecHolder2, getter).getNewHolder();
+//		}
+//	}
 
 	
 	public EasyAccessInterface getEasyAccessInterface() {

@@ -26,7 +26,7 @@ public class WebDataConverter {
 		
 		if (isList(id)) {
 			for (String optionId : this.properties.getProperty(id).getListIds()) {
-				createList(optionId, ret, spec.getExpression(DependencySpec.OptionEnable + "#" + optionId));
+				createList(optionId, ret, spec.getExpression(DependencySpec.createOptionEnableId(optionId)));
 			}
 		}
 		

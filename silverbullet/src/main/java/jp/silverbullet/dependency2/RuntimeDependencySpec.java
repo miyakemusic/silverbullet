@@ -50,7 +50,7 @@ public class RuntimeDependencySpec {
 	}
 
 	public String getTargetOption() {
-		return this.target.split("#")[1];
+		return this.target.split(DependencySpec.SEPARATOR)[1];
 	}
 
 	public void addElseSource(RuntimeDependencySpec spec) {

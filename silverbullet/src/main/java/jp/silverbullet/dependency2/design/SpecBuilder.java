@@ -222,7 +222,7 @@ public abstract class SpecBuilder {
 				
 				if (this.getData().contains(targetOption, triggerOption)) {
 					this.getDependencySpecHolder().getSpec(targetId).addValue(targetOption, 
-							"$" + triggerId + "==%" + triggerOption, enabledCondition);					
+							"$" + triggerId + "==%" + triggerOption, enabledCondition, !this.confirmSamePriority, true);					
 				}
 			}
 		}

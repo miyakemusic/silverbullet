@@ -20,9 +20,9 @@ public class DependencySpecAnalyzer {
 		//print();
 	}
 
-	private void print() {
-		this.nodeHolder.print();
-	}
+//	private void print() {
+//		this.nodeHolder.print();
+//	}
 
 	public DependencyNode getNode(String id) {
 		return this.nodeHolder.getNode(id);
@@ -45,7 +45,7 @@ public class DependencySpecAnalyzer {
 			}
 			
 			for (String option : spec.getTargetOptions()) {
-				String targetElement = DependencySpec.OptionEnable + "#" + option;
+				String targetElement = DependencySpec.createOptionEnableId(option);
 				addParent(targetElement, spec, dependencyNode);
 			}
 		}

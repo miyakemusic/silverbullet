@@ -1,4 +1,4 @@
-package jp.silverbullet.dependency2;
+package jp.silverbullet.obsolute;
 
 import java.io.IOException;
 import java.nio.file.Files;

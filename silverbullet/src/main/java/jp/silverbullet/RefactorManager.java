@@ -7,7 +7,7 @@ import jp.silverbullet.property2.PropertyHolder2;
 import jp.silverbullet.test.TestRecorder;
 import jp.silverbullet.web.ui.part2.UiBuilder;
 
-public class UndoManager {
+public class RefactorManager {
 
 	PropertyDefHolderListener listener = new PropertyDefHolderListener() {
 		@Override

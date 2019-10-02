@@ -1,9 +1,14 @@
-package jp.silverbullet.dependency2;
+package jp.silverbullet.web.trash;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import jp.silverbullet.dependency2.DepPropertyStore;
+import jp.silverbullet.dependency2.DependencySpec;
+import jp.silverbullet.dependency2.DependencySpecHolder;
+import jp.silverbullet.dependency2.Expression;
+import jp.silverbullet.dependency2.ExpressionParser;
 import jp.silverbullet.web.ui.PropertyGetter;
 
 public class DependencySpecRebuilder {
@@ -26,8 +31,8 @@ public class DependencySpecRebuilder {
 		for (String targetElement : expressionHolder.keySet()) {
 			List<Expression> expressions = expressionHolder.get(targetElement);
 			
-			if (targetElement.startsWith(DependencySpec.OptionEnable + "#") ) {
-				String option = targetElement.replace(DependencySpec.OptionEnable + "#", "");
+			if (targetElement.startsWith(DependencySpec.OptionEnable + DependencySpec.SEPARATOR) ) {
+				String option = targetElement.replace(DependencySpec.OptionEnable + DependencySpec.SEPARATOR, "");
 
 				List<String> trueCondition = new ArrayList<>();
 				List<String> falseCondition = new ArrayList<>();
@@ -90,7 +95,7 @@ public class DependencySpecRebuilder {
 			if (option2.equals(option)) {
 				continue;
 			}
-			List<Expression> expressions = spec.getExpression(DependencySpec.OptionEnable + "#" + option);
+			List<Expression> expressions = spec.getExpression(DependencySpec.createOptionEnableId(option));
 			for (Expression expression : expressions) {
 				if (expression.getValue().equals(DependencySpec.True)) {
 					ExpressionParser p2 = new ExpressionParser(expression.getTrigger());

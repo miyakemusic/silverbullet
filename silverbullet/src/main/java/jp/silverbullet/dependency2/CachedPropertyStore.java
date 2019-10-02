@@ -200,19 +200,19 @@ public class CachedPropertyStore implements PropertyGetter {
 		return ret;
 	}
 	
-	public String getMessage(String id) {
-		String ret = "";
-		for (String key : this.changedHistory.keySet()) {
-			if (!key.equals(id)) {
-				List<ChangedItemValue> item = this.changedHistory.get(key);
-				ret += this.cached.get(key).getTitle()  + " ("+  key+ ")" +  ":\n";
-				for (ChangedItemValue v : item) {
-					ret += " " + v.getElement() + " -> " + v.getValue() + "\n";
-				}
-			}
-		}
-		return ret;
-	}
+//	public String getMessage(String id) {
+//		String ret = "";
+//		for (String key : this.changedHistory.keySet()) {
+//			if (!key.equals(id)) {
+//				List<ChangedItemValue> item = this.changedHistory.get(key);
+//				ret += this.cached.get(key).getTitle()  + " ("+  key+ ")" +  ":\n";
+//				for (ChangedItemValue v : item) {
+//					ret += " " + v.getElement() + " -> " + v.getValue() + "\n";
+//				}
+//			}
+//		}
+//		return ret;
+//	}
 
 	public List<String> getChangedIds() {
 		return new ArrayList<String>(this.changedHistory.keySet());
@@ -229,14 +229,14 @@ public class CachedPropertyStore implements PropertyGetter {
 		return ret;
 	}
 	
-	public List<ChangedItemValue> getChanged(String id) {
-		return this.changedHistory.get(id);
-	}
-
-	public void clearHistory() {
-		this.changedHistory.clear();
-		this.confirmationMessage.clear();
-	}
+//	public List<ChangedItemValue> getChanged(String id) {
+//		return this.changedHistory.get(id);
+//	}
+//
+//	public void clearHistory() {
+//		this.changedHistory.clear();
+//		this.confirmationMessage.clear();
+//	}
 
 	public void addCachedPropertyStoreListener(CachedPropertyStoreListener cachedPropertyStoreListener) {
 		cachedPropertyStoreListeners.add(cachedPropertyStoreListener);
