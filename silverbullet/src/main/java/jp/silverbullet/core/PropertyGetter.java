@@ -1,4 +1,4 @@
-package jp.silverbullet.web.ui;
+package jp.silverbullet.core;
 
 import jp.silverbullet.core.property2.RuntimeProperty;
 

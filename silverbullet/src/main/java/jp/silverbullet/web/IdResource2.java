@@ -14,7 +14,6 @@ import javax.ws.rs.core.Response;
 import jp.silverbullet.core.property2.PropertyFactory;
 import jp.silverbullet.core.property2.PropertyHolder2;
 import jp.silverbullet.core.property2.PropertyType2;
-import jp.silverbullet.core.property2.WebTableConverter;
 
 //@Path("/id2/{code}")
 @Path("/id2")

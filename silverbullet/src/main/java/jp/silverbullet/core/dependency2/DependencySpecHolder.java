@@ -9,9 +9,6 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jp.silverbullet.core.property2.RuntimeProperty;
-import jp.silverbullet.dev.StaticInstances;
-
 public class DependencySpecHolder {
 	private Map<String, DependencySpec> specs = new HashMap<>();
 	private Map<String, Integer> priorityMap = new HashMap<>();

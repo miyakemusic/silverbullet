@@ -12,7 +12,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jp.silverbullet.web.JsonPersistent;
+import jp.silverbullet.core.JsonPersistent;
 @XmlRootElement
 public class RegisterSpecHolder {
 	private Map<Long, SvRegister> registers = new LinkedHashMap<>();

@@ -8,6 +8,7 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
+import jp.silverbullet.core.PropertyGetter;
 import jp.silverbullet.core.property2.PropertyFactory;
 import jp.silverbullet.core.property2.PropertyHolder2;
 import jp.silverbullet.core.property2.PropertyType2;

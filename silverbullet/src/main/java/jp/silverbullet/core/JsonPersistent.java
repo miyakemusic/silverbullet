@@ -1,4 +1,4 @@
-package jp.silverbullet.web;
+package jp.silverbullet.core;
 
 import java.io.File;
 import java.io.IOException;

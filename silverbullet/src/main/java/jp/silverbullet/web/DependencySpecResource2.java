@@ -14,6 +14,7 @@ import javax.ws.rs.core.Response;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jp.silverbullet.core.PropertyGetter;
 import jp.silverbullet.core.dependency2.DependencySpec;
 import jp.silverbullet.core.dependency2.DependencySpecAnalyzer;
 import jp.silverbullet.core.dependency2.DependencySpecHolder;
@@ -25,7 +26,6 @@ import jp.silverbullet.core.dependency2.WebPair;
 import jp.silverbullet.core.dependency2.LinkGenerator.LinkLevel;
 import jp.silverbullet.core.property2.PropertyType2;
 import jp.silverbullet.core.property2.RuntimeProperty;
-import jp.silverbullet.web.ui.PropertyGetter;
 
 @Path("/dependencySpec2")
 public class DependencySpecResource2 {

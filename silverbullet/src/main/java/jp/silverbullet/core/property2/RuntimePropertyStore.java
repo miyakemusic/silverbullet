@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import jp.silverbullet.core.JsonPersistent;
 import jp.silverbullet.core.dependency2.IdValue;
-import jp.silverbullet.web.JsonPersistent;
 
 public class RuntimePropertyStore {
 

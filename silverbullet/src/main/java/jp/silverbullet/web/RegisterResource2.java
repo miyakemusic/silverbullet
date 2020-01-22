@@ -14,6 +14,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import jp.silverbullet.core.KeyValue;
 import jp.silverbullet.core.register2.RegisterAccessor;
 import jp.silverbullet.core.register2.RegisterJsonController;
 import jp.silverbullet.core.register2.RegisterShortCut;

@@ -1,7 +1,5 @@
 package jp.silverbullet.core.register2;
 
-import org.apache.commons.lang3.StringUtils;
-
 public class RegisterCommon {
 	static public String createInstanceName(String name) {
 		return name.replaceAll("[^A-Za-z0-9]", "_").toLowerCase();

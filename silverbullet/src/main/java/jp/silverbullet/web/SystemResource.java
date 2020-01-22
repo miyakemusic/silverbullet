@@ -8,6 +8,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.MediaType;
 
+import jp.silverbullet.core.KeyValue;
 import jp.silverbullet.core.property2.SvFileException;
 import jp.silverbullet.web.auth.GoogleAccressTokenResponse;
 import jp.silverbullet.web.auth.GoogleHandlerForTest;
@@ -61,8 +62,8 @@ public class SystemResource {
 	
 	public static AuthStore authMap = new AuthStore();
 	
-	private GoogleHanlder googleHandler = new GoogleHandlerForTest();
-//	private GoogleHanlder googleHandler = new GoogleHandlerImpl(ClientBuilder.newClient());
+//	private GoogleHanlder googleHandler = new GoogleHandlerForTest();
+	private GoogleHanlder googleHandler = new GoogleHandlerImpl(ClientBuilder.newClient());
 	@GET
 	@Path("/login")
 	@Produces(MediaType.APPLICATION_JSON)

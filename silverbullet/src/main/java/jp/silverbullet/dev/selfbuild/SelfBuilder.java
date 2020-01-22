@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import jp.silverbullet.web.JsonPersistent;
+import jp.silverbullet.core.JsonPersistent;
 
 public class SelfBuilder {
 	

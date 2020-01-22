@@ -4,12 +4,12 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
+import jp.silverbullet.core.PropertyGetter;
 import jp.silverbullet.core.dependency2.DependencySpec;
 import jp.silverbullet.core.dependency2.DependencySpecHolder;
 import jp.silverbullet.core.dependency2.WebDataConverter;
 import jp.silverbullet.core.dependency2.WebDependencySpec;
 import jp.silverbullet.core.property2.RuntimeProperty;
-import jp.silverbullet.web.ui.PropertyGetter;
 
 public class WebDataConverterTest {
 

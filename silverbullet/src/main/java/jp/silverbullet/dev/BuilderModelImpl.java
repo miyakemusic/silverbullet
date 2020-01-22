@@ -10,6 +10,9 @@ import java.util.Set;
 
 import javax.xml.bind.JAXBException;
 
+import jp.silverbullet.core.BlobStore;
+import jp.silverbullet.core.JsonPersistent;
+import jp.silverbullet.core.PropertyGetter;
 import jp.silverbullet.core.RuntimeListener;
 import jp.silverbullet.core.XmlPersistent;
 import jp.silverbullet.core.dependency2.CommitListener;
@@ -17,7 +20,6 @@ import jp.silverbullet.core.dependency2.DependencyEngine;
 import jp.silverbullet.core.dependency2.DependencySpecHolder;
 import jp.silverbullet.core.dependency2.IdValue;
 import jp.silverbullet.core.dependency2.RequestRejectedException;
-import jp.silverbullet.core.dependency2.design.DependencyDesigner;
 import jp.silverbullet.core.property2.PropertyDef2;
 import jp.silverbullet.core.property2.PropertyHolder2;
 import jp.silverbullet.core.property2.RuntimeProperty;
@@ -36,13 +38,11 @@ import jp.silverbullet.core.sequncer.UserSequencer;
 import jp.silverbullet.core.sequncer.Sequencer.Actor;
 import jp.silverbullet.core.sequncer.SystemAccessor.DialogAnswer;
 import jp.silverbullet.core.ui.part2.UiBuilder;
+import jp.silverbullet.dev.dependency2.design.DependencyDesigner;
 import jp.silverbullet.dev.selfbuild.SelfBuilder;
 import jp.silverbullet.dev.test.TestRecorder;
 import jp.silverbullet.dev.test.TestRecorderInterface;
-import jp.silverbullet.web.BlobStore;
-import jp.silverbullet.web.JsonPersistent;
 import jp.silverbullet.web.ValueSetResult;
-import jp.silverbullet.web.ui.PropertyGetter;
 
 public class BuilderModelImpl {
 
@@ -573,10 +573,6 @@ public class BuilderModelImpl {
 	public UiBuilder getUiBuilder() {
 		return uiBuilder;
 	}
-
-//	public RestrictionMatrix getRestrictionMatrix() {
-//		return this.restrictionMatrix;
-//	}
 
 	public BlobStore getBlobStore() {
 		return blobStore;

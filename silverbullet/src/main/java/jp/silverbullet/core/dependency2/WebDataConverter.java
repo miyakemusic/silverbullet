@@ -2,7 +2,7 @@ package jp.silverbullet.core.dependency2;
 
 import java.util.List;
 
-import jp.silverbullet.web.ui.PropertyGetter;
+import jp.silverbullet.core.PropertyGetter;
 
 public class WebDataConverter {
 

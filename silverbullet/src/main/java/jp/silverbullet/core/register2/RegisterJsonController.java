@@ -1,7 +1,7 @@
 package jp.silverbullet.core.register2;
 
+import jp.silverbullet.core.KeyValue;
 import jp.silverbullet.core.register2.RegisterBit.ReadWriteType;
-import jp.silverbullet.web.KeyValue;
 
 public class RegisterJsonController {
 

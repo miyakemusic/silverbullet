@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import jp.silverbullet.core.KeyValue;
 import jp.silverbullet.core.register2.BitValue;
 import jp.silverbullet.core.register2.RegisterAccessor;
 import jp.silverbullet.core.register2.RegisterAccessorListener;
@@ -25,7 +26,6 @@ import jp.silverbullet.core.register2.SvRegister;
 import jp.silverbullet.core.register2.RegisterBit.ReadWriteType;
 import jp.silverbullet.core.register2.RuntimeRegisterMap.DeviceType;
 import jp.silverbullet.dev.sourcegenerator.RegisterSourceGenerator;
-import jp.silverbullet.web.KeyValue;
 import jp.silverbullet.web.register.json.SvRegisterJsonHolder;
 
 public class RegisterSpecHolderTest {

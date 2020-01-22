@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import jp.silverbullet.core.PropertyGetter;
 import jp.silverbullet.core.property2.RuntimeProperty;
 import jp.silverbullet.dev.StaticInstances;
 

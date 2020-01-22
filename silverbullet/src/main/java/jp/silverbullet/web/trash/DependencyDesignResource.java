@@ -11,9 +11,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import jp.silverbullet.core.dependency2.design.DependencyDesignConfig;
-import jp.silverbullet.core.dependency2.design.RestrictionMatrix;
 import jp.silverbullet.dev.StaticInstances;
+import jp.silverbullet.dev.dependency2.design.DependencyDesignConfig;
+import jp.silverbullet.dev.dependency2.design.RestrictionMatrix;
 import jp.silverbullet.web.SilverBulletServer;
 
 @Path("/dependencyDesign")

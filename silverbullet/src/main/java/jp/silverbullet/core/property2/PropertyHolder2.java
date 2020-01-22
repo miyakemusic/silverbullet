@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import jp.silverbullet.web.JsonPersistent;
+import jp.silverbullet.core.JsonPersistent;
 
 public class PropertyHolder2 {
 

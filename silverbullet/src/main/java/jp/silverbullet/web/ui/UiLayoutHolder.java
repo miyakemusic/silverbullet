@@ -14,8 +14,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import jp.silverbullet.core.JsonPersistent;
+import jp.silverbullet.core.PropertyGetter;
 import jp.silverbullet.dev.StaticInstances;
-import jp.silverbullet.web.JsonPersistent;
 import jp.silverbullet.web.Pair;
 
 public class UiLayoutHolder {

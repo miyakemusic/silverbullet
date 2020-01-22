@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
+import jp.silverbullet.core.PropertyGetter;
 import jp.silverbullet.core.dependency2.CachedPropertyStore;
 import jp.silverbullet.core.property2.IdValues;
 import jp.silverbullet.core.property2.PropertyDef2;
@@ -13,7 +14,6 @@ import jp.silverbullet.core.property2.PropertyType2;
 import jp.silverbullet.core.property2.RuntimeProperty;
 import jp.silverbullet.core.property2.RuntimePropertyStore;
 import jp.silverbullet.core.property2.SvFileException;
-import jp.silverbullet.web.ui.PropertyGetter;
 
 public class RuntimePropertyStoreTest {
 

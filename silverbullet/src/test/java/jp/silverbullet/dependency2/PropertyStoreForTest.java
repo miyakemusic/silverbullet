@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jp.silverbullet.core.PropertyGetter;
 import jp.silverbullet.core.property2.RuntimeProperty;
 import jp.silverbullet.dependency.speceditor3.RuntimePropertyFactory;
-import jp.silverbullet.web.ui.PropertyGetter;
 
 public class PropertyStoreForTest implements PropertyGetter {
 	private RuntimePropertyFactory factory = new RuntimePropertyFactory();

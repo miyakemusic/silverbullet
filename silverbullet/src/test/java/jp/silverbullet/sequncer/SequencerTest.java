@@ -8,6 +8,8 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import jp.silverbullet.core.BlobStore;
+import jp.silverbullet.core.PropertyGetter;
 import jp.silverbullet.core.dependency2.ChangedItemValue;
 import jp.silverbullet.core.dependency2.DependencyEngine;
 import jp.silverbullet.core.dependency2.DependencySpecHolder;
@@ -23,8 +25,6 @@ import jp.silverbullet.core.sequncer.SvHandlerModel;
 import jp.silverbullet.core.sequncer.SystemAccessor;
 import jp.silverbullet.core.sequncer.UserSequencer;
 import jp.silverbullet.dependency2.PropertyStoreForTest;
-import jp.silverbullet.web.BlobStore;
-import jp.silverbullet.web.ui.PropertyGetter;
 
 public class SequencerTest {
 	

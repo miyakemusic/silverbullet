@@ -10,8 +10,7 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import javax.swing.SwingUtilities;
-
+import jp.silverbullet.core.BlobStore;
 import jp.silverbullet.core.dependency2.ChangedItemValue;
 import jp.silverbullet.core.dependency2.CommitListener;
 import jp.silverbullet.core.dependency2.DependencyEngine;
@@ -22,7 +21,6 @@ import jp.silverbullet.core.dependency2.RequestRejectedException;
 import jp.silverbullet.core.property2.RuntimeProperty;
 import jp.silverbullet.core.property2.RuntimePropertyStore;
 import jp.silverbullet.core.register2.RegisterAccessor;
-import jp.silverbullet.web.BlobStore;
 
 public abstract class Sequencer {
 	protected abstract RuntimePropertyStore getPropertiesStore();

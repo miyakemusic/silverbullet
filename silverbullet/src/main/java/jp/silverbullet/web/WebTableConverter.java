@@ -1,4 +1,4 @@
-package jp.silverbullet.core.property2;
+package jp.silverbullet.web;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -12,7 +12,11 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
-import jp.silverbullet.web.JsonTable;
+import jp.silverbullet.core.property2.ListDetailElement;
+import jp.silverbullet.core.property2.PropertyDef2;
+import jp.silverbullet.core.property2.PropertyHolder2;
+import jp.silverbullet.core.property2.PropertyType2;
+import jp.silverbullet.core.property2.TableColumn;
 
 public class WebTableConverter {
 

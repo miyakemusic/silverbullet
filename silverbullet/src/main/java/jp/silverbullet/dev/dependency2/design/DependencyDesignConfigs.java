@@ -1,4 +1,4 @@
-package jp.silverbullet.core.dependency2.design;
+package jp.silverbullet.dev.dependency2.design;
 
 import java.util.Collection;
 import java.util.HashMap;

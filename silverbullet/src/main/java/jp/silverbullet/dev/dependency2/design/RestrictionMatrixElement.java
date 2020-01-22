@@ -1,4 +1,4 @@
-package jp.silverbullet.core.dependency2.design;
+package jp.silverbullet.dev.dependency2.design;
 
 public class RestrictionMatrixElement {
 	

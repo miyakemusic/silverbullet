@@ -8,13 +8,13 @@ import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jp.silverbullet.core.BlobStore;
 import jp.silverbullet.core.property2.ChartContent;
 import jp.silverbullet.core.property2.PropertyFactory;
 import jp.silverbullet.core.property2.PropertyHolder2;
 import jp.silverbullet.core.property2.PropertyType2;
 import jp.silverbullet.core.property2.RuntimePropertyStore;
 import jp.silverbullet.core.property2.ChartContent.ChartType;
-import jp.silverbullet.web.BlobStore;
 
 public class JsPropertyTest {
 

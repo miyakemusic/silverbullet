@@ -1,4 +1,4 @@
-package jp.silverbullet.core.dependency2.design;
+package jp.silverbullet.dev.dependency2.design;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,13 +13,13 @@ import java.util.Set;
 
 import javax.xml.bind.JAXBException;
 
+import jp.silverbullet.core.JsonPersistent;
 import jp.silverbullet.core.XmlPersistent;
 import jp.silverbullet.core.dependency2.DependencySpecHolder;
 import jp.silverbullet.core.property2.PropertyDef2;
 import jp.silverbullet.core.property2.PropertyDefHolderListener;
 import jp.silverbullet.core.property2.PropertyHolder2;
 import jp.silverbullet.core.property2.RuntimeProperty;
-import jp.silverbullet.web.JsonPersistent;
 
 public abstract class DependencyDesigner {
 

@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import jp.silverbullet.core.PropertyGetter;
 import jp.silverbullet.core.dependency2.CommitListener.Reply;
 import jp.silverbullet.core.property2.RuntimeProperty;
-import jp.silverbullet.web.ui.PropertyGetter;
 
 /**
  * @author

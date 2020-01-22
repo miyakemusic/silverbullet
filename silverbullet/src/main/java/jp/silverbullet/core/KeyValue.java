@@ -1,4 +1,4 @@
-package jp.silverbullet.web;
+package jp.silverbullet.core;
 
 public class KeyValue {
 	private String key;

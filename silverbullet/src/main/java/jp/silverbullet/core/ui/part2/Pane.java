@@ -8,8 +8,8 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import jp.silverbullet.core.KeyValue;
 import jp.silverbullet.core.ui.part2.UiBuilder.PropertyField;
-import jp.silverbullet.web.KeyValue;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class Pane implements Cloneable {

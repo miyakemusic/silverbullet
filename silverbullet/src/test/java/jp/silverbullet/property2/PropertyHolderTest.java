@@ -15,8 +15,8 @@ import jp.silverbullet.core.property2.PropertyType;
 import jp.silverbullet.core.property2.PropertyType2;
 import jp.silverbullet.core.property2.RuntimeProperty;
 import jp.silverbullet.core.property2.RuntimePropertyStore;
-import jp.silverbullet.core.property2.WebTableConverter;
 import jp.silverbullet.web.JsonTable;
+import jp.silverbullet.web.WebTableConverter;
 
 public class PropertyHolderTest {
 	private PropertyType types = new PropertyType();
