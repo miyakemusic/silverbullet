@@ -7,8 +7,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import jp.silverbullet.core.register2.RegisterBit.ReadWriteType;
 import jp.silverbullet.register.UserRuntimeRegisterHolderForTest;
-import jp.silverbullet.register2.RegisterBit.ReadWriteType;
 
 public class RealHardwareAccessorTest {
 	private long val;

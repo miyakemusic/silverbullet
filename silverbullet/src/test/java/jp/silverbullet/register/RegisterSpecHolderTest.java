@@ -12,21 +12,21 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import jp.silverbullet.register.json.SvRegisterJsonHolder;
-import jp.silverbullet.register2.BitValue;
-import jp.silverbullet.register2.RegisterAccessor;
-import jp.silverbullet.register2.RegisterAccessorListener;
-import jp.silverbullet.register2.RegisterBit;
-import jp.silverbullet.register2.RegisterBit.ReadWriteType;
-import jp.silverbullet.sourcegenerator.RegisterSourceGenerator;
-import jp.silverbullet.register2.RegisterBitArray;
-import jp.silverbullet.register2.RuntimeRegisterMap;
-import jp.silverbullet.register2.RuntimeRegisterMap.DeviceType;
-import jp.silverbullet.register2.SvRegister;
+import jp.silverbullet.core.register2.BitValue;
+import jp.silverbullet.core.register2.RegisterAccessor;
+import jp.silverbullet.core.register2.RegisterAccessorListener;
+import jp.silverbullet.core.register2.RegisterBit;
+import jp.silverbullet.core.register2.RegisterBitArray;
+import jp.silverbullet.core.register2.RegisterController;
+import jp.silverbullet.core.register2.RegisterJsonController;
+import jp.silverbullet.core.register2.RegisterSpecHolder;
+import jp.silverbullet.core.register2.RuntimeRegisterMap;
+import jp.silverbullet.core.register2.SvRegister;
+import jp.silverbullet.core.register2.RegisterBit.ReadWriteType;
+import jp.silverbullet.core.register2.RuntimeRegisterMap.DeviceType;
+import jp.silverbullet.dev.sourcegenerator.RegisterSourceGenerator;
 import jp.silverbullet.web.KeyValue;
-import jp.silverbullet.register2.RegisterController;
-import jp.silverbullet.register2.RegisterJsonController;
-import jp.silverbullet.register2.RegisterSpecHolder;
+import jp.silverbullet.web.register.json.SvRegisterJsonHolder;
 
 public class RegisterSpecHolderTest {
 

@@ -8,9 +8,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import jp.silverbullet.SilverBulletServer;
-import jp.silverbullet.StaticInstances;
-import jp.silverbullet.test.TestScriptPresentation;
+import jp.silverbullet.dev.StaticInstances;
+import jp.silverbullet.dev.test.TestScriptPresentation;
 import jp.silverbullet.web.ui.JsWidget;
 
 @Path("/test")

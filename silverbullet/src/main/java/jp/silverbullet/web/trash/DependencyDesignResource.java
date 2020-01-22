@@ -11,10 +11,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import jp.silverbullet.SilverBulletServer;
-import jp.silverbullet.StaticInstances;
-import jp.silverbullet.dependency2.design.DependencyDesignConfig;
-import jp.silverbullet.dependency2.design.RestrictionMatrix;
+import jp.silverbullet.core.dependency2.design.DependencyDesignConfig;
+import jp.silverbullet.core.dependency2.design.RestrictionMatrix;
+import jp.silverbullet.dev.StaticInstances;
+import jp.silverbullet.web.SilverBulletServer;
 
 @Path("/dependencyDesign")
 public class DependencyDesignResource {

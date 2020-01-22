@@ -4,6 +4,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
+import jp.silverbullet.core.property2.PropertyDef2;
+import jp.silverbullet.core.property2.PropertyFactory;
+import jp.silverbullet.core.property2.PropertyHolder2;
+import jp.silverbullet.core.property2.PropertyType2;
+import jp.silverbullet.core.property2.WebTableConverter;
 import jp.silverbullet.web.JsonTable;
 
 public class WebTableConverterTest {

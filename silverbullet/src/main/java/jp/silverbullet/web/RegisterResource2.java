@@ -14,13 +14,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import jp.silverbullet.BuilderModelImpl.RegisterTypeEnum;
-import jp.silverbullet.SilverBulletServer;
-import jp.silverbullet.register.json.SvRegisterJsonHolder;
-import jp.silverbullet.register2.RegisterAccessor;
-import jp.silverbullet.register2.RegisterJsonController;
-import jp.silverbullet.register2.RegisterShortCut;
-import jp.silverbullet.register2.RuntimeRegisterMap.DeviceType;
+import jp.silverbullet.core.register2.RegisterAccessor;
+import jp.silverbullet.core.register2.RegisterJsonController;
+import jp.silverbullet.core.register2.RegisterShortCut;
+import jp.silverbullet.core.register2.RuntimeRegisterMap.DeviceType;
+import jp.silverbullet.dev.BuilderModelImpl.RegisterTypeEnum;
+import jp.silverbullet.web.register.json.SvRegisterJsonHolder;
 
 @Path("/register2")
 public class RegisterResource2 {

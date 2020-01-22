@@ -7,12 +7,15 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import jp.silverbullet.XmlPersistent;
-import jp.silverbullet.property2.PropertyDef2;
-import jp.silverbullet.property2.PropertyFactory;
-import jp.silverbullet.property2.PropertyHolder2;
-import jp.silverbullet.property2.PropertyType2;
-import jp.silverbullet.property2.WebTableConverter;
+import jp.silverbullet.core.XmlPersistent;
+import jp.silverbullet.core.property2.PropertyDef2;
+import jp.silverbullet.core.property2.PropertyFactory;
+import jp.silverbullet.core.property2.PropertyHolder2;
+import jp.silverbullet.core.property2.PropertyType;
+import jp.silverbullet.core.property2.PropertyType2;
+import jp.silverbullet.core.property2.RuntimeProperty;
+import jp.silverbullet.core.property2.RuntimePropertyStore;
+import jp.silverbullet.core.property2.WebTableConverter;
 import jp.silverbullet.web.JsonTable;
 
 public class PropertyHolderTest {

@@ -7,14 +7,16 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import jp.silverbullet.dependency2.DependencySpec;
-import jp.silverbullet.dependency2.DependencySpecHolder;
-import jp.silverbullet.dependency2.Expression;
-import jp.silverbullet.property2.PropertyDef2;
-import jp.silverbullet.property2.PropertyFactory;
-import jp.silverbullet.property2.PropertyHolder2;
-import jp.silverbullet.property2.RuntimeProperty;
-import jp.silverbullet.property2.RuntimePropertyStore;
+import jp.silverbullet.core.dependency2.DependencySpec;
+import jp.silverbullet.core.dependency2.DependencySpecHolder;
+import jp.silverbullet.core.dependency2.Expression;
+import jp.silverbullet.core.dependency2.design.DependencyDesigner;
+import jp.silverbullet.core.dependency2.design.RestrictionMatrix;
+import jp.silverbullet.core.property2.PropertyDef2;
+import jp.silverbullet.core.property2.PropertyFactory;
+import jp.silverbullet.core.property2.PropertyHolder2;
+import jp.silverbullet.core.property2.RuntimeProperty;
+import jp.silverbullet.core.property2.RuntimePropertyStore;
 
 public class RestrictionMatrixTest {
 	
@@ -94,7 +96,7 @@ public class RestrictionMatrixTest {
 				}
 
 				@Override
-				protected DependencySpecHolder getDependencySpecHolder() {
+				public DependencySpecHolder getDependencySpecHolder() {
 					return depSpecHolder;
 				}
 

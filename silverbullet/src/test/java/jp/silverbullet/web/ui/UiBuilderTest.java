@@ -4,10 +4,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-import jp.silverbullet.web.ui.part2.Layout;
-import jp.silverbullet.web.ui.part2.Pane;
-import jp.silverbullet.web.ui.part2.UiBuilder;
-import jp.silverbullet.web.ui.part2.UiBuilder.PropertyField;
+import jp.silverbullet.core.ui.part2.Layout;
+import jp.silverbullet.core.ui.part2.Pane;
+import jp.silverbullet.core.ui.part2.UiBuilder;
+import jp.silverbullet.core.ui.part2.UiBuilder.PropertyField;
 
 class UiBuilderTest {
 

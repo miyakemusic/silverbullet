@@ -1,6 +1,6 @@
 package jp.silverbullet.web.ui;
 
-import jp.silverbullet.property2.RuntimeProperty;
+import jp.silverbullet.core.property2.RuntimeProperty;
 
 public interface PropertyGetter {
 

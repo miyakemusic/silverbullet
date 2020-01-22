@@ -9,10 +9,11 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import jp.silverbullet.property2.PropertyDef2;
-import jp.silverbullet.property2.PropertyFactory;
-import jp.silverbullet.property2.PropertyHolder2;
-import jp.silverbullet.property2.RuntimePropertyStore;
+import jp.silverbullet.core.property2.PropertyDef2;
+import jp.silverbullet.core.property2.PropertyFactory;
+import jp.silverbullet.core.property2.PropertyHolder2;
+import jp.silverbullet.core.property2.RuntimePropertyStore;
+import jp.silverbullet.dev.sourcegenerator.PropertySourceGenerator;
 
 public class PropertySourceGeneratorTest {
 

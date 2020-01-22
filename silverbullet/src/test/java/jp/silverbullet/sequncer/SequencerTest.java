@@ -8,17 +8,22 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import jp.silverbullet.BlobStore;
-import jp.silverbullet.dependency2.ChangedItemValue;
-import jp.silverbullet.dependency2.DependencyEngine;
-import jp.silverbullet.dependency2.DependencySpecHolder;
+import jp.silverbullet.core.dependency2.ChangedItemValue;
+import jp.silverbullet.core.dependency2.DependencyEngine;
+import jp.silverbullet.core.dependency2.DependencySpecHolder;
+import jp.silverbullet.core.dependency2.RequestRejectedException;
+import jp.silverbullet.core.property2.PropertyFactory;
+import jp.silverbullet.core.property2.PropertyHolder2;
+import jp.silverbullet.core.property2.RuntimeProperty;
+import jp.silverbullet.core.property2.RuntimePropertyStore;
+import jp.silverbullet.core.register2.RegisterAccessor;
+import jp.silverbullet.core.sequncer.EasyAccessInterface;
+import jp.silverbullet.core.sequncer.Sequencer;
+import jp.silverbullet.core.sequncer.SvHandlerModel;
+import jp.silverbullet.core.sequncer.SystemAccessor;
+import jp.silverbullet.core.sequncer.UserSequencer;
 import jp.silverbullet.dependency2.PropertyStoreForTest;
-import jp.silverbullet.dependency2.RequestRejectedException;
-import jp.silverbullet.property2.PropertyFactory;
-import jp.silverbullet.property2.PropertyHolder2;
-import jp.silverbullet.property2.RuntimeProperty;
-import jp.silverbullet.property2.RuntimePropertyStore;
-import jp.silverbullet.register2.RegisterAccessor;
+import jp.silverbullet.web.BlobStore;
 import jp.silverbullet.web.ui.PropertyGetter;
 
 public class SequencerTest {

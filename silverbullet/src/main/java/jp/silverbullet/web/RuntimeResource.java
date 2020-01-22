@@ -8,9 +8,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import jp.silverbullet.SilverBulletServer;
-import jp.silverbullet.property2.PropertyType2;
-import jp.silverbullet.property2.RuntimeProperty;
+import jp.silverbullet.core.property2.PropertyType2;
+import jp.silverbullet.core.property2.RuntimeProperty;
 import jp.silverbullet.web.ui.JsProperty;
 import jp.silverbullet.web.ui.JsPropertyConverter;
 

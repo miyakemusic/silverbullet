@@ -16,8 +16,17 @@ import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import jp.silverbullet.dependency2.CommitListener.Reply;
-import jp.silverbullet.dependency2.LinkGenerator.LinkLevel;
+import jp.silverbullet.core.dependency2.CachedPropertyStore;
+import jp.silverbullet.core.dependency2.CommitListener;
+import jp.silverbullet.core.dependency2.DependencyEngine;
+import jp.silverbullet.core.dependency2.DependencySpec;
+import jp.silverbullet.core.dependency2.DependencySpecAnalyzer;
+import jp.silverbullet.core.dependency2.DependencySpecHolder;
+import jp.silverbullet.core.dependency2.GenericLink;
+import jp.silverbullet.core.dependency2.IdValue;
+import jp.silverbullet.core.dependency2.RequestRejectedException;
+import jp.silverbullet.core.dependency2.CommitListener.Reply;
+import jp.silverbullet.core.dependency2.LinkGenerator.LinkLevel;
 
 public class DependencySpecTest {
 		

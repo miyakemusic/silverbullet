@@ -1,6 +1,6 @@
 package jp.silverbullet.register;
 
-import jp.silverbullet.register2.RegisterAccessorListener;
+import jp.silverbullet.core.register2.RegisterAccessorListener;
 
 public class RegisterAccessorListenerImpl implements RegisterAccessorListener {
 

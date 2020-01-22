@@ -19,7 +19,11 @@ public class AuthenticationFilter implements ContainerRequestFilter
 		
 		List<String> code = queryParameters.get("code");
 		
+		System.out.println("AuthenticationFilter/code=" + code.get(0));
 		if (requestContext.getUriInfo().getRequestUri().getPath().equals("/rest/system/login")) {
+			return;
+		}
+		else if (requestContext.getUriInfo().getRequestUri().getPath().equals("/rest/system/loginAndroid")) {
 			return;
 		}
 		else if (code.size() > 0){

@@ -8,11 +8,11 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
-import jp.silverbullet.property2.PropertyFactory;
-import jp.silverbullet.property2.PropertyHolder2;
-import jp.silverbullet.property2.PropertyType2;
-import jp.silverbullet.property2.RuntimeProperty;
-import jp.silverbullet.property2.RuntimePropertyStore;
+import jp.silverbullet.core.property2.PropertyFactory;
+import jp.silverbullet.core.property2.PropertyHolder2;
+import jp.silverbullet.core.property2.PropertyType2;
+import jp.silverbullet.core.property2.RuntimeProperty;
+import jp.silverbullet.core.property2.RuntimePropertyStore;
 
 public class UiLayoutHolderTest {
 

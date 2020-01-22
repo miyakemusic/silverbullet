@@ -7,13 +7,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.MediaType;
-import jp.silverbullet.SilverBulletServer;
-import jp.silverbullet.auth.GoogleAccressTokenResponse;
-import jp.silverbullet.auth.GoogleHandlerForTest;
-import jp.silverbullet.auth.GoogleHandlerImpl;
-import jp.silverbullet.auth.GoogleHanlder;
-import jp.silverbullet.auth.GooglePersonalResponse;
-import jp.silverbullet.property2.SvFileException;
+
+import jp.silverbullet.core.property2.SvFileException;
+import jp.silverbullet.web.auth.GoogleAccressTokenResponse;
+import jp.silverbullet.web.auth.GoogleHandlerForTest;
+import jp.silverbullet.web.auth.GoogleHandlerImpl;
+import jp.silverbullet.web.auth.GoogleHanlder;
+import jp.silverbullet.web.auth.GooglePersonalResponse;
 
 @Path("/system")
 public class SystemResource {
@@ -91,6 +91,25 @@ public class SystemResource {
 			String url = googleHandler.getAuthUri(redirectUri);
 			return new KeyValue("RedirectAuth", url);
 		}
+	}
+	
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	@Path("/loginAndroid")
+	public String loginAndroid(@QueryParam("auth") final String auth)
+	{
+		try {
+			GooglePersonalResponse personal = googleHandler.retrievePersonal(auth);
+			personal.access_token = auth;
+			personal.auth_code = auth;
+			
+			authMap.add(personal);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return "OK";
 	}
 	
 	@GET

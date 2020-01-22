@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import jp.silverbullet.dependency2.DepPropertyStore;
-import jp.silverbullet.dependency2.DependencySpec;
-import jp.silverbullet.dependency2.DependencySpecHolder;
-import jp.silverbullet.dependency2.Expression;
-import jp.silverbullet.dependency2.ExpressionParser;
+import jp.silverbullet.core.dependency2.DepPropertyStore;
+import jp.silverbullet.core.dependency2.DependencySpec;
+import jp.silverbullet.core.dependency2.DependencySpecHolder;
+import jp.silverbullet.core.dependency2.Expression;
+import jp.silverbullet.core.dependency2.ExpressionParser;
 import jp.silverbullet.web.ui.PropertyGetter;
 
 public class DependencySpecRebuilder {

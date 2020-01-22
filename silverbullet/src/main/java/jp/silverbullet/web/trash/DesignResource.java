@@ -9,7 +9,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import jp.silverbullet.SilverBulletServer;
+import jp.silverbullet.web.SilverBulletServer;
 import jp.silverbullet.web.ui.JsWidget;
 import jp.silverbullet.web.ui.UiLayout;
 

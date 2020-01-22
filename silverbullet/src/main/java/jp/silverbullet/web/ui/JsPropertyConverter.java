@@ -8,11 +8,11 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import jp.silverbullet.BlobStore;
-import jp.silverbullet.StaticInstances;
-import jp.silverbullet.property2.ChartContent;
-import jp.silverbullet.property2.ListDetailElement;
-import jp.silverbullet.property2.RuntimeProperty;
+import jp.silverbullet.core.property2.ChartContent;
+import jp.silverbullet.core.property2.ListDetailElement;
+import jp.silverbullet.core.property2.RuntimeProperty;
+import jp.silverbullet.dev.StaticInstances;
+import jp.silverbullet.web.BlobStore;
 
 public class JsPropertyConverter {
 

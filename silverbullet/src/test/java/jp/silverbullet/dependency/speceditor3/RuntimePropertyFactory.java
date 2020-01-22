@@ -2,9 +2,9 @@ package jp.silverbullet.dependency.speceditor3;
 
 import java.util.List;
 
-import jp.silverbullet.property2.PropertyDef2;
-import jp.silverbullet.property2.PropertyType2;
-import jp.silverbullet.property2.RuntimeProperty;
+import jp.silverbullet.core.property2.PropertyDef2;
+import jp.silverbullet.core.property2.PropertyType2;
+import jp.silverbullet.core.property2.RuntimeProperty;
 
 public class RuntimePropertyFactory  {
 

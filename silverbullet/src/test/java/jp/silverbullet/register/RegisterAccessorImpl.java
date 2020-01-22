@@ -2,9 +2,9 @@ package jp.silverbullet.register;
 
 import java.util.List;
 
-import jp.silverbullet.register2.BitValue;
-import jp.silverbullet.register2.RegisterAccessor;
-import jp.silverbullet.register2.RegisterAccessorListener;
+import jp.silverbullet.core.register2.BitValue;
+import jp.silverbullet.core.register2.RegisterAccessor;
+import jp.silverbullet.core.register2.RegisterAccessorListener;
 
 public class RegisterAccessorImpl implements RegisterAccessor {
 

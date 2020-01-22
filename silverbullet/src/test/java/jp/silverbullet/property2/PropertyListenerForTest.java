@@ -1,5 +1,7 @@
 package jp.silverbullet.property2;
 
+import jp.silverbullet.core.property2.RuntimePropertyListener;
+
 public class PropertyListenerForTest implements RuntimePropertyListener {
 
 	@Override

@@ -1,8 +1,8 @@
 package jp.silverbullet.register;
 
-import jp.silverbullet.register2.RegisterAccessor;
-import jp.silverbullet.register2.RuntimeRegister;
-import jp.silverbullet.register2.RuntimeRegisterHolder;
+import jp.silverbullet.core.register2.RegisterAccessor;
+import jp.silverbullet.core.register2.RuntimeRegister;
+import jp.silverbullet.core.register2.RuntimeRegisterHolder;
 
 public class UserRuntimeRegisterHolderForTest extends RuntimeRegisterHolder {
 	

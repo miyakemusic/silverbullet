@@ -10,14 +10,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import jp.silverbullet.SilverBulletServer;
-import jp.silverbullet.web.ui.part2.WidgetGeneratorHelper;
-import jp.silverbullet.web.ui.part2.WidgetType;
-import jp.silverbullet.web.ui.part2.UiBuilder.PropertyField;
-import jp.silverbullet.web.ui.part2.Layout;
-import jp.silverbullet.web.ui.part2.Pane;
-import jp.silverbullet.web.ui.part2.PaneWalkThrough;
-import jp.silverbullet.web.ui.part2.UiBuilder;
+import jp.silverbullet.core.ui.part2.Layout;
+import jp.silverbullet.core.ui.part2.Pane;
+import jp.silverbullet.core.ui.part2.PaneWalkThrough;
+import jp.silverbullet.core.ui.part2.UiBuilder;
+import jp.silverbullet.core.ui.part2.WidgetGeneratorHelper;
+import jp.silverbullet.core.ui.part2.WidgetType;
+import jp.silverbullet.core.ui.part2.UiBuilder.PropertyField;
 
 @Path("/newGui")
 public class NewGuiResource {

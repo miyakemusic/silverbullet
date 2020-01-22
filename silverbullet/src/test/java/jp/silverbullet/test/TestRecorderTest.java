@@ -10,18 +10,21 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import jp.silverbullet.dependency2.RequestRejectedException;
-import jp.silverbullet.property2.PropertyDef2;
-import jp.silverbullet.property2.PropertyFactory;
-import jp.silverbullet.property2.PropertyHolder2;
-import jp.silverbullet.property2.RuntimeProperty;
-import jp.silverbullet.property2.RuntimePropertyStore;
-import jp.silverbullet.register2.BitValue;
-import jp.silverbullet.register2.RegisterAccessor;
-import jp.silverbullet.register2.RegisterAccessorListener;
-import jp.silverbullet.register2.RegisterController;
-import jp.silverbullet.sequncer.SequencerListener;
-import jp.silverbullet.test.TestResultItem.PassFail;
+import jp.silverbullet.core.dependency2.RequestRejectedException;
+import jp.silverbullet.core.property2.PropertyDef2;
+import jp.silverbullet.core.property2.PropertyFactory;
+import jp.silverbullet.core.property2.PropertyHolder2;
+import jp.silverbullet.core.property2.RuntimeProperty;
+import jp.silverbullet.core.property2.RuntimePropertyStore;
+import jp.silverbullet.core.register2.BitValue;
+import jp.silverbullet.core.register2.RegisterAccessor;
+import jp.silverbullet.core.register2.RegisterAccessorListener;
+import jp.silverbullet.core.register2.RegisterController;
+import jp.silverbullet.core.sequncer.SequencerListener;
+import jp.silverbullet.dev.test.TestRecorder;
+import jp.silverbullet.dev.test.TestRecorderInterface;
+import jp.silverbullet.dev.test.TestRecorderListener;
+import jp.silverbullet.dev.test.TestResultItem.PassFail;
 
 public class TestRecorderTest {
 	private Map<String, Integer> values = new HashMap<>();

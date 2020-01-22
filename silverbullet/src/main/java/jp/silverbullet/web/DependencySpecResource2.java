@@ -14,18 +14,17 @@ import javax.ws.rs.core.Response;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import jp.silverbullet.SilverBulletServer;
-import jp.silverbullet.dependency2.DependencySpec;
-import jp.silverbullet.dependency2.DependencySpecAnalyzer;
-import jp.silverbullet.dependency2.DependencySpecHolder;
-import jp.silverbullet.dependency2.GenericLinks;
-import jp.silverbullet.dependency2.LinkGenerator;
-import jp.silverbullet.dependency2.LinkGenerator.LinkLevel;
-import jp.silverbullet.dependency2.WebDataConverter;
-import jp.silverbullet.dependency2.WebDependencySpec;
-import jp.silverbullet.dependency2.WebPair;
-import jp.silverbullet.property2.PropertyType2;
-import jp.silverbullet.property2.RuntimeProperty;
+import jp.silverbullet.core.dependency2.DependencySpec;
+import jp.silverbullet.core.dependency2.DependencySpecAnalyzer;
+import jp.silverbullet.core.dependency2.DependencySpecHolder;
+import jp.silverbullet.core.dependency2.GenericLinks;
+import jp.silverbullet.core.dependency2.LinkGenerator;
+import jp.silverbullet.core.dependency2.WebDataConverter;
+import jp.silverbullet.core.dependency2.WebDependencySpec;
+import jp.silverbullet.core.dependency2.WebPair;
+import jp.silverbullet.core.dependency2.LinkGenerator.LinkLevel;
+import jp.silverbullet.core.property2.PropertyType2;
+import jp.silverbullet.core.property2.RuntimeProperty;
 import jp.silverbullet.web.ui.PropertyGetter;
 
 @Path("/dependencySpec2")

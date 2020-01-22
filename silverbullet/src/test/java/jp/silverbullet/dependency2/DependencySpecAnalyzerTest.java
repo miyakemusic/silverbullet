@@ -6,7 +6,12 @@ import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-import jp.silverbullet.dependency2.LinkGenerator.LinkLevel;
+import jp.silverbullet.core.dependency2.DependencyNode;
+import jp.silverbullet.core.dependency2.DependencySpec;
+import jp.silverbullet.core.dependency2.DependencySpecAnalyzer;
+import jp.silverbullet.core.dependency2.DependencySpecHolder;
+import jp.silverbullet.core.dependency2.GenericLink;
+import jp.silverbullet.core.dependency2.LinkGenerator.LinkLevel;
 
 public class DependencySpecAnalyzerTest {
 
