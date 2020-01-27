@@ -1,4 +1,4 @@
-package jp.silverbullet.web.ui;
+package jp.silverbullet.core.ui;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,12 +12,12 @@ import jp.silverbullet.core.BlobStore;
 import jp.silverbullet.core.property2.ChartContent;
 import jp.silverbullet.core.property2.ListDetailElement;
 import jp.silverbullet.core.property2.RuntimeProperty;
-import jp.silverbullet.dev.StaticInstances;
+//import jp.silverbullet.dev.StaticInstances;
 
-public class JsPropertyConverter {
+public class UiPropertyConverter {
 
-	public static JsProperty convert(RuntimeProperty property, String ext, BlobStore blobStore) {
-		JsProperty ret = new JsProperty();
+	public static UiProperty convert(RuntimeProperty property, String ext, BlobStore blobStore) {
+		UiProperty ret = new UiProperty();
 		ret.setId(property.getId());
 		ret.setTitle(property.getTitle());
 		ret.setUnit(property.getUnit());
@@ -80,8 +80,8 @@ public class JsPropertyConverter {
 		return ret;
 	}
 	
-	public static List<JsProperty> convert(List<RuntimeProperty> allProperties) {
-		List<JsProperty> ret = new ArrayList<>();
+	public static List<UiProperty> convert(List<RuntimeProperty> allProperties) {
+		List<UiProperty> ret = new ArrayList<>();
 		allProperties.forEach(prop -> ret.add(convert(prop, "", null)));
 		return ret;
 	}

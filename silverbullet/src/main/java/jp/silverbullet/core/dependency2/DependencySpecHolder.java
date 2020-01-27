@@ -1,5 +1,6 @@
 package jp.silverbullet.core.dependency2;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -8,6 +9,8 @@ import java.util.Map;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jp.silverbullet.core.JsonPersistent;
 
 public class DependencySpecHolder {
 	private Map<String, DependencySpec> specs = new HashMap<>();
@@ -142,6 +145,18 @@ public class DependencySpecHolder {
 
 	public void clear() {
 		this.specs.clear();
+	}
+
+	public void load(String filename) {
+		
+		try {
+			DependencySpecHolder obj = new JsonPersistent().loadJson(this.getClass(), filename);
+			this.specs = obj.specs;
+			this.priorityMap = obj.priorityMap;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 

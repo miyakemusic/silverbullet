@@ -55,7 +55,7 @@ public class BuilderModelImpl {
 	private RuntimePropertyStore store;
 	private Sequencer sequencer;
 	private PropertyHolder2 propertiesHolder2 = new PropertyHolder2();
-	private RegisterSpecHolder registerProperty = new RegisterSpecHolder();
+//	private RegisterSpecHolder registerProperty = new RegisterSpecHolder();
 	private DependencySpecHolder dependencySpecHolder2 = new DependencySpecHolder();
 	private RegisterShortCutHolder registerShortCuts = new RegisterShortCutHolder();
 	private SelfBuilder selfBuilder = new SelfBuilder();
@@ -247,7 +247,7 @@ public class BuilderModelImpl {
 		propertiesHolder2.load(folder + "/" + ID_DEF_JSON);
 		
 		//this.store = new RuntimePropertyStore(propertiesHolder2);
-		this.registerProperty = load(RegisterSpecHolder.class, folder + "/" + REGISTER_XML);
+//		this.registerProperty = load(RegisterSpecHolder.class, folder + "/" + REGISTER_XML);
 		this.registerShortCuts = load(RegisterShortCutHolder.class, folder + "/" + REGISTERSHORTCUT);
 		this.dependencySpecHolder2 = loadJson(DependencySpecHolder.class, folder + "/" + DEPENDENCYSPEC3_XML);
 		
@@ -317,7 +317,7 @@ public class BuilderModelImpl {
 			}
 		}
 		this.propertiesHolder2.save(folder + "/" + ID_DEF_JSON);
-		save(this.registerProperty, RegisterSpecHolder.class, folder + "/" + REGISTER_XML);
+//		save(this.registerProperty, RegisterSpecHolder.class, folder + "/" + REGISTER_XML);
 		save(this.registerShortCuts, RegisterShortCutHolder.class, folder + "/" + REGISTERSHORTCUT);
 		saveJson(this.dependencySpecHolder2, folder + "/" + DEPENDENCYSPEC3_XML);
 

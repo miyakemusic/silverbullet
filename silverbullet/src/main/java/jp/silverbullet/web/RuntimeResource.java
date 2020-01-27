@@ -10,20 +10,20 @@ import javax.ws.rs.core.MediaType;
 
 import jp.silverbullet.core.property2.PropertyType2;
 import jp.silverbullet.core.property2.RuntimeProperty;
-import jp.silverbullet.web.ui.JsProperty;
-import jp.silverbullet.web.ui.JsPropertyConverter;
+import jp.silverbullet.core.ui.UiProperty;
+import jp.silverbullet.core.ui.UiPropertyConverter;
 
 @Path("/runtime")
 public class RuntimeResource {
 	@GET
 	@Path("/getProperty")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public JsProperty getProperty(@QueryParam("id") String id, @QueryParam("index") Integer index, @QueryParam("ext") String ext) {
+	public UiProperty getProperty(@QueryParam("id") String id, @QueryParam("index") Integer index, @QueryParam("ext") String ext) {
 		RuntimeProperty property = SilverBulletServer.getStaticInstance().getBuilderModel().getRuntimePropertyStore().get(RuntimeProperty.createIdText(id,index));
 		if (property == null) {
 			System.err.println(id);
 		}
-		return JsPropertyConverter.convert(property, ext, SilverBulletServer.getStaticInstance().getBuilderModel().getBlobStore());
+		return UiPropertyConverter.convert(property, ext, SilverBulletServer.getStaticInstance().getBuilderModel().getBlobStore());
 	}
 
 	@GET
@@ -45,8 +45,8 @@ public class RuntimeResource {
 	@GET
 	@Path("/getProperties")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<JsProperty> getProperties() {
-		return JsPropertyConverter.convert(SilverBulletServer.getStaticInstance().getBuilderModel().getRuntimePropertyStore().getAllProperties(PropertyType2.NotSpecified));
+	public List<UiProperty> getProperties() {
+		return UiPropertyConverter.convert(SilverBulletServer.getStaticInstance().getBuilderModel().getRuntimePropertyStore().getAllProperties(PropertyType2.NotSpecified));
 	}
 	
 	@GET

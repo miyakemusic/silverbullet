@@ -87,6 +87,10 @@ public abstract class Sequencer {
 		createDependencyThread();
 	}
 	
+	public void requestChange(String id, String value, CommitListener commitListener) throws RequestRejectedException {
+		requestChange(id, 0, value, false, commitListener, Actor.User);
+	}
+	
 	public void requestChange(String id, String value) throws RequestRejectedException {
 		requestChange(id, 0, value, false);
 	}
@@ -165,7 +169,7 @@ public abstract class Sequencer {
 		dependencyQueue.add(new DepenendencyRequest(id, index, value, forceChange, commitListener, actor));
 	}
 	
-	public void handleRequestChange(String id, Integer index, String value, boolean forceChange, 
+	private void handleRequestChange(String id, Integer index, String value, boolean forceChange, 
 			CommitListener commitListener, Actor actor)
 			throws RequestRejectedException {
 		

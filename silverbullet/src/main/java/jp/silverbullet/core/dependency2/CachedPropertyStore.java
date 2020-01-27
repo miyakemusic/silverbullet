@@ -21,7 +21,7 @@ public class CachedPropertyStore implements PropertyGetter {
 	private Map<String, List<ChangedItemValue>> changedHistory = new LinkedHashMap<>();
 	private Set<IdValue> confirmationMessage = new LinkedHashSet<>();
 	private Set<CachedPropertyStoreListener> cachedPropertyStoreListeners = new HashSet<>();
-	private boolean confirmation = true;
+	private boolean confirmationEnabled = true;
 	
 	private RuntimePropertyListener listener = new RuntimePropertyListener() {
 		@Override
@@ -81,7 +81,7 @@ public class CachedPropertyStore implements PropertyGetter {
 	}
 
 	private void appendConfirmLog(Id id, ChangedItemValue changedItemValue2) {
-		if (this.confirmation && changedItemValue2.getElement().equals(DependencySpec.Value.toString())) {
+		if (this.confirmationEnabled && changedItemValue2.getElement().equals(DependencySpec.Value.toString())) {
 			IdValue item = new IdValue(id.toString(), changedItemValue2.getValue());
 			for (IdValue d : this.confirmationMessage) {
 				if (item.equals(d)) {
@@ -246,8 +246,8 @@ public class CachedPropertyStore implements PropertyGetter {
 		cachedPropertyStoreListeners.remove(cachedPropertyStoreListener);
 	}
 
-	public void setConfirmation(boolean b) {
-		this.confirmation = b;
+	public void setConfirmationEnabled(boolean b) {
+		this.confirmationEnabled = b;
 	}
 
 	public Set<IdValue> getConfirmationMessage() {
@@ -260,6 +260,10 @@ public class CachedPropertyStore implements PropertyGetter {
 
 	public void setBlockPropagation(boolean blockPropagation) {
 		this.blockPropagation = blockPropagation;
+	}
+
+	public boolean needsConfirmation() {
+		return this.confirmationMessage.size() > 0;
 	}
 
 

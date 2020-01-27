@@ -1,5 +1,6 @@
 package jp.silverbullet.core.ui.part2;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,6 +10,8 @@ import java.util.Map;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jp.silverbullet.core.XmlPersistent;
 
 
 @XmlRootElement
@@ -191,6 +194,18 @@ public class UiBuilder {
 			v.changeId(prevId, newId);
 		});
 		System.out.println();
+	}
+
+	public void load(String filename) {
+		XmlPersistent<UiBuilder> reader = new XmlPersistent<>();
+		try {
+			UiBuilder obj = reader.load(filename, UiBuilder.class);
+			
+			this.panes = obj.panes;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

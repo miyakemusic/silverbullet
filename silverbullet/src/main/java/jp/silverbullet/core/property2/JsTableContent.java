@@ -1,4 +1,4 @@
-package jp.silverbullet.web;
+package jp.silverbullet.core.property2;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @XmlRootElement
 public class JsTableContent {
 
-	public List<String> headers;
+	public List<String> headers = new ArrayList<>();
 	private List<List<String>> data = new ArrayList<>();
 	public boolean structureChanged = true;
 	public boolean dataChanged = true;

@@ -1,19 +1,12 @@
-package jp.silverbullet.web.ui;
+package jp.silverbullet.core.ui;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import jp.silverbullet.core.property2.ChartContent;
 import jp.silverbullet.core.property2.ListDetailElement;
 import jp.silverbullet.core.property2.PropertyType2;
-import jp.silverbullet.core.property2.RuntimeProperty;
 
-public class JsProperty {
+public class UiProperty {
 	private String id;
 	private String title;
 	private String unit;

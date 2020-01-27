@@ -15,6 +15,8 @@ import jp.silverbullet.core.property2.PropertyHolder2;
 import jp.silverbullet.core.property2.PropertyType2;
 import jp.silverbullet.core.property2.RuntimePropertyStore;
 import jp.silverbullet.core.property2.ChartContent.ChartType;
+import jp.silverbullet.core.ui.UiProperty;
+import jp.silverbullet.core.ui.UiPropertyConverter;
 
 public class JsPropertyTest {
 
@@ -31,7 +33,7 @@ public class JsPropertyTest {
 		BlobStore blobStore = new BlobStore();
 		
 		{
-			JsProperty prop = JsPropertyConverter.convert(store.get("ID_LIST"), null, blobStore);
+			UiProperty prop = UiPropertyConverter.convert(store.get("ID_LIST"), null, blobStore);
 			assertEquals("ID_LIST", prop.getId());
 			assertEquals("ID_LIST_A", prop.getCurrentSelectionId());
 			assertEquals("list", prop.getTitle());
@@ -45,7 +47,7 @@ public class JsPropertyTest {
 		}
 		
 		{
-			JsProperty prop = JsPropertyConverter.convert(store.get("ID_NUMERIC"), null, blobStore);
+			UiProperty prop = UiPropertyConverter.convert(store.get("ID_NUMERIC"), null, blobStore);
 			assertEquals("ID_NUMERIC", prop.getId());
 			assertEquals("123.00", prop.getCurrentValue());
 			assertEquals("number", prop.getTitle());
@@ -59,11 +61,11 @@ public class JsPropertyTest {
 			content.setYmin("0");
 			content.setY(Arrays.asList("1", "2", "3", "4", "5").toArray(new String[0]));
 			store.get("ID_CHART").setCurrentValue(new ObjectMapper().writeValueAsString(content));
-			JsProperty prop = JsPropertyConverter.convert(store.get("ID_CHART"), null, blobStore);
+			UiProperty prop = UiPropertyConverter.convert(store.get("ID_CHART"), null, blobStore);
 			assertEquals("ID_CHART", prop.getId());
 			
 			blobStore.put("ID_CHART", content);
-			prop = JsPropertyConverter.convert(store.get("ID_CHART"), "2", blobStore);
+			prop = UiPropertyConverter.convert(store.get("ID_CHART"), "2", blobStore);
 			
 			assertEquals("ID_CHART", prop.getId());
 		}
