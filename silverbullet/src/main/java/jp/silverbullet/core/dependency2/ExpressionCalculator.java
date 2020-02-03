@@ -12,9 +12,16 @@ import jp.silverbullet.core.property2.RuntimeProperty;
 public abstract class ExpressionCalculator {
 	abstract protected RuntimeProperty getProperty(String id);
 	
-	private ScriptEngine scriptEngine = new ScriptEngineManager().getEngineByName("JavaScript");
+	private ScriptEngine scriptEngine = null;//new ScriptEngineManager().getEngineByName("JavaScript");
 	private IdUtility idCollector = new IdUtility();
-	
+
+	public ExpressionCalculator() {
+		scriptEngine = new ScriptEngineManager().getEngineByName("JavaScript");
+		if (scriptEngine == null) { // for Android
+			scriptEngine = new ScriptEngineManager().getEngineByName("rhino");
+		}
+	}
+
 	public boolean isSatisfied(String expression) {
 		expression = replaceWithRealValue(expression);
 		try {

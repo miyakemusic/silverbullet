@@ -8,6 +8,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import jp.silverbullet.core.ui.UiModel;
 import jp.silverbullet.core.ui.UiProperty;
 import jp.silverbullet.core.ui.part2.Pane;
 

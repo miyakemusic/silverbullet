@@ -2,6 +2,7 @@ package jp.silverbullet.swing;
 
 import javax.swing.JPanel;
 
+import jp.silverbullet.core.ui.UiModel;
 import jp.silverbullet.core.ui.part2.Pane;
 
 public abstract class SbPanel {

@@ -7,21 +7,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.ContainerEvent;
-import java.awt.event.ContainerListener;
 import java.util.Set;
 
 import javax.swing.BoxLayout;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.border.EtchedBorder;
-import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
 import jp.silverbullet.core.BlobStore;
@@ -32,6 +26,8 @@ import jp.silverbullet.core.property2.RuntimeProperty;
 import jp.silverbullet.core.property2.RuntimePropertyListener;
 import jp.silverbullet.core.property2.RuntimePropertyStore;
 import jp.silverbullet.core.sequncer.Sequencer;
+import jp.silverbullet.core.ui.UiModel;
+import jp.silverbullet.core.ui.UiModelListener;
 import jp.silverbullet.core.ui.UiProperty;
 import jp.silverbullet.core.ui.UiPropertyConverter;
 import jp.silverbullet.core.ui.part2.Layout;
@@ -39,12 +35,12 @@ import jp.silverbullet.core.ui.part2.Pane;
 import jp.silverbullet.core.ui.part2.UiBuilder;
 import jp.silverbullet.core.ui.part2.WidgetType;
 
-public class Gui extends JFrame {
+public class SwingGui extends JFrame {
 	private CommitListener commitListener = new CommitListener() {
 
 		@Override
 		public Reply confirm(Set<IdValue> message) {
-			int ret = JOptionPane.showConfirmDialog(Gui.this, createMessage(message), "Do you accept change?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+			int ret = JOptionPane.showConfirmDialog(SwingGui.this, createMessage(message), "Do you accept change?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 			return JOptionPane.YES_OPTION == ret ? Reply.Accept : Reply.Reject;
 		}
 
@@ -121,7 +117,7 @@ public class Gui extends JFrame {
 	private BlobStore blobStore;
 	private Sequencer sequencer;
 	
-	public Gui(UiBuilder uiBuilder, RuntimePropertyStore runtimePropertyStore, BlobStore blobStore, Sequencer sequencer) {
+	public SwingGui(UiBuilder uiBuilder, RuntimePropertyStore runtimePropertyStore, BlobStore blobStore, Sequencer sequencer) {
 		this.runtimePropertyStore = runtimePropertyStore;
 		this.blobStore = blobStore;
 		this.sequencer = sequencer;

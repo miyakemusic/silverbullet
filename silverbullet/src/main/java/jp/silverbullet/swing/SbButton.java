@@ -9,6 +9,7 @@ import javax.swing.JButton;
 
 import jp.silverbullet.core.property2.ListDetailElement;
 import jp.silverbullet.core.property2.PropertyType2;
+import jp.silverbullet.core.ui.UiModel;
 import jp.silverbullet.core.ui.UiProperty;
 import jp.silverbullet.core.ui.part2.Pane;
 
@@ -119,7 +120,6 @@ public class SbButton extends SbWidget {
 	}
 	
 	private void updateButtonText(UiProperty uiProp) {
-	//	button.setText("<html><table><tr><td>" + uiProp.getTitle() + "</td></tr><tr><td><font color=\"blue\">" + uiProp.getCurrentValue() + "</font></td></tr></html>");
 		button.setText("<html><div style=\"text-align:center\">"  + uiProp.getTitle() + "<br><font color=\"blue\">" + uiProp.getCurrentValue() + "</font></div><html/>");
 	}
 

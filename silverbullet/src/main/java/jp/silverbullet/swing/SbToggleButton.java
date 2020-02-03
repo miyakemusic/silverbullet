@@ -11,6 +11,7 @@ import javax.swing.JToggleButton;
 
 import jp.silverbullet.core.property2.ListDetailElement;
 import jp.silverbullet.core.property2.PropertyType2;
+import jp.silverbullet.core.ui.UiModel;
 import jp.silverbullet.core.ui.UiProperty;
 import jp.silverbullet.core.ui.part2.Pane;
 

@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JComboBox;
 import jp.silverbullet.core.property2.ListDetailElement;
+import jp.silverbullet.core.ui.UiModel;
 import jp.silverbullet.core.ui.UiProperty;
 import jp.silverbullet.core.ui.part2.Pane;
 

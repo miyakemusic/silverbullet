@@ -14,6 +14,7 @@ import org.jfree.data.xy.XYSeriesCollection;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jp.silverbullet.core.property2.ChartContent;
+import jp.silverbullet.core.ui.UiModel;
 import jp.silverbullet.core.ui.UiProperty;
 import jp.silverbullet.core.ui.part2.Pane;
 

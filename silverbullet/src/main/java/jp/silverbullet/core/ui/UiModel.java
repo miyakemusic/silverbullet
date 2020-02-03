@@ -1,6 +1,4 @@
-package jp.silverbullet.swing;
-
-import jp.silverbullet.core.ui.UiProperty;
+package jp.silverbullet.core.ui;
 
 public interface UiModel {
 

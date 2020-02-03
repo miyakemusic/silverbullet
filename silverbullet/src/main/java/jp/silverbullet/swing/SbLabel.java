@@ -5,6 +5,7 @@ import java.awt.Dimension;
 
 import javax.swing.JLabel;
 
+import jp.silverbullet.core.ui.UiModel;
 import jp.silverbullet.core.ui.UiProperty;
 import jp.silverbullet.core.ui.part2.Pane;
 import jp.silverbullet.core.ui.part2.UiBuilder.PropertyField;

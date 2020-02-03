@@ -2,6 +2,8 @@ package jp.silverbullet.swing;
 
 import java.awt.Container;
 
+import jp.silverbullet.core.ui.UiModel;
+import jp.silverbullet.core.ui.UiModelListener;
 import jp.silverbullet.core.ui.UiProperty;
 import jp.silverbullet.core.ui.part2.Pane;
 
