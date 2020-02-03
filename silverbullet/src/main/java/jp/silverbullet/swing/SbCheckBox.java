@@ -1,12 +1,14 @@
 package jp.silverbullet.swing;
 
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JCheckBox;
 
 import jp.silverbullet.core.dependency2.DependencySpec;
+import jp.silverbullet.core.ui.UiModel;
 import jp.silverbullet.core.ui.UiProperty;
 import jp.silverbullet.core.ui.part2.Pane;
 
@@ -21,7 +23,7 @@ public class SbCheckBox extends SbWidget {
 
 	@Override
 	protected void onSize(int width, int height) {
-		
+		this.checkBox.setPreferredSize(new Dimension(width, height));
 	}
 
 	@Override

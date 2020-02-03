@@ -47,10 +47,10 @@ import jp.silverbullet.web.ValueSetResult;
 public class BuilderModelImpl {
 
 	private static final String ID_DEF_JSON = "id_def.json";
-	private static final String REGISTER_XML = "register.xml";
 	private static final String REGISTERSHORTCUT = "registershortcuts.xml";
 	private static final String DEPENDENCYSPEC3_XML = "dependencyspec3.xml";
-	private static final String UIBUILDER = "uibuilder.json";
+//	private static final String UIBUILDER = "uibuilder.json";
+	private static final String UIBUILDER2 = "uibuilder2.json";
 	
 	private RuntimePropertyStore store;
 	private Sequencer sequencer;
@@ -257,7 +257,9 @@ public class BuilderModelImpl {
 		registerSpecHolder.load(folder);// = load(RegisterSpecHolder.class, folder);
 //		restrictionMatrix.load(folder);
 		
-		this.uiBuilder = this.load(UiBuilder.class, folder + "/" + UIBUILDER);
+		//this.uiBuilder = this.load(UiBuilder.class, folder + "/" + UIBUILDER);
+		//this.uiBuilder = this.loadJson(UiBuilder.class, folder + "/" + UIBUILDER2);
+		this.uiBuilder.loadJson(folder + "/" + UIBUILDER2);
 		if (this.uiBuilder != null) {
 			this.uiBuilder.nameAll();
 		}
@@ -322,9 +324,11 @@ public class BuilderModelImpl {
 		saveJson(this.dependencySpecHolder2, folder + "/" + DEPENDENCYSPEC3_XML);
 
 		this.registerSpecHolder.save(folder);
-//		this.uiLayoutHolder.save(folder);
-		save(this.uiBuilder, UiBuilder.class, folder + "/" + UIBUILDER);
-//		this.restrictionMatrix.save(folder);
+
+//		save(this.uiBuilder, UiBuilder.class, folder + "/" + UIBUILDER);
+//		saveJson(this.uiBuilder, folder + "/" + UIBUILDER2);
+		this.uiBuilder.saveJson(folder + "/" + UIBUILDER2);
+		
 		this.dependencyDesigner.save(folder);
 		this.selfBuilder.save(folder);
 	}

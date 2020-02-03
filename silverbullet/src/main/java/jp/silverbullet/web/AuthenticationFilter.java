@@ -26,6 +26,9 @@ public class AuthenticationFilter implements ContainerRequestFilter
 		else if (requestContext.getUriInfo().getRequestUri().getPath().equals("/rest/system/loginAndroid")) {
 			return;
 		}
+		else if (requestContext.getUriInfo().getRequestUri().getPath().equals("/rest/config/all")) {
+			return;
+		}
 		else if (code.size() > 0){
 			if (SystemResource.authMap.stores(code.get(0))) {
 				return;

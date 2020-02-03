@@ -26,7 +26,8 @@ public class XmlPersistent<T> {
 	}
 	
 	public T load(String filename, Class<T> cls) throws IOException {
-		File file = FileUtils.getFile(filename);
+		File file = new File(filename);
+//		File file = FileUtils.getFile(filename);
 		String input = FileUtils.readFileToString(file, "UTF-8");
 		return loadFromXml(input, cls);
 

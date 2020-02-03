@@ -11,6 +11,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jp.silverbullet.core.JsonPersistent;
 import jp.silverbullet.core.XmlPersistent;
 
 
@@ -18,9 +19,9 @@ import jp.silverbullet.core.XmlPersistent;
 public class UiBuilder {
 	private WidgetIdManager widgetIdManager = null;
 
-	//public Pane pane = null;
 	public Map<String, Pane> panes = new HashMap<>();
 	
+	@JsonIgnore
 	private UiBuilderListener listener;
 	public enum PropertyField {
 		VALUE, TITLE, UNIT, MIN, MAX, STATICTEXT, NONE
@@ -56,10 +57,15 @@ public class UiBuilder {
 		}
 		
 	}
+	
+	@JsonIgnore
 	public Pane getRootPane() {
 		return panes.values().iterator().next();
 	}
 
+	public Map<String, Pane> getPanes() {
+		return panes;
+	}
 
 	public Pane getRootPane(String root, boolean link) {
 		Pane ret = null;
@@ -135,6 +141,7 @@ public class UiBuilder {
 		//return pane.getParent(divid);
 	}
 	
+	@JsonIgnore
 	public List<String> getRootList() {
 		List<String> ret = new ArrayList<String>(this.panes.keySet());
 		Collections.sort(ret);
@@ -172,6 +179,7 @@ public class UiBuilder {
 		return clone;
 	}
 
+	@JsonIgnore
 	public List<String> getFieldTypes() {
 		List<String> ret = new ArrayList<>();
 		for (PropertyField field : PropertyField.values()) {
@@ -181,6 +189,7 @@ public class UiBuilder {
 		return ret;
 	}
 
+	@JsonIgnore
 	public List<String> getNameList() {
 		List<String> ret = new ArrayList<>();
 		for (Pane pane : this.panes.values()) {
@@ -202,6 +211,26 @@ public class UiBuilder {
 			UiBuilder obj = reader.load(filename, UiBuilder.class);
 			
 			this.panes = obj.panes;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void loadJson(String filename) {
+		try {
+			UiBuilder loaded =  new JsonPersistent().loadJson(UiBuilder.class, filename);
+			this.panes = loaded.panes;
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void saveJson(String filename) {
+		try {
+			new JsonPersistent().saveJson(this, filename);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
