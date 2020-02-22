@@ -13,6 +13,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import jp.silverbullet.core.KeyValue;
+import jp.silverbullet.core.Zip;
+import jp.silverbullet.dev.StaticInstances;
 
 @Path("/config")
 public class FileResource {
@@ -21,6 +23,8 @@ public class FileResource {
 	@Path("/all")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<KeyValue> getIdFile() {
+		Zip.unzip("ti_back.zip", StaticInstances.TMP_FOLDER);
+		
 		List<KeyValue> files = new ArrayList<>();
 		for (File file : new File("sv_tmp").listFiles()) {
 			try {

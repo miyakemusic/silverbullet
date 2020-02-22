@@ -274,7 +274,7 @@ public class NewGuiResource {
 	
 		Pane parent = getUiBuilder().getParentOf(divid);
 		
-		List<String> keys = Arrays.asList("width", "height", "padding", "margin", "font-size");
+		List<String> keys = Arrays.asList("display","width", "height", "padding", "margin", "font-size", "font-family");
 		for (Pane child : parent.widgets) {
 			if (child.type.equals(widget.type)) {
 				for (String key : keys) {
