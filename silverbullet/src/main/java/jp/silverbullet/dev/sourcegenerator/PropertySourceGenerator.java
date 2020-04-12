@@ -85,7 +85,7 @@ public class PropertySourceGenerator {
 				source.add("        model.requestChange(ID." + prop.getId() + ", value.toString());");
 				source.add("    }");
 				source.add("    public Enum" + methodName + " get" + getMethodName(prop.getId()) + "() {");
-				source.add("        return Enum" + methodName + ".valueOf(model.getProperty(ID." + prop.getId() + ").getCurrentValue());");
+				source.add("        return Enum" + methodName + ".valueOf(model.getCurrentValue(ID." + prop.getId() + "));");
 				source.add("    }");
 				
 				if (array) {
@@ -93,7 +93,7 @@ public class PropertySourceGenerator {
 					source.add("        model.requestChange(ID." + prop.getId() + ", index, value.toString());");
 					source.add("    }");
 					source.add("    public Enum" + methodName + " get" + getMethodName(prop.getId()) + "(int index) {");
-					source.add("        return Enum" + methodName + ".valueOf(model.getProperty(ID." + prop.getId() + " + \"" + RuntimeProperty.INDEXSIGN + "\" + index).getCurrentValue());");
+					source.add("        return Enum" + methodName + ".valueOf(model.getCurrentValue(ID." + prop.getId() + " + \"" + RuntimeProperty.INDEXSIGN + "\" + index));");
 					source.add("    }");
 				}
 			}
@@ -113,7 +113,7 @@ public class PropertySourceGenerator {
 		source.add("        model.requestChange(ID." + prop.getId() + ", String.valueOf(value));");
 		source.add("    }");
 		source.add("    public " + type + " get" + getMethodName(prop.getId()) + "() {");
-		source.add("        return " + type + ".valueOf(model.getProperty(ID." + prop.getId() + ").getCurrentValue());");
+		source.add("        return " + type + ".valueOf(model.getCurrentValue(ID." + prop.getId() + "));");
 		source.add("    }");
 		if (array) {
 			source.add("    public void set" + getMethodName(prop.getId()) + "(" + type + " value, int index) throws RequestRejectedException {");

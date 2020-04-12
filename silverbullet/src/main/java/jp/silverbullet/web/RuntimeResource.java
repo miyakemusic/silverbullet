@@ -1,12 +1,17 @@
 package jp.silverbullet.web;
 
+import java.io.IOException;
 import java.util.List;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jp.silverbullet.core.property2.PropertyType2;
 import jp.silverbullet.core.property2.RuntimeProperty;
@@ -55,7 +60,7 @@ public class RuntimeResource {
 	public ValueSetResult setCurrentValue(@QueryParam("id") String id, @QueryParam("index") Integer index, @QueryParam("value") String value) {
 		return SilverBulletServer.getStaticInstance().getBuilderModel().requestChangeByUser(id, index, value);
 	}
-	
+
 	@GET
 	@Path("/defaultValues")
 	@Produces(MediaType.TEXT_PLAIN) 

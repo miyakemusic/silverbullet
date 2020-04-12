@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RegisterUpdates {
+	public static final String INTERRUPT = "@Interrupt@";
 	private int address;
 	private String name;
 	private List<BitUpdates> bits = new ArrayList<>();

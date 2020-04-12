@@ -101,9 +101,6 @@ public class BuilderModelImpl {
 	private RegisterAccessor currentRegisterAccessor = runtimeRegisterMap;
 
 	private EasyAccessInterface easyAccessInterface = new EasyAccessInterface() {
-		public RuntimeProperty getProperty(String id) {
-			return store.get(id);
-		}
 
 		public void requestChange(String id, String value) throws RequestRejectedException {
 			getSequencer().requestChange(id, value, false);
@@ -116,6 +113,16 @@ public class BuilderModelImpl {
 		@Override
 		public void requestChange(String id, Object blobData, String name) throws RequestRejectedException {
 			System.err.println("requestChange blob");
+		}
+
+		@Override
+		public String getCurrentValue(String id) {
+			return store.get(id).getCurrentValue();
+		}
+
+		@Override
+		public String getSelectedListTitle(String id) {
+			return store.get(id).getSelectedListTitle();
 		}
 	};
 	
@@ -204,18 +211,17 @@ public class BuilderModelImpl {
 		this.getRegisterAccessor().addListener(this.testRecorder);
 		this.getRuntimRegisterMap().addDevice(DeviceType.CONTROLLER, this.registerController);
 		this.sequencer = new Sequencer() {
+			@Override
 			protected RuntimePropertyStore getPropertiesStore() {
 				return store;
 			}
 
+			@Override
 			protected DependencyEngine getDependency() {
 				return dependency;
 			}
 			
-			protected EasyAccessInterface getEasyAccessInterface() {
-				return easyAccessInterface;
-			}
-			
+			@Override
 			protected RegisterAccessor getRegisterAccessor() {
 				return currentRegisterAccessor;
 			}
@@ -614,6 +620,25 @@ public class BuilderModelImpl {
 
 	public void addUserSequencer(UserSequencer sequencer2) {
 		this.getSequencer().addUserSequencer(sequencer2);
+	}
+
+	public void requestChangeBySystem(String id, int index, String value) {
+		try {
+			this.getSequencer().getAccessFromSystem().requestChange(id, index, value);
+		} catch (RequestRejectedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public String requestBlobChangeBySystem(String id, Integer index, Object object, String name) {
+		try {
+			this.getSequencer().getAccessFromSystem().requestChange(id, object, name);
+		} catch (RequestRejectedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "OK";
 	}
 
 }

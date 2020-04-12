@@ -1,5 +1,6 @@
 package jp.silverbullet.web;
 
+import java.util.Arrays;
 import java.util.List;
 
 import jp.silverbullet.core.register2.RegisterAccessor;
@@ -7,7 +8,7 @@ import jp.silverbullet.core.sequncer.UserSequencer;
 import jp.silverbullet.core.ui.part2.UiBuilder;
 import jp.silverbullet.dev.BuilderModelImpl;
 
-public class SampleMain extends SilverBulletServer {
+public class ServerMain extends SilverBulletServer {
 
 	@Override
 	protected String getDefaultFilename() {
@@ -16,7 +17,7 @@ public class SampleMain extends SilverBulletServer {
 	}
 
 	public static void main(String[] args) {
-		new SampleMain().start(args[0], null);
+		new ServerMain().start(args[0], args[1], args[2]);
 	}
 
 	@Override
@@ -33,14 +34,12 @@ public class SampleMain extends SilverBulletServer {
 	
 	@Override
 	protected RegisterAccessor getHardwareAccessor(BuilderModelImpl model) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	protected List<UserSequencer> getUserSequencers(BuilderModelImpl model) {
-		// TODO Auto-generated method stub
-		return null;
+		return Arrays.asList(new WebSequencer());
 	}
 
 	@Override

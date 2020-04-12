@@ -79,9 +79,6 @@ public class PropertyDef2 implements Cloneable {
 	private String comment = "";
 	
 	private Set<PropertyDefListener2> listeners = new HashSet<>();
-	
-//	@JsonIgnore
-//	private int index;
 
 	public PropertyDef2() {}
 	

@@ -45,8 +45,8 @@ public abstract class SilverBulletServer {
 		return staticInstance;
 	}
 
-	public void start(String port, String protocol) {
-		String filename = getDefaultFilename();
+	public void start(String port, String protocol, String filename) {
+//		String filename = getDefaultFilename();
 		
 //		staticInstance.createInstances(getInstanceCount());
 		staticInstance.load(filename);
@@ -249,10 +249,11 @@ public abstract class SilverBulletServer {
 			public void onInterrupt() {
 				try {
 					RegisterUpdates updates = new RegisterUpdates();
-					updates.setName("@Interrupt@");
+					updates.setName(RegisterUpdates.INTERRUPT);
 					String val = new ObjectMapper().writeValueAsString(updates);
 					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("REGVAL", val));
 					WebSocketBroadcaster.getInstance().sendMessage(str);
+					WebSocketBroadcaster.getInstance().sendMessageToDomainModel(RegisterUpdates.INTERRUPT);
 				} catch (JsonGenerationException e) {
 					e.printStackTrace();
 				} catch (JsonMappingException e) {

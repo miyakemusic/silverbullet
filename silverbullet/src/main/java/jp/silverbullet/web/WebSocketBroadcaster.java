@@ -8,11 +8,14 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.eclipse.jetty.websocket.api.Session;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class WebSocketBroadcaster {
     private static WebSocketBroadcaster INSTANCE = new WebSocketBroadcaster();
     private List<WebSocketObject> clients = new ArrayList<WebSocketObject>();
+    private List<WebSocketObject> domainModels = new ArrayList<WebSocketObject>();
     
     private WebSocketBroadcaster(){
     	senderThread.start();
@@ -22,12 +25,22 @@ public class WebSocketBroadcaster {
         return INSTANCE;
     }
 
+
+	public void resigerAs(String target, WebSocketObject client) {
+		if (target.equals(WebSocketClientHandler.DomainModel)) {
+			this.domainModels.add(client);
+		}
+		else if (target.equals(WebSocketClientHandler.UserClient)) {
+			this.clients.add(client);
+		}
+	}
+	
     /**
      * Add Client
      * */
-    protected void join(WebSocketObject socket, String address){
-    	this.clients.add(socket);
-    }
+//    protected void join(WebSocketObject socket, String address){
+//    	this.clients.add(socket);
+//    }
     /**
      * Delete Client
      * */
@@ -44,10 +57,6 @@ public class WebSocketBroadcaster {
             member.getSession().getRemote().sendStringByFuture(message);
         }
     }
-//
-//	public void login(String employeeNumber, WebSocketObject webSocketObject) {
-//        clients.put(webSocketObject, employeeNumber);
-//	}
 	
 	public void sendMessage(final String message) {
 //		System.out.println(message);
@@ -63,12 +72,6 @@ public class WebSocketBroadcaster {
 			}.start();
 			
 		}
-//        for(WebSocketObject member: clients.keySet()){
-//            String empNum = clients.get(member);
-//            if (empNum.equals(employeeNumber)) {
-//            	member.getSession().getRemote().sendStringByFuture(message);
-//            }
-//        }		
 	}
 
 //	private Object sync = new Object();
@@ -84,36 +87,6 @@ public class WebSocketBroadcaster {
 					
 					TypeValue tv = queue.take();
 					send(tv.value, tv.type);
-					
-					
-//					Iterator<TypeValue> it = queue.iterator();
-//					
-//					//String ids = "";
-//					String currentType = "";
-//					
-//					Set<String> tmp = new LinkedHashSet<>();
-//					
-//					while(it.hasNext()) {	
-//						TypeValue tv2 = it.next();
-//						
-//						tmp.add(it.next().value);
-//						
-//						if (!currentType.isEmpty() && !tv2.type.equals(currentType)) {	
-//							String msg = toText(tmp);
-//							send(msg, currentType);							
-//							tmp.clear();
-//						}
-//						//for (int i = 0; i < queue.size(); i++) {
-//							//ids += "," + tv2.value;
-//						//	tmp.add(tv2.value);
-//						//}
-//						
-//						currentType = tv2.type;
-//					}
-//	
-//					if (!tmp.isEmpty()) {
-//						send(toText(tmp), currentType);			
-//					}
 				}
 			}
 			catch (InterruptedException e) {
@@ -154,5 +127,14 @@ public class WebSocketBroadcaster {
 			e.printStackTrace();
 		}
 
+	}
+
+	public void sendMessageToDomainModel(String message) {
+		//String message = new ObjectMapper().writeValueAsString(new WebSocketMessage(currentType, ids));
+		for(final WebSocketObject member: this.domainModels){
+			if (member != null) {
+				member.getSession().getRemote().sendStringByFuture(message);
+			}
+		}
 	}
 }

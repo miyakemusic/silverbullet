@@ -19,7 +19,7 @@ public class AuthenticationFilter implements ContainerRequestFilter
 		
 		List<String> code = queryParameters.get("code");
 		
-		System.out.println("AuthenticationFilter/code=" + code.get(0));
+//		System.out.println("AuthenticationFilter/code=" + code.get(0));
 		if (code.get(0).equals("forDebug")) {
 			return;
 		}

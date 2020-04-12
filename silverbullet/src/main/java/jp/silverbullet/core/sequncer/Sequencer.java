@@ -25,7 +25,7 @@ import jp.silverbullet.core.register2.RegisterAccessor;
 public abstract class Sequencer {
 	protected abstract RuntimePropertyStore getPropertiesStore();
 	protected abstract DependencyEngine getDependency();
-	protected abstract EasyAccessInterface getEasyAccessInterface();
+//	protected abstract EasyAccessInterface getEasyAccessInterface();
 	protected abstract RegisterAccessor getRegisterAccessor();
 
 	private Set<SequencerListener> listeners = new HashSet<SequencerListener>();
@@ -41,7 +41,7 @@ public abstract class Sequencer {
 
 		@Override
 		public EasyAccessInterface getEasyAccessInterface() {
-			return easyAccessInterface;
+			return accessFromSystem;
 		}
 
 		@Override
@@ -51,7 +51,7 @@ public abstract class Sequencer {
 
 	};
 
-	private EasyAccessInterface easyAccessInterface = new EasyAccessInterface() {
+	private EasyAccessInterface accessFromSystem = new EasyAccessInterface() {
 		@Override
 		public void requestChange(final String id, final String value) throws RequestRejectedException {
 			requestChange(id, 0, value);
@@ -71,8 +71,8 @@ public abstract class Sequencer {
 		
 		}
 		@Override
-		public RuntimeProperty getProperty(String id) {
-			return getPropertiesStore().get(id);
+		public String getCurrentValue(String id) {
+			return getPropertiesStore().get(id).getCurrentValue();
 		}
 
 		@Override
@@ -80,9 +80,14 @@ public abstract class Sequencer {
 			storeBlob(id, blobData);
 			requestChange(id, name);
 		}
+
+		@Override
+		public String getSelectedListTitle(String id) {
+			return getPropertiesStore().get(id).getSelectedListTitle();
+		}
 		
 	};
-			
+				
 	public Sequencer() {
 		createDependencyThread();
 	}
@@ -221,6 +226,9 @@ public abstract class Sequencer {
 	}
 	
 	private boolean matches(List<String> targetIds, List<String> changedIds) {
+		if (targetIds == null) {
+			return true;
+		}
 		for (String id : changedIds) {
 			if (targetIds.contains(id.split(RuntimeProperty.INDEXSIGN)[0])) {
 				return true;
@@ -268,6 +276,9 @@ public abstract class Sequencer {
 				e.printStackTrace();
 			}
 		}
+	}
+	public EasyAccessInterface getAccessFromSystem() {
+		return accessFromSystem;
 	}
 
 }

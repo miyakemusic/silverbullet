@@ -10,6 +10,7 @@ public interface EasyAccessInterface {
 	void requestChange(String id, int index, String value) throws RequestRejectedException;
 	void requestChange(String id, Object blobData, String name) throws RequestRejectedException;
 	
-	RuntimeProperty getProperty(String id);
+	String getCurrentValue(String id);
+	String getSelectedListTitle(String id);
 	
 }

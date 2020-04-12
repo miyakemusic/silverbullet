@@ -11,8 +11,9 @@ class MyWebSocket {
 		var connection  = new WebSocket(wsHeader + "://" + window.location.host + "/websocket");
 		// When the connection is open, send some data to the server
 		connection.onopen = function () {
+			connection.send("RegisterAs:UserClient");
 		};
-		
+				
 		// Log errors
 		connection.onerror = function (error) {
 

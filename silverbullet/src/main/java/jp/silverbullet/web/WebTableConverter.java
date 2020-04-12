@@ -104,7 +104,7 @@ public class WebTableConverter {
 	            	e.printStackTrace();
 	            }
 	        }
-	        table.setHeader(header);
+	        table.setHeaderList(header);
 	        table.setWidths(widths.toArray(new Integer[0]));
 	        
 	        int index = 1;

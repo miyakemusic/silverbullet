@@ -11,10 +11,17 @@ import javax.swing.Timer;
 
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
+import org.eclipse.jetty.websocket.api.WriteCallback;
+import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 
+import jp.silverbullet.core.ui.UiProperty;
+
 public abstract class WebSocketClientHandler {
-    private WebSocketClient client = new WebSocketClient();
+    public static final String DomainModel = "DomainModel";
+    public static final String UserClient = "UserClient";
+    
+	private WebSocketClient client = new WebSocketClient();
 	private Session session;
 	private boolean closeRequested = false;
     
@@ -22,10 +29,10 @@ public abstract class WebSocketClientHandler {
         connect(server, port);
 	}
 
-	private void connect(final String optBridge, final String port) throws Exception, IOException,
+	private void connect(final String server, final String port) throws Exception, IOException,
 			InterruptedException, ExecutionException {
 
-		URI uri = URI.create("ws://" + optBridge + ":" + port + "/websocket/");
+		URI uri = URI.create("ws://" + server + ":" + port + "/websocket/");
 	
         client.start();
         // The socket that receives events
@@ -49,7 +56,7 @@ public abstract class WebSocketClientHandler {
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
 						try {
-							connect(optBridge, port);
+							connect(server, port);
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -69,14 +76,17 @@ public abstract class WebSocketClientHandler {
 				timer.start();
 			}
         };
+//        ClientUpgradeRequest request = new ClientUpgradeRequest();
+//        request.addExtensions("DomainModel");
+        
         // Attempt Connect
-        Future<Session> fut = client.connect(socket,uri);
+        Future<Session> fut = client.connect(socket, uri);
         // Wait for Connect
         session = fut.get();
         
-        if (session != null) {
-        	login(System.getProperty("user.name"));
-        }
+//        if (session != null) {
+//        	login(System.getProperty("user.name"));
+//        }
 	}
 	
 	abstract protected void onMessageReceived(String message2);
@@ -84,7 +94,7 @@ public abstract class WebSocketClientHandler {
 	public void login(String employeeNumber) {
         // Send a message
         try {
-			session.getRemote().sendString("login:" + employeeNumber);
+			session.getRemote().sendString("RegisterAs:" + employeeNumber);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -102,5 +112,22 @@ public abstract class WebSocketClientHandler {
 			e.printStackTrace();
 		}
 
+	}
+
+	public UiProperty getUiProperty(String id2) {
+		session.getRemote().sendString("GetProperty:"+ id2, new WriteCallback() {
+			@Override
+			public void writeFailed(Throwable x) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void writeSuccess() {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		return null;
 	}
 }
