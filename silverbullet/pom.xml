@@ -46,7 +46,7 @@
 		        </descriptorRefs>
 		        <archive>
 		            <manifest>
-		                <mainClass>jp.silverbullet.SampleMain</mainClass>
+		                <mainClass>jp.silverbullet.web.ServerMain</mainClass>
 		            </manifest>
 		        </archive>
 		    </configuration>
