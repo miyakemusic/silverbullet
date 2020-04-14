@@ -12,7 +12,6 @@ import javax.swing.Timer;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.eclipse.jetty.websocket.api.WriteCallback;
-import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 
 import jp.silverbullet.core.ui.UiProperty;
@@ -33,7 +32,7 @@ public abstract class WebSocketClientHandler {
 			InterruptedException, ExecutionException {
 
 		URI uri = URI.create("ws://" + server + ":" + port + "/websocket/");
-	
+		client.setAsyncWriteTimeout(10000);
         client.start();
         // The socket that receives events
         WebSocketAdapter socket = new WebSocketAdapter() {

@@ -1,15 +1,13 @@
 package jp.silverbullet.web;
 
+import javax.annotation.CheckForNull;
+
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import jp.silverbullet.core.property2.LightProperty;
-import jp.silverbullet.core.property2.RuntimeProperty;
 
 
 @WebSocket
@@ -28,19 +26,19 @@ public class WebSocketObject {
     		String target = message.split(":")[1];
     		WebSocketBroadcaster.getInstance().resigerAs(target, this);
     	}
-//    	else if (message.startsWith("GetProperty:")) {
-//    		String id = message.split(":")[1];
-//    		RuntimeProperty prop = SilverBulletServer.getStaticInstance().getBuilderModel().getRuntimePropertyStore().get(id);
-//    		LightProperty lightProp = new LightProperty();
-//    		lightProp.currentValue = prop.getCurrentValue();
-//    	}
     }
 
     @OnWebSocketClose
     public void onClose(int statusCode, String reason) {
+    	System.out.println("WebSocket closed");
     	WebSocketBroadcaster.getInstance().bye(this);
     }
-
+    
+    @OnWebSocketError
+    public void onError(@CheckForNull Session session, Throwable error) throws Exception {
+    	error.printStackTrace();
+    }
+    
     public Session getSession(){
         return this.session;
     }

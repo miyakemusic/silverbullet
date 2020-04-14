@@ -126,9 +126,6 @@ public class SwingGui extends JFrame {
 		uiBuilder.getRootList().forEach(root -> rootPanes.addItem(root));
 		this.getContentPane().setLayout(new BorderLayout());
 		JPanel mainPane = new JPanel();
-		
-//		mainPane.setLayout(new VerticalLayout());
-//		mainPane.setLayout(new FlowLayout());
 
 		this.getContentPane().add(rootPanes, BorderLayout.SOUTH);
 		this.getContentPane().add(new JScrollPane(mainPane), BorderLayout.CENTER);

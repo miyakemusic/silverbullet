@@ -283,15 +283,29 @@ class SbImage extends Widget {
 	}
 	
 	onUpdateValue(property) {
-		var wrapper = $('#' + this.divid)[0];
-		
-		var canvasWidth = this.canvas.width;
-		var divWidth = $('#' + this.divid).width();
-		if (this.canvas.width != $('#' + this.divid).width()) {
-			$('#' + this.canvasId).attr('width', $('#' + this.divid).width());
-			$('#' + this.canvasId).attr('height', $('#' + this.divid).height());
+		if (property.currentValue == '') {
+			return;
 		}
-		this.image.src = property.currentValue;
+		var url =  "//" + window.location.host + "/rest/runtime/getBlob?id=" + property.id + "&name=" + property.currentValue;
+		
+		var me = this;
+		var wrapper = $('#' + me.divid)[0];
+		
+		var canvasWidth = me.canvas.width;
+		var divWidth = $('#' + me.divid).width();
+		if (me.canvas.width != $('#' + me.divid).width()) {
+			$('#' + this.canvasId).attr('width', $('#' + me.divid).width());
+			$('#' + this.canvasId).attr('height', $('#' + me.divid).height());
+		}
+			
+		$.ajax({
+		   type: "GET", 
+		   url: url,
+		   success: function(blob){
+			me.image.src = blob.data;
+		   }
+		});
+
 	}
 }
 

@@ -12,6 +12,7 @@ import javax.ws.rs.core.MediaType;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import javafx.beans.property.ListProperty;
 import jp.silverbullet.core.property2.LightProperty;
 import jp.silverbullet.core.property2.RuntimeProperty;
 
@@ -32,11 +33,19 @@ public class DomainResource {
 		return ret;
 	}
 	
-	@GET
+	@POST
 	@Path("/setValueBySystem")
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String setValueBySystem(@QueryParam("id") String id, @QueryParam("index") Integer index, @QueryParam("value") String value) {
-		SilverBulletServer.getStaticInstance().getBuilderModel().requestChangeBySystem(id, index, value);
+	public String setValueBySystem(String json) {
+		try {
+			LightProperty prop = new ObjectMapper().readValue(json, LightProperty.class);
+			SilverBulletServer.getStaticInstance().getBuilderModel().requestChangeBySystem(prop.id, 0, prop.currentValue);
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return "OK";
 	}
 	

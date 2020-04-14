@@ -32,6 +32,16 @@ public class RuntimeResource {
 	}
 
 	@GET
+	@Path("/getBlob")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public BlobJson getProperty(@QueryParam("id") String id, @QueryParam("name") String name) {
+		Object object = SilverBulletServer.getStaticInstance().getBuilderModel().getBlobStore().get(id);
+		BlobJson json = new BlobJson();
+		json.data = object.toString();
+		return json;
+	}
+	
+	@GET
 	@Path("/respondMessage")
 	@Produces(MediaType.APPLICATION_JSON)
 	public String respondMessage(@QueryParam("id") String id, @QueryParam("type") String type) {

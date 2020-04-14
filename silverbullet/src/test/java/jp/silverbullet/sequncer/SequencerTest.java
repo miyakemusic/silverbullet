@@ -89,12 +89,6 @@ public class SequencerTest {
 			}
 
 			@Override
-			protected EasyAccessInterface getEasyAccessInterface() {
-				// TODO Auto-generated method stub
-				return null;
-			}
-
-			@Override
 			protected RegisterAccessor getRegisterAccessor() {
 				// TODO Auto-generated method stub
 				return null;

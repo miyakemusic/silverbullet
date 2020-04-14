@@ -8,8 +8,6 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.eclipse.jetty.websocket.api.Session;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class WebSocketBroadcaster {
