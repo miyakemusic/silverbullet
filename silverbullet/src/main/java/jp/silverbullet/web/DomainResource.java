@@ -12,7 +12,6 @@ import javax.ws.rs.core.MediaType;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import javafx.beans.property.ListProperty;
 import jp.silverbullet.core.property2.LightProperty;
 import jp.silverbullet.core.property2.RuntimeProperty;
 
