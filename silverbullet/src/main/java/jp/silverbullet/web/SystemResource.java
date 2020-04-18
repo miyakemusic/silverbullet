@@ -96,7 +96,7 @@ public class SystemResource {
 
 				cookieStore.put(sessionName, personal);
 				
-				NewCookie newCookie = new NewCookie(new Cookie("SilverBullet", sessionName, "/rest", "localhost"));
+				NewCookie newCookie = new NewCookie(new Cookie("SilverBullet", sessionName, "/rest", ""));
 				//NewCookie newCookie = new NewCookie("SilverBullet", sessionName);
 				//NewCookie newCookie = new NewCookie(new Cookie("SilverBullet", sessionName));
 				return Response.ok(new KeyValue("Complete", personal.name)).
