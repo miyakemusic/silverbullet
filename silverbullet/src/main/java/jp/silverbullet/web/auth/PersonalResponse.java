@@ -1,6 +1,6 @@
 package jp.silverbullet.web.auth;
 
-public class GooglePersonalResponse {
+public class PersonalResponse {
 	public String id;
 	public String name;
 	public String given_name;

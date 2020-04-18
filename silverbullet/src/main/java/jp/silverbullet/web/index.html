@@ -50,15 +50,16 @@
 $(function() {
 	$(document).ready(function(){
 		$('#mainFunction').hide();
-		var login = new Login('login', 'loginName');
-				
-		login.loginListener = function(name) {
+
+		var loginListener = function(name) {
 			createPane();
 		};
-		
-		login.logoutListener = function() {
+				
+		var logoutListener = function() {
 
-		}
+		};
+		
+		var login = new Login('login', 'loginName', loginListener, logoutListener);
 		
 		function createPane() {
 			$('#mainFunction').show();
@@ -119,7 +120,6 @@ $(function() {
 <link rel="stylesheet" type="text/css" href="lib/jquery-ui.css">
 <link rel="stylesheet" type="text/css" href="lib/fancyknob.css">
 <link rel="stylesheet" type="text/css" href="mycss.css">
-<link rel="stylesheet" type="text/css" href="table.css">
 <link rel="stylesheet" type="text/css" href="jsmytable.css">
 <link rel="stylesheet" type="text/css" href="lib/keyboard.min.css">
 <link rel="stylesheet" type="text/css" href="login.css">

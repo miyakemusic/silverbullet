@@ -18,7 +18,7 @@ import jp.silverbullet.core.property2.SvFileException;
 import jp.silverbullet.web.auth.GoogleAccressTokenResponse;
 import jp.silverbullet.web.auth.GoogleHandlerImpl;
 import jp.silverbullet.web.auth.GoogleHanlder;
-import jp.silverbullet.web.auth.GooglePersonalResponse;
+import jp.silverbullet.web.auth.PersonalResponse;
 
 @Path("/system")
 public class SystemResource {
@@ -65,56 +65,111 @@ public class SystemResource {
 	}
 	
 	public static AuthStore authMap = new AuthStore();
-	public static CookieStore cookieStore = new CookieStore();
+	public static UserStore userStore = new UserStore();
 	
 //	private GoogleHanlder googleHandler = new GoogleHandlerForTest();
 	private GoogleHanlder googleHandler = new GoogleHandlerImpl(ClientBuilder.newClient());
-	
+
 	@GET
-	@Path("/login")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response login(@CookieParam("SilverBullet") String cookie, @QueryParam("code") final String code, @QueryParam("scope") final String scope,
-			@QueryParam("redirectUri") final String redirectUri) throws URISyntaxException {
-
-		try {
-			String access_token;
-			GooglePersonalResponse personal;
-			
-			if (cookieStore.containsCookie(cookie)) {
-				access_token = cookieStore.get(cookie).access_token;
-				personal = cookieStore.get(cookie);
-				return Response.ok(new KeyValue("Complete", personal.name)).build();
-			}
-			else {
-				GoogleAccressTokenResponse accessToken = googleHandler.retrieveAccessToken(code, redirectUri);
-				access_token = accessToken.access_token;
-				personal = googleHandler.retrievePersonal(access_token);
-				personal.access_token = access_token;
-				personal.auth_code = code;
-
-				String sessionName = String.valueOf(System.currentTimeMillis()); 
-
-				cookieStore.put(sessionName, personal);
-				
-				NewCookie newCookie = new NewCookie(new Cookie("SilverBullet", sessionName, "/rest", ""));
-				//NewCookie newCookie = new NewCookie("SilverBullet", sessionName);
-				//NewCookie newCookie = new NewCookie(new Cookie("SilverBullet", sessionName));
-				return Response.ok(new KeyValue("Complete", personal.name)).
-						cookie(newCookie)
-						.build();
-					
-			}
-			
-			//return new KeyValue("Complete", personal.name);	
-		}
-		catch (Exception e) {
-//			e.printStackTrace();
-			String url = googleHandler.getAuthUri(redirectUri);
-			return Response.ok(new KeyValue("RedirectAuth", url)).build();
-			//return new KeyValue("RedirectAuth", url);
-		}
+	@Path("/getAuthUrl")
+	@Produces(MediaType.TEXT_PLAIN)
+	public Response getAuthUrl(@QueryParam("url") final String url) {
+		String authUrl = googleHandler.getAuthUri(url);
+		return Response.ok(new String(authUrl)).build();
 	}
 	
+	@GET
+	@Path("/autoLogin")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response autoLogin(@CookieParam("SilverBullet") String cookie) {
+		if (cookie != null) {
+			if (userStore.containsCookie(cookie)) {
+				PersonalResponse res = userStore.getByCookie(cookie);
+				return Response.ok(new KeyValue("name", res.name)).build();
+			}
+		}
+		return Response.ok(new KeyValue("name", "")).build();
+	}
+
+	@GET
+	@Path("/newLogin")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response newLogin(@QueryParam("code") final String code, @QueryParam("scope") final String scope,
+			@QueryParam("redirectUri") final String redirectUri) throws Exception {
+
+		GoogleAccressTokenResponse accessToken = googleHandler.retrieveAccessToken(code, redirectUri);
+
+		String access_token;
+		PersonalResponse personal;
+		access_token = accessToken.access_token;
+		personal = googleHandler.retrievePersonal(access_token);
+		personal.access_token = access_token;
+		personal.auth_code = code;
+
+		String sessionName = String.valueOf(System.currentTimeMillis()); 
+
+		userStore.put(sessionName, personal);
+		
+		NewCookie newCookie = new NewCookie(new Cookie("SilverBullet", sessionName, "/rest", ""));
+
+		return Response.ok(new KeyValue("name", personal.name)).
+				cookie(newCookie)
+				.build();		
+	}
+	
+//	@GET
+//	@Path("/login")
+//	@Produces(MediaType.APPLICATION_JSON)
+//	public Response login(@CookieParam("SilverBullet") String cookie, @QueryParam("code") final String code, @QueryParam("scope") final String scope,
+//			@QueryParam("redirectUri") final String redirectUri) throws URISyntaxException {
+//
+//		try {
+//			String access_token;
+//			PersonalResponse personal;
+//			
+//			if (userStore.containsCookie(cookie)) {
+//				access_token = userStore.get(cookie).access_token;
+//				personal = userStore.get(cookie);
+//				return Response.ok(new KeyValue("Complete", personal.name)).build();
+//			}
+//			else {
+//				GoogleAccressTokenResponse accessToken = googleHandler.retrieveAccessToken(code, redirectUri);
+//				access_token = accessToken.access_token;
+//				personal = googleHandler.retrievePersonal(access_token);
+//				personal.access_token = access_token;
+//				personal.auth_code = code;
+//
+//				String sessionName = String.valueOf(System.currentTimeMillis()); 
+//
+//				userStore.put(sessionName, personal);
+//				
+//				NewCookie newCookie = new NewCookie(new Cookie("SilverBullet", sessionName, "/rest", ""));
+//				//NewCookie newCookie = new NewCookie("SilverBullet", sessionName);
+//				//NewCookie newCookie = new NewCookie(new Cookie("SilverBullet", sessionName));
+//				return Response.ok(new KeyValue("Complete", personal.name)).
+//						cookie(newCookie)
+//						.build();
+//					
+//			}
+//			
+//			//return new KeyValue("Complete", personal.name);	
+//		}
+//		catch (Exception e) {
+////			e.printStackTrace();
+//			String url = googleHandler.getAuthUri(redirectUri);
+//			return Response.ok(new KeyValue("RedirectAuth", url)).build();
+//			//return new KeyValue("RedirectAuth", url);
+//		}
+//	}
+	
+	@GET
+	@Path("/logout")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response login(@CookieParam("SilverBullet") String cookie) {
+		userStore.remove(cookie);
+		return Response.ok().build();
+	}
+		
 	@GET
 	@Path("/loginTmp")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -131,7 +186,7 @@ public class SystemResource {
 				GoogleAccressTokenResponse accessToken = googleHandler.retrieveAccessToken(code, redirectUri);
 				access_token = accessToken.access_token;
 			}
-			GooglePersonalResponse personal = googleHandler.retrievePersonal(access_token);
+			PersonalResponse personal = googleHandler.retrievePersonal(access_token);
 			personal.access_token = access_token;
 			personal.auth_code = code;
 			
@@ -158,7 +213,7 @@ public class SystemResource {
 	public String loginAndroid(@QueryParam("auth") final String auth)
 	{
 		try {
-			GooglePersonalResponse personal = googleHandler.retrievePersonal(auth);
+			PersonalResponse personal = googleHandler.retrievePersonal(auth);
 			personal.access_token = auth;
 			personal.auth_code = auth;
 			

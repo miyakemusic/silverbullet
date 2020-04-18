@@ -72,7 +72,7 @@ public class GoogleHandlerImpl implements GoogleHanlder {
 	}
 
 	@Override
-	public GooglePersonalResponse retrievePersonal(String accessToken) throws Exception {
+	public PersonalResponse retrievePersonal(String accessToken) throws Exception {
 		OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url("https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=" + accessToken)
@@ -80,7 +80,7 @@ public class GoogleHandlerImpl implements GoogleHanlder {
                 .build();
         Response responseOk = client.newCall(request).execute();
         String string  = responseOk.body().string();
-		return new ObjectMapper().readValue(string, GooglePersonalResponse.class);	
+		return new ObjectMapper().readValue(string, PersonalResponse.class);	
 	}
 
 	@Override

@@ -3,17 +3,17 @@ package jp.silverbullet.web;
 import java.util.HashMap;
 import java.util.Map;
 
-import jp.silverbullet.web.auth.GooglePersonalResponse;
+import jp.silverbullet.web.auth.PersonalResponse;
 
 public class AuthStore {
-	private Map<String, GooglePersonalResponse> map = new HashMap<>();
+	private Map<String, PersonalResponse> map = new HashMap<>();
 
-	public void add(GooglePersonalResponse personal) {
+	public void add(PersonalResponse personal) {
 		map.put(personal.id, personal);
 	}
 
 	public boolean stores(String code) {
-		for (GooglePersonalResponse r : map.values()) {
+		for (PersonalResponse r : map.values()) {
 			if (r.auth_code.equals(code)) {
 				return true;
 			}
@@ -21,8 +21,8 @@ public class AuthStore {
 		return false;
 	}
 
-	public GooglePersonalResponse getByCode(String code) {
-		for (GooglePersonalResponse r : map.values()) {
+	public PersonalResponse getByCode(String code) {
+		for (PersonalResponse r : map.values()) {
 			if (r.auth_code.equals(code)) {
 				return r;
 			}

@@ -1,6 +1,7 @@
 package jp.silverbullet.web;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.container.ContainerRequestContext;
@@ -9,26 +10,28 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 
-import jp.silverbullet.web.auth.GooglePersonalResponse;
+import jp.silverbullet.web.auth.PersonalResponse;
 
 @Provider
 public class AuthenticationFilter implements ContainerRequestFilter
 {
 
+	private static List<String> extPath = Arrays.asList(
+			"/rest/system/login", "/rest/system/autoLogin", "/rest/system/newLogin", 
+			"/rest/system/getAuthUrl", "/rest/system/loginAndroid");
 	@Override
 	public void filter(ContainerRequestContext requestContext) throws IOException {	  
 		MultivaluedMap<String, String> queryParameters = requestContext.getUriInfo().getQueryParameters();
 		
-		if (requestContext.getUriInfo().getRequestUri().getPath().equals("/rest/system/login")) {
-			return;
+		for (String path : extPath) {
+			if (requestContext.getUriInfo().getRequestUri().getPath().equals(path)) {
+				return;
+			}
 		}
-		if (requestContext.getUriInfo().getRequestUri().getPath().equals("/rest/system/loginAndroid")) {
-			return;
-		}	
 		
 		if (requestContext.getCookies().containsKey("SilverBullet")) {
 			String cookie = requestContext.getCookies().get("SilverBullet").getValue();
-			GooglePersonalResponse rs = SystemResource.cookieStore.get(cookie);
+			PersonalResponse rs = SystemResource.userStore.getByCookie(cookie);
 			return;
 		}
 		

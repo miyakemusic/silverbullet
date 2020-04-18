@@ -13,8 +13,8 @@ public class GoogleHandlerForTest implements GoogleHanlder {
 	}
 
 	@Override
-	public GooglePersonalResponse retrievePersonal(String accessToken) {
-		GooglePersonalResponse ret = new GooglePersonalResponse();
+	public PersonalResponse retrievePersonal(String accessToken) {
+		PersonalResponse ret = new PersonalResponse();
 		ret.name = "Test User";
 		ret.id = "testuser_000000";
 		return ret;
