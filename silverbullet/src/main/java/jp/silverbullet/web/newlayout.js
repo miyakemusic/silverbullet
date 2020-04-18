@@ -972,7 +972,6 @@ class NewLayout {
 			new DependencyHistory(div);
 			
 			this.propertyWindow = new NewLayoutProperty(div);
-		
 		}
 		else {
 			getDesignByName(rootName, true, true);

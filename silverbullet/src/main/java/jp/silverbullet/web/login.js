@@ -13,7 +13,11 @@ function getArgMap() {
 class Login {
 	constructor(beforeDiv, afterDiv) {		
 		var me = this;
-	
+		
+		var argMap = getArgMap();//new Map();
+		
+		$.ajaxSetup({xhrFields:{withCredentials:true}});
+		
 		$('#' + afterDiv).append('Hello <label id="username">' + name + ' : </label>');
 		$('#username').css('font-weight', 'bold');
 		$('#' + afterDiv).append('<button id="logout">Logout</button>');
@@ -21,12 +25,20 @@ class Login {
 			logout();
 		});
 			
-		if (localStorage.getItem('oauthCode') != null) {
+		
+//		if (localStorage.getItem('oauthCode') != null) {
+		if (Cookies.get('SilverBullet') != null) {
 			login();
 			return;
 		}
 		
-		var argMap = getArgMap();//new Map();
+		var code = getArgValue('code');
+		var scope = getArgValue('scope');
+		if (code != '' && scope != '') {
+			login(code, scope);
+			return;
+		}
+
 /*		var args = window.location.search;
 		for (var arg of args.split('&')) {
 			var item = arg.split('=')[0].replace('?', '');
@@ -36,12 +48,13 @@ class Login {
 		}
 */
 				
-		if (argMap.has("code")) {
+/*		if (argMap.has("code")) {
 			localStorage.setItem('oauthCode', getArgValue('code'));
 			localStorage.setItem('oauthScope', getArgValue('scope'));
 			login();
 			return;
 		}
+*/
 		
 		$('#' + beforeDiv).append('<div class="headerBlank"></div>');
 		
@@ -72,9 +85,10 @@ class Login {
 			return "";
 		}
 		
-		function login() {
-			var code = localStorage.getItem('oauthCode');
-			var scope = localStorage.getItem('oauthScope');
+		function login(code, scope) {
+//			var code = localStorage.getItem('oauthCode');
+//			var scope = localStorage.getItem('oauthScope');
+
 			var redirectUri = window.location.origin;
 			console.log(code);
 			$.ajax({
@@ -82,8 +96,8 @@ class Login {
 			   url: "http://" + window.location.host + "/rest/system/login?code=" + code + "&scope=" + scope + "&redirectUri=" + redirectUri,
 			   success: function(response){
 			   	if (response.key == 'RedirectAuth') {
-			   		localStorage.removeItem('oauthCode');
-			   		localStorage.removeItem('oauthScope');
+//			   		localStorage.removeItem('oauthCode');
+//			   		localStorage.removeItem('oauthScope');
 			   		window.location.href = response.value;
 			   	}
 			   	else if (response.key == 'Complete') {
@@ -98,14 +112,15 @@ class Login {
 		}
 		
 		function logout() {
-	   		localStorage.removeItem('oauthCode');
-	   		localStorage.removeItem('oauthScope');	
-	   		window.location.href = ".";	
+//	   		localStorage.removeItem('oauthCode');
+//	   		localStorage.removeItem('oauthScope');	
+			Cookies.remove('SilverBullet');
+	   		window.location.href = ".";		   		
 	   		
 	   		$('#' + beforeDiv).show();
 	   		$('#' + afterDiv).hide();
 	   		
-	   		this.logoutListener();
+	   		me.logoutListener();
 		}
 	}
 	
@@ -129,6 +144,7 @@ class Login {
 }
 
 $.ajaxPrefilter( function( options, originalOptions, jqXHR ) {
+/*
 	var oauthCode = localStorage.getItem('oauthCode');
 	if (originalOptions.url.includes('?')) {
 		if (!originalOptions.url.includes('code=')) {
@@ -139,6 +155,7 @@ $.ajaxPrefilter( function( options, originalOptions, jqXHR ) {
 		//options.url += '/oauthCode';
 		options.url += '?code=' + oauthCode;
 	}
+*/
 });
 $.ajaxSetup({
     error: function(event, jqXHR, ajaxSettings, thrownError) {

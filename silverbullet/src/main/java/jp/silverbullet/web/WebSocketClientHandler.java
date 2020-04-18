@@ -113,20 +113,20 @@ public abstract class WebSocketClientHandler {
 
 	}
 
-	public UiProperty getUiProperty(String id2) {
-		session.getRemote().sendString("GetProperty:"+ id2, new WriteCallback() {
-			@Override
-			public void writeFailed(Throwable x) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void writeSuccess() {
-				// TODO Auto-generated method stub
-				
-			}
-		});
-		return null;
-	}
+//	public UiProperty getUiProperty(String id2) {
+//		session.getRemote().sendString("GetProperty:"+ id2, new WriteCallback() {
+//			@Override
+//			public void writeFailed(Throwable x) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//
+//			@Override
+//			public void writeSuccess() {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//		});
+//		return null;
+//	}
 }

@@ -9,6 +9,8 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 
+import jp.silverbullet.web.auth.GooglePersonalResponse;
+
 @Provider
 public class AuthenticationFilter implements ContainerRequestFilter
 {
@@ -17,31 +19,27 @@ public class AuthenticationFilter implements ContainerRequestFilter
 	public void filter(ContainerRequestContext requestContext) throws IOException {	  
 		MultivaluedMap<String, String> queryParameters = requestContext.getUriInfo().getQueryParameters();
 		
-		List<String> code = queryParameters.get("code");
-		
-//		System.out.println("AuthenticationFilter/code=" + code.get(0));
-		if (code.get(0).equals("forDebug")) {
-			return;
-		}
 		if (requestContext.getUriInfo().getRequestUri().getPath().equals("/rest/system/login")) {
 			return;
 		}
-		else if (requestContext.getUriInfo().getRequestUri().getPath().equals("/rest/system/loginAndroid")) {
+		if (requestContext.getUriInfo().getRequestUri().getPath().equals("/rest/system/loginAndroid")) {
+			return;
+		}	
+		
+		if (requestContext.getCookies().containsKey("SilverBullet")) {
+			String cookie = requestContext.getCookies().get("SilverBullet").getValue();
+			GooglePersonalResponse rs = SystemResource.cookieStore.get(cookie);
 			return;
 		}
-		else if (code.size() > 0){
-			if (SystemResource.authMap.stores(code.get(0))) {
-				return;
-			}
-//			for (GooglePersonalResponse res : SystemResource.authMap.values()) {
-//				if (res.auth_code.equals(code.get(0))) {
-//					return;
-//				}
-//			}
-			requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
-	                .entity("Not Logged In.")
-	                .build());
+		
+		List<String> code = queryParameters.get("code");
+		if (code != null && code.size() > 0 && code.get(0).equals("forDebug")) {
+			return;
 		}
+		
+		requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
+                .entity("Not Logged In.")
+                .build());	
 	}      
 
 }
