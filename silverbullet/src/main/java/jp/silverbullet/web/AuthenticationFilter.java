@@ -34,6 +34,9 @@ public class AuthenticationFilter implements ContainerRequestFilter
 			PersonalResponse rs = SystemResource.userStore.getByCookie(cookie);
 			return;
 		}
+		else {
+			System.out.println("No Cookie");
+		}
 		
 		List<String> code = queryParameters.get("code");
 		if (code != null && code.size() > 0 && code.get(0).equals("forDebug")) {

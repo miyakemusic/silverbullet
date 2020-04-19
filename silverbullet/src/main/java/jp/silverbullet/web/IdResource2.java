@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 
+import javax.ws.rs.CookieParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -101,7 +102,7 @@ public class IdResource2 {
 	@GET
 	@Path("/typeNames")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public List<String> getTypeNames() {
+	public List<String> getTypeNames(@CookieParam("SilverBullet") String cookie) {
 		return getPropertiesHolder().getTypes();
 	}
 

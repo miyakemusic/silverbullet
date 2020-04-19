@@ -110,8 +110,9 @@ public class SystemResource {
 
 		userStore.put(sessionName, personal);
 		
-		NewCookie newCookie = new NewCookie(new Cookie("SilverBullet", sessionName, "/rest", ""));
-
+		NewCookie newCookie = new NewCookie(new Cookie("SilverBullet", sessionName, "/rest/", ""));
+//		NewCookie newCookie = new NewCookie(new Cookie("SilverBullet", sessionName));
+		
 		return Response.ok(new KeyValue("name", personal.name)).
 				cookie(newCookie)
 				.build();		
