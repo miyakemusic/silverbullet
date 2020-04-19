@@ -33,7 +33,7 @@ public class AuthenticationFilter implements ContainerRequestFilter
 		
 		if (requestContext.getCookies().containsKey("SilverBullet")) {
 			String cookie = requestContext.getCookies().get("SilverBullet").getValue();
-			System.out.println("Cookie:" + cookie);
+//			System.out.println("Cookie:" + cookie);
 			PersonalResponse rs = SystemResource.userStore.getByCookie(cookie);
 			return;
 		}
