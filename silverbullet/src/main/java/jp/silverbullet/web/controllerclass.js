@@ -5,7 +5,7 @@ class ControllerClass {
 		$('#' + idAdd).click(function() {
 			$.ajax({
 				type: "GET", 
-				url: "http://" + window.location.host + "/rest/controller/addNew",
+				url: window.location.origin + "/rest/controller/addNew",
 					success: function(msg) {
 						myTable.clear();
 						myTable.appendRows(msg);
@@ -21,7 +21,7 @@ class ControllerClass {
 		myTable.listenerChange = function(row, name, value) {
 			$.ajax({
 				type: "GET", 
-				url: "http://" + window.location.host + "/rest/controller/update?row=" + row + "&name=" + name + "&value=" + value,
+				url: window.location.origin + "/rest/controller/update?row=" + row + "&name=" + name + "&value=" + value,
 					success: function(msg) {
 						myTable.clear();
 						myTable.appendRows(msg);
@@ -31,7 +31,7 @@ class ControllerClass {
 		
 //		$.ajax({
 //			type: "GET", 
-//			url: "http://" + window.location.host + "/rest/controller/getSpecs",
+//			url: window.location.origin + "/rest/controller/getSpecs",
 //				success: function(msg) {
 //					myTable.appendRows(msg);
 //				}
@@ -40,7 +40,7 @@ class ControllerClass {
 		function removeRow(row) {
 			$.ajax({
 				type: "GET", 
-				url: "http://" + window.location.host + "/rest/controller/remove?row=" + row,
+				url: window.location.origin + "/rest/controller/remove?row=" + row,
 					success: function(msg) {
 						myTable.clear();
 						myTable.appendRows(msg);

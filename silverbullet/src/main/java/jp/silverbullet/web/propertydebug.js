@@ -16,7 +16,7 @@ class PropertyDebug {
 			table.clear();
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/runtime/getProperties",
+			   url: window.location.origin + "/rest/runtime/getProperties",
 			   success: function(props){
 				table.appendRows(props);
 			   }

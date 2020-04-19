@@ -50,7 +50,7 @@ class DependencyDiagram {
 		var me = this;
 		$.ajax({
 		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/dependencySpec/target?id=" + id,
+		   url: window.location.origin + "/rest/dependencySpec/target?id=" + id,
 		   success: function(msg){
 			   var link = [];
 				for (var i in msg) {

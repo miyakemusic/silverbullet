@@ -14,7 +14,7 @@ class DebugClass {
 		$('#' + this.div).append('<div id="debugDiv"></div>');
 		$.ajax({
 		   type: "GET", 
-		   url: "http://" + window.location.host + "/rest/register/getShortCuts",
+		   url: window.location.origin + "/rest/register/getShortCuts",
 		   success: function(msg){
 				updateList(msg);
 		   }
@@ -46,7 +46,7 @@ class DebugClass {
 						
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/register/setCheck?regName=" + item.regName + "&bitName=" + item.bitName + "&value=" + val,
+			   url: window.location.origin + "/rest/register/setCheck?regName=" + item.regName + "&bitName=" + item.bitName + "&value=" + val,
 			   success: function(msg){
 					me.initialize();
 			   }
@@ -58,7 +58,7 @@ class DebugClass {
 						
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/register/setCurrentValue?regName=" + item.regName + "&bitName=" + item.bitName + "&value=1",
+			   url: window.location.origin + "/rest/register/setCurrentValue?regName=" + item.regName + "&bitName=" + item.bitName + "&value=1",
 			   success: function(msg){
 
 			   }
@@ -66,7 +66,7 @@ class DebugClass {
 //			if (item.interrupt == true) {
 //				$.ajax({
 //				   type: "GET", 
-//				   url: "http://" + window.location.host + "/rest/register/interrupt",
+//				   url: window.location.origin + "/rest/register/interrupt",
 //				   success: function(msg){
 //	
 //				   }

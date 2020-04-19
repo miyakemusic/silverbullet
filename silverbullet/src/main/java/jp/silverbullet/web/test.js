@@ -148,7 +148,7 @@ class TestClass {
 				var url = id.split('_')[id.split('_').length-1];
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + '/rest/test/' + url + '?serial=' + selectedSerial,
+				   url: window.location.origin + '/rest/test/' + url + '?serial=' + selectedSerial,
 				   success: function(msg){
 						update();
 				   }
@@ -159,7 +159,7 @@ class TestClass {
 				var test = $(this).val();
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/test/selectTest?testName=" + test,
+				   url: window.location.origin + "/rest/test/selectTest?testName=" + test,
 				   success: function(msg){
 						update();
 				   }
@@ -170,7 +170,7 @@ class TestClass {
 				$('#' + testListId).empty();
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/test/getTestList",
+				   url: window.location.origin + "/rest/test/getTestList",
 				   success: function(msg){
 				   		for (var test of msg) {
 					   		var option = $('<option>').val(test).text(test);
@@ -183,7 +183,7 @@ class TestClass {
 			function selectRow() {
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/test/selectRow?serial=" + selectedSerial,
+				   url: window.location.origin + "/rest/test/selectRow?serial=" + selectedSerial,
 				   success: function(msg){
 	
 				   }
@@ -193,7 +193,7 @@ class TestClass {
 				clearTable();
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/test/startRecording",
+				   url: window.location.origin + "/rest/test/startRecording",
 				   success: function(msg){
 	
 				   }
@@ -202,7 +202,7 @@ class TestClass {
 			function stop() {
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/test/stopRecording",
+				   url: window.location.origin + "/rest/test/stopRecording",
 				   success: function(msg){
 						update();
 				   }
@@ -211,7 +211,7 @@ class TestClass {
 			function play() {
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/test/playBack",
+				   url: window.location.origin + "/rest/test/playBack",
 				   success: function(msg){
 	
 				   }
@@ -225,7 +225,7 @@ class TestClass {
 					var name = this.getText();
 					$.ajax({
 					   type: "GET", 
-					   url: "http://" + window.location.host + "/rest/test/save?testName=" + name,
+					   url: window.location.origin + "/rest/test/save?testName=" + name,
 					   success: function(msg){
 		
 					   }
@@ -330,7 +330,7 @@ class TestClass {
 			  function deleteRow() {
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/test/deleteRow?serial=" + selectedSerial,
+				   url: window.location.origin + "/rest/test/deleteRow?serial=" + selectedSerial,
 				   success: function(msg){
 						update();
 				   }
@@ -340,7 +340,7 @@ class TestClass {
 			  function addCommand(type, target, value) {
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/test/addCommand?type=" + type + "&target=" + target + "&value=" + value + "&serial=" + selectedSerial,
+				   url: window.location.origin + "/rest/test/addCommand?type=" + type + "&target=" + target + "&value=" + value + "&serial=" + selectedSerial,
 				   success: function(msg){
 						update();
 				   }
@@ -350,7 +350,7 @@ class TestClass {
 			  function move(type) {
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/test/move?type=" + type + "&serial=" + selectedSerial,
+				   url: window.location.origin + "/rest/test/move?type=" + type + "&serial=" + selectedSerial,
 				   success: function(msg){
 						update();
 				   }
@@ -368,7 +368,7 @@ class TestClass {
 			if (sel == 'Value') {		
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/test/updateValue?serial=" + selectedSerial + "&value=" + value,
+				   url: window.location.origin + "/rest/test/updateValue?serial=" + selectedSerial + "&value=" + value,
 				   success: function(msg){
 						update();
 				   }
@@ -377,7 +377,7 @@ class TestClass {
 			else if (sel == 'Expected') {		
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/test/updateExpected?serial=" + selectedSerial + "&value=" + value,
+				   url: window.location.origin + "/rest/test/updateExpected?serial=" + selectedSerial + "&value=" + value,
 				   success: function(msg){
 						update();
 				   }
@@ -389,7 +389,7 @@ class TestClass {
 			clearTable();
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/test/getTest",
+			   url: window.location.origin + "/rest/test/getTest",
 			   success: function(msg){
 					for (var obj of msg.items) {
 						table.row.add([obj.number, obj.type, obj.target, obj.value, obj.expected, obj.result, obj.passFail, obj.time, obj.serial]).draw(false);

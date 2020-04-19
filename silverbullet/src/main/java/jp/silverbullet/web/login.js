@@ -42,7 +42,7 @@ class Login {
 					/*
 					$.ajax({
 						type: "GET", 
-						url: "http://" + window.location.host + "/rest/system/getAuthUrl",
+						url: window.location.origin + "/rest/system/getAuthUrl",
 						success: function(response) {
 							window.location.href = response;
 						},
@@ -97,7 +97,7 @@ class Login {
 				var redirectUri = window.location.origin;
 				$.ajax({
 					type: "GET", 
-					url: "http://" + window.location.host + "/rest/system/getAuthUrl?url=" + redirectUri,
+					url: window.location.origin + "/rest/system/getAuthUrl?url=" + redirectUri,
 					success: function(response) {
 						window.location.href = response;
 					},
@@ -114,7 +114,7 @@ class Login {
 			console.log(code);
 			$.ajax({
 				type: "GET", 
-				url: "http://" + window.location.host + "/rest/system/newLogin?code=" + code + "&scope=" + scope + "&redirectUri=" + redirectUri,
+				url: window.location.origin + "/rest/system/newLogin?code=" + code + "&scope=" + scope + "&redirectUri=" + redirectUri,
 				success: function(response){
 					if (response.key == 'name') {
 				   		//$('#' + beforeDiv).hide();
@@ -137,7 +137,7 @@ class Login {
 			console.log(code);
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/system/login?code=" + code + "&scope=" + scope + "&redirectUri=" + redirectUri,
+			   url: window.location.origin + "/rest/system/login?code=" + code + "&scope=" + scope + "&redirectUri=" + redirectUri,
 			   success: function(response){
 			   	if (response.key == 'RedirectAuth') {
 			   		window.location.href = response.value;
@@ -164,7 +164,7 @@ class Login {
 	   		beforeLogin();
 			$.ajax({
 				type: "GET", 
-				url: "http://" + window.location.host + "/rest/system/logout",
+				url: window.location.origin + "/rest/system/logout",
 				success: function(response){
 					logoutListener();
 				},
@@ -178,7 +178,7 @@ class Login {
 			var me = this;
 			$.ajax({
 				type: "GET", 
-				url: "http://" + window.location.host + "/rest/system/autoLogin",
+				url: window.location.origin + "/rest/system/autoLogin",
 				success: function(response) {
 					if (response.value != '') {
 				   		$('#' + beforeDiv).hide();
