@@ -119,12 +119,12 @@ class Login {
 				url: window.location.origin + resourceRootPath + "newLogin?code=" + code + "&scope=" + scope + "&redirectUri=" + redirectUri,
 				success: function(response){
 					if (response.key == 'name') {
-				   		//$('#' + beforeDiv).hide();
-				   		//$('#' + afterDiv).show();			 
-				   		afterLogin();
-				   		
+		 				window.location.href = window.location.origin;
+		 				/*
+				   		afterLogin();			   		
 				   		$('#username').text(response.value);  		
 				   		loginListener(response.value);
+				   		*/
 				   	}
 				},
 				error: function(response) {

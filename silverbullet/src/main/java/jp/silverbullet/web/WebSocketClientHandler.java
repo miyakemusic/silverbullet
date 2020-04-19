@@ -32,7 +32,7 @@ public abstract class WebSocketClientHandler {
 			InterruptedException, ExecutionException {
 
 		URI uri = URI.create("ws://" + server + ":" + port + "/websocket/");
-		client.setAsyncWriteTimeout(10000);
+//		client.setAsyncWriteTimeout(10000);
         client.start();
         // The socket that receives events
         WebSocketAdapter socket = new WebSocketAdapter() {
@@ -49,13 +49,16 @@ public abstract class WebSocketClientHandler {
 				super.onWebSocketClose(statusCode, reason);
 				
 				if (closeRequested) {
+					System.out.println("WebSocketClosed");
 					return;
 				}
 				Timer timer = new Timer(500, new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
 						try {
+							System.out.println("WebSocketClient reconnedting...");
 							connect(server, port);
+							onRecconected();
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -89,6 +92,7 @@ public abstract class WebSocketClientHandler {
 	}
 	
 	abstract protected void onMessageReceived(String message2);
+	abstract protected void onRecconected();
 	
 	public void login(String employeeNumber) {
         // Send a message
