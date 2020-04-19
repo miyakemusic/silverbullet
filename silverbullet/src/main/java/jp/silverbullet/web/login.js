@@ -16,6 +16,8 @@ class Login {
 		
 		var argMap = getArgMap();//new Map();
 		
+		var resourceRootPath = "/rest/";
+		
 		$.ajaxSetup({xhrFields:{withCredentials:true}});
 		
 		function getArgValue(arg) {
@@ -42,7 +44,7 @@ class Login {
 					/*
 					$.ajax({
 						type: "GET", 
-						url: window.location.origin + "/rest/system/getAuthUrl",
+						url: window.location.origin + resourceRootPath + "getAuthUrl",
 						success: function(response) {
 							window.location.href = response;
 						},
@@ -97,7 +99,7 @@ class Login {
 				var redirectUri = window.location.origin;
 				$.ajax({
 					type: "GET", 
-					url: window.location.origin + "/rest/system/getAuthUrl?url=" + redirectUri,
+					url: window.location.origin + resourceRootPath + "getAuthUrl?url=" + redirectUri,
 					success: function(response) {
 						window.location.href = response;
 					},
@@ -114,7 +116,7 @@ class Login {
 			console.log(code);
 			$.ajax({
 				type: "GET", 
-				url: window.location.origin + "/rest/system/newLogin?code=" + code + "&scope=" + scope + "&redirectUri=" + redirectUri,
+				url: window.location.origin + resourceRootPath + "newLogin?code=" + code + "&scope=" + scope + "&redirectUri=" + redirectUri,
 				success: function(response){
 					if (response.key == 'name') {
 				   		//$('#' + beforeDiv).hide();
@@ -130,32 +132,6 @@ class Login {
 				}
 			});		
 		}
-
-/*				
-		function login(code, scope) {
-			var redirectUri = window.location.origin;
-			console.log(code);
-			$.ajax({
-			   type: "GET", 
-			   url: window.location.origin + "/rest/system/login?code=" + code + "&scope=" + scope + "&redirectUri=" + redirectUri,
-			   success: function(response){
-			   	if (response.key == 'RedirectAuth') {
-			   		window.location.href = response.value;
-			   	}
-			   	else if (response.key == 'Complete') {
-			   		$('#' + beforeDiv).hide();
-			   		$('#' + afterDiv).show();			 
-			   		
-			   		$('#username').text(response.value);  		
-			   		loginListener(response.value);
-			   	}
-			   },
-			   error: function(response) {
-			   	alert(response);
-			   }
-			});		
-		}
-*/
 		
 		function logout() {
 			Cookies.remove('SilverBullet');
@@ -164,7 +140,7 @@ class Login {
 	   		beforeLogin();
 			$.ajax({
 				type: "GET", 
-				url: window.location.origin + "/rest/system/logout",
+				url: window.location.origin + resourceRootPath + "logout",
 				success: function(response){
 					logoutListener();
 				},
@@ -178,7 +154,7 @@ class Login {
 			var me = this;
 			$.ajax({
 				type: "GET", 
-				url: window.location.origin + "/rest/system/autoLogin",
+				url: window.location.origin + resourceRootPath + "autoLogin",
 				success: function(response) {
 					if (response.value != '') {
 				   		$('#' + beforeDiv).hide();
@@ -200,24 +176,6 @@ class Login {
 		}	
 	}
 	
-
-/*	
-	set loginListener(listener) {
-		this._loginListener = listener;
-	}
-	
-	get loginListener() {
-		return this._loginListener;
-	}
-	
-	set logoutLisnter(listener) {
-		this._logoutListener = listener;
-	}
-	
-	get logoutListener() {
-		return this._logoutListener;
-	}
-*/
 }
 
 $.ajaxPrefilter( function( options, originalOptions, jqXHR ) {

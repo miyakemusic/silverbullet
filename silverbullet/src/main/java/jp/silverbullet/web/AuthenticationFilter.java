@@ -16,9 +16,11 @@ import jp.silverbullet.web.auth.PersonalResponse;
 public class AuthenticationFilter implements ContainerRequestFilter
 {
 
+	private static final String SYSTEMPATH = "/rest/";
+	
 	private static List<String> extPath = Arrays.asList(
-			"/rest/system/login", "/rest/system/autoLogin", "/rest/system/newLogin", 
-			"/rest/system/getAuthUrl", "/rest/system/loginAndroid");
+			SYSTEMPATH + "login", SYSTEMPATH + "autoLogin", SYSTEMPATH + "newLogin", 
+			SYSTEMPATH + "getAuthUrl", SYSTEMPATH + "loginAndroid");
 	@Override
 	public void filter(ContainerRequestContext requestContext) throws IOException {	  
 		MultivaluedMap<String, String> queryParameters = requestContext.getUriInfo().getQueryParameters();

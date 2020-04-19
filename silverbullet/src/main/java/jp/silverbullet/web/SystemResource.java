@@ -20,7 +20,8 @@ import jp.silverbullet.web.auth.GoogleHandlerImpl;
 import jp.silverbullet.web.auth.GoogleHanlder;
 import jp.silverbullet.web.auth.PersonalResponse;
 
-@Path("/system")
+//@Path("/system")
+@Path("/")
 public class SystemResource {
 	@GET
 	@Path("/save")
@@ -110,8 +111,8 @@ public class SystemResource {
 
 		userStore.put(sessionName, personal);
 		
-		NewCookie newCookie = new NewCookie(new Cookie("SilverBullet", sessionName, "/rest/", ""));
-//		NewCookie newCookie = new NewCookie(new Cookie("SilverBullet", sessionName));
+//		NewCookie newCookie = new NewCookie(new Cookie("SilverBullet", sessionName, "/rest/", ""));
+		NewCookie newCookie = new NewCookie(new Cookie("SilverBullet", sessionName));
 		
 		return Response.ok(new KeyValue("name", personal.name)).
 				cookie(newCookie)
