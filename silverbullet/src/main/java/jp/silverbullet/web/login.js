@@ -45,6 +45,9 @@ class Login {
 						url: "http://" + window.location.host + "/rest/system/getAuthUrl",
 						success: function(response) {
 							window.location.href = response;
+						},
+						error: function(response) {
+							alert(response);
 						}
 					});					
 					*/
@@ -98,8 +101,8 @@ class Login {
 					success: function(response) {
 						window.location.href = response;
 					},
-					error: function() {
-						alert('error');
+					error: function(response) {
+						alert(response);
 					}
 				});	
 					
@@ -121,6 +124,9 @@ class Login {
 				   		$('#username').text(response.value);  		
 				   		loginListener(response.value);
 				   	}
+				},
+				error: function(response) {
+					alert(response);
 				}
 			});		
 		}
@@ -143,6 +149,9 @@ class Login {
 			   		$('#username').text(response.value);  		
 			   		loginListener(response.value);
 			   	}
+			   },
+			   error: function(response) {
+			   	alert(response);
 			   }
 			});		
 		}
@@ -158,6 +167,9 @@ class Login {
 				url: "http://" + window.location.host + "/rest/system/logout",
 				success: function(response){
 					logoutListener();
+				},
+				error: function(response) {
+					alert(response);
 				}
 			});	
 		}
@@ -180,6 +192,9 @@ class Login {
 					else {
 						resultFunc('failed', '');
 					}
+				},
+				error: function(response) {
+					alert(response);
 				}
 			});	
 		}	
