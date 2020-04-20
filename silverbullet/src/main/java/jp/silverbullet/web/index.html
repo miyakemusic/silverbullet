@@ -48,6 +48,7 @@
 
 <script type="text/javascript">
 $(function() {
+	var application = 'miyake_otdr';
 	$(document).ready(function(){
 		$('#mainFunction').hide();
 
@@ -75,11 +76,41 @@ $(function() {
 			new NewLayout('tab_newgui');
 			new DependencyDesign2('tab_dependencydesign2');
 			new Build('tab_build');
-			
+
+
+			$.ajax({
+				type: "GET", 
+				url: "http://" + window.location.host + "/rest/getApplications",
+				success: function(list){
+					for (var l of list) {
+						$("#applications").append($("<option>").val(l).text(l));
+						
+						if (application == null) {
+							application = l;
+						}
+					} 
+			   }
+			});
+				
+			$('#applications').change(function() {
+			    var r = $('option:selected').val();
+			    application = r;
+			    createPane();
+			});
+
+			$('#newApplication').click(function() {
+				$.ajax({
+				   type: "GET", 
+				   url: "http://" + window.location.host + "/rest/newApplication",
+				   success: function(property){
+				   }
+				});
+			});
+						
 			$('#save').click(function() {
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/system/save",
+				   url: "http://" + window.location.host + "/rest/save",
 				   success: function(property){
 				   }
 				});
@@ -87,7 +118,7 @@ $(function() {
 			$('#generateSource').click(function() {
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/system/generateSource",
+				   url: "http://" + window.location.host + "/rest/generateSource",
 				   success: function(property){
 				   }
 				});
@@ -95,7 +126,7 @@ $(function() {
 			$('#saveParameters').click(function() {
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/system/saveParameters?filename=data.txt",
+				   url: "http://" + window.location.host + "/rest/saveParameters?filename=data.txt",
 				   success: function(property){
 				   }
 				});
@@ -103,14 +134,48 @@ $(function() {
 			$('#loadParameters').click(function() {
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/system/loadParameters?filename=data.txt",
+				   url: "http://" + window.location.host + "/rest/loadParameters?filename=data.txt",
 				   success: function(property){
 				   }
 				});
 			});
 		}
 	});
+	
+	$.ajaxPrefilter( function( options, originalOptions, jqXHR ) {
+		if (application == null) {
+			return;
+		}
+		
+		var url = options.url;
+		if (url.includes('?')) {
+			url = options.url.split('?')[0];
+		}
+		var count = ( url.match( new RegExp( '/', "g" ) ) || [] ).length ;
+		if (count > 4) {
+			options.url = options.url.replace('/rest/', '/rest/' + application + '/');
+		}
+	/*
+		var oauthCode = localStorage.getItem('oauthCode');
+		if (originalOptions.url.includes('?')) {
+			if (!originalOptions.url.includes('code=')) {
+				options.url += '&code=' + oauthCode;
+			}
+		}
+		else {
+			//options.url += '/oauthCode';
+			options.url += '?code=' + oauthCode;
+		}
+	*/
+	});
+	$.ajaxSetup({
+	    error: function(event, jqXHR, ajaxSettings, thrownError) {
+	//		window.location.href = window.location.origin;
+	    }
+	});
 })
+
+
 </script>
 <link rel="stylesheet" media="screen" href="lib/handsontable.full.css">
 <link rel="stylesheet" media="screen" href="lib/jquery.dataTables.min.css">
@@ -130,6 +195,8 @@ $(function() {
 <body> 
 
 <div id="mainFunction">
+	Application:<select id="applications"></select>
+	<button id="newApplication">New Application</button>
 	<button id="save">Save</button><button id="generateSource">Generate Source</button>
 	<button id="saveParameters">Save Parameters</button><button id="loadParameters">Load Parameters</button>
 	<span id="loginName"></span>

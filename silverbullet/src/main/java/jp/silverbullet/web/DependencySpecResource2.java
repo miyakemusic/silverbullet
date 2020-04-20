@@ -6,6 +6,7 @@ import java.util.Set;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -27,13 +28,13 @@ import jp.silverbullet.core.dependency2.LinkGenerator.LinkLevel;
 import jp.silverbullet.core.property2.PropertyType2;
 import jp.silverbullet.core.property2.RuntimeProperty;
 
-@Path("/dependencySpec2")
+@Path("/{app}/dependencySpec2")
 public class DependencySpecResource2 {
 
 	@GET
 	@Path("/getSpec")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public Response getSpec(@QueryParam("id") final String id) {
+	public Response getSpec(@PathParam("app") String app, @QueryParam("id") final String id) {
 		DependencySpecHolder holder = SilverBulletServer.getStaticInstance().getBuilderModel().getDependencySpecHolder2();
 		WebDataConverter converter = new WebDataConverter(holder, new PropertyGetter() {
 			@Override
@@ -53,7 +54,7 @@ public class DependencySpecResource2 {
 	@GET
 	@Path("/updateSpec")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String updateSpec(@QueryParam("id") final String id, @QueryParam("element") String element, 
+	public String updateSpec(@PathParam("app") String app, @QueryParam("id") final String id, @QueryParam("element") String element, 
 			@QueryParam("row") final Integer row, @QueryParam("col") final String col, @QueryParam("value") final String value) {
 	
 		DependencySpecHolder holder = SilverBulletServer.getStaticInstance().getBuilderModel().getDependencySpecHolder2();
@@ -67,14 +68,14 @@ public class DependencySpecResource2 {
 	@GET
 	@Path("/getIds")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public Set<String> getIds() {
+	public Set<String> getIds(@PathParam("app") String app) {
 		return SilverBulletServer.getStaticInstance().getBuilderModel().getDependencySpecHolder2().getAllIds();
 	}
 	
 	@GET
 	@Path("/getLinks")
 	@Produces(MediaType.APPLICATION_JSON)
-	public GenericLinks getLinks(@QueryParam("id") final String id) {
+	public GenericLinks getLinks(@PathParam("app") String app, @QueryParam("id") final String id) {
 		LinkGenerator linkGenerator = new DependencySpecAnalyzer(SilverBulletServer.getStaticInstance().getBuilderModel().getDependencySpecHolder2()).getLinkGenerator();//.generateLinks(LinkLevel.Detail);//.filter(id).getLinks();
 		if ((id != null) && !id.isEmpty()) {
 			return linkGenerator.generateLinks(LinkLevel.Detail, id);
@@ -87,17 +88,17 @@ public class DependencySpecResource2 {
 	@GET
 	@Path("/getPriority")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Integer getPriority(@QueryParam("id") final String id) {
+	public Integer getPriority(@PathParam("app") String app, @QueryParam("id") final String id) {
 		return SilverBulletServer.getStaticInstance().getBuilderModel().getDependencySpecHolder2().getPriority(id);
 	}
 
 	@GET
 	@Path("/getPriorityList")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<WebPair> getPriorityList() {
+	public List<WebPair> getPriorityList(@PathParam("app") String app) {
 		List<WebPair> ret = new ArrayList<>();
 		for (String id : SilverBulletServer.getStaticInstance().getBuilderModel().getPropertiesHolder2().getAllIds(PropertyType2.NotSpecified)) {
-			ret.add(new WebPair(id, String.valueOf(this.getPriority(id))));
+			ret.add(new WebPair(id, String.valueOf(this.getPriority(app, id))));
 		}
 		return ret;
 	}
@@ -105,7 +106,7 @@ public class DependencySpecResource2 {
 	@GET
 	@Path("/setPriority")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String getPriority(@QueryParam("id") final String id, @QueryParam("priority") final Integer priority) {
+	public String getPriority(@PathParam("app") String app, @QueryParam("id") final String id, @QueryParam("priority") final Integer priority) {
 		SilverBulletServer.getStaticInstance().getBuilderModel().getDependencySpecHolder2().setPriority(id, priority);
 		return "OK";
 	}
@@ -129,7 +130,7 @@ public class DependencySpecResource2 {
 	@GET
 	@Path("/copySpec")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String copySpec(@QueryParam("id") final String id, @QueryParam("from") final String from, @QueryParam("to") final String to) {
+	public String copySpec(@PathParam("app") String app, @QueryParam("id") final String id, @QueryParam("from") final String from, @QueryParam("to") final String to) {
 		DependencySpecHolder specHolder = SilverBulletServer.getStaticInstance().getBuilderModel().getDependencySpecHolder2();
 		specHolder.getSpec(id).copySpec(from, to);
 		return "OK";

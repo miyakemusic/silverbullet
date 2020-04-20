@@ -1,6 +1,7 @@
 package jp.silverbullet.core.sequncer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -15,6 +16,7 @@ import jp.silverbullet.core.dependency2.ChangedItemValue;
 import jp.silverbullet.core.dependency2.CommitListener;
 import jp.silverbullet.core.dependency2.DependencyEngine;
 import jp.silverbullet.core.dependency2.DependencyListener;
+import jp.silverbullet.core.dependency2.DepenendencyRequest;
 import jp.silverbullet.core.dependency2.Id;
 import jp.silverbullet.core.dependency2.IdValue;
 import jp.silverbullet.core.dependency2.RequestRejectedException;
@@ -89,7 +91,7 @@ public abstract class Sequencer {
 	};
 				
 	public Sequencer() {
-		createDependencyThread();
+		createDependencyThread(MyThread.DEFAULT);
 	}
 	
 	public void requestChange(String id, String value, CommitListener commitListener) throws RequestRejectedException {
@@ -124,36 +126,24 @@ public abstract class Sequencer {
 		User,
 		System
 	};
-	class DepenendencyRequest {
-		private Actor actor;
-		public DepenendencyRequest(String id2, Integer index, String value2, boolean forceChange2,
-				CommitListener commitListener2, Actor actor) {
 
-			this.id = new Id(id2, index);
-			this.value = value2;
-			this.forceChange = forceChange2;
-			this.commitListener = commitListener2;
-			this.actor = actor;
-			
-		}
-		Id id;
-		String value;
-		boolean forceChange;
-		CommitListener commitListener;
-	}
-	private BlockingQueue<DepenendencyRequest> dependencyQueue = new LinkedBlockingQueue<>();
+//	private BlockingQueue<DepenendencyRequest> dependencyQueue = new LinkedBlockingQueue<>();
 	RequestRejectedException exception = null;
 	
-	private void createDependencyThread() {
-		new Thread() {
+	private Map<String, MyThread> threads = new HashMap<>();
+	
+	private void createDependencyThread(String user) {
+		BlockingQueue<DepenendencyRequest> dependencyQueue = new LinkedBlockingQueue<>();
+		Thread thread = new Thread() {
 			@Override
 			public void run() {
 				while(true) {
 					try {
 						DepenendencyRequest req = dependencyQueue.take();
-						String id = req.id.getId();
-						int index = req.id.getIndex();
-						handleRequestChange(id, index, req.value, req.forceChange, req.commitListener, req.actor);
+						String id = req.getId().getId();
+						int index = req.getId().getIndex();
+						handleRequestChange(id, index, req.getValue(), req.isForceChange(), 
+								req.getCommitListener(), req.getActor());
 						synchronized(sync) {
 							sync.notify();
 						}
@@ -164,14 +154,18 @@ public abstract class Sequencer {
 					}
 				}
 			}
-		}.start();
+		};
+		thread.start();
+		
+		threads.put(user, new MyThread(dependencyQueue, thread));
 	}
 	
 	public void requestChange(String id, Integer index, String value, boolean forceChange, 
 			CommitListener commitListener, Actor actor)
 			throws RequestRejectedException {
 	
-		dependencyQueue.add(new DepenendencyRequest(id, index, value, forceChange, commitListener, actor));
+//		dependencyQueue.add(new DepenendencyRequest(id, index, value, forceChange, commitListener, actor));
+		this.threads.get(MyThread.DEFAULT).requestDependency(id, index, value, forceChange, commitListener, actor);
 	}
 	
 	private void handleRequestChange(String id, Integer index, String value, boolean forceChange, 

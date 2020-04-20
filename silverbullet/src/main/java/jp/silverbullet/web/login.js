@@ -178,22 +178,3 @@ class Login {
 	
 }
 
-$.ajaxPrefilter( function( options, originalOptions, jqXHR ) {
-/*
-	var oauthCode = localStorage.getItem('oauthCode');
-	if (originalOptions.url.includes('?')) {
-		if (!originalOptions.url.includes('code=')) {
-			options.url += '&code=' + oauthCode;
-		}
-	}
-	else {
-		//options.url += '/oauthCode';
-		options.url += '?code=' + oauthCode;
-	}
-*/
-});
-$.ajaxSetup({
-    error: function(event, jqXHR, ajaxSettings, thrownError) {
-//		window.location.href = window.location.origin;
-    }
-});

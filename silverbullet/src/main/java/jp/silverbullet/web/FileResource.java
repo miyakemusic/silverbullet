@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
@@ -16,13 +17,13 @@ import jp.silverbullet.core.KeyValue;
 import jp.silverbullet.core.Zip;
 import jp.silverbullet.dev.StaticInstances;
 
-@Path("/config")
+@Path("/{app}/config")
 public class FileResource {
 
 	@GET
 	@Path("/all")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public List<KeyValue> getIdFile() {
+	public List<KeyValue> getIdFile(@PathParam("app") String app) {
 		Zip.unzip("ti_back.zip", StaticInstances.TMP_FOLDER);
 		
 		List<KeyValue> files = new ArrayList<>();

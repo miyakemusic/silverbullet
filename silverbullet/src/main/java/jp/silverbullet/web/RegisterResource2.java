@@ -10,6 +10,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -22,13 +23,13 @@ import jp.silverbullet.core.register2.RuntimeRegisterMap.DeviceType;
 import jp.silverbullet.dev.BuilderModelImpl.RegisterTypeEnum;
 import jp.silverbullet.web.register.json.SvRegisterJsonHolder;
 
-@Path("/register2")
+@Path("/{app}/register2")
 public class RegisterResource2 {
 
 	@GET
 	@Path("/interrupt")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String interupt() {
+	public String interupt(@PathParam("app") String app) {
 		SilverBulletServer.getStaticInstance().getBuilderModel().getRuntimRegisterMap().getRegisterController().triggerInterrupt();
 		return "OK";
 	}
@@ -36,7 +37,7 @@ public class RegisterResource2 {
 	@GET
 	@Path("/getRegisters")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public SvRegisterJsonHolder getRegisters() {
+	public SvRegisterJsonHolder getRegisters(@PathParam("app") String app) {
 		return new SvRegisterJsonHolder(SilverBulletServer.getStaticInstance().getBuilderModel().getRegisterSpecHolder());
 	}
 	
@@ -44,7 +45,7 @@ public class RegisterResource2 {
 	@Path("/postChanges")
 	@Consumes(MediaType.APPLICATION_JSON) 
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String postChanges(KeyValue[] changes) {
+	public String postChanges(@PathParam("app") String app, KeyValue[] changes) {
 		RegisterJsonController controller = new RegisterJsonController(
 				SilverBulletServer.getStaticInstance().getBuilderModel().getRegisterSpecHolder());
 		controller.handle(changes);
@@ -54,7 +55,7 @@ public class RegisterResource2 {
 	
 	@GET
 	@Path("/addNew")
-	public String addNew() {
+	public String addNew(@PathParam("app") String app) {
 		SilverBulletServer.getStaticInstance().getBuilderModel().getRegisterSpecHolder().addRegister();
 		return "OK";
 	}
@@ -62,7 +63,7 @@ public class RegisterResource2 {
 	@GET
 	@Path("/addRow")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String addRow(@QueryParam("row") final Integer row) {
+	public String addRow(@PathParam("app") String app, @QueryParam("row") final Integer row) {
 		SilverBulletServer.getStaticInstance().getBuilderModel().getRegisterSpecHolder().insertRegisterAt(row);
 
 		return "OK";
@@ -71,7 +72,7 @@ public class RegisterResource2 {
 	@GET
 	@Path("/deleteRow")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String deleteRow(@QueryParam("row") final Integer row) {
+	public String deleteRow(@PathParam("app") String app, @QueryParam("row") final Integer row) {
 		SilverBulletServer.getStaticInstance().getBuilderModel().getRegisterSpecHolder().removeRow(row);
 
 		return "OK";
@@ -80,7 +81,7 @@ public class RegisterResource2 {
 	@GET
 	@Path("/addBitRow")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String addBitRow(@QueryParam("row") final int row) {
+	public String addBitRow(@PathParam("app") String app, @QueryParam("row") final int row) {
 		SilverBulletServer.getStaticInstance().getBuilderModel().getRegisterSpecHolder().getRegisterByIndex(row).addBit();
 		return "OK";
 	}
@@ -88,7 +89,7 @@ public class RegisterResource2 {
 	@GET
 	@Path("/setCurrentValue")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String setCurrentValue(@QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName, @QueryParam("value") final String value) {
+	public String setCurrentValue(@PathParam("app") String app, @QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName, @QueryParam("value") final String value) {
 		SilverBulletServer.getStaticInstance().getBuilderModel().getRuntimRegisterMap().getRegisterController().updateValue(regName, bitName, Integer.valueOf(value));
 
 		return "OK";
@@ -98,7 +99,7 @@ public class RegisterResource2 {
 	@Path("/setBlockData")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_PLAIN)
-	public String setBlockData(String data, @QueryParam("regName") final String regName) {
+	public String setBlockData(@PathParam("app") String app, String data, @QueryParam("regName") final String regName) {
 		byte[] b = Base64.getDecoder().decode(data.split(",")[1]);//data.replace("data:application/octet-stream;base64,", ""));
 		SilverBulletServer.getStaticInstance().getBuilderModel().getRuntimRegisterMap().getRegisterController().updateValue(regName, b);
 		return "OK";
@@ -107,10 +108,10 @@ public class RegisterResource2 {
 	@GET
 	@Path("/triggerShortcut")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String triggerShortcut(@QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName) {
-		setCurrentValue(regName, bitName, "1");
+	public String triggerShortcut(@PathParam("app") String app, @QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName) {
+		setCurrentValue(app, regName, bitName, "1");
 		if (SilverBulletServer.getStaticInstance().getBuilderModel().getRegisterShortCut().isInterruptEnabled(regName, bitName)) {
-			this.interupt();
+			this.interupt(app);
 		}
 		return "OK";
 	}
@@ -118,7 +119,7 @@ public class RegisterResource2 {
 	@GET
 	@Path("/createShortCut")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String createShortCut(@QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName) {
+	public String createShortCut(@PathParam("app") String app, @QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName) {
 		SilverBulletServer.getStaticInstance().getBuilderModel().getRegisterShortCut().add(regName, bitName);
 		return "OK";
 	}
@@ -126,7 +127,7 @@ public class RegisterResource2 {
 	@GET
 	@Path("/addToTest")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String addToTest(@QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName) {
+	public String addToTest(@PathParam("app") String app, @QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName) {
 		long value = SilverBulletServer.getStaticInstance().getBuilderModel().getRegisterAccessor().readRegister(regName, bitName);
 		SilverBulletServer.getStaticInstance().getBuilderModel().getTestRecorder().addRegisterQuery(regName, bitName, value);
 		return "OK";
@@ -135,14 +136,14 @@ public class RegisterResource2 {
 	@GET
 	@Path("/getShortCuts")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public List<RegisterShortCut> getShortCuts() {
+	public List<RegisterShortCut> getShortCuts(@PathParam("app") String app) {
 		return SilverBulletServer.getStaticInstance().getBuilderModel().getRegisterShortCut().getShortcuts();
 	}
 	
 	@GET
 	@Path("/getCurrentValue")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String getCurrentValue(@QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName) {
+	public String getCurrentValue(@PathParam("app") String app, @QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName) {
 		long ret = SilverBulletServer.getStaticInstance().getBuilderModel().getRegisterAccessor().readRegister(regName, bitName);
 		return String.valueOf(ret);
 	}
@@ -150,7 +151,7 @@ public class RegisterResource2 {
 	@GET
 	@Path("/getSimulators")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<String> getSimulators() {
+	public List<String> getSimulators(@PathParam("app") String app) {
 		List<RegisterAccessor> sims = SilverBulletServer.getStaticInstance().getBuilderModel().getSimulators();
 		List<String> ret = new ArrayList<>();
 		sims.forEach(a -> ret.add(a.getClass().getSimpleName()));
@@ -160,7 +161,7 @@ public class RegisterResource2 {
 	@GET
 	@Path("getAddedSimulators")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<String> getAddedSimulators() {
+	public List<String> getAddedSimulators(@PathParam("app") String app) {
 		Set<RegisterAccessor> list = SilverBulletServer.getStaticInstance().getBuilderModel().getRuntimRegisterMap().getUserDevices();
 		List<String> ret = new ArrayList<>();
 		list.forEach(a -> ret.add(a.getClass().getSimpleName()));
@@ -170,7 +171,7 @@ public class RegisterResource2 {
 	@GET
 	@Path("loadSimulator")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String loadSimulator(@QueryParam("simulator") final String simulator) {
+	public String loadSimulator(@PathParam("app") String app, @QueryParam("simulator") final String simulator) {
 		RegisterAccessor rg = SilverBulletServer.getStaticInstance().getBuilderModel().getSimulator(simulator);
 		SilverBulletServer.getStaticInstance().getBuilderModel().getRuntimRegisterMap().addDevice(DeviceType.SIMULATOR, rg);
 		return "OK";
@@ -179,7 +180,7 @@ public class RegisterResource2 {
 	@GET
 	@Path("unloadSimulator")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String unloadSimulator(@QueryParam("simulator") final String simulator) {
+	public String unloadSimulator(@PathParam("app") String app, @QueryParam("simulator") final String simulator) {
 		RegisterAccessor rg = SilverBulletServer.getStaticInstance().getBuilderModel().getSimulator(simulator);
 		SilverBulletServer.getStaticInstance().getBuilderModel().getRuntimRegisterMap().removeDevice(rg);
 		return "OK";
@@ -188,14 +189,14 @@ public class RegisterResource2 {
 	@GET
 	@Path("/setCheck")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String setCheck(@QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName, @QueryParam("value") final String value) {
+	public String setCheck(@PathParam("app") String app, @QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName, @QueryParam("value") final String value) {
 		return "OK";
 	}
 
 	@GET
 	@Path("/setRegisterType")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String setRegisterType(@QueryParam("type") final String type) {
+	public String setRegisterType(@PathParam("app") String app, @QueryParam("type") final String type) {
 		SilverBulletServer.getStaticInstance().getBuilderModel().setRegisterType(RegisterTypeEnum.valueOf(type));
 		return "OK";
 	}
@@ -203,21 +204,21 @@ public class RegisterResource2 {
 	@GET
 	@Path("/getRegSize")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public int getRegSize() {
+	public int getRegSize(@PathParam("app") String app) {
 		return SilverBulletServer.getStaticInstance().getBuilderModel().getRegisterSpecHolder().getRegSize();
 	}
 
 	@GET
 	@Path("/getRegSizeList")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public List<String> getRegSizeList() {
+	public List<String> getRegSizeList(@PathParam("app") String app) {
 		return Arrays.asList("8", "16", "32", "64", "128");
 	}
 	
 	@GET
 	@Path("/setRegSize")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String setRegSize(@QueryParam("value") final int value) {
+	public String setRegSize(@PathParam("app") String app, @QueryParam("value") final int value) {
 		SilverBulletServer.getStaticInstance().getBuilderModel().getRegisterSpecHolder().setRegSize(value);
 		return "OK";
 	}

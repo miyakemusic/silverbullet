@@ -45,11 +45,16 @@ public abstract class SilverBulletServer {
 		return staticInstance;
 	}
 
-	public void start(String port, String protocol, String filename) {
+	public void start(String port, String protocol) {
 //		String filename = getDefaultFilename();
 		
 //		staticInstance.createInstances(getInstanceCount());
-		staticInstance.load(filename);
+		try {
+			staticInstance.load();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		BuilderModelImpl model = staticInstance.getBuilderModel();
 		this.onStart(model);

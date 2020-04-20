@@ -1,6 +1,7 @@
 package jp.silverbullet.web;
 
 import java.net.URISyntaxException;
+import java.util.List;
 
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.GET;
@@ -23,6 +24,22 @@ import jp.silverbullet.web.auth.PersonalResponse;
 //@Path("/system")
 @Path("/")
 public class SystemResource {
+	@GET
+	@Path("/newApplication")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String createNewApplication(@CookieParam("SilverBullet") String cookie) {
+		SilverBulletServer.getStaticInstance().newApplication();
+		return "OK";
+	}
+
+	@GET
+	@Path("/getApplications")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public List<String> getApplications(@CookieParam("SilverBullet") String cookie) {
+		List<String> list = SilverBulletServer.getStaticInstance().getApplications();
+		return list;
+	}
+	
 	@GET
 	@Path("/save")
 	@Produces(MediaType.TEXT_PLAIN) 

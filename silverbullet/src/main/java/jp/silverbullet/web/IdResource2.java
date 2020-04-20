@@ -7,6 +7,7 @@ import java.util.Set;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -17,12 +18,12 @@ import jp.silverbullet.core.property2.PropertyHolder2;
 import jp.silverbullet.core.property2.PropertyType2;
 
 //@Path("/id2/{code}")
-@Path("/id2")
+@Path("/{app}/id2")
 public class IdResource2 {
 	@GET
 	@Path("/selection")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public JsonTable getSelections(/*@PathParam("code") final String code, */@QueryParam("id") final String id) {
+	public JsonTable getSelections(@PathParam("app") String app, @QueryParam("id") final String id) {
 		JsonTable ret = new WebTableConverter(getPropertiesHolder()).createOptionTable(id);
 		return ret;
 	}
@@ -30,7 +31,7 @@ public class IdResource2 {
 	@GET
 	@Path("/addNew")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String addNewProperty(@QueryParam("type") final String type) {
+	public String addNewProperty(@PathParam("app") String app, @QueryParam("type") final String type) {
 		String id = "ID_" + Calendar.getInstance().getTime().getTime();
 		getPropertiesHolder().addProperty(new PropertyFactory().create(id, PropertyType2.valueOf(type)));
 		return "OK";
@@ -39,7 +40,7 @@ public class IdResource2 {
 	@GET
 	@Path("/remove")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String remove(@QueryParam("id") final String id) {
+	public String remove(@PathParam("app") String app, @QueryParam("id") final String id) {
 		getPropertiesHolder().remove(id);
 		return "OK";
 	}
@@ -51,7 +52,7 @@ public class IdResource2 {
 	@GET
 	@Path("/addChoice")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String addNewChoice(@QueryParam("id") final String id) {
+	public String addNewChoice(@PathParam("app") String app, @QueryParam("id") final String id) {
 		String optionId = id + "_" + Calendar.getInstance().getTime().getTime();
 		try {
 			getPropertiesHolder().addOption(id, optionId);
@@ -64,7 +65,7 @@ public class IdResource2 {
 	@GET
 	@Path("/updateChoice")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public String updateChoice(@QueryParam("id") final String id, @QueryParam("selectionId") final String selectionId, 
+	public String updateChoice(@PathParam("app") String app, @QueryParam("id") final String id, @QueryParam("selectionId") final String selectionId, 
 			@QueryParam("paramName") final String paramName, @QueryParam("value") final String value) {
 		
 		WebTableConverter converter = new WebTableConverter(getPropertiesHolder());
@@ -75,7 +76,7 @@ public class IdResource2 {
 	@GET
 	@Path("/properties")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public Response test(@QueryParam("type") final String type) {
+	public Response test(@PathParam("app") String app, @QueryParam("type") final String type) {
 		JsonTable table = new WebTableConverter(getPropertiesHolder()).
 				createIdTable(PropertyType2.valueOf(type));
 		
@@ -89,7 +90,7 @@ public class IdResource2 {
 	@GET
 	@Path("/update")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String updateValue(@QueryParam("id") final String id, 
+	public String updateValue(@PathParam("app") String app, @QueryParam("id") final String id, 
 			@QueryParam("paramName") final String paramName,  
 			@QueryParam("value") final String value) {
 		
@@ -102,14 +103,14 @@ public class IdResource2 {
 	@GET
 	@Path("/typeNames")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public List<String> getTypeNames(@CookieParam("SilverBullet") String cookie) {
+	public List<String> getTypeNames(@PathParam("app") String app, @CookieParam("SilverBullet") String cookie) {
 		return getPropertiesHolder().getTypes();
 	}
 
 	@GET
 	@Path("/ids")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public Set<String> getIds() {
+	public Set<String> getIds(@PathParam("app") String app) {
 		return getPropertiesHolder().getAllIds(PropertyType2.NotSpecified);
 	}
 }
