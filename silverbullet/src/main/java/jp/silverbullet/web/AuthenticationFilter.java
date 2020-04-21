@@ -38,7 +38,7 @@ public class AuthenticationFilter implements ContainerRequestFilter
 			return;
 		}
 		else {
-			System.out.println("No Cookie");
+			//System.out.println("No Cookie");
 		}
 		
 		List<String> code = queryParameters.get("code");

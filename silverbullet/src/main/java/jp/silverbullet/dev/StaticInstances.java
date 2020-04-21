@@ -64,30 +64,34 @@ public class StaticInstances {
 				BuilderModelImpl model = new BuilderModelImpl();
 				model.load(StaticInstances.TMP_FOLDER);	
 				builderModels.put(file.getName().replace(".zip", ""), model);
-				
+				new SvClientHandler(model);
 			}
 		}
 //		currentFilename = filename;
 
 	}
 
-	public BuilderModelImpl getBuilderModel() {
-		return this.builderModels.values().iterator().next();
+	public BuilderModelImpl getBuilderModel(String app) {
+		return this.builderModels.get(app);
 	}
 
-	public void generateSource() {
-		String info = getBuilderModel().getSourceInfo();
+	public void generateSource(String app) {
+		String info = getBuilderModel(app).getSourceInfo();
 		String folder = info.split(";")[0];
 		String packageName = info.split(";")[1];
-		new PropertySourceGenerator(getBuilderModel().getPropertiesHolder2()).generate(folder, packageName);
-		new RegisterSourceGenerator(getBuilderModel().getRegisterSpecHolder()).
+		new PropertySourceGenerator(getBuilderModel(app).getPropertiesHolder2()).generate(folder, packageName);
+		new RegisterSourceGenerator(getBuilderModel(app).getRegisterSpecHolder()).
 			exportFile(folder, packageName);
 	}
 
 	public void newApplication() {
 		BuilderModelImpl model = new BuilderModelImpl();
 		builderModels.put(String.valueOf(System.currentTimeMillis()), model);
+		
+		new SvClientHandler(model);
+		
 	}
+
 
 	public List<String> getApplications() {
 		return new ArrayList<String>(this.builderModels.keySet());

@@ -25,7 +25,7 @@ public class NewGuiResource {
 	@Path("/getDesign")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public Pane getDesign(@PathParam("app") String app, @QueryParam("root") final String root, @QueryParam("link") final boolean link) {
-		Pane pane = getUiBuilder().getRootPane(root, link);
+		Pane pane = getUiBuilder(app).getRootPane(root, link);
 //		new PaneWalkThrough() {
 //
 //			@Override
@@ -41,8 +41,8 @@ public class NewGuiResource {
 		return pane;
 	}
 
-	private UiBuilder getUiBuilder() {
-		return SilverBulletServer.getStaticInstance().getBuilderModel().getUiBuilder();
+	private UiBuilder getUiBuilder(String app) {
+		return SilverBulletServer.getStaticInstance().getBuilderModel(app).getUiBuilder();
 	}	
 
 	@GET
@@ -51,7 +51,7 @@ public class NewGuiResource {
 	public Pane getDesignByName(@PathParam("app") String app, @QueryParam("name") final String name, @QueryParam("link") final boolean link,
 			@QueryParam("initPos") final boolean initPos) {
 		
-		Pane pane = getUiBuilder().getPaneByName(name, link, initPos);
+		Pane pane = getUiBuilder(app).getPaneByName(name, link, initPos);
 		return pane;
 	}
 	
@@ -59,14 +59,14 @@ public class NewGuiResource {
 	@Path("/getWidget")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public Pane getWidget(@PathParam("app") String app, @QueryParam("divid") final String divid) {
-		return getUiBuilder().getWidget(divid);
+		return getUiBuilder(app).getWidget(divid);
 	}	
 	
 	@GET
 	@Path("/setSize")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setSize(@PathParam("app") String app, @QueryParam("divid") final String divid, @QueryParam("width") final String width, @QueryParam("height") final String height) {
-		Pane widget = getUiBuilder().getWidget(divid);
+		Pane widget = getUiBuilder(app).getWidget(divid);
 		widget.css("width", width).css("height", height);
 		widget.fireLayoutChange();
 		return "OK";
@@ -76,7 +76,7 @@ public class NewGuiResource {
 	@Path("/setCss")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setCss(@PathParam("app") String app, @QueryParam("divid") final String divid, @QueryParam("key") final String key, @QueryParam("value") final String value) {
-		Pane widget = getUiBuilder().getWidget(divid);
+		Pane widget = getUiBuilder(app).getWidget(divid);
 		widget.css(key, value);
 		widget.fireCssChange(divid, key, value);
 		return "OK";
@@ -86,7 +86,7 @@ public class NewGuiResource {
 	@Path("/setId")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setId(@PathParam("app") String app, @QueryParam("divid") final String divid, @QueryParam("id") final String id, @QueryParam("subId") final String subId) {
-		Pane widget = getUiBuilder().getWidget(divid);
+		Pane widget = getUiBuilder(app).getWidget(divid);
 		widget.setId(id, subId);
 		widget.fireIdChange();
 		return "OK";
@@ -96,7 +96,7 @@ public class NewGuiResource {
 	@Path("/setField")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setField(@PathParam("app") String app, @QueryParam("divid") final String divid, @QueryParam("field") final String field) {
-		Pane widget = getUiBuilder().getWidget(divid);
+		Pane widget = getUiBuilder(app).getWidget(divid);
 		widget.field(PropertyField.valueOf(field));
 		widget.fireFieldChange();
 		return "OK";
@@ -106,14 +106,14 @@ public class NewGuiResource {
 	@Path("/getFieldTypes")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<String> getFieldTypes(@PathParam("app") String app) {
-		return getUiBuilder().getFieldTypes();
+		return getUiBuilder(app).getFieldTypes();
 	}
 	
 	@GET
 	@Path("/setLayout")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setLayout(@PathParam("app") String app, @QueryParam("divid") final String divid, @QueryParam("layout") final String layout) {
-		Pane widget = getUiBuilder().getWidget(divid);
+		Pane widget = getUiBuilder(app).getWidget(divid);
 		widget.layout(Layout.valueOf(layout));
 		widget.fireLayoutChange();
 		return "OK";
@@ -133,7 +133,7 @@ public class NewGuiResource {
 	@Path("/setWidgetType")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setWidgetType(@PathParam("app") String app, @QueryParam("divid") final String divid, @QueryParam("type") final String type) {
-		Pane widget = getUiBuilder().getWidget(divid);
+		Pane widget = getUiBuilder(app).getWidget(divid);
 		widget.setType(type);
 		
 		widget.fireTypeChange();
@@ -145,10 +145,10 @@ public class NewGuiResource {
 	@Path("/addWidget")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String addWidget(@PathParam("app") String app, @QueryParam("divid") final String divid) {
-		Pane widget = getUiBuilder().getWidget(divid);
+		Pane widget = getUiBuilder(app).getWidget(divid);
 		widget.createPane(Layout.HORIZONTAL).css("width", "100").css("height", "30");//.css("border-style", "solid");
 		
-		Pane parent = getUiBuilder().getParentOf(divid);
+		Pane parent = getUiBuilder(app).getParentOf(divid);
 		parent.fireLayoutChange();
 		return "OK";
 	}
@@ -157,8 +157,8 @@ public class NewGuiResource {
 	@Path("/removeWidget")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String removeWidget(@PathParam("app") String app, @QueryParam("divid") final String divid) {
-		Pane widget = getUiBuilder().getWidget(divid);
-		Pane parent = getUiBuilder().getParentOf(divid);
+		Pane widget = getUiBuilder(app).getWidget(divid);
+		Pane parent = getUiBuilder(app).getParentOf(divid);
 		parent.removeChild(widget);
 		parent.fireLayoutChange();
 		return "OK";
@@ -168,8 +168,8 @@ public class NewGuiResource {
 	@Path("/move")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String move(@PathParam("app") String app, @QueryParam("divid") final String divid, @QueryParam("top") final String top, @QueryParam("left") final String left) {
-		Pane widget = getUiBuilder().getWidget(divid);
-		Pane parent = getUiBuilder().getParentOf(divid);
+		Pane widget = getUiBuilder(app).getWidget(divid);
+		Pane parent = getUiBuilder(app).getParentOf(divid);
 		
 		if (parent.layout.equals(Layout.HORIZONTAL)) {
 			int sum = 0;
@@ -205,14 +205,14 @@ public class NewGuiResource {
 	@Path("/changeParent")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String move(@PathParam("app") String app, @QueryParam("divid") final String divid, @QueryParam("parent") final String parentId) {
-		Pane widget = getUiBuilder().getWidget(divid);
-		Pane parent = getUiBuilder().getParentOf(divid);
+		Pane widget = getUiBuilder(app).getWidget(divid);
+		Pane parent = getUiBuilder(app).getParentOf(divid);
 		
 		if (!parent.type.equals(WidgetType.Pane)) {
 			return "OK";
 		}
 		
-		Pane newParent = getUiBuilder().getWidget(parentId);
+		Pane newParent = getUiBuilder(app).getWidget(parentId);
 		if (newParent.equals(parent) || !newParent.type.equals(WidgetType.Pane)) {
 			return "OK";
 		}
@@ -226,8 +226,8 @@ public class NewGuiResource {
 	@Path("/buttonArray")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String buttonArray(@PathParam("app") String app, @QueryParam("divid") final String divid) {
-		Pane widget = getUiBuilder().getWidget(divid);
-		WidgetGeneratorHelper helper = new WidgetGeneratorHelper(SilverBulletServer.getStaticInstance().getBuilderModel().getPropertiesHolder2());
+		Pane widget = getUiBuilder(app).getWidget(divid);
+		WidgetGeneratorHelper helper = new WidgetGeneratorHelper(SilverBulletServer.getStaticInstance().getBuilderModel(app).getPropertiesHolder2());
 		helper.generateToggleButton(widget.id, widget);
 		widget.fireLayoutChange();
 		return "OK";
@@ -237,8 +237,8 @@ public class NewGuiResource {
 	@Path("/titledInput")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String titledInput(@PathParam("app") String app, @QueryParam("divid") final String divid) {
-		Pane widget = getUiBuilder().getWidget(divid);
-		WidgetGeneratorHelper helper = new WidgetGeneratorHelper(SilverBulletServer.getStaticInstance().getBuilderModel().getPropertiesHolder2());
+		Pane widget = getUiBuilder(app).getWidget(divid);
+		WidgetGeneratorHelper helper = new WidgetGeneratorHelper(SilverBulletServer.getStaticInstance().getBuilderModel(app).getPropertiesHolder2());
 		
 		helper.generateTitledSetting(widget.id, widget);
 		widget.id = "";
@@ -261,7 +261,7 @@ public class NewGuiResource {
 	@Path("/setOptional")
 	@Produces(MediaType.APPLICATION_JSON)
 	public String setOptional (@PathParam("app") String app, @QueryParam("divid") final String divid, @QueryParam("optional") final String optional) {
-		Pane widget = getUiBuilder().getWidget(divid);
+		Pane widget = getUiBuilder(app).getWidget(divid);
 		widget.setOptional(optional);
 		widget.fireFieldChange();
 		return "OK";
@@ -271,9 +271,9 @@ public class NewGuiResource {
 	@Path("/copySize")
 	@Produces(MediaType.APPLICATION_JSON)
 	public String copySize (@PathParam("app") String app, @QueryParam("divid") final String divid) {
-		Pane widget = getUiBuilder().getWidget(divid);
+		Pane widget = getUiBuilder(app).getWidget(divid);
 	
-		Pane parent = getUiBuilder().getParentOf(divid);
+		Pane parent = getUiBuilder(app).getParentOf(divid);
 		
 		List<String> keys = Arrays.asList("display","width", "height", "padding", "margin", "font-size", "font-family");
 		for (Pane child : parent.widgets) {
@@ -291,14 +291,14 @@ public class NewGuiResource {
 	@Path("/getRootPanes")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<String> getRootPanes(@PathParam("app") String app) {
-		return getUiBuilder().getRootList();
+		return getUiBuilder(app).getRootList();
 	}
 	
 	@GET
 	@Path("/addRootPane")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String addRootPanes(@PathParam("app") String app) {
-		getUiBuilder().createRoot();
+		getUiBuilder(app).createRoot();
 		return "OK";
 	}
 	
@@ -306,7 +306,7 @@ public class NewGuiResource {
 	@Path("/changeName")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String changeName(@PathParam("app") String app, @QueryParam("oldName") final String oldName, @QueryParam("newName") final String newName) {
-		getUiBuilder().changeRootName(oldName, newName);
+		getUiBuilder(app).changeRootName(oldName, newName);
 		return "OK";
 	}
 
@@ -314,6 +314,6 @@ public class NewGuiResource {
 	@Path("/getRuntimeList")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<String> getRuntimeList(@PathParam("app") String app) {
-		return getUiBuilder().getNameList();
+		return getUiBuilder(app).getNameList();
 	}
 }

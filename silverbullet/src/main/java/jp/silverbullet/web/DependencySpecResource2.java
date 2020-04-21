@@ -35,16 +35,16 @@ public class DependencySpecResource2 {
 	@Path("/getSpec")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public Response getSpec(@PathParam("app") String app, @QueryParam("id") final String id) {
-		DependencySpecHolder holder = SilverBulletServer.getStaticInstance().getBuilderModel().getDependencySpecHolder2();
+		DependencySpecHolder holder = SilverBulletServer.getStaticInstance().getBuilderModel(app).getDependencySpecHolder2();
 		WebDataConverter converter = new WebDataConverter(holder, new PropertyGetter() {
 			@Override
 			public RuntimeProperty getProperty(String id) {
-				return SilverBulletServer.getStaticInstance().getBuilderModel().getRuntimePropertyStore().get(id);
+				return SilverBulletServer.getStaticInstance().getBuilderModel(app).getRuntimePropertyStore().get(id);
 			}
 
 			@Override
 			public RuntimeProperty getProperty(String id, int index) {
-				return SilverBulletServer.getStaticInstance().getBuilderModel().getRuntimePropertyStore().get(RuntimeProperty.createIdText(id, index));
+				return SilverBulletServer.getStaticInstance().getBuilderModel(app).getRuntimePropertyStore().get(RuntimeProperty.createIdText(id, index));
 			}			
 		});
 				
@@ -57,7 +57,7 @@ public class DependencySpecResource2 {
 	public String updateSpec(@PathParam("app") String app, @QueryParam("id") final String id, @QueryParam("element") String element, 
 			@QueryParam("row") final Integer row, @QueryParam("col") final String col, @QueryParam("value") final String value) {
 	
-		DependencySpecHolder holder = SilverBulletServer.getStaticInstance().getBuilderModel().getDependencySpecHolder2();
+		DependencySpecHolder holder = SilverBulletServer.getStaticInstance().getBuilderModel(app).getDependencySpecHolder2();
 		DependencySpec spec = holder.getSpec(id);
 		
 		spec.update(element, row, col, value);
@@ -69,14 +69,14 @@ public class DependencySpecResource2 {
 	@Path("/getIds")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public Set<String> getIds(@PathParam("app") String app) {
-		return SilverBulletServer.getStaticInstance().getBuilderModel().getDependencySpecHolder2().getAllIds();
+		return SilverBulletServer.getStaticInstance().getBuilderModel(app).getDependencySpecHolder2().getAllIds();
 	}
 	
 	@GET
 	@Path("/getLinks")
 	@Produces(MediaType.APPLICATION_JSON)
 	public GenericLinks getLinks(@PathParam("app") String app, @QueryParam("id") final String id) {
-		LinkGenerator linkGenerator = new DependencySpecAnalyzer(SilverBulletServer.getStaticInstance().getBuilderModel().getDependencySpecHolder2()).getLinkGenerator();//.generateLinks(LinkLevel.Detail);//.filter(id).getLinks();
+		LinkGenerator linkGenerator = new DependencySpecAnalyzer(SilverBulletServer.getStaticInstance().getBuilderModel(app).getDependencySpecHolder2()).getLinkGenerator();//.generateLinks(LinkLevel.Detail);//.filter(id).getLinks();
 		if ((id != null) && !id.isEmpty()) {
 			return linkGenerator.generateLinks(LinkLevel.Detail, id);
 		}
@@ -89,7 +89,7 @@ public class DependencySpecResource2 {
 	@Path("/getPriority")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Integer getPriority(@PathParam("app") String app, @QueryParam("id") final String id) {
-		return SilverBulletServer.getStaticInstance().getBuilderModel().getDependencySpecHolder2().getPriority(id);
+		return SilverBulletServer.getStaticInstance().getBuilderModel(app).getDependencySpecHolder2().getPriority(id);
 	}
 
 	@GET
@@ -97,7 +97,7 @@ public class DependencySpecResource2 {
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<WebPair> getPriorityList(@PathParam("app") String app) {
 		List<WebPair> ret = new ArrayList<>();
-		for (String id : SilverBulletServer.getStaticInstance().getBuilderModel().getPropertiesHolder2().getAllIds(PropertyType2.NotSpecified)) {
+		for (String id : SilverBulletServer.getStaticInstance().getBuilderModel(app).getPropertiesHolder2().getAllIds(PropertyType2.NotSpecified)) {
 			ret.add(new WebPair(id, String.valueOf(this.getPriority(app, id))));
 		}
 		return ret;
@@ -107,7 +107,7 @@ public class DependencySpecResource2 {
 	@Path("/setPriority")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String getPriority(@PathParam("app") String app, @QueryParam("id") final String id, @QueryParam("priority") final Integer priority) {
-		SilverBulletServer.getStaticInstance().getBuilderModel().getDependencySpecHolder2().setPriority(id, priority);
+		SilverBulletServer.getStaticInstance().getBuilderModel(app).getDependencySpecHolder2().setPriority(id, priority);
 		return "OK";
 	}
 	
@@ -123,7 +123,7 @@ public class DependencySpecResource2 {
 //		else {
 //			type = "Normal";
 //		}
-//		SilverBulletServer.getStaticInstance().getBuilderModel().switchDependency(type);
+//		SilverBulletServer.getStaticInstance().getBuilderModel(app).switchDependency(type);
 //		return "OK";
 //	}
 	
@@ -131,7 +131,7 @@ public class DependencySpecResource2 {
 	@Path("/copySpec")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String copySpec(@PathParam("app") String app, @QueryParam("id") final String id, @QueryParam("from") final String from, @QueryParam("to") final String to) {
-		DependencySpecHolder specHolder = SilverBulletServer.getStaticInstance().getBuilderModel().getDependencySpecHolder2();
+		DependencySpecHolder specHolder = SilverBulletServer.getStaticInstance().getBuilderModel(app).getDependencySpecHolder2();
 		specHolder.getSpec(id).copySpec(from, to);
 		return "OK";
 	}
@@ -140,7 +140,7 @@ public class DependencySpecResource2 {
 //	@Path("/getRestrictions")
 //	@Produces(MediaType.APPLICATION_JSON)
 //	public DependencyRestriction getRestrictions() {
-//		DependencySpecHolder specHolder = SilverBulletServer.getStaticInstance().getBuilderModel().getDependencySpecHolder2();
+//		DependencySpecHolder specHolder = SilverBulletServer.getStaticInstance().getBuilderModel(app).getDependencySpecHolder2();
 //		return specHolder.getDependencyRestriction();
 //	}
 }

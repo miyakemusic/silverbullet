@@ -15,7 +15,6 @@ import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 
 import jp.silverbullet.core.KeyValue;
-import jp.silverbullet.core.property2.SvFileException;
 import jp.silverbullet.web.auth.GoogleAccressTokenResponse;
 import jp.silverbullet.web.auth.GoogleHandlerImpl;
 import jp.silverbullet.web.auth.GoogleHanlder;
@@ -48,40 +47,7 @@ public class SystemResource {
 		return "OK";
 	}
 	
-	@GET
-	@Path("/generateSource")
-	@Produces(MediaType.TEXT_PLAIN) 
-	public String generateSource() {
-		SilverBulletServer.getStaticInstance().generateSource();
-		return "OK";
-	}
-	
-	@GET
-	@Path("/saveParameters")
-	@Produces(MediaType.TEXT_PLAIN) 
-	public String saveParameters(@QueryParam("filename") final String filename) {
-		try {
-			SilverBulletServer.getStaticInstance().getBuilderModel().saveParameters(filename);
-		} catch (SvFileException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return "OK";
-	}
-	
-	@GET
-	@Path("/loadParameters")
-	@Produces(MediaType.TEXT_PLAIN) 
-	public String loadParameters(@QueryParam("filename") final String filename) {
-		try {
-			SilverBulletServer.getStaticInstance().getBuilderModel().loadParameters(filename);
-		} catch (SvFileException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return "OK";
-	}
-	
+
 	public static AuthStore authMap = new AuthStore();
 	public static UserStore userStore = new UserStore();
 	

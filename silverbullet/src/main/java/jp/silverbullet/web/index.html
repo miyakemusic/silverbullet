@@ -52,6 +52,21 @@ $(function() {
 	$(document).ready(function(){
 		$('#mainFunction').hide();
 
+		$.ajax({
+			type: "GET", 
+			url: "http://" + window.location.host + "/rest/getApplications",
+			success: function(list){
+				for (var l of list) {
+					$("#applications").append($("<option>").val(l).text(l));
+					
+					if (application == null) {
+						application = l;
+					}
+				} 
+				
+		   }
+		});
+			
 		var loginListener = function(name) {
 			createPane();
 		};
@@ -67,35 +82,23 @@ $(function() {
 		
 			$('#tab').tabs();
 					
-			new IdEditorClass('tab_id');
-			new RegisterClass('tab_register');
-			new ControllerClass('tab_control');
-			new DebugClass('tab_debug');
-			new TestClass('tab_test');
-			new DependencyClass2('tab_dependency2');
-			new NewLayout('tab_newgui');
-			new DependencyDesign2('tab_dependencydesign2');
-			new Build('tab_build');
+			var idEditor = new IdEditorClass('tab_id');
+			var register = new RegisterClass('tab_register');
+			var controller = new ControllerClass('tab_control');
+			var deb = new DebugClass('tab_debug');
+			var test = new TestClass('tab_test');
+			var dependency = new DependencyClass2('tab_dependency2');
+			var newLayout = new NewLayout('tab_newgui');
+			var depenencyDesign = new DependencyDesign2('tab_dependencydesign2');
+			var build = new Build('tab_build');
 
 
-			$.ajax({
-				type: "GET", 
-				url: "http://" + window.location.host + "/rest/getApplications",
-				success: function(list){
-					for (var l of list) {
-						$("#applications").append($("<option>").val(l).text(l));
-						
-						if (application == null) {
-							application = l;
-						}
-					} 
-			   }
-			});
+
 				
 			$('#applications').change(function() {
 			    var r = $('option:selected').val();
 			    application = r;
-			    createPane();
+			    idEditor.rebuild(application);
 			});
 
 			$('#newApplication').click(function() {
@@ -110,7 +113,7 @@ $(function() {
 			$('#save').click(function() {
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/save",
+				   url: "http://" + window.location.host + "/rest/selfbuild/save",
 				   success: function(property){
 				   }
 				});
@@ -118,7 +121,7 @@ $(function() {
 			$('#generateSource').click(function() {
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/generateSource",
+				   url: "http://" + window.location.host + "/rest/selfbuild/generateSource",
 				   success: function(property){
 				   }
 				});
@@ -126,7 +129,7 @@ $(function() {
 			$('#saveParameters').click(function() {
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/saveParameters?filename=data.txt",
+				   url: "http://" + window.location.host + "/rest/selfbuild/saveParameters?filename=data.txt",
 				   success: function(property){
 				   }
 				});
@@ -134,7 +137,7 @@ $(function() {
 			$('#loadParameters').click(function() {
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/loadParameters?filename=data.txt",
+				   url: "http://" + window.location.host + "/rest/selfbuild/loadParameters?filename=data.txt",
 				   success: function(property){
 				   }
 				});

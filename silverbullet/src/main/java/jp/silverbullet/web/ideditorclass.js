@@ -309,8 +309,15 @@ class IdEditorClass {
 			currentId = "";
 			updateMainTable();		
 		}
+		
+    	this.rebuilder = function(applicaton) {
+			updateMainTable();
+    	}
 	}
 
+	rebuild(applicaton) {
+		this.rebuilder(applicaton);
+	}
 	
 }
 

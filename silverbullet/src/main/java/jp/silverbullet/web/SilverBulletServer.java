@@ -46,9 +46,6 @@ public abstract class SilverBulletServer {
 	}
 
 	public void start(String port, String protocol) {
-//		String filename = getDefaultFilename();
-		
-//		staticInstance.createInstances(getInstanceCount());
 		try {
 			staticInstance.load();
 		} catch (IOException e) {
@@ -56,26 +53,15 @@ public abstract class SilverBulletServer {
 			e.printStackTrace();
 		}
 
-		BuilderModelImpl model = staticInstance.getBuilderModel();
-		this.onStart(model);
-		model.setSimulators(getSimulators());
-		model.setHardwareAccessor(getHardwareAccessor(model));
-		getUserSequencers(model).forEach(sequencer -> {
-			model.addUserSequencer(sequencer);
-		});	
-		model.setDefaultValues();
-		
-//		staticInstance.getBuilderModels().forEach(builderModel -> {
-//			builderModel.setUiBuilder(getUi());
-//			onStart(builderModel);
-//			builderModel.setSimulators(getSimulators());
-//			builderModel.setHardwareAccessor(getHardwareAccessor(builderModel));
-//			getUserSequencers(builderModel).forEach(sequencer -> {
-//				builderModel.getSequencer().addUserSequencer(sequencer);
-//			});	
-//			builderModel.setDefaultValues();
+//		BuilderModelImpl model = staticInstance.getBuilderModel();
+//		this.onStart(model);
+//		model.setSimulators(getSimulators());
+//		model.setHardwareAccessor(getHardwareAccessor(model));
+//		getUserSequencers(model).forEach(sequencer -> {
+//			model.addUserSequencer(sequencer);
 //		});	
-
+//		model.setDefaultValues();
+		
 		registerWebClientManager();
 		
 		startWebServer(Integer.valueOf(port), protocol);
@@ -87,212 +73,253 @@ public abstract class SilverBulletServer {
 	
 	private void registerWebClientManager() {
 
-		staticInstance.getBuilderModel().addRuntimeListener(new RuntimeListener() {
-			@Override
-			public DialogAnswer dialog(String message) {
-				message = message.replace("\n", "<br>");
-				WebSocketBroadcaster.getInstance().sendMessageAsync("MESSAGE", message);
-				synchronized(syncDialog) {
-					try {
-						syncDialog.wait();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-				WebSocketBroadcaster.getInstance().sendMessageAsync("MESSAGE", "@CLOSE@");
-				return answerDialog;
-			}
-
-			@Override
-			public void onReply(String messageId, String reply) {
-				answerDialog = DialogAnswer.valueOf(reply);
-				synchronized(syncDialog) {
-					syncDialog.notify();
-				}
-			}
-
-			@Override
-			public void message(String message) {
-				WebSocketBroadcaster.getInstance().sendMessageAsync("MESSAGE", message);
-			}
-		});
-		
-		List<String> depHistory = new ArrayList<>();
-		staticInstance.getBuilderModel().getDependency().addDependencyListener(new DependencyListener() {
-			@Override
-			public boolean confirm(String history) {
-				return true;
-			}
-
-			@Override
-			public void onResult(Map<String, List<ChangedItemValue>> changedHistory) {
-			//	System.out.println(changedHistory);
-			}
-
-			@Override
-			public void onCompleted(String message) {
-				WebSocketBroadcaster.getInstance().sendMessageAsync("VALUES", message);
-				if (debugEnabled) {
-					WebSocketBroadcaster.getInstance().sendMessageAsync("DEBUG", toHtml(depHistory));
-				}
-			}
-
-			private String toHtml(List<String> lines) {
-				StringBuilder sb = new StringBuilder();
-				for (String s : lines) {
-					sb.append(s + "<br>"); 
-				}
-				return sb.toString();
-			}
-
-			@Override
-			public void onStart(Id id, String value) {
-//				depHistory.add("--------start-------------------------- "+ Thread.currentThread().getId());
-			}
-
-			@Override
-			public void onRejected(Id id, String message) {
-				WebSocketBroadcaster.getInstance().sendMessageAsync("VALUES", id.toString());
-				WebSocketBroadcaster.getInstance().sendMessageAsync("MESSAGE", message);
-				
-			}
-
-			@Override
-			public void onProgress(List<String> log) {
-				depHistory.addAll(log);
-				depHistory.add("----------------------------------------------- "+ Thread.currentThread().getId());
-			}		
-		});
-		staticInstance.getBuilderModel().getSequencer().addSequencerListener(new SequencerListener() {
-
-			@Override
-			public void onChangedBySystem(String id, String value) {
-				depHistory.add("--------------- by STSTEM ----------------- " + Thread.currentThread().getId());
-			}
-
-			@Override
-			public void onChangedByUser(String id, String value) {
-				depHistory.clear();
-			}
-			
-		});
-		staticInstance.getBuilderModel().getPropertiesHolder2().addListener(new PropertyDefHolderListener() {
-			@Override
-			public void onChange(String id, String fieldName, Object value, Object prevValue) {
-				try {
-					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("ID", "Change:" + id));
-					WebSocketBroadcaster.getInstance().sendMessage(str);
-				} catch (JsonProcessingException e) {
-					e.printStackTrace();
-				}
-			}
-
-			@Override
-			public void onAdd(String id) {
-				try {
-					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("ID", "Add:" + id));
-					WebSocketBroadcaster.getInstance().sendMessage(str);
-				} catch (JsonProcessingException e) {
-					e.printStackTrace();
-				}
-			}
-
-			@Override
-			public void onRemove(String id, String replacedId) {
-				try {
-					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("ID", "Remove:" + id + ":" + replacedId));
-					WebSocketBroadcaster.getInstance().sendMessage(str);
-				} catch (JsonProcessingException e) {
-					e.printStackTrace();
-				}
-			}
-
-			@Override
-			public void onLoad() {
-				// TODO Auto-generated method stub
-				
-			}
-
-		});
-		
-//		staticInstance.getBuilderModel().getUiLayoutHolder().addListener(new UiLayoutListener() {
+//		staticInstance.getBuilderModel().addRuntimeListener(new RuntimeListener() {
 //			@Override
-//			public void onLayoutChange(String div, String currentFilename) {
+//			public DialogAnswer dialog(String message) {
+//				message = message.replace("\n", "<br>");
+//				WebSocketBroadcaster.getInstance().sendMessageAsync("MESSAGE", message);
+//				synchronized(syncDialog) {
+//					try {
+//						syncDialog.wait();
+//					} catch (InterruptedException e) {
+//						e.printStackTrace();
+//					}
+//				}
+//				WebSocketBroadcaster.getInstance().sendMessageAsync("MESSAGE", "@CLOSE@");
+//				return answerDialog;
+//			}
+//
+//			@Override
+//			public void onReply(String messageId, String reply) {
+//				answerDialog = DialogAnswer.valueOf(reply);
+//				synchronized(syncDialog) {
+//					syncDialog.notify();
+//				}
+//			}
+//
+//			@Override
+//			public void message(String message) {
+//				WebSocketBroadcaster.getInstance().sendMessageAsync("MESSAGE", message);
+//			}
+//		});
+//		
+//		List<String> depHistory = new ArrayList<>();
+//		staticInstance.getBuilderModel().getDependency().addDependencyListener(new DependencyListener() {
+//			@Override
+//			public boolean confirm(String history) {
+//				return true;
+//			}
+//
+//			@Override
+//			public void onResult(Map<String, List<ChangedItemValue>> changedHistory) {
+//			//	System.out.println(changedHistory);
+//			}
+//
+//			@Override
+//			public void onCompleted(String message) {
+//				WebSocketBroadcaster.getInstance().sendMessageAsync("VALUES", message);
+//				if (debugEnabled) {
+//					WebSocketBroadcaster.getInstance().sendMessageAsync("DEBUG", toHtml(depHistory));
+//				}
+//			}
+//
+//			private String toHtml(List<String> lines) {
+//				StringBuilder sb = new StringBuilder();
+//				for (String s : lines) {
+//					sb.append(s + "<br>"); 
+//				}
+//				return sb.toString();
+//			}
+//
+//			@Override
+//			public void onStart(Id id, String value) {
+////				depHistory.add("--------start-------------------------- "+ Thread.currentThread().getId());
+//			}
+//
+//			@Override
+//			public void onRejected(Id id, String message) {
+//				WebSocketBroadcaster.getInstance().sendMessageAsync("VALUES", id.toString());
+//				WebSocketBroadcaster.getInstance().sendMessageAsync("MESSAGE", message);
+//				
+//			}
+//
+//			@Override
+//			public void onProgress(List<String> log) {
+//				depHistory.addAll(log);
+//				depHistory.add("----------------------------------------------- "+ Thread.currentThread().getId());
+//			}		
+//		});
+//		staticInstance.getBuilderModel().getSequencer().addSequencerListener(new SequencerListener() {
+//
+//			@Override
+//			public void onChangedBySystem(String id, String value) {
+//				depHistory.add("--------------- by STSTEM ----------------- " + Thread.currentThread().getId());
+//			}
+//
+//			@Override
+//			public void onChangedByUser(String id, String value) {
+//				depHistory.clear();
+//			}
+//			
+//		});
+//		staticInstance.getBuilderModel().getPropertiesHolder2().addListener(new PropertyDefHolderListener() {
+//			@Override
+//			public void onChange(String id, String fieldName, Object value, Object prevValue) {
 //				try {
-//					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("DESIGN", "layoutChanged:" + div));
+//					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("ID", "Change:" + id));
 //					WebSocketBroadcaster.getInstance().sendMessage(str);
 //				} catch (JsonProcessingException e) {
 //					e.printStackTrace();
 //				}
 //			}
+//
+//			@Override
+//			public void onAdd(String id) {
+//				try {
+//					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("ID", "Add:" + id));
+//					WebSocketBroadcaster.getInstance().sendMessage(str);
+//				} catch (JsonProcessingException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//
+//			@Override
+//			public void onRemove(String id, String replacedId) {
+//				try {
+//					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("ID", "Remove:" + id + ":" + replacedId));
+//					WebSocketBroadcaster.getInstance().sendMessage(str);
+//				} catch (JsonProcessingException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//
+//			@Override
+//			public void onLoad() {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//
 //		});
-
-		staticInstance.getBuilderModel().getRegisterAccessor().addListener(new RegisterAccessorListener() {
-			@Override
-			public void onUpdate(Object regName, Object bitName, int value) {
-				try {
-					RegisterUpdates updates = new RegisterUpdates();
-					updates.setName(regName.toString());
-					updates.setBits(Arrays.asList(new BitUpdates(bitName.toString(), String.valueOf(value))));
-					String val = new ObjectMapper().writeValueAsString(updates);
-					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("REGVAL", val));
-					WebSocketBroadcaster.getInstance().sendMessage(str);
-				} catch (JsonGenerationException e) {
-					e.printStackTrace();
-				} catch (JsonMappingException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-
-			@Override
-			public void onUpdate(Object regName, byte[] image) {				
-			}
-
-			@Override
-			public void onInterrupt() {
-				try {
-					RegisterUpdates updates = new RegisterUpdates();
-					updates.setName(RegisterUpdates.INTERRUPT);
-					String val = new ObjectMapper().writeValueAsString(updates);
-					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("REGVAL", val));
-					WebSocketBroadcaster.getInstance().sendMessage(str);
-					WebSocketBroadcaster.getInstance().sendMessageToDomainModel(RegisterUpdates.INTERRUPT);
-				} catch (JsonGenerationException e) {
-					e.printStackTrace();
-				} catch (JsonMappingException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-			
-		});
-		
-		staticInstance.getBuilderModel().getTestRecorder().addListener(new TestRecorderListener() {
-			@Override
-			public void onTestFinished() {
-				try {
-					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("TEST", "TestFinished"));
-					WebSocketBroadcaster.getInstance().sendMessage(str);
-				} catch (JsonProcessingException e) {
-					e.printStackTrace();
-				}
-			}
-
-			@Override
-			public void onTestStart() {
-			}
-
-			@Override
-			public void onAdd(String string) {				
-			}
-
-			@Override
-			public void onUpdate() {				
-			}
-		});
+//
+//		staticInstance.getBuilderModel().getRegisterAccessor().addListener(new RegisterAccessorListener() {
+//			@Override
+//			public void onUpdate(Object regName, Object bitName, int value) {
+//				try {
+//					RegisterUpdates updates = new RegisterUpdates();
+//					updates.setName(regName.toString());
+//					updates.setBits(Arrays.asList(new BitUpdates(bitName.toString(), String.valueOf(value))));
+//					String val = new ObjectMapper().writeValueAsString(updates);
+//					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("REGVAL", val));
+//					WebSocketBroadcaster.getInstance().sendMessage(str);
+//				} catch (JsonGenerationException e) {
+//					e.printStackTrace();
+//				} catch (JsonMappingException e) {
+//					e.printStackTrace();
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//
+//			@Override
+//			public void onUpdate(Object regName, byte[] image) {				
+//			}
+//
+//			@Override
+//			public void onInterrupt() {
+//				try {
+//					RegisterUpdates updates = new RegisterUpdates();
+//					updates.setName(RegisterUpdates.INTERRUPT);
+//					String val = new ObjectMapper().writeValueAsString(updates);
+//					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("REGVAL", val));
+//					WebSocketBroadcaster.getInstance().sendMessage(str);
+//					WebSocketBroadcaster.getInstance().sendMessageToDomainModel(RegisterUpdates.INTERRUPT);
+//				} catch (JsonGenerationException e) {
+//					e.printStackTrace();
+//				} catch (JsonMappingException e) {
+//					e.printStackTrace();
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//			
+//		});
+//		
+//		staticInstance.getBuilderModel().getTestRecorder().addListener(new TestRecorderListener() {
+//			@Override
+//			public void onTestFinished() {
+//				try {
+//					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("TEST", "TestFinished"));
+//					WebSocketBroadcaster.getInstance().sendMessage(str);
+//				} catch (JsonProcessingException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//
+//			@Override
+//			public void onTestStart() {
+//			}
+//
+//			@Override
+//			public void onAdd(String string) {				
+//			}
+//
+//			@Override
+//			public void onUpdate() {				
+//			}
+//		});
+//
+//
+//		staticInstance.getBuilderModel().getUiBuilder().addListener(new UiBuilderListener() {
+//			@Override
+//			public void onCssUpdate(String widgetId, String key, String value) {
+//				try {
+//					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("UIDESIGN", "CSS:" + widgetId + "," + key + "," + value));
+//					WebSocketBroadcaster.getInstance().sendMessage(str);
+//				} catch (JsonProcessingException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//
+//			@Override
+//			public void onTypeUpdate(String widgetId, WidgetType type) {
+//				try {
+//					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("UIDESIGN", "TYPE:" + widgetId + "," + type.toString()));
+//					WebSocketBroadcaster.getInstance().sendMessage(str);
+//				} catch (JsonProcessingException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//
+//			@Override
+//			public void onIdChange(String id, String subId) {
+//				try {
+//					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("UIDESIGN", "ID:" + id + "," + id + "," + subId));
+//					WebSocketBroadcaster.getInstance().sendMessage(str);
+//				} catch (JsonProcessingException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//
+//			@Override
+//			public void onFieldChange(String id) {
+//				try {
+//					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("UIDESIGN", "FIELD:" + id + "," + id));
+//					WebSocketBroadcaster.getInstance().sendMessage(str);
+//				} catch (JsonProcessingException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//
+//			@Override
+//			public void onLayoutChange(String id) {
+//				try {
+//					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("UIDESIGN", "LAYOUT:" + id + "," + id));
+//					WebSocketBroadcaster.getInstance().sendMessage(str);
+//				} catch (JsonProcessingException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});		
 		
 //		staticInstance.getBuilderModel().getRestrictionMatrix().addListener(new RestrictionMatrixListener() {
 //			@Override
@@ -306,57 +333,17 @@ public abstract class SilverBulletServer {
 //			}
 //		});
 		
-		staticInstance.getBuilderModel().getUiBuilder().addListener(new UiBuilderListener() {
-			@Override
-			public void onCssUpdate(String widgetId, String key, String value) {
-				try {
-					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("UIDESIGN", "CSS:" + widgetId + "," + key + "," + value));
-					WebSocketBroadcaster.getInstance().sendMessage(str);
-				} catch (JsonProcessingException e) {
-					e.printStackTrace();
-				}
-			}
-
-			@Override
-			public void onTypeUpdate(String widgetId, WidgetType type) {
-				try {
-					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("UIDESIGN", "TYPE:" + widgetId + "," + type.toString()));
-					WebSocketBroadcaster.getInstance().sendMessage(str);
-				} catch (JsonProcessingException e) {
-					e.printStackTrace();
-				}
-			}
-
-			@Override
-			public void onIdChange(String id, String subId) {
-				try {
-					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("UIDESIGN", "ID:" + id + "," + id + "," + subId));
-					WebSocketBroadcaster.getInstance().sendMessage(str);
-				} catch (JsonProcessingException e) {
-					e.printStackTrace();
-				}
-			}
-
-			@Override
-			public void onFieldChange(String id) {
-				try {
-					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("UIDESIGN", "FIELD:" + id + "," + id));
-					WebSocketBroadcaster.getInstance().sendMessage(str);
-				} catch (JsonProcessingException e) {
-					e.printStackTrace();
-				}
-			}
-
-			@Override
-			public void onLayoutChange(String id) {
-				try {
-					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("UIDESIGN", "LAYOUT:" + id + "," + id));
-					WebSocketBroadcaster.getInstance().sendMessage(str);
-				} catch (JsonProcessingException e) {
-					e.printStackTrace();
-				}
-			}
-		});		
+//		staticInstance.getBuilderModel().getUiLayoutHolder().addListener(new UiLayoutListener() {
+//			@Override
+//			public void onLayoutChange(String div, String currentFilename) {
+//				try {
+//					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("DESIGN", "layoutChanged:" + div));
+//					WebSocketBroadcaster.getInstance().sendMessage(str);
+//				} catch (JsonProcessingException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
 	}
 	
 	protected UiBuilder getUi() {

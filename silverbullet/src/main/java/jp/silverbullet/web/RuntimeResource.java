@@ -20,18 +20,18 @@ public class RuntimeResource {
 	@Path("/getProperty")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public UiProperty getProperty(@PathParam("app") String app, @QueryParam("id") String id, @QueryParam("index") Integer index, @QueryParam("ext") String ext) {
-		RuntimeProperty property = SilverBulletServer.getStaticInstance().getBuilderModel().getRuntimePropertyStore().get(RuntimeProperty.createIdText(id,index));
+		RuntimeProperty property = SilverBulletServer.getStaticInstance().getBuilderModel(app).getRuntimePropertyStore().get(RuntimeProperty.createIdText(id,index));
 		if (property == null) {
 			System.err.println(id);
 		}
-		return UiPropertyConverter.convert(property, ext, SilverBulletServer.getStaticInstance().getBuilderModel().getBlobStore());
+		return UiPropertyConverter.convert(property, ext, SilverBulletServer.getStaticInstance().getBuilderModel(app).getBlobStore());
 	}
 
 	@GET
 	@Path("/getBlob")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public BlobJson getProperty(@PathParam("app") String app, @QueryParam("id") String id, @QueryParam("name") String name) {
-		Object object = SilverBulletServer.getStaticInstance().getBuilderModel().getBlobStore().get(id);
+		Object object = SilverBulletServer.getStaticInstance().getBuilderModel(app).getBlobStore().get(id);
 		BlobJson json = new BlobJson();
 		json.data = object.toString();
 		return json;
@@ -41,7 +41,7 @@ public class RuntimeResource {
 	@Path("/respondMessage")
 	@Produces(MediaType.APPLICATION_JSON)
 	public String respondMessage(@PathParam("app") String app, @QueryParam("id") String id, @QueryParam("type") String type) {
-		SilverBulletServer.getStaticInstance().getBuilderModel().respondToMessage(id, type);
+		SilverBulletServer.getStaticInstance().getBuilderModel(app).respondToMessage(id, type);
 		return "OK";
 	}
 
@@ -49,7 +49,7 @@ public class RuntimeResource {
 	@Path("/replyDialog")
 	@Produces(MediaType.APPLICATION_JSON)
 	public String replyDialog(@PathParam("app") String app, @QueryParam("messageId") String messageId, @QueryParam("reply") String reply) {
-		SilverBulletServer.getStaticInstance().getBuilderModel().replyDialog(messageId, reply);
+		SilverBulletServer.getStaticInstance().getBuilderModel(app).replyDialog(messageId, reply);
 		return "OK";
 	}
 	
@@ -57,21 +57,21 @@ public class RuntimeResource {
 	@Path("/getProperties")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<UiProperty> getProperties(@PathParam("app") String app) {
-		return UiPropertyConverter.convert(SilverBulletServer.getStaticInstance().getBuilderModel().getRuntimePropertyStore().getAllProperties(PropertyType2.NotSpecified));
+		return UiPropertyConverter.convert(SilverBulletServer.getStaticInstance().getBuilderModel(app).getRuntimePropertyStore().getAllProperties(PropertyType2.NotSpecified));
 	}
 	
 	@GET
 	@Path("/setValue")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public ValueSetResult setCurrentValue(@PathParam("app") String app, @QueryParam("id") String id, @QueryParam("index") Integer index, @QueryParam("value") String value) {
-		return SilverBulletServer.getStaticInstance().getBuilderModel().requestChangeByUser(id, index, value);
+		return SilverBulletServer.getStaticInstance().getBuilderModel(app).requestChangeByUser(id, index, value);
 	}
 
 	@GET
 	@Path("/defaultValues")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setDefaultValues(@PathParam("app") String app) {
-		SilverBulletServer.getStaticInstance().getBuilderModel().setDefaultValues();
+		SilverBulletServer.getStaticInstance().getBuilderModel(app).setDefaultValues();
 		return "OK";
 	}
 	
