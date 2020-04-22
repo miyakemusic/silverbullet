@@ -11,10 +11,7 @@ import javax.swing.Timer;
 
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
-import org.eclipse.jetty.websocket.api.WriteCallback;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
-
-import jp.silverbullet.core.ui.UiProperty;
 
 public abstract class WebSocketClientHandler {
     public static final String DomainModel = "DomainModel";
@@ -94,10 +91,10 @@ public abstract class WebSocketClientHandler {
 	abstract protected void onMessageReceived(String message2);
 	abstract protected void onRecconected();
 	
-	public void login(String employeeNumber) {
+	public void login(String type, String name) {
         // Send a message
         try {
-			session.getRemote().sendString("RegisterAs:" + employeeNumber);
+			session.getRemote().sendString("RegisterAs:" + type +";name:" + name);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

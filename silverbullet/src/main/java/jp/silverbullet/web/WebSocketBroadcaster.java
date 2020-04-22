@@ -2,8 +2,10 @@ package jp.silverbullet.web;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -13,7 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class WebSocketBroadcaster {
     private static WebSocketBroadcaster INSTANCE = new WebSocketBroadcaster();
     private List<WebSocketObject> clients = new ArrayList<WebSocketObject>();
-    private List<WebSocketObject> domainModels = new ArrayList<WebSocketObject>();
+    private Map<String, WebSocketObject> domainModels = new HashMap<>();
     
     private WebSocketBroadcaster(){
     	senderThread.start();
@@ -24,9 +26,14 @@ public class WebSocketBroadcaster {
     }
 
 
-	public void resigerAs(String target, WebSocketObject client) {
+	public Map<String, WebSocketObject> getDomainModels() {
+		return domainModels;
+	}
+
+	public void resigerAs(String target, String name, WebSocketObject client) {
 		if (target.equals(WebSocketClientHandler.DomainModel)) {
-			this.domainModels.add(client);
+			this.domainModels.put(name, client);
+			sendMessageAsync("DEVICE", "Added");
 		}
 		else if (target.equals(WebSocketClientHandler.UserClient)) {
 			this.clients.add(client);
@@ -43,7 +50,18 @@ public class WebSocketBroadcaster {
      * Delete Client
      * */
     protected void bye(WebSocketObject socket){
-        clients.remove(socket);
+    	if (clients.contains(socket)) {
+    		clients.remove(socket);
+    	}
+    	else {
+            for (Map.Entry<String, WebSocketObject> entry : domainModels.entrySet()) {
+            	if (entry.getValue().equals(socket)) {
+            		domainModels.remove(entry.getKey());
+            		sendMessageAsync("DEVICE", "Removed");
+            		break;
+            	}
+            }
+    	}
     }
 
     /**
@@ -129,7 +147,7 @@ public class WebSocketBroadcaster {
 
 	public void sendMessageToDomainModel(String message) {
 		//String message = new ObjectMapper().writeValueAsString(new WebSocketMessage(currentType, ids));
-		for(final WebSocketObject member: this.domainModels){
+		for(final WebSocketObject member: this.domainModels.values()){
 			if (member != null) {
 				member.getSession().getRemote().sendStringByFuture(message);
 			}

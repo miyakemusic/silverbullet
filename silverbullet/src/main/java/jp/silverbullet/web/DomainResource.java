@@ -1,6 +1,9 @@
 package jp.silverbullet.web;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -18,6 +21,15 @@ import jp.silverbullet.core.property2.RuntimeProperty;
 
 @Path("/{app}/domain")
 public class DomainResource {
+	
+	@GET
+	@Path("/devices")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public List<String> getDevices() {
+		Set<String> set = WebSocketBroadcaster.getInstance().getDomainModels().keySet();
+		return new ArrayList<String>(set);
+	}
+	
 	@GET
 	@Path("/getProperty")
 	@Produces(MediaType.APPLICATION_JSON) 

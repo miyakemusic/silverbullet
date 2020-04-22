@@ -43,6 +43,7 @@
 <script type="text/javascript" src="dependencydiagram.js"></script>
 <script type="text/javascript" src="dependencyspeceditor.js"></script>
 <script type="text/javascript" src="dependencyclass2.js"></script>
+<script type="text/javascript" src="devices.js"></script>
 
 <script type="text/javascript" src="build.js"></script>
 
@@ -54,7 +55,7 @@ $(function() {
 
 		$.ajax({
 			type: "GET", 
-			url: "http://" + window.location.host + "/rest/getApplications",
+			url: "//" + window.location.host + "/rest/getApplications",
 			success: function(list){
 				for (var l of list) {
 					$("#applications").append($("<option>").val(l).text(l));
@@ -91,7 +92,7 @@ $(function() {
 			var newLayout = new NewLayout('tab_newgui');
 			var depenencyDesign = new DependencyDesign2('tab_dependencydesign2');
 			var build = new Build('tab_build');
-
+			var devices = new Devices('tab_device');
 
 
 				
@@ -104,7 +105,7 @@ $(function() {
 			$('#newApplication').click(function() {
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/newApplication",
+				   url: "//" + window.location.host + "/rest/newApplication",
 				   success: function(property){
 				   }
 				});
@@ -113,7 +114,7 @@ $(function() {
 			$('#save').click(function() {
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/selfbuild/save",
+				   url: "//" + window.location.host + "/rest/selfbuild/save",
 				   success: function(property){
 				   }
 				});
@@ -121,7 +122,7 @@ $(function() {
 			$('#generateSource').click(function() {
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/selfbuild/generateSource",
+				   url: "//" + window.location.host + "/rest/selfbuild/generateSource",
 				   success: function(property){
 				   }
 				});
@@ -129,7 +130,7 @@ $(function() {
 			$('#saveParameters').click(function() {
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/selfbuild/saveParameters?filename=data.txt",
+				   url: "//" + window.location.host + "/rest/selfbuild/saveParameters?filename=data.txt",
 				   success: function(property){
 				   }
 				});
@@ -137,7 +138,7 @@ $(function() {
 			$('#loadParameters').click(function() {
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/selfbuild/loadParameters?filename=data.txt",
+				   url: "//" + window.location.host + "/rest/selfbuild/loadParameters?filename=data.txt",
 				   success: function(property){
 				   }
 				});
@@ -214,6 +215,7 @@ $(function() {
 	  	<li><a href="#tab_test">Test</a></li>
 	  	<li><a href="#tab_newgui">GUI</a></li>
 	  	<li><a href="#tab_build">Build</a></li>
+	  	<li><a href="#tab_device">Devices</a></li>
 	  </ul>
 	  <div id="tab_id"></div>
 	  <div id="tab_register"></div>
@@ -224,6 +226,7 @@ $(function() {
 	  <div id="tab_newgui"></div>
 	  <div id="tab_dependencydesign2"></div>
 	  <div id="tab_build"></div>
+	  <div id="tab_device"></div>
 	</div>
 </div>
 <div id="login">

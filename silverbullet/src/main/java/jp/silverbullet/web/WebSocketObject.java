@@ -23,8 +23,15 @@ public class WebSocketObject {
     @OnWebSocketMessage
     public void onText(String message) {
     	if (message.startsWith("RegisterAs:")) {
-    		String target = message.split(":")[1];
-    		WebSocketBroadcaster.getInstance().resigerAs(target, this);
+    		String tmp[] = message.split("[:;]");
+    		String target = tmp[1];
+    		
+    		String name = "";
+    		
+    		if (tmp.length > 3) {
+    			name = tmp[3];
+    		}
+    		WebSocketBroadcaster.getInstance().resigerAs(target, name, this);
     	}
     }
 
