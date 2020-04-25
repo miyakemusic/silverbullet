@@ -127,13 +127,13 @@ public abstract class Sequencer {
 		System
 	};
 
-//	private BlockingQueue<DepenendencyRequest> dependencyQueue = new LinkedBlockingQueue<>();
+	private BlockingQueue<DepenendencyRequest> dependencyQueue = new LinkedBlockingQueue<>();
 	RequestRejectedException exception = null;
 	
-	private Map<String, MyThread> threads = new HashMap<>();
+//	private Map<String, MyThread> threads = new HashMap<>();
 	
 	private void createDependencyThread(String user) {
-		BlockingQueue<DepenendencyRequest> dependencyQueue = new LinkedBlockingQueue<>();
+//		BlockingQueue<DepenendencyRequest> dependencyQueue = new LinkedBlockingQueue<>();
 		Thread thread = new Thread() {
 			@Override
 			public void run() {
@@ -157,15 +157,15 @@ public abstract class Sequencer {
 		};
 		thread.start();
 		
-		threads.put(user, new MyThread(dependencyQueue, thread));
+//		threads.put(user, new MyThread(dependencyQueue, thread));
 	}
 	
 	public void requestChange(String id, Integer index, String value, boolean forceChange, 
 			CommitListener commitListener, Actor actor)
 			throws RequestRejectedException {
 	
-//		dependencyQueue.add(new DepenendencyRequest(id, index, value, forceChange, commitListener, actor));
-		this.threads.get(MyThread.DEFAULT).requestDependency(id, index, value, forceChange, commitListener, actor);
+		dependencyQueue.add(new DepenendencyRequest(id, index, value, forceChange, commitListener, actor));
+//		this.threads.get(MyThread.DEFAULT).requestDependency(id, index, value, forceChange, commitListener, actor);
 	}
 	
 	private void handleRequestChange(String id, Integer index, String value, boolean forceChange, 

@@ -29,12 +29,29 @@ public class DomainResource {
 		Set<String> set = WebSocketBroadcaster.getInstance().getDomainModels().keySet();
 		return new ArrayList<String>(set);
 	}
+
+	@GET
+	@Path("/{device}/login")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String longin(@PathParam("app") String app, @PathParam("device") String device) {
+		SilverBulletServer.getStaticInstance().createDevice(app, device);
+		return "OK";
+	}
+
+	@GET
+	@Path("/{device}/logout")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String logout(@PathParam("app") String app, @PathParam("device") String device) {
+		SilverBulletServer.getStaticInstance().deleteDevice(app, device);
+		return "OK";
+	}
 	
 	@GET
-	@Path("/getProperty")
+	@Path("/{device}/getProperty")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public LightProperty getProperty(@PathParam("app") String app, @QueryParam("id") String id, @QueryParam("index") Integer index, @QueryParam("ext") String ext) {
-		RuntimeProperty property = SilverBulletServer.getStaticInstance().getBuilderModel(app).getRuntimePropertyStore().get(RuntimeProperty.createIdText(id,index));
+	public LightProperty getProperty(@PathParam("app") String app, @PathParam("device") String device, 
+			@QueryParam("id") String id, @QueryParam("index") Integer index, @QueryParam("ext") String ext) {
+		RuntimeProperty property = SilverBulletServer.getStaticInstance().getBuilderModel(app, device).getRuntimePropertyStore().get(RuntimeProperty.createIdText(id,index));
 		if (property == null) {
 			System.err.println(id);
 		}
@@ -46,13 +63,14 @@ public class DomainResource {
 	}
 	
 	@POST
-	@Path("/setValueBySystem")
+	@Path("/{device}/setValueBySystem")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String setValueBySystem(@PathParam("app") String app, String json) {
+	public String setValueBySystem(@PathParam("app") String app, @PathParam("device") String device, 
+			String json) {
 		try {
 			LightProperty prop = new ObjectMapper().readValue(json, LightProperty.class);
-			SilverBulletServer.getStaticInstance().getBuilderModel(app).requestChangeBySystem(prop.id, 0, prop.currentValue);
+			SilverBulletServer.getStaticInstance().getBuilderModel(app, device).requestChangeBySystem(prop.id, 0, prop.currentValue);
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -62,15 +80,16 @@ public class DomainResource {
 	}
 	
 	@POST
-	@Path("/postValueBySystem")
+	@Path("/{device}/postValueBySystem")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.TEXT_PLAIN)
-	public String postValue(@PathParam("app") String app, @QueryParam("id") String id, @QueryParam("index") Integer index, 
+	public String postValue(@PathParam("app") String app, @PathParam("device") String device, 
+			@QueryParam("id") String id, @QueryParam("index") Integer index, 
 			@QueryParam("name") String name, @QueryParam("classname") String classname, String json) {
 //		System.out.println("postValue " + object);
 		try {
 			Object object = new ObjectMapper().readValue(json, Class.forName(classname));
-			return SilverBulletServer.getStaticInstance().getBuilderModel(app).requestBlobChangeBySystem(id, index, object, name);
+			return SilverBulletServer.getStaticInstance().getBuilderModel(app, device).requestBlobChangeBySystem(id, index, object, name);
 		} catch (ClassNotFoundException | IOException e) {
 			e.printStackTrace();
 		}

@@ -46,12 +46,7 @@ public abstract class SilverBulletServer {
 	}
 
 	public void start(String port, String protocol) {
-		try {
-			staticInstance.load();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		staticInstance.load();
 
 //		BuilderModelImpl model = staticInstance.getBuilderModel();
 //		this.onStart(model);

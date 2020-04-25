@@ -98,6 +98,7 @@ public abstract class WebSocketClientHandler {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+        
 	}
 
 	public void close() {

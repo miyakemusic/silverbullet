@@ -44,18 +44,16 @@ import jp.silverbullet.dev.test.TestRecorder;
 import jp.silverbullet.dev.test.TestRecorderInterface;
 import jp.silverbullet.web.ValueSetResult;
 
-public class BuilderModelImpl {
+public class BuilderModelImpl implements Cloneable {
 
 	private static final String ID_DEF_JSON = "id_def.json";
 	private static final String REGISTERSHORTCUT = "registershortcuts.xml";
 	private static final String DEPENDENCYSPEC3_XML = "dependencyspec3.xml";
-//	private static final String UIBUILDER = "uibuilder.json";
 	private static final String UIBUILDER2 = "uibuilder2.json";
 	
 	private RuntimePropertyStore store;
 	private Sequencer sequencer;
 	private PropertyHolder2 propertiesHolder2 = new PropertyHolder2();
-//	private RegisterSpecHolder registerProperty = new RegisterSpecHolder();
 	private DependencySpecHolder dependencySpecHolder2 = new DependencySpecHolder();
 	private RegisterShortCutHolder registerShortCuts = new RegisterShortCutHolder();
 	private SelfBuilder selfBuilder = new SelfBuilder();
@@ -641,4 +639,13 @@ public class BuilderModelImpl {
 		return "OK";
 	}
 
+	public BuilderModelImpl clone() {
+		try {
+			return (BuilderModelImpl)super.clone();
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
 }

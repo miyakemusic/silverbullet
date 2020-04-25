@@ -19,9 +19,14 @@ public class StaticInstances {
 	public static final String PERSISTENT_FOLDER = "./persistent";
 	public static final String TMP_FOLDER = PERSISTENT_FOLDER + "/sv_tmp";
 
-	private Map<String, BuilderModelImpl> builderModels = new HashMap<>();// = new ArrayList<>();
-//	private String currentFilename = "";
-		
+	private Map<String, BuilderModelImpl> builderModels;// = new ArrayList<>();
+	private Map<String, BuilderModelImpl> runtimeModels;
+	
+	public StaticInstances() {
+		builderModels = new HashMap<>();// = new ArrayList<>();
+		runtimeModels = new HashMap<>();		
+	}
+	
 	public void save() {
 		createTmpFolderIfNotExists();
 
@@ -55,26 +60,57 @@ public class StaticInstances {
 		}
 	}
 
-	public void load() throws IOException {
+	public void load() {
 		createTmpFolderIfNotExists();
 		for (File file : new File(PERSISTENT_FOLDER).listFiles()) {
-			if (file.getName().endsWith(".zip")) {
-				FileUtils.cleanDirectory(new File(TMP_FOLDER));
-				Zip.unzip(file.getAbsolutePath(), StaticInstances.TMP_FOLDER);
-				BuilderModelImpl model = new BuilderModelImpl();
-				model.load(StaticInstances.TMP_FOLDER);	
-				builderModels.put(file.getName().replace(".zip", ""), model);
-				new SvClientHandler(model);
+			String filename = file.getAbsolutePath();
+			try {
+				BuilderModelImpl model = loadAfile(filename);
+				builderModels.put(new File(filename).getName().replace(".zip", ""), model);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+			//	e.printStackTrace();
 			}
+			
 		}
 //		currentFilename = filename;
 
 	}
 
-	public BuilderModelImpl getBuilderModel(String app) {
-		return this.builderModels.get(app);
+	private synchronized BuilderModelImpl loadAfile(String filename) throws IOException {
+		if (filename.endsWith(".zip")) {
+			FileUtils.cleanDirectory(new File(TMP_FOLDER));
+			Zip.unzip(filename, StaticInstances.TMP_FOLDER);
+			BuilderModelImpl model = new BuilderModelImpl();
+			model.load(StaticInstances.TMP_FOLDER);			
+			new SvClientHandler(model);
+			return model;
+		}
+		throw new IOException();
 	}
 
+	public BuilderModelImpl getBuilderModel(String app) {
+		return builderModels.get(app);
+	}
+
+	public BuilderModelImpl getBuilderModel(String app, String device) {
+		BuilderModelImpl model = runtimeModels.get(device);
+		return model;
+	}
+
+	private synchronized BuilderModelImpl generateModel(String app, String device) {
+		try {
+			BuilderModelImpl r = this.loadAfile(PERSISTENT_FOLDER + "/" + app + ".zip");
+			runtimeModels.put(device, r);
+			System.out.println("Runtime Model was generated. :" + 
+					device + " @" + Thread.currentThread().getName() + ":" + runtimeModels.hashCode());
+			return r;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public void generateSource(String app) {
 		String info = getBuilderModel(app).getSourceInfo();
 		String folder = info.split(";")[0];
@@ -95,6 +131,14 @@ public class StaticInstances {
 
 	public List<String> getApplications() {
 		return new ArrayList<String>(this.builderModels.keySet());
+	}
+
+	public void createDevice(String app, String device) {
+		generateModel(app, device);
+	}
+
+	public void deleteDevice(String app, String device) {
+		this.runtimeModels.remove(device);
 	}
 
 }

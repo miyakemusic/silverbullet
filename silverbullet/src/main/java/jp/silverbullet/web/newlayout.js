@@ -1,8 +1,9 @@
 class Widget {
-	constructor(widget, parent, divid) {
+	constructor(widget, parent, divid, ajaxRuntime) {
 		this.widget = widget;
 		this.divid = divid;
 		this.parent = parent;
+		this.ajaxRuntime = ajaxRuntime;
 	}
 	
 	accessor(setter, getter) {
@@ -263,8 +264,8 @@ class Slider extends Widget {
 }
 
 class SbImage extends Widget {
-	constructor(widget, parent, divid) {
-		super(widget, parent, divid);
+	constructor(widget, parent, divid, ajaxRuntime) {
+		super(widget, parent, divid, ajaxRuntime);
 		
 		this.canvasId = divid + "canvas";
 		$('#' + parent).append('<div id="' + divid + '" width="100%" height="100%"><canvas id="' + this.canvasId + '"></canvas></div>');
@@ -286,7 +287,6 @@ class SbImage extends Widget {
 		if (property.currentValue == '') {
 			return;
 		}
-		var url =  "//" + window.location.host + "/rest/runtime/getBlob?id=" + property.id + "&name=" + property.currentValue;
 		
 		var me = this;
 		var wrapper = $('#' + me.divid)[0];
@@ -298,6 +298,11 @@ class SbImage extends Widget {
 			$('#' + this.canvasId).attr('height', $('#' + me.divid).height());
 		}
 			
+		me.ajaxRuntime("getBlob?id=" + property.id + "&name=" + property.currentValue, function(blob) {
+			me.image.src = blob.data;
+		});		
+/*		
+		var url =  "//" + window.location.host + "/rest/" + me.device + "/runtime/getBlob?id=" + property.id + "&name=" + property.currentValue;		
 		$.ajax({
 		   type: "GET", 
 		   url: url,
@@ -305,7 +310,7 @@ class SbImage extends Widget {
 			me.image.src = blob.data;
 		   }
 		});
-
+*/
 	}
 }
 
@@ -327,26 +332,12 @@ class Dialog extends Widget {
 		$('#' + parent).append('<div id="' + divid + '" class="mybutton canpush"></div>');
 		
 		this.dialogId = divid + '_dialog';
-		
-//		this.dialogId = this.dialogId + Math.random();
-//		this.dialogId = this.dialogId.replace('.', '');
-		
-//		$('#' + this.dialogId).dialog('destroy'); // if already created, remove at first.
-		
+	
 		$('#' + parent).append('<div id="' + this.dialogId + '"></div>');
 		
 		var width = 600;
 		var height = 400;
-/*		
-		for (var s of widget.volatileInfo) {
-			if (s.startsWith('width=')) {
-				width = s.split('=')[1];
-			}
-			else if (s.startsWith('height=')) {
-				height = s.split('=')[1];
-			}			
-		}
-*/		
+	
 		var me = this;
 				
 				
@@ -704,8 +695,8 @@ class ComboBox extends Widget {
 }
 
 class ChartMine extends Widget {
-	constructor(widget, parent, divid) {
-		super(widget, parent, divid);
+	constructor(widget, parent, divid, ajaxRuntime) {
+		super(widget, parent, divid, ajaxRuntime);
 		
 		$('#' + parent).append('<div id="' + divid + '"></div>');
 		
@@ -734,9 +725,20 @@ class ChartMine extends Widget {
 			var chart = me.chart;
 			
 			if (property.currentValue == 'REQUEST_AGAIN') {
+				me.ajaxRuntime("getProperty?id=" + widget.id + '&index=' + index + '&ext=' + chart.getDataPoints(), function(property) {
+			   		if (property == null) {
+			   			return;
+			   		}
+					var trace = JSON.parse(property.currentValue);
+					if (trace != null) {
+ 						me.chart.update(trace);
+ 					}
+				});
+	
+/*			
 				$.ajax({
 				   type: "GET", 
-				   url: "//" + window.location.host + "/rest/runtime/getProperty?id=" + widget.id + '&index=' + index + '&ext=' + chart.getDataPoints(),
+				   url: "//" + window.location.host + "/rest/" + me.device + "/runtime/getProperty?id=" + widget.id + '&index=' + index + '&ext=' + chart.getDataPoints(),
 				   success: function(property){
 				   		if (property == null) {
 				   			return;
@@ -747,6 +749,7 @@ class ChartMine extends Widget {
 	 					}
 				   }
 				});
+*/
 			}	
 
 		}
@@ -754,8 +757,8 @@ class ChartMine extends Widget {
 }
 
 class Chart extends Widget {
-	constructor(widget, parent, divid) {
-		super(widget, parent, divid);
+	constructor(widget, parent, divid, ajaxRuntime) {
+		super(widget, parent, divid, ajaxRuntime);
 
 		$('#' + parent).append('<div id="' + divid + '"></div>');
 		var me = this;
@@ -777,9 +780,23 @@ class Chart extends Widget {
 		var me = this;
 		var index = 0;
 		if (property.currentValue == 'REQUEST_AGAIN') {
+			me.ajaxRuntime("getProperty?id=" + me.widget.id + '&index=' + index + '&ext=1001', function(property) {
+		   		if (property == null) {
+		   			return;
+		   		}
+				var trace = JSON.parse(property.currentValue);
+				if (trace == null)return;
+				var list = [];
+				for (var i = 0; i < trace.y.length; i++) {
+					list.push({y: parseFloat(trace.y[i])});
+				}	
+				me.chart.options.data[0].dataPoints = list;
+				me.chart.render();   
+			});
+/*
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/runtime/getProperty?id=" + me.widget.id + '&index=' + index + '&ext=1001',
+			   url: "//" + window.location.host + "/rest/" + me.device + "/runtime/getProperty?id=" + me.widget.id + '&index=' + index + '&ext=1001',
 			   success: function(property){
 			   		if (property == null) {
 			   			return;
@@ -794,6 +811,7 @@ class Chart extends Widget {
 					me.chart.render();   
 			   }
 			});
+*/
 		}	
 	}
 }
@@ -962,7 +980,7 @@ class NewLayout {
 			$('#' + defaultValueId).click(function() {
 				$.ajax({
 				   type: "GET", 
-				   url: "//" + window.location.host + "/rest/runtime/defaultValues",
+				   url: "//" + window.location.host + "/rest/" + me.device + "/runtime/defaultValues",
 				   success: function(widget){
 	
 				   }
@@ -972,6 +990,34 @@ class NewLayout {
 			new DependencyHistory(div);
 			
 			this.propertyWindow = new NewLayoutProperty(div);
+			
+			var devicesId = div + "_devices";
+			$('#' + div).append('<select id="' + devicesId + '"></select>');
+			$('#' + devicesId).change(function() {
+				me.device = $(this).val();
+			});
+
+			new MyWebSocket(function(msg) {
+				updateDevicesList();
+			}
+			, 'DEVICE');		
+			
+			updateDevicesList();
+			function updateDevicesList() {	
+				$.ajax({
+					type: "GET", 
+					url: "//" + window.location.host + "/rest/domain/devices",
+					success: function(msg){
+						$('#' + devicesId).empty();
+						for (var o of msg) {
+							$("#" + devicesId).append($("<option>").val(o).text(o));
+							if (me.device == null) {
+								me.device = o;
+							}
+						}
+				   }
+				});	
+			}		
 		}
 		else {
 			getDesignByName(rootName, true, true);
@@ -1055,7 +1101,7 @@ class NewLayout {
 		function replyDialog(messageId, reply) {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/runtime/replyDialog?messageId=" + messageId + "&reply=" + reply,
+			   url: "//" + window.location.host + "/rest/" + me.device + "/runtime/replyDialog?messageId=" + messageId + "&reply=" + reply,
 			   success: function(widget){
 
 			   }
@@ -1128,6 +1174,16 @@ class NewLayout {
 			});	
 		}
 		
+		function ajaxRuntimePath(path, result) {
+			$.ajax({
+			   type: "GET", 
+			   url: "//" + window.location.host + "/rest/" + me.device + "/runtime/" + path,
+			   success: function(msg){
+			   	result(msg);
+			   }
+			});		
+		}
+		
 		function getProperty(id, index, callback) {
 			if (propertyMap[id] != null) {
 				callback(propertyMap[id]);
@@ -1143,7 +1199,7 @@ class NewLayout {
 		function retrieveProperty(id, index, callback) {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/runtime/getProperty?id="  +  id + "&index=" + index,
+			   url: "//" + window.location.host + "/rest/" + me.device + "/runtime/getProperty?id="  +  id + "&index=" + index,
 			   success: function(property){
 			   		callback(property);
 			   }
@@ -1166,7 +1222,7 @@ class NewLayout {
 		function setValue(id, index, value) {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/runtime/setValue?id=" + id + "&index=" + index + "&value=" + value,
+			   url: "//" + window.location.host + "/rest/" + me.device + "/runtime/setValue?id=" + id + "&index=" + index + "&value=" + value,
 			   success: function(property){
 			   }
 			});			
@@ -1256,13 +1312,13 @@ class NewLayout {
 				wrappedWidget = new Button(widget, parentDiv, divid);
 			}
 			else if (widget.type == 'Chart') {	
-				wrappedWidget = new ChartMine(widget, parentDiv, divid);
+				wrappedWidget = new ChartMine(widget, parentDiv, divid, ajaxRuntimePath);
 			}
 			else if (widget.type == 'Table') {	
-				wrappedWidget = new Table2(widget, parentDiv, divid);
+				wrappedWidget = new Table2(widget, parentDiv, divid, ajaxRuntimePath);
 			}					
 			else if (widget.type == 'Image') {	
-				wrappedWidget = new SbImage(widget, parentDiv, divid);
+				wrappedWidget = new SbImage(widget, parentDiv, divid, ajaxRuntimePath);
 			}
 			else if (widget.type == 'Slider') {	
 				wrappedWidget = new Slider(widget, parentDiv, divid);

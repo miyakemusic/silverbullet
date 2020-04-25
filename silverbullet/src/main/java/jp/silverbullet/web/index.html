@@ -49,27 +49,27 @@
 
 <script type="text/javascript">
 $(function() {
-	var application = 'miyake_otdr';
+	var application = null;
 	$(document).ready(function(){
 		$('#mainFunction').hide();
 
-		$.ajax({
-			type: "GET", 
-			url: "//" + window.location.host + "/rest/getApplications",
-			success: function(list){
-				for (var l of list) {
-					$("#applications").append($("<option>").val(l).text(l));
-					
-					if (application == null) {
-						application = l;
-					}
-				} 
-				
-		   }
-		});
+
 			
 		var loginListener = function(name) {
-			createPane();
+			$.ajax({
+				type: "GET", 
+				url: "//" + window.location.host + "/rest/getApplications",
+				success: function(list){
+					for (var l of list) {
+						$("#applications").append($("<option>").val(l).text(l));
+						
+						if (application == null) {
+							application = l;
+						}
+					} 
+					createPane();
+			   }
+			});
 		};
 				
 		var logoutListener = function() {

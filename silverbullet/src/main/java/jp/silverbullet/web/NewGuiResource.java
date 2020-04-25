@@ -13,7 +13,6 @@ import javax.ws.rs.core.MediaType;
 
 import jp.silverbullet.core.ui.part2.Layout;
 import jp.silverbullet.core.ui.part2.Pane;
-import jp.silverbullet.core.ui.part2.PaneWalkThrough;
 import jp.silverbullet.core.ui.part2.UiBuilder;
 import jp.silverbullet.core.ui.part2.WidgetGeneratorHelper;
 import jp.silverbullet.core.ui.part2.WidgetType;
