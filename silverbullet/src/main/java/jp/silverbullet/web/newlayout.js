@@ -950,6 +950,32 @@ class NewLayout {
 		
 		me.currentRoot = "";
 		
+		var valueWebSocket = new MyWebSocket(function(msg) {
+			var ids = msg.split(',');
+			for (var idindex of ids) {
+				var id = idindex.split('#')[0];
+				var index = idindex.split('#')[1];
+				retrieveProperty(id, index, function(property) {
+					propertyMap[property.id] = property;
+					for (var widget of getWidget(property.id)) {
+						widget.onUpdateValue(property);
+					}
+				});
+			}
+		}, 'VALUES');
+
+		var messageDialogId = divBase + "_messageDialog";
+		var messageId = divBase + "_message";
+		var messageWebSocket = new MyWebSocket(function(msg) {
+			if (msg == '@CLOSE@') {
+				$('#' + messageDialogId).dialog('close');
+			}
+			else {
+				$('#' + messageId).html(msg.replace('\n', '<br>'));
+				$('#' + messageDialogId).dialog('open');
+			}
+		}, 'MESSAGE');
+				
 		if (rootName == null) {
 			new NewLayoutLibrary(divLeft, function(selectedRoot) {
 				me.currentRoot = selectedRoot;
@@ -995,6 +1021,8 @@ class NewLayout {
 			$('#' + div).append('<select id="' + devicesId + '"></select>');
 			$('#' + devicesId).change(function() {
 				me.device = $(this).val();
+				valueWebSocket.changeType('VALUES@' + me.device);
+				messageWebSocket.changeType('MESSAGE@' + me.device);
 			});
 
 			new MyWebSocket(function(msg) {
@@ -1013,6 +1041,8 @@ class NewLayout {
 							$("#" + devicesId).append($("<option>").val(o).text(o));
 							if (me.device == null) {
 								me.device = o;
+								valueWebSocket.changeType('VALUES@' + me.device);
+								messageWebSocket.changeType('MESSAGE@' + me.device);
 							}
 						}
 				   }
@@ -1028,19 +1058,6 @@ class NewLayout {
 		
 		this.divNumber = 0;
 		
-		new MyWebSocket(function(msg) {
-			var ids = msg.split(',');
-			for (var idindex of ids) {
-				var id = idindex.split('#')[0];
-				var index = idindex.split('#')[1];
-				retrieveProperty(id, index, function(property) {
-					propertyMap[property.id] = property;
-					for (var widget of getWidget(property.id)) {
-						widget.onUpdateValue(property);
-					}
-				});
-			}
-		}, 'VALUES');
 		
 		new MyWebSocket(function(msg) {
 			var type = msg.split(':')[0];
@@ -1064,19 +1081,7 @@ class NewLayout {
 			}		
 
 		}, 'UIDESIGN');
-		
-		var messageDialogId = divBase + "_messageDialog";
-		var messageId = divBase + "_message";
-		new MyWebSocket(function(msg) {
-			if (msg == '@CLOSE@') {
-				$('#' + messageDialogId).dialog('close');
-			}
-			else {
-				$('#' + messageId).html(msg.replace('\n', '<br>'));
-				$('#' + messageDialogId).dialog('open');
-			}
-		}, 'MESSAGE');
-					
+						
 		
 		$('#' + divBase).append('<div id="' + messageDialogId + '"><label id="' + messageId + '"></label></div>');
 		$('#' + messageDialogId).dialog({

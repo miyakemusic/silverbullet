@@ -33,13 +33,13 @@ public class SvClientHandler {
 	private Object syncDialog = new Object();
 	private DialogAnswer answerDialog = null;
 	
-	public SvClientHandler(BuilderModelImpl model) {
+	public SvClientHandler(String device, BuilderModelImpl model) {
 		model.addUserSequencer(new WebSequencer());
 		model.addRuntimeListener(new RuntimeListener() {
 			@Override
 			public DialogAnswer dialog(String message) {
 				message = message.replace("\n", "<br>");
-				WebSocketBroadcaster.getInstance().sendMessageAsync("MESSAGE", message);
+				WebSocketBroadcaster.getInstance().sendMessageAsync("MESSAGE@" + device, message);
 				synchronized(syncDialog) {
 					try {
 						syncDialog.wait();
@@ -47,7 +47,7 @@ public class SvClientHandler {
 						e.printStackTrace();
 					}
 				}
-				WebSocketBroadcaster.getInstance().sendMessageAsync("MESSAGE", "@CLOSE@");
+				WebSocketBroadcaster.getInstance().sendMessageAsync("MESSAGE@" + device, "@CLOSE@");
 				return answerDialog;
 			}
 	
@@ -61,7 +61,7 @@ public class SvClientHandler {
 	
 			@Override
 			public void message(String message) {
-				WebSocketBroadcaster.getInstance().sendMessageAsync("MESSAGE", message);
+				WebSocketBroadcaster.getInstance().sendMessageAsync("MESSAGE@" + device, message);
 			}
 		});
 	
@@ -79,9 +79,9 @@ public class SvClientHandler {
 	
 			@Override
 			public void onCompleted(String message) {
-				WebSocketBroadcaster.getInstance().sendMessageAsync("VALUES", message);
+				WebSocketBroadcaster.getInstance().sendMessageAsync("VALUES@" + device, message);
 				if (debugEnabled) {
-					WebSocketBroadcaster.getInstance().sendMessageAsync("DEBUG", toHtml(depHistory));
+					WebSocketBroadcaster.getInstance().sendMessageAsync("DEBUG@" + device, toHtml(depHistory));
 				}
 			}
 	
@@ -100,8 +100,8 @@ public class SvClientHandler {
 	
 			@Override
 			public void onRejected(Id id, String message) {
-				WebSocketBroadcaster.getInstance().sendMessageAsync("VALUES", id.toString());
-				WebSocketBroadcaster.getInstance().sendMessageAsync("MESSAGE", message);
+				WebSocketBroadcaster.getInstance().sendMessageAsync("VALUES@" + device, id.toString());
+				WebSocketBroadcaster.getInstance().sendMessageAsync("MESSAGE@" + device, message);
 				
 			}
 	
@@ -125,6 +125,8 @@ public class SvClientHandler {
 			}
 			
 		});
+		
+		// Property's information
 		model.getPropertiesHolder2().addListener(new PropertyDefHolderListener() {
 			@Override
 			public void onChange(String id, String fieldName, Object value, Object prevValue) {

@@ -18,6 +18,7 @@ import jp.silverbullet.dev.sourcegenerator.RegisterSourceGenerator;
 public class StaticInstances {
 	public static final String PERSISTENT_FOLDER = "./persistent";
 	public static final String TMP_FOLDER = PERSISTENT_FOLDER + "/sv_tmp";
+	private static final String NO_DEVICE = "NO_DEVICE";
 
 	private Map<String, BuilderModelImpl> builderModels;// = new ArrayList<>();
 	private Map<String, BuilderModelImpl> runtimeModels;
@@ -65,7 +66,7 @@ public class StaticInstances {
 		for (File file : new File(PERSISTENT_FOLDER).listFiles()) {
 			String filename = file.getAbsolutePath();
 			try {
-				BuilderModelImpl model = loadAfile(filename);
+				BuilderModelImpl model = loadAfile(filename, NO_DEVICE);
 				builderModels.put(new File(filename).getName().replace(".zip", ""), model);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -77,13 +78,13 @@ public class StaticInstances {
 
 	}
 
-	private synchronized BuilderModelImpl loadAfile(String filename) throws IOException {
+	private synchronized BuilderModelImpl loadAfile(String filename, String device) throws IOException {
 		if (filename.endsWith(".zip")) {
 			FileUtils.cleanDirectory(new File(TMP_FOLDER));
 			Zip.unzip(filename, StaticInstances.TMP_FOLDER);
 			BuilderModelImpl model = new BuilderModelImpl();
 			model.load(StaticInstances.TMP_FOLDER);			
-			new SvClientHandler(model);
+			new SvClientHandler(device, model);
 			return model;
 		}
 		throw new IOException();
@@ -100,7 +101,7 @@ public class StaticInstances {
 
 	private synchronized BuilderModelImpl generateModel(String app, String device) {
 		try {
-			BuilderModelImpl r = this.loadAfile(PERSISTENT_FOLDER + "/" + app + ".zip");
+			BuilderModelImpl r = this.loadAfile(PERSISTENT_FOLDER + "/" + app + ".zip", device);
 			runtimeModels.put(device, r);
 			System.out.println("Runtime Model was generated. :" + 
 					device + " @" + Thread.currentThread().getName() + ":" + runtimeModels.hashCode());
@@ -124,7 +125,7 @@ public class StaticInstances {
 		BuilderModelImpl model = new BuilderModelImpl();
 		builderModels.put(String.valueOf(System.currentTimeMillis()), model);
 		
-		new SvClientHandler(model);
+//		new SvClientHandler(model);
 		
 	}
 

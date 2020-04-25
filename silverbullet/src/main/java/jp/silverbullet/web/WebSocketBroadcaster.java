@@ -121,14 +121,13 @@ public class WebSocketBroadcaster {
 	}
 	private BlockingQueue<TypeValue> queue = new LinkedBlockingQueue<>(10);
 	public void sendMessageAsync(String type, String value) {
-//		System.out.println("--" + value);
 		try {
 			queue.put(new TypeValue(type, value));
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
-
+	
 	private void send(String ids, String currentType) {
 //		System.out.println("sent   " + ids + "   " + currentType);
 		try {
@@ -153,4 +152,5 @@ public class WebSocketBroadcaster {
 			}
 		}
 	}
+
 }

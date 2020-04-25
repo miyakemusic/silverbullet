@@ -33,7 +33,13 @@ class MyWebSocket {
 		  	}
 	    };
 	    
+	    this.setType = function(type) {
+	    	this.type = type;
+	    }
 		/////////////////////////////////////////////	
 	}
 
+	changeType(type) {
+		this.setType(type);
+	}
 }
