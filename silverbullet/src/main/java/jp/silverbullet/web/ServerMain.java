@@ -39,7 +39,7 @@ public class ServerMain extends SilverBulletServer {
 
 	@Override
 	protected List<UserSequencer> getUserSequencers(BuilderModelImpl model) {
-		return Arrays.asList(new WebSequencer());
+		return Arrays.asList(new WebSequencer(""));
 	}
 
 	@Override

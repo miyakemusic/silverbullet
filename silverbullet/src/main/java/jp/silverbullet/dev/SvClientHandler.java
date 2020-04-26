@@ -34,7 +34,7 @@ public class SvClientHandler {
 	private DialogAnswer answerDialog = null;
 	
 	public SvClientHandler(String device, BuilderModelImpl model) {
-		model.addUserSequencer(new WebSequencer());
+		model.addUserSequencer(new WebSequencer(device));
 		model.addRuntimeListener(new RuntimeListener() {
 			@Override
 			public DialogAnswer dialog(String message) {
@@ -197,7 +197,7 @@ public class SvClientHandler {
 					String val = new ObjectMapper().writeValueAsString(updates);
 					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("REGVAL", val));
 					WebSocketBroadcaster.getInstance().sendMessage(str);
-					WebSocketBroadcaster.getInstance().sendMessageToDomainModel(RegisterUpdates.INTERRUPT);
+					WebSocketBroadcaster.getInstance().sendMessageToDomainModel(device, RegisterUpdates.INTERRUPT);
 				} catch (JsonGenerationException e) {
 					e.printStackTrace();
 				} catch (JsonMappingException e) {

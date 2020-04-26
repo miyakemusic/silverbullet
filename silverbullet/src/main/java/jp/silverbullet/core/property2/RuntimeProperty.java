@@ -342,4 +342,10 @@ public class RuntimeProperty implements Cloneable {
 	}
 
 
+	public static String convertSimpleId(String id) {
+		if (id.contains(INDEXSIGN)) {
+			return id.split(INDEXSIGN)[0];
+		}
+		return id;
+	}
 }

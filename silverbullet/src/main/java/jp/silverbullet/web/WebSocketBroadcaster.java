@@ -144,13 +144,13 @@ public class WebSocketBroadcaster {
 
 	}
 
-	public void sendMessageToDomainModel(String message) {
-		//String message = new ObjectMapper().writeValueAsString(new WebSocketMessage(currentType, ids));
-		for(final WebSocketObject member: this.domainModels.values()){
-			if (member != null) {
-				member.getSession().getRemote().sendStringByFuture(message);
-			}
-		}
+	public void sendMessageToDomainModel(String device, String message) {
+		this.domainModels.get(device).getSession().getRemote().sendStringByFuture(message);
+//		for(final WebSocketObject member: this.domainModels.values()){
+//			if (member != null) {
+//				member.getSession().getRemote().sendStringByFuture(message);
+//			}
+//		}
 	}
 
 }
