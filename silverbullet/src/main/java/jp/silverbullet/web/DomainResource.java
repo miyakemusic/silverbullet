@@ -34,6 +34,7 @@ public class DomainResource {
 	@Path("/{device}/login")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String longin(@PathParam("app") String app, @PathParam("device") String device) {
+		System.out.println("login: + " + app + "@" + device);
 		SilverBulletServer.getStaticInstance().createDevice(app, device);
 		return "OK";
 	}
@@ -42,6 +43,7 @@ public class DomainResource {
 	@Path("/{device}/logout")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String logout(@PathParam("app") String app, @PathParam("device") String device) {
+		System.out.println("logout: + " + app + "@" + device);
 		SilverBulletServer.getStaticInstance().deleteDevice(app, device);
 		return "OK";
 	}
