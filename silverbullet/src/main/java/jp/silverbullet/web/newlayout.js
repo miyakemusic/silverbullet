@@ -734,22 +734,6 @@ class ChartMine extends Widget {
  						me.chart.update(trace);
  					}
 				});
-	
-/*			
-				$.ajax({
-				   type: "GET", 
-				   url: "//" + window.location.host + "/rest/" + me.device + "/runtime/getProperty?id=" + widget.id + '&index=' + index + '&ext=' + chart.getDataPoints(),
-				   success: function(property){
-				   		if (property == null) {
-				   			return;
-				   		}
-						var trace = JSON.parse(property.currentValue);
-						if (trace != null) {
-	 						me.chart.update(trace);
-	 					}
-				   }
-				});
-*/
 			}	
 
 		}
@@ -793,25 +777,6 @@ class Chart extends Widget {
 				me.chart.options.data[0].dataPoints = list;
 				me.chart.render();   
 			});
-/*
-			$.ajax({
-			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/" + me.device + "/runtime/getProperty?id=" + me.widget.id + '&index=' + index + '&ext=1001',
-			   success: function(property){
-			   		if (property == null) {
-			   			return;
-			   		}
-					var trace = JSON.parse(property.currentValue);
-					if (trace == null)return;
-					var list = [];
-					for (var i = 0; i < trace.y.length; i++) {
-						list.push({y: parseFloat(trace.y[i])});
-					}	
-					me.chart.options.data[0].dataPoints = list;
-					me.chart.render();   
-			   }
-			});
-*/
 		}	
 	}
 }
@@ -1045,6 +1010,7 @@ class NewLayout {
 								messageWebSocket.changeType('MESSAGE@' + me.device);
 							}
 						}
+						$('#' + devicesId).val(me.device);
 				   }
 				});	
 			}		
