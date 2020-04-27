@@ -53,8 +53,6 @@ $(function() {
 	$(document).ready(function(){
 		$('#mainFunction').hide();
 
-
-			
 		var loginListener = function(name) {
 			$.ajax({
 				type: "GET", 
@@ -76,7 +74,7 @@ $(function() {
 
 		};
 		
-		var login = new Login('login', 'loginName', loginListener, logoutListener);
+		var login = new Login('login', 'loginName', window.location.pathname, loginListener, logoutListener);
 		
 		function createPane() {
 			$('#mainFunction').show();
@@ -93,9 +91,7 @@ $(function() {
 			var depenencyDesign = new DependencyDesign2('tab_dependencydesign2');
 			var build = new Build('tab_build');
 			var devices = new Devices('tab_device');
-
-
-				
+	
 			$('#applications').change(function() {
 			    var r = $('option:selected').val();
 			    application = r;
@@ -159,18 +155,6 @@ $(function() {
 		if (count > 4) {
 			options.url = options.url.replace('/rest/', '/rest/' + application + '/');
 		}
-	/*
-		var oauthCode = localStorage.getItem('oauthCode');
-		if (originalOptions.url.includes('?')) {
-			if (!originalOptions.url.includes('code=')) {
-				options.url += '&code=' + oauthCode;
-			}
-		}
-		else {
-			//options.url += '/oauthCode';
-			options.url += '?code=' + oauthCode;
-		}
-	*/
 	});
 	$.ajaxSetup({
 	    error: function(event, jqXHR, ajaxSettings, thrownError) {

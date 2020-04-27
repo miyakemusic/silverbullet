@@ -871,13 +871,14 @@ class Table2 extends Widget {
 }
 
 class NewLayout {
-	constructor(divParent, rootName) {
+	constructor(divParent, rootName, device) {
 		var propertyMap = new Map();
 		var widgetMap = new Map();
 		var divMap = new Map();
 		
 		var me = this;
 		
+		me.device = device;
 		var div;
 		
 		if (rootName == null) {
@@ -927,7 +928,7 @@ class NewLayout {
 					}
 				});
 			}
-		}, 'VALUES');
+		}, 'VALUES@' + me.device);
 
 		var messageDialogId = divBase + "_messageDialog";
 		var messageId = divBase + "_message";
@@ -939,7 +940,7 @@ class NewLayout {
 				$('#' + messageId).html(msg.replace('\n', '<br>'));
 				$('#' + messageDialogId).dialog('open');
 			}
-		}, 'MESSAGE');
+		}, 'MESSAGE@' + me.device);
 				
 		if (rootName == null) {
 			new NewLayoutLibrary(divLeft, function(selectedRoot) {

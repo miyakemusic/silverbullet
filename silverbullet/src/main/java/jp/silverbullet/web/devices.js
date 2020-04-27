@@ -4,12 +4,12 @@ class Devices {
 		
 		var listId = div + "_deviceList";
 		$('#' + div).append('<div id="' + listId + '"></div>');
-		$('#' + listId).css({'display':'inline-block','width':'200px', 'border-width':'1px', 'background-color':'lightgreen'});
+		$('#' + listId).css({'display':'inline-block','width':'150px', 'border-width':'1px', 'background-color':'lightgreen'});
  		
 		var contentId = div + "_content";
 		$('#' + div).append('<div id="' + contentId + '">Main</div>');
-		$('#' + contentId).css({'display':'inline-block', 'width':'1000px', 
-			'height':'800px', 'background-color':'lightgray', 'vertical-align':'top'});
+		$('#' + contentId).css({'display':'inline-block', 'width':'800px', 
+			'height':'600px', 'background-color':'white', 'vertical-align':'top'});
 		
 		$('#' + div).append('<div id="' + listId + '"></div>');
 		
@@ -31,14 +31,25 @@ class Devices {
 						$('#' + listId).append('<div><button class="deviceItem">' + o + '</button></div>');
 					}
 					$('.deviceItem').on('click', function() {
-						new NewLayout(contentId, 'OTDR');
+						$('#' + contentId).empty();
+						var device = $(this).text();
+						retreiveUiEntry(device, function(result) {
+							new NewLayout(contentId, result, device);
+						});
+						
 					});	
 			   }
 			});
 		}
-1
-2
-3
-	
+		
+		function retreiveUiEntry(device, result) {
+			$.ajax({
+				type: "GET", 
+				url: "//" + window.location.host + "/rest/domain/" + device + "/getUiEntry",
+				success: function(msg){
+					result(msg);
+				}
+			});
+		}	
 	}
 }

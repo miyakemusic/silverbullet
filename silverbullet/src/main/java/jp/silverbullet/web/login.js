@@ -11,8 +11,10 @@ function getArgMap() {
 }
 
 class Login {
-	constructor(beforeDiv, afterDiv, loginListener, logoutListener) {		
+	constructor(beforeDiv, afterDiv, pathname, loginListener, logoutListener) {		
 		var me = this;
+		
+		me.pathname = pathname;
 		
 		var argMap = getArgMap();//new Map();
 		
@@ -41,25 +43,11 @@ class Login {
 				}
 				else if (result == 'failed') {
 					beforeLogin();
-					/*
-					$.ajax({
-						type: "GET", 
-						url: window.location.origin + resourceRootPath + "getAuthUrl",
-						success: function(response) {
-							window.location.href = response;
-						},
-						error: function(response) {
-							alert(response);
-						}
-					});					
-					*/
 				}
 			});
 		}
 				
-		function afterLogin() {
-	//		$('#' + beforeDiv).clear();
-	//		$('#' + afterDiv).clear();			
+		function afterLogin() {		
 	   		$('#' + beforeDiv).hide();
 	   		$('#' + afterDiv).show();	
 	   		
@@ -72,8 +60,6 @@ class Login {
 		}
 					
 		function beforeLogin() {
-	//		$('#' + beforeDiv).clear();
-	//		$('#' + afterDiv).clear();
 	   		$('#' + beforeDiv).show();
 	   		$('#' + afterDiv).hide();
 	   		
@@ -96,7 +82,7 @@ class Login {
 			$('#yahoo').prop('disabled', true);
 			
 			$('#google').click(function() {
-				var redirectUri = window.location.origin;
+				var redirectUri = window.location.origin + me.pathname;
 				$.ajax({
 					type: "GET", 
 					url: window.location.origin + resourceRootPath + "getAuthUrl?url=" + redirectUri,
@@ -112,19 +98,14 @@ class Login {
 		}
 
 		function newLogin(code, scope) {
-			var redirectUri = window.location.origin;
+			var redirectUri = window.location.origin + me.pathname;
 			console.log(code);
 			$.ajax({
 				type: "GET", 
 				url: window.location.origin + resourceRootPath + "newLogin?code=" + code + "&scope=" + scope + "&redirectUri=" + redirectUri,
 				success: function(response){
 					if (response.key == 'name') {
-		 				window.location.href = window.location.origin;
-		 				/*
-				   		afterLogin();			   		
-				   		$('#username').text(response.value);  		
-				   		loginListener(response.value);
-				   		*/
+		 				window.location.href = window.location.origin + me.pathname;
 				   	}
 				},
 				error: function(response) {
@@ -161,8 +142,7 @@ class Login {
 				   		$('#' + afterDiv).show();			 
 				   		
 				   		$('#username').text(response.value);  		
-				   	//	loginListener(response.value);
-				   		
+
 				   		resultFunc('success', response.value);
 					}
 					else {
