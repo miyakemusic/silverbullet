@@ -11,10 +11,14 @@
 <script type="text/javascript" src="newlayout.js"></script> 
 <script type="text/javascript" src="mywebsocket.js"></script>
 <script type="text/javascript" src="login.js"></script>
+<script type="text/javascript" src="devices.js"></script>
 <script type="text/javascript">
 $(function() {
+	var application = 'miyake_otdr';
+	
 	$(document).ready(function(){
 		function loginListener(name) {
+			var devices = new Devices('main');
 		};
 		
 		function logoutListener() {
@@ -22,18 +26,33 @@ $(function() {
 		
 		var login = new Login('login', 'loginName', window.location.pathname, loginListener, logoutListener);
 	});
+	
+	$.ajaxPrefilter( function( options, originalOptions, jqXHR ) {
+		if (application == null) {
+			return;
+		}
+		
+		var url = options.url;
+		if (url.includes('?')) {
+			url = options.url.split('?')[0];
+		}
+		var count = ( url.match( new RegExp( '/', "g" ) ) || [] ).length ;
+		if (count > 4) {
+			options.url = options.url.replace('/rest/', '/rest/' + application + '/');
+		}
+	});
 })
 </script>
 <link rel="stylesheet" media="screen" href="lib/handsontable.full.css">
 <link rel="stylesheet" media="screen" href="lib/jquery.dataTables.min.css">
+<link rel="stylesheet" media="screen" href="lib/jquery.resizableColumns.css">
 
+<link rel="stylesheet" type="text/css" href="mywidget.css">
 <link rel="stylesheet" type="text/css" href="lib/jquery-ui.css">
 <link rel="stylesheet" type="text/css" href="lib/fancyknob.css">
-<link rel="stylesheet" type="text/css" href="lib/keyboard.min.css">
-<link rel="stylesheet" type="text/css" href="mywidget.css">
 <link rel="stylesheet" type="text/css" href="mycss.css">
-<link rel="stylesheet" type="text/css" href="table.css">
 <link rel="stylesheet" type="text/css" href="jsmytable.css">
+<link rel="stylesheet" type="text/css" href="lib/keyboard.min.css">
 <link rel="stylesheet" type="text/css" href="login.css">
 
 <head>
