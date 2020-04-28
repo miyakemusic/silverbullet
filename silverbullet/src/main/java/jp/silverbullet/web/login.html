@@ -8,8 +8,40 @@
 <script type="text/javascript">
 $(function() {
 	$(document).ready(function(){
-		var arguments = window.location.search;
-		var login = new Login('loginMain');		
+		function getArgMap() {
+			var argMap = new Map();
+			var args = window.location.search;
+			for (var arg of args.split('&')) {
+				var item = arg.split('=')[0].replace('?', '');
+				var value = arg.split('=')[1];
+				
+				argMap.set(item, value);
+			}
+			return argMap;
+		}	
+		var argMap = getArgMap();
+		
+		function getArgValue(arg) {
+			if (argMap.has(arg)) {
+				return argMap.get(arg);
+			}
+			return "";
+		}
+		
+		$('#login').click(function() {
+			$.ajax({
+				type: "GET", 
+				url: window.location.origin + "/rest/nativeLogin?username=" + $('#username').val()
+					+ '&password=' + $('#password').val(),
+					
+				success: function(response) {
+					window.location.href = getArgValue('redirectUri');
+				},
+				error: function(response) {
+					alert(response);
+				}
+			});	
+		});
 	});
 });
 </script>
@@ -20,6 +52,9 @@ $(function() {
 <title>Login</title>
 </head>
 <body> 
-<div id="loginMain"></div>
+<div>Username:<input type="text" id="username"></div>
+<div>Password:<input type="password" id="password"></div>
+<div><button id="login">Login</button></div>
+
 </body>
 </html>

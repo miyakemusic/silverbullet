@@ -45,11 +45,37 @@ public class SystemResource {
 //	private GoogleHanlder googleHandler = new GoogleHandlerForTest();
 	private GoogleHanlder googleHandler = new GoogleHandlerImpl(ClientBuilder.newClient());
 
+
+	@GET
+	@Path("/nativeLogin")
+	@Produces(MediaType.TEXT_PLAIN)
+	public Response nativeLogin(@QueryParam("username") final String username, 
+			@QueryParam("password") final String password) {
+		
+		PersonalResponse personal = new PersonalResponse();
+		personal.name = username;
+
+		String sessionName = String.valueOf(System.currentTimeMillis()); 
+
+		userStore.put(sessionName, personal);
+		NewCookie newCookie = new NewCookie(new Cookie("SilverBullet", sessionName));
+		
+		return Response.ok(new String()).
+				cookie(newCookie)
+				.build();	
+	}
+	
 	@GET
 	@Path("/getAuthUrl")
 	@Produces(MediaType.TEXT_PLAIN)
-	public Response getAuthUrl(@QueryParam("url") final String url) {
-		String authUrl = googleHandler.getAuthUri(url);
+	public Response getAuthUrl(@QueryParam("url") final String url, @QueryParam("service") final String service) {
+		String authUrl = "";
+		if (service.equals("google")) {
+			authUrl = googleHandler.getAuthUri(url);
+		}
+		else if (service.equals("silverbullet")) {
+			authUrl = "./login.html?redirectUri=" + url;
+		}
 		return Response.ok(new String(authUrl)).build();
 	}
 	
@@ -70,7 +96,7 @@ public class SystemResource {
 	@Path("/newLogin")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response newLogin(@QueryParam("code") final String code, @QueryParam("scope") final String scope,
-			@QueryParam("redirectUri") final String redirectUri) throws Exception {
+			@QueryParam("redirectUri") final String redirectUri, @QueryParam("service") final String service) throws Exception {
 
 		GoogleAccressTokenResponse accessToken = googleHandler.retrieveAccessToken(code, redirectUri);
 
@@ -85,7 +111,6 @@ public class SystemResource {
 
 		userStore.put(sessionName, personal);
 		
-//		NewCookie newCookie = new NewCookie(new Cookie("SilverBullet", sessionName, "/rest/", ""));
 		NewCookie newCookie = new NewCookie(new Cookie("SilverBullet", sessionName));
 		
 		return Response.ok(new KeyValue("name", personal.name)).

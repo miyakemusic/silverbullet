@@ -73,19 +73,24 @@ class Login {
 			$('#' + beforeDiv).append('<div id="loginDiv"></div>');
 			$('#loginDiv').append('<div class="subtitle">Login with:</div>');
 			$('#loginDiv').append('<button id="google" class="loginButton">Google</button>');
-			$('#loginDiv').append('<button id="facebook">Facebook</button>');
-			$('#loginDiv').append('<button id="twitter">Twitter</button>');
-			$('#loginDiv').append('<button id="yahoo">Yahoo</button>');
+			$('#loginDiv').append('<button id="facebook" class="loginButton">Facebook</button>');
+			$('#loginDiv').append('<button id="twitter" class="loginButton">Twitter</button>');
+			$('#loginDiv').append('<button id="yahoo" class="loginButton">Yahoo</button>');
+			$('#loginDiv').append('<button id="silverbullet" class="loginButton">SilverBullet</button>');
 			
-			$('#facebook').prop('disabled', true);
-			$('#twitter').prop('disabled', true);
-			$('#yahoo').prop('disabled', true);
+//			$('#facebook').prop('disabled', true);
+//			$('#twitter').prop('disabled', true);
+//			$('#yahoo').prop('disabled', true);
 			
-			$('#google').click(function() {
+			$('.loginButton').click(function() {
 				var redirectUri = window.location.origin + me.pathname;
+				var service = $(this).prop('id');
+				
 				$.ajax({
 					type: "GET", 
-					url: window.location.origin + resourceRootPath + "getAuthUrl?url=" + redirectUri,
+					url: window.location.origin + resourceRootPath + "getAuthUrl?url=" + redirectUri 
+						+ '&service=' + service,
+						
 					success: function(response) {
 						window.location.href = response;
 					},
@@ -97,7 +102,7 @@ class Login {
 			});
 		}
 
-		function newLogin(code, scope) {
+		function newLogin(code, scope, method) {
 			var redirectUri = window.location.origin + me.pathname;
 			console.log(code);
 			$.ajax({
