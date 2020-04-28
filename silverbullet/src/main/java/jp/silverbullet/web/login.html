@@ -42,7 +42,25 @@ $(function() {
 				}
 			});	
 		});
+			
+		$('#create').click(function() {
+				$.ajax({
+					type: "GET", 
+					url: window.location.origin + "/rest/nativeCreate?username=" + $('#username').val()
+						+ '&password=' + $('#password').val(),
+						
+					success: function(response) {
+						window.location.href = getArgValue('redirectUri');
+					},
+					error: function(response) {
+						alert(response);
+					}
+				});	
+		});
 	});
+	
+
+	
 });
 </script>
 <link rel="stylesheet" type="text/css" href="lib/jquery-ui.css">
@@ -52,9 +70,9 @@ $(function() {
 <title>Login</title>
 </head>
 <body> 
+
 <div>Username:<input type="text" id="username"></div>
 <div>Password:<input type="password" id="password"></div>
-<div><button id="login">Login</button></div>
-
+<div><button id="login">Login</button><button id="create">Create Account</button></div>
 </body>
 </html>

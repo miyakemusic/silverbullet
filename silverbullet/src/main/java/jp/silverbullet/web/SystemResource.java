@@ -1,7 +1,9 @@
 package jp.silverbullet.web;
 
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.GET;
@@ -14,6 +16,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.codec.digest.DigestUtils;
+
 import jp.silverbullet.core.KeyValue;
 import jp.silverbullet.web.auth.GoogleAccressTokenResponse;
 import jp.silverbullet.web.auth.GoogleHandlerImpl;
@@ -23,6 +27,8 @@ import jp.silverbullet.web.auth.PersonalResponse;
 //@Path("/system")
 @Path("/")
 public class SystemResource {
+	private static Map<String, String> userPassword = new HashMap<>();
+	
 	@GET
 	@Path("/newApplication")
 	@Produces(MediaType.TEXT_PLAIN) 
@@ -45,13 +51,43 @@ public class SystemResource {
 //	private GoogleHanlder googleHandler = new GoogleHandlerForTest();
 	private GoogleHanlder googleHandler = new GoogleHandlerImpl(ClientBuilder.newClient());
 
+	@GET
+	@Path("/nativeCreate")
+	@Produces(MediaType.TEXT_PLAIN)
+	public Response nativeCreate(@QueryParam("username") final String username, 
+			@QueryParam("password") final String password) {
+		
+		
+		if (userPassword.keySet().contains(username)) {
+			return Response.serverError().build();
+		}
+		userPassword.put(username, DigestUtils.shaHex(password));
+		
+		PersonalResponse personal = new PersonalResponse();
+		personal.name = username;
 
+		String sessionName = String.valueOf(System.currentTimeMillis()); 
+
+		userStore.put(sessionName, personal);
+		NewCookie newCookie = new NewCookie(new Cookie("SilverBullet", sessionName));
+		
+		return Response.ok(new String()).
+				cookie(newCookie)
+				.build();	
+	}
+	
 	@GET
 	@Path("/nativeLogin")
 	@Produces(MediaType.TEXT_PLAIN)
 	public Response nativeLogin(@QueryParam("username") final String username, 
 			@QueryParam("password") final String password) {
 		
+		if (!userPassword.containsKey(username)) {
+			return Response.serverError().build();
+		}
+		if (!userPassword.get(username).equals(DigestUtils.shaHex(password))) {
+			return Response.serverError().build();
+		}
 		PersonalResponse personal = new PersonalResponse();
 		personal.name = username;
 

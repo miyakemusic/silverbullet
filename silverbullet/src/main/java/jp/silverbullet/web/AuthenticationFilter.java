@@ -20,6 +20,7 @@ public class AuthenticationFilter implements ContainerRequestFilter
 	
 	private static List<String> extPath = Arrays.asList(
 			SYSTEMPATH + "login", SYSTEMPATH + "autoLogin", SYSTEMPATH + "newLogin", 
+			SYSTEMPATH + "nativeLogin", SYSTEMPATH + "nativeCreate", 
 			SYSTEMPATH + "getAuthUrl", SYSTEMPATH + "loginAndroid");
 	@Override
 	public void filter(ContainerRequestContext requestContext) throws IOException {	  
