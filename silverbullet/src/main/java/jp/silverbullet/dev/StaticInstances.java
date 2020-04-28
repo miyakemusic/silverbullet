@@ -28,19 +28,19 @@ public class StaticInstances {
 		runtimeModels = new HashMap<>();		
 	}
 	
-	public void save() {
+	public void save(String app) {
 		createTmpFolderIfNotExists();
-
-		for (String name : builderModels.keySet()) {
-			try {
-				FileUtils.cleanDirectory(new File(TMP_FOLDER));
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			builderModels.get(name).save(StaticInstances.TMP_FOLDER);
-			Zip.zip(StaticInstances.TMP_FOLDER, PERSISTENT_FOLDER + "/" + name + ".zip");		
-		}
+		builderModels.get(app).save(StaticInstances.TMP_FOLDER);
+		Zip.zip(StaticInstances.TMP_FOLDER, PERSISTENT_FOLDER + "/" + app + ".zip");	
+//		for (String name : builderModels.keySet()) {
+//			try {
+//				FileUtils.cleanDirectory(new File(TMP_FOLDER));
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//	
+//		}
 	}
 
 	private static synchronized void createTmpFolderIfNotExists() {
@@ -95,8 +95,13 @@ public class StaticInstances {
 	}
 
 	public BuilderModelImpl getBuilderModel(String app, String device) {
-		BuilderModelImpl model = runtimeModels.get(device);
-		return model;
+		if (!runtimeModels.containsKey(device)) {
+			return getBuilderModel(app);
+		}
+		else {
+			BuilderModelImpl model = runtimeModels.get(device);
+			return model;
+		}
 	}
 
 	private synchronized BuilderModelImpl generateModel(String app, String device) {

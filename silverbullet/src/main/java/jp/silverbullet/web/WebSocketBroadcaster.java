@@ -145,7 +145,10 @@ public class WebSocketBroadcaster {
 	}
 
 	public void sendMessageToDomainModel(String device, String message) {
-		this.domainModels.get(device).getSession().getRemote().sendStringByFuture(message);
+		WebSocketObject obj = this.domainModels.get(device);
+		if (obj != null) {
+			obj.getSession().getRemote().sendStringByFuture(message);
+		}
 //		for(final WebSocketObject member: this.domainModels.values()){
 //			if (member != null) {
 //				member.getSession().getRemote().sendStringByFuture(message);

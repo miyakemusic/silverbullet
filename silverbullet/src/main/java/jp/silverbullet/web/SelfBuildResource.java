@@ -75,4 +75,11 @@ public class SelfBuildResource {
 		return "OK";
 	}
 	
+	@GET
+	@Path("/save")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String Save(@PathParam("app") String app) {
+		SilverBulletServer.getStaticInstance().save(app);
+		return "OK";
+	}
 }

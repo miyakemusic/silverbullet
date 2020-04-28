@@ -39,15 +39,6 @@ public class SystemResource {
 		return list;
 	}
 	
-	@GET
-	@Path("/save")
-	@Produces(MediaType.TEXT_PLAIN) 
-	public String Save() {
-		SilverBulletServer.getStaticInstance().save();
-		return "OK";
-	}
-	
-
 	public static AuthStore authMap = new AuthStore();
 	public static UserStore userStore = new UserStore();
 	

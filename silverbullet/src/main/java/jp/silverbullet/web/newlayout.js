@@ -878,7 +878,12 @@ class NewLayout {
 		
 		var me = this;
 		
-		me.device = device;
+		if (device == null) {
+			me.device = 'NO_DEVICE';
+		}
+		else {
+			me.device = device;
+		}
 		var div;
 		
 		if (rootName == null) {
