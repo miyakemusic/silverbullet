@@ -64,30 +64,46 @@ class Devices {
 }
 class AllDevices {
 	constructor(div) {
-	
+				
+		var columnCountId = div + "_columnCount";
+		$('#' + div).append('Column Count: <select id="' + columnCountId + '"></select>');
+		$('#' + columnCountId).append($('<option />').val('1').text('1'));
+		$('#' + columnCountId).append($('<option />').val('2').text('2'));
+		$('#' + columnCountId).change(function() {
+			retreiveDevices($(this).val());
+		});
+		
+		var mainId = div + "_mainId";
+		$('#' + div).append('<div id="' + mainId + '"></div>');
+		
+		retreiveDevices(1);
+
 		var webSocket = new MyWebSocket(function(msg) {
-			retreiveDevices();
+			retreiveDevices($('#' + columnCountId).val());
 		}
 		, 'DEVICE');
-		
-		retreiveDevices();
-		
-		function retreiveDevices() {
+				
+		function retreiveDevices(columns) {
 			$.ajax({
 				type: "GET", 
 				url: "//" + window.location.host + "/rest/domain/devices",
 				success: function(msg){
-					$('#' + div).empty();
-					var tablestr = '<table>';
+					$('#' + mainId).empty();
+					
+					var col = 0;
+					var tablestr = '<table><tr>';
 					for (var device of msg) {
 						var contentId = div + '_' + device;
-						//var buttonId = contentId + '_button';
-						tablestr += '<tr><td><input type="checkbox" class="deviceButton" id="' + device + '" name="' + contentId + '">' + device + '</button></td><td id="' + contentId + '">_________________________________________________________________________________________________________________</td></tr>';
-
-//						$('#' + contentId).css({'width':'800px','height':'500px'}); 
+						tablestr += '<td><input type="checkbox" class="deviceButton" id="' + device + '" name="' + contentId + '">' + device + '</button></td><td id="' + contentId + '"></td>';
+					
+						col++;
+						if (col == columns) {
+							col = 0;
+							tablestr += '</tr><tr>';
+						}
 					}
-					tablestr += '</table>';
-					$('#' + div).append(tablestr);
+					tablestr += '</tr></table>';
+					$('#' + mainId).append(tablestr);
 					$('.deviceButton').click(function() {
 						var checked = $(this).prop('checked');
 						if (checked == true) {
