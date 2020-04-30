@@ -69,8 +69,8 @@ class AllDevices {
 		$('#' + div).append('Column Count: <select id="' + columnCountId + '"></select>');
 		$('#' + columnCountId).append($('<option />').val('1').text('1'));
 		$('#' + columnCountId).append($('<option />').val('2').text('2'));
-		$('#' + columnCountId).append($('<option />').val('3').text('4'));
-		$('#' + columnCountId).append($('<option />').val('3').text('4'));
+		$('#' + columnCountId).append($('<option />').val('3').text('3'));
+		$('#' + columnCountId).append($('<option />').val('4').text('4'));
 		$('#' + columnCountId).change(function() {
 			retreiveDevices($(this).val());
 		});
