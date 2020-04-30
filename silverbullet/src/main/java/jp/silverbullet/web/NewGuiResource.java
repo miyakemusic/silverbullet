@@ -148,7 +148,9 @@ public class NewGuiResource {
 		widget.createPane(Layout.HORIZONTAL).css("width", "100").css("height", "30");//.css("border-style", "solid");
 		
 		Pane parent = getUiBuilder(app).getParentOf(divid);
-		parent.fireLayoutChange();
+		if (parent != null) {
+			parent.fireLayoutChange();
+		}
 		return "OK";
 	}
 

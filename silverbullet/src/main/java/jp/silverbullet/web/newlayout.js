@@ -886,8 +886,8 @@ class NewLayout {
 		}
 		var div;
 		
+		var divBase = divParent + "_newLayout";
 		if (rootName == null) {
-			var divBase = divParent + "_newLayout";
 			$('#' + divParent).append('<div id="' + divBase + '"></div>');
 			
 			var editId = divBase + "_edit";
@@ -1213,6 +1213,12 @@ class NewLayout {
 			});
 		}
 		
+		function trimDivid(divid) {
+			//return divid;
+			var tmp = divid.split('-');
+			return tmp[tmp.length-1];
+		}
+		
 		function build(pane, div) {
 			buildSub(pane, div);
 			
@@ -1234,7 +1240,7 @@ class NewLayout {
 					$(this).addClass('editableSelected');
 					e.stopPropagation();
 					
-					var divid = $(this).prop('id');
+					var divid = trimDivid($(this).prop('id'));
 					
 					me.propertyWindow.update(divMap.get(divid));
 				});
@@ -1248,7 +1254,7 @@ class NewLayout {
 		
 		function buildSub(widget, parentDiv) {
 			// adding parentDiv in order to avoid ID duplication. for Dialog pane.
-			var divid = widget.widgetId;
+			var divid = parentDiv + '-' + widget.widgetId;
 
 			if (parentDiv.includes('dialog')) {
 				divid = "dialog_" + divid;
@@ -1336,13 +1342,13 @@ class NewLayout {
 			
 					} ,
 					stop : function (event , ui){
-						updatePosition(divid, $('#' + divid).position().top + "px", $('#' + divid).position().left + "px");						
+						updatePosition(trimDivid(divid), $('#' + divid).position().top + "px", $('#' + divid).position().left + "px");						
 					},
 				});
 
 				$('#' + divid).resizable({
 			      stop: function( event, ui ) {
-			      	updateSize(divid, ui.size.width, ui.size.height);
+			      	updateSize(trimDivid(divid), ui.size.width, ui.size.height);
 			      },
 			      grid: 5, 
 			    }); 
@@ -1350,7 +1356,7 @@ class NewLayout {
 				$('#' + divid).droppable({
 					greedy: true,
 					drop: function( event, ui ) {
-			           changeParent(ui.draggable[0].id, divid);
+			           changeParent(ui.draggable[0].id, trimDivid(divid));
 			           event.stopPropagation();
 			        }
 			    });	

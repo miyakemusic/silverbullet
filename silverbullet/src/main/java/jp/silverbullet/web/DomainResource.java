@@ -103,10 +103,10 @@ public class DomainResource {
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String getUiEntry(@PathParam("app") String app, @PathParam("device") String device) {
 		if (device.startsWith("OTDR")) {
-			return "OTDR";
+			return "OTDR2";
 		}
 		else if (device.startsWith("OSC")) {
-			return "OSC";
+			return "OSC2";
 		}
 		else if (device.startsWith("COMBI")) {
 			return "MAIN";

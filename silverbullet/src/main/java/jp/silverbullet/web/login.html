@@ -43,24 +43,46 @@ $(function() {
 			});	
 		});
 			
-		$('#create').click(function() {
-				$.ajax({
-					type: "GET", 
-					url: window.location.origin + "/rest/nativeCreate?username=" + $('#username').val()
-						+ '&password=' + $('#password').val(),
-						
-					success: function(response) {
-						window.location.href = getArgValue('redirectUri');
-					},
-					error: function(response) {
-						alert(response);
-					}
-				});	
+		$('#createAccount').click(function() {
+			var username = $('#newusername').val();
+			var password = $('#newpassword').val();
+			var password = $('#newpassword2').val();
+			var firstname = $('#firstname').val();
+			var familyname = $('#familyname').val();
+			var email = $('#email').val();
+			var email2 = $('#email2').val();
+			
+			if (password != password) {
+				alert('Password mismatch');
+			}
+			else if (email != email2) {
+				alert('Email mismatch');
+			}			
+			$.ajax({
+				type: "GET", 
+				url: window.location.origin + "/rest/nativeCreate?username=" + username
+					+ '&password=' + password + '&firstname=' + firstname 
+					+ '&familyname=' + familyname + '&email=' + email,
+					
+				success: function(response) {
+					window.location.href = getArgValue('redirectUri');
+				},
+				error: function(response) {
+					alert(response);
+				}
+			});	
+		});
+		
+		$('#loginArea').show();
+		$('#personalInfo').hide();
+		
+		$('#toCreateAccount').click(function() {
+			$('#loginArea').hide();
+			$('#personalInfo').show();
 		});
 	});
 	
 
-	
 });
 </script>
 <link rel="stylesheet" type="text/css" href="lib/jquery-ui.css">
@@ -71,8 +93,22 @@ $(function() {
 </head>
 <body> 
 
+<div id="loginArea">
 <div>Username:<input type="text" id="username"></div>
 <div>Password:<input type="password" id="password"></div>
-<div><button id="login">Login</button><button id="create">Create Account</button></div>
+<div><button id="login">Login</button><button id="toCreateAccount">Create New Account</button></div>
+</div>
+
+<div id="personalInfo">
+<div>Username:<input type="text" id="newusername"></div>
+<div>Password:<input type="password" id="newpassword"></div>
+<div>Confirm Password:<input type="password" id="newpassword2"></div>
+<div>First Name:<input type="text" id="firstname"></div>
+<div>Family Name:<input type="text" id="familyname"></div>
+<div>Email:<input type="text" id="email"></div>
+<div>Confirm Email:<input type="text" id="email2"></div>
+<button id="createAccount">Create Account</button>
+</div>
+
 </body>
 </html>

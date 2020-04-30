@@ -90,7 +90,7 @@ $(function() {
 			var newLayout = new NewLayout('tab_newgui');
 			var depenencyDesign = new DependencyDesign2('tab_dependencydesign2');
 			var build = new Build('tab_build');
-			var devices = new Devices('tab_device');
+			var devices = new Devices('tab_device', 'vertical');
 	
 			$('#applications').change(function() {
 			    var r = $('option:selected').val();

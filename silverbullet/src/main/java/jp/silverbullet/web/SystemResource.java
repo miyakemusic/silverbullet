@@ -27,7 +27,7 @@ import jp.silverbullet.web.auth.PersonalResponse;
 //@Path("/system")
 @Path("/")
 public class SystemResource {
-	private static Map<String, String> userPassword = new HashMap<>();
+//	private static Map<String, String> userPassword = new HashMap<>();
 	
 	@GET
 	@Path("/newApplication")
@@ -55,17 +55,21 @@ public class SystemResource {
 	@Path("/nativeCreate")
 	@Produces(MediaType.TEXT_PLAIN)
 	public Response nativeCreate(@QueryParam("username") final String username, 
-			@QueryParam("password") final String password) {
+			@QueryParam("password") final String password, @QueryParam("firstname") final String firstname,
+			@QueryParam("familyname") final String familyname, @QueryParam("email") final String email) {
 		
 		
-		if (userPassword.keySet().contains(username)) {
+		if (userStore.containsNativeUser(username)) {
 			return Response.serverError().build();
 		}
-		userPassword.put(username, DigestUtils.shaHex(password));
-		
+
 		PersonalResponse personal = new PersonalResponse();
 		personal.name = username;
-
+		personal.id = "Native" + String.valueOf(System.currentTimeMillis());
+		personal.basicPassword = DigestUtils.shaHex(password);
+		personal.email = email;
+		personal.given_name = firstname;
+		personal.family_name = familyname;
 		String sessionName = String.valueOf(System.currentTimeMillis()); 
 
 		userStore.put(sessionName, personal);
@@ -82,18 +86,18 @@ public class SystemResource {
 	public Response nativeLogin(@QueryParam("username") final String username, 
 			@QueryParam("password") final String password) {
 		
-		if (!userPassword.containsKey(username)) {
+		if (!userStore.containsNativeUser(username)) {
 			return Response.serverError().build();
 		}
-		if (!userPassword.get(username).equals(DigestUtils.shaHex(password))) {
+		if (!userStore.matchesNativePassword(username, password)) {
 			return Response.serverError().build();
 		}
-		PersonalResponse personal = new PersonalResponse();
-		personal.name = username;
+//		PersonalResponse personal = new PersonalResponse();
+//		personal.name = username;
 
 		String sessionName = String.valueOf(System.currentTimeMillis()); 
 
-		userStore.put(sessionName, personal);
+		userStore.updateCookie(username, sessionName);
 		NewCookie newCookie = new NewCookie(new Cookie("SilverBullet", sessionName));
 		
 		return Response.ok(new String()).

@@ -14,6 +14,7 @@ import org.apache.commons.io.FileUtils;
 import jp.silverbullet.core.Zip;
 import jp.silverbullet.dev.sourcegenerator.PropertySourceGenerator;
 import jp.silverbullet.dev.sourcegenerator.RegisterSourceGenerator;
+import jp.silverbullet.web.SystemResource;
 
 public class StaticInstances {
 	public static final String PERSISTENT_FOLDER = "./persistent";
@@ -25,7 +26,9 @@ public class StaticInstances {
 	
 	public StaticInstances() {
 		builderModels = new HashMap<>();// = new ArrayList<>();
-		runtimeModels = new HashMap<>();		
+		runtimeModels = new HashMap<>();
+		
+//		SystemResource.userStore.loadJson();
 	}
 	
 	public void save(String app) {
