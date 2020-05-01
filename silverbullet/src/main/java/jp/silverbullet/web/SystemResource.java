@@ -27,7 +27,10 @@ import jp.silverbullet.web.auth.PersonalResponse;
 //@Path("/system")
 @Path("/")
 public class SystemResource {
-//	private static Map<String, String> userPassword = new HashMap<>();
+//	private GoogleHanlder googleHandler = new GoogleHandlerForTest();
+	public static GoogleHanlder googleHandler = new GoogleHandlerImpl(ClientBuilder.newClient());
+	public static AuthStore authMap = new AuthStore();
+	public static UserStore userStore = new UserStore();
 	
 	@GET
 	@Path("/newApplication")
@@ -44,13 +47,8 @@ public class SystemResource {
 		List<String> list = SilverBulletServer.getStaticInstance().getApplications();
 		return list;
 	}
-	
-	public static AuthStore authMap = new AuthStore();
-	public static UserStore userStore = new UserStore();
-	
-//	private GoogleHanlder googleHandler = new GoogleHandlerForTest();
-	private GoogleHanlder googleHandler = new GoogleHandlerImpl(ClientBuilder.newClient());
 
+	
 	@GET
 	@Path("/nativeCreate")
 	@Produces(MediaType.TEXT_PLAIN)
@@ -216,7 +214,7 @@ public class SystemResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response login2(@QueryParam("code") final String code, @QueryParam("scope") final String scope,
 			@QueryParam("redirectUri") final String redirectUri) throws URISyntaxException {
-//	System.out.println("code=" + code);
+
 		try {
 			String access_token;
 
@@ -236,9 +234,7 @@ public class SystemResource {
 			String sessionName = String.valueOf(System.currentTimeMillis()); 
 			
 			return Response.ok(new KeyValue("Complete", personal.name)).
-					cookie(new NewCookie("SilverBullet", sessionName)).build();
-			
-			//return new KeyValue("Complete", personal.name);	
+					cookie(new NewCookie("SilverBullet", sessionName)).build();	
 		}
 		catch (Exception e) {
 //			e.printStackTrace();

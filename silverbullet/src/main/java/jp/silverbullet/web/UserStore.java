@@ -1,5 +1,6 @@
 package jp.silverbullet.web;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -101,7 +102,7 @@ public class UserStore {
 	}
 
 	
-	private PersonalCookie find(String username) {
+	private PersonalCookie findByUser(String username) {
 		for (String key : this.data.getMap().keySet()) {
 			PersonalCookie c = this.data.getMap().get(key);
 			if (c.personal.name.equals(username)) {
@@ -112,7 +113,7 @@ public class UserStore {
 	}
 	
 	public boolean matchesNativePassword(String username, String password) {
-		PersonalCookie c= this.find(username);
+		PersonalCookie c= this.findByUser(username);
 		if (DigestUtils.shaHex(password).equals(c.personal.basicPassword)) {
 			return true;
 		}
@@ -122,8 +123,18 @@ public class UserStore {
 	}
 
 	public void updateCookie(String username, String sessionName) {
-		PersonalCookie c= this.find(username);
+		PersonalCookie c= this.findByUser(username);
 		c.cookie = sessionName;
+	}
+
+	public PersonalCookie findByCookie(String cookie) {
+		for (String key : this.data.getMap().keySet()) {
+			PersonalCookie c = this.data.getMap().get(key);
+			if (c.cookie.equals(cookie)) {
+				return c;
+			}
+		}
+		return null;
 	}
 }
 class PersonalCookie {

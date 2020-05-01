@@ -1,5 +1,8 @@
 package jp.silverbullet.web;
 
+import java.io.File;
+
+import javax.ws.rs.CookieParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -78,8 +81,17 @@ public class SelfBuildResource {
 	@GET
 	@Path("/save")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String Save(@PathParam("app") String app) {
-		SilverBulletServer.getStaticInstance().save(app);
+	public String Save(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app) {
+		String filename = SilverBulletServer.getStaticInstance().save(app);
+		PersonalCookie r = SystemResource.userStore.findByCookie(cookie);
+		
+//		filename = "C:\\Users\\miyak\\git\\openti\\openti\\sv_tmp\\id_def.json";
+		
+		String contentType = "application/octet-stream";
+		File file = new File(filename);
+		
+		SystemResource.googleHandler.postFile(r.personal.access_token, contentType, file);
+//		SystemResource..(cookie, new File(filename));
 		return "OK";
 	}
 }

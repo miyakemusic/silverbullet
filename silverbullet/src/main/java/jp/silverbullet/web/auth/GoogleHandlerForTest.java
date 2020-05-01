@@ -1,5 +1,7 @@
 package jp.silverbullet.web.auth;
 
+import java.io.File;
+
 public class GoogleHandlerForTest implements GoogleHanlder {
 
 	@Override
@@ -25,4 +27,11 @@ public class GoogleHandlerForTest implements GoogleHanlder {
 		//return "http://localhost:8081/auth.html";
 		return redirectUri + "?code=12345";
 	}
+
+	@Override
+	public void postFile(String access_token, String type, File file) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

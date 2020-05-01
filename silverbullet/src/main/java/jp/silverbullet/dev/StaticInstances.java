@@ -31,10 +31,13 @@ public class StaticInstances {
 //		SystemResource.userStore.loadJson();
 	}
 	
-	public void save(String app) {
+	public String save(String app) {
 		createTmpFolderIfNotExists();
 		builderModels.get(app).save(StaticInstances.TMP_FOLDER);
-		Zip.zip(StaticInstances.TMP_FOLDER, PERSISTENT_FOLDER + "/" + app + ".zip");	
+		String filename = PERSISTENT_FOLDER + "/" + app + ".zip";
+		Zip.zip(StaticInstances.TMP_FOLDER, filename);	
+		return filename;
+		
 //		for (String name : builderModels.keySet()) {
 //			try {
 //				FileUtils.cleanDirectory(new File(TMP_FOLDER));
