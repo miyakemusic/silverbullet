@@ -10,4 +10,18 @@ public class PersonalCookie {
 	}
 	public PersonalResponse personal;
 	public String sessionID;
+	public PersonalResponse getPersonal() {
+		return personal;
+	}
+	public void setPersonal(PersonalResponse personal) {
+		this.personal = personal;
+	}
+	public String getSessionID() {
+		return sessionID;
+	}
+	public void setSessionID(String sessionID) {
+		this.sessionID = sessionID;
+	}
+	
+	
 }
