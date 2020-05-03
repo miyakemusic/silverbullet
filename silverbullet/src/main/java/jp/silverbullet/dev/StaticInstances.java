@@ -20,7 +20,7 @@ public class StaticInstances {
 	}
 	
 	public String save(String sessionID, String app) {
-		String userid = userStore.findBySessionID(sessionID).personal.id;
+		String userid = userStore.findBySessionID(sessionID).getPersonal().id;
 		return this.builderModelHolder.save(userid, app);
 	}
 
@@ -32,12 +32,12 @@ public class StaticInstances {
 	}
 
 	public BuilderModelImpl getBuilderModel(String sessionID, String app) {
-		String userid = userStore.findBySessionID(sessionID).personal.id;
+		String userid = userStore.findBySessionID(sessionID).getPersonal().id;
 		return this.builderModelHolder.get(userid, app);
 	}
 
 	public BuilderModelImpl getBuilderModelBySessionID(String sessionID, String app, String device) {
-		String userid = userStore.findBySessionID(sessionID).personal.id;
+		String userid = userStore.findBySessionID(sessionID).getPersonal().id;
 		return this.builderModelHolder.getBuilderModel(userid, app, device);
 	}
 
@@ -46,7 +46,7 @@ public class StaticInstances {
 	}
 	
 	public void generateSource(String sessionID, String app) {
-		String userid = userStore.findBySessionID(sessionID).personal.id;
+		String userid = userStore.findBySessionID(sessionID).getPersonal().id;
 		String info = getBuilderModel(userid, app).getSourceInfo();
 		String folder = info.split(";")[0];
 		String packageName = info.split(";")[1];
@@ -56,13 +56,13 @@ public class StaticInstances {
 	}
 
 	public void newApplication(String sessionID) {
-		String userid = userStore.findBySessionID(sessionID).personal.id;
+		String userid = userStore.findBySessionID(sessionID).getPersonal().id;
 		this.builderModelHolder.newApplication(userid, sessionID);
 	}
 
 
 	public List<String> getApplications(String sessionID) {
-		String userid = userStore.findBySessionID(sessionID).personal.id;
+		String userid = userStore.findBySessionID(sessionID).getPersonal().id;
 		return this.builderModelHolder.getApplications(userid);
 	}
 
@@ -84,7 +84,7 @@ public class StaticInstances {
 	}
 
 	public String getUserID(String sessionId) {
-		return this.userStore.findBySessionID(sessionId).personal.id;
+		return this.userStore.findBySessionID(sessionId).getPersonal().id;
 	}
 
 

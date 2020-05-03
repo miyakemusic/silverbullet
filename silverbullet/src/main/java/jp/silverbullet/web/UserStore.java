@@ -50,8 +50,8 @@ public class UserStore {
 	public void put(String sessionID, PersonalResponse value) {
 		if (data.getMap().containsKey(value.id)) {
 			PersonalCookie pc = data.getMap().get(value.id);
-			pc.sessionID = sessionID;
-			pc.personal= value;
+			pc.setSessionID(sessionID);
+			pc.setPersonal(value);
 		}
 		else {
 			this.data.getMap().put(value.id, new PersonalCookie(sessionID, value));
@@ -61,7 +61,7 @@ public class UserStore {
 
 	public boolean containsCookie(String sessionID) {
 		for (PersonalCookie p : data.getMap().values()) {
-			if (p.sessionID.equals(sessionID)) {
+			if (p.getSessionID().equals(sessionID)) {
 				return true;
 			}
 		}
@@ -70,8 +70,8 @@ public class UserStore {
 
 	public PersonalResponse getBySessionID(String sessionID) {
 		for (PersonalCookie p : data.getMap().values()) {
-			if (p.sessionID.equals(sessionID)) {
-				return p.personal;
+			if (p.getSessionID().equals(sessionID)) {
+				return p.getPersonal();
 			}
 		}
 		return null;
@@ -80,9 +80,9 @@ public class UserStore {
 	public void remove(String sessionID) {
 		for (String key : this.data.getMap().keySet()) {
 			PersonalCookie c = this.data.getMap().get(key);
-			if (c.sessionID.equals(sessionID)) {
+			if (c.getSessionID().equals(sessionID)) {
 				//this.map.remove(key);
-				c.sessionID = "";
+				c.setSessionID("");
 				return;
 			}
 		}
@@ -92,7 +92,7 @@ public class UserStore {
 	public boolean containsNativeUser(String username) {
 		for (String key : this.data.getMap().keySet()) {
 			PersonalCookie c = this.data.getMap().get(key);
-			if (c.personal.name.equalsIgnoreCase(username)) {
+			if (c.getPersonal().name.equalsIgnoreCase(username)) {
 				return true;
 			}
 		}
@@ -103,7 +103,7 @@ public class UserStore {
 	private PersonalCookie findByUser(String username) {
 		for (String key : this.data.getMap().keySet()) {
 			PersonalCookie c = this.data.getMap().get(key);
-			if (c.personal.name.equals(username)) {
+			if (c.getPersonal().name.equals(username)) {
 				return c;
 			}
 		}
@@ -112,7 +112,7 @@ public class UserStore {
 	
 	public boolean matchesNativePassword(String username, String password) {
 		PersonalCookie c= this.findByUser(username);
-		if (DigestUtils.shaHex(password).equals(c.personal.basicPassword)) {
+		if (DigestUtils.shaHex(password).equals(c.getPersonal().basicPassword)) {
 			return true;
 		}
 		else {
@@ -122,13 +122,13 @@ public class UserStore {
 
 	public void updateCookie(String username, String sessionID) {
 		PersonalCookie c= this.findByUser(username);
-		c.sessionID = sessionID;
+		c.setSessionID(sessionID);
 	}
 
 	public PersonalCookie findBySessionID(String sessionID) {
 		for (String key : this.data.getMap().keySet()) {
 			PersonalCookie c = this.data.getMap().get(key);
-			if (c.sessionID.equals(sessionID)) {
+			if (c.getSessionID().equals(sessionID)) {
 				return c;
 			}
 		}
@@ -138,7 +138,7 @@ public class UserStore {
 	public PersonalCookie findByUsername(String username) {
 		for (String key : this.data.getMap().keySet()) {
 			PersonalCookie c = this.data.getMap().get(key);
-			if (c.personal.name.equals(username)) {
+			if (c.getPersonal().name.equals(username)) {
 				return c;
 			}
 		}

@@ -8,8 +8,8 @@ public class PersonalCookie {
 		this.personal = value;
 		this.sessionID = cookie2;
 	}
-	public PersonalResponse personal;
-	public String sessionID;
+	private PersonalResponse personal;
+	private String sessionID;
 	public PersonalResponse getPersonal() {
 		return personal;
 	}
