@@ -143,7 +143,7 @@ public class BuilderModelHolder {
 	private synchronized BuilderModelImpl generateModel(String userid, String app, String device) {
 		try {
 			Map<String, BuilderModelImpl> runtimeModels = this.allUsers.get(userid).getRuntimeModels();
-			BuilderModelImpl r = this.loadAfile(userid, PERSISTENT_FOLDER + "/" + app + ".zip", device);
+			BuilderModelImpl r = this.loadAfile(userid, PERSISTENT_FOLDER + "/" + userid + "/" + app + ".zip", device);
 			runtimeModels.put(device, r);
 			System.out.println("Runtime Model was generated. :" + 
 					device + " @" + Thread.currentThread().getName() + ":" + runtimeModels.hashCode());
