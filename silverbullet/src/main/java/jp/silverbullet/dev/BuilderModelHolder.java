@@ -114,6 +114,7 @@ public class BuilderModelHolder {
 	
 	private synchronized BuilderModelImpl loadAfile(String userid, String filename, String device) throws IOException {
 		if (filename.endsWith(".zip")) {
+			createTmpFolderIfNotExists();
 			FileUtils.cleanDirectory(new File(TMP_FOLDER));
 			Zip.unzip(filename, TMP_FOLDER);
 			BuilderModelImpl model = new BuilderModelImpl();
