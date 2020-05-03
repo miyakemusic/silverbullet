@@ -9,6 +9,8 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 
 @WebSocket
 public class WebSocketObject {
@@ -22,16 +24,18 @@ public class WebSocketObject {
 
     @OnWebSocketMessage
     public void onText(String message) {
-    	if (message.startsWith("RegisterAs:")) {
-    		String tmp[] = message.split("[:;]");
-    		String target = tmp[1];
-    		
-    		String name = "";
-    		
-    		if (tmp.length > 3) {
-    			name = tmp[3];
+    	try {
+    		WsLoginMessage obj = new ObjectMapper().readValue(message, WsLoginMessage.class);
+    		if (obj.type.equals(WsLoginMessage.UserClient)) {
+    			WebSocketBroadcaster.getInstance().registerAsBrowser(obj.sessionID, this);
     		}
-    		WebSocketBroadcaster.getInstance().resigerAs(target, name, this);
+    		else if (obj.type.equals(WsLoginMessage.DomainModel)) {
+    			WebSocketBroadcaster.getInstance().registerAsDevice(obj.userid, obj.device, this);
+    		}
+    		
+    	}
+    	catch (Exception e) {
+    		
     	}
     }
 

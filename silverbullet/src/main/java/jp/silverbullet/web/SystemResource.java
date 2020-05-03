@@ -1,16 +1,16 @@
 package jp.silverbullet.web;
 
-import java.net.URISyntaxException;
-import java.util.HashMap;
+import java.util.Calendar;
 import java.util.List;
-import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
@@ -29,14 +29,13 @@ import jp.silverbullet.web.auth.PersonalResponse;
 public class SystemResource {
 //	private GoogleHanlder googleHandler = new GoogleHandlerForTest();
 	public static GoogleHanlder googleHandler = new GoogleHandlerImpl(ClientBuilder.newClient());
-	public static AuthStore authMap = new AuthStore();
-	public static UserStore userStore = new UserStore();
+//	public static AuthStore authMap = new AuthStore();
 	
 	@GET
 	@Path("/newApplication")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String createNewApplication(@CookieParam("SilverBullet") String cookie) {
-		SilverBulletServer.getStaticInstance().newApplication();
+		SilverBulletServer.getStaticInstance().newApplication(cookie);
 		return "OK";
 	}
 
@@ -44,7 +43,7 @@ public class SystemResource {
 	@Path("/getApplications")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<String> getApplications(@CookieParam("SilverBullet") String cookie) {
-		List<String> list = SilverBulletServer.getStaticInstance().getApplications();
+		List<String> list = SilverBulletServer.getStaticInstance().getApplications(cookie);
 		return list;
 	}
 
@@ -56,6 +55,7 @@ public class SystemResource {
 			@QueryParam("password") final String password, @QueryParam("firstname") final String firstname,
 			@QueryParam("familyname") final String familyname, @QueryParam("email") final String email) {
 		
+		UserStore userStore = SilverBulletServer.getStaticInstance().getUserStore();
 		
 		if (userStore.containsNativeUser(username)) {
 			return Response.serverError().build();
@@ -84,6 +84,7 @@ public class SystemResource {
 	public Response nativeLogin(@QueryParam("username") final String username, 
 			@QueryParam("password") final String password) {
 		
+		UserStore userStore = SilverBulletServer.getStaticInstance().getUserStore();
 		if (!userStore.containsNativeUser(username)) {
 			return Response.serverError().build();
 		}
@@ -121,9 +122,11 @@ public class SystemResource {
 	@Path("/autoLogin")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response autoLogin(@CookieParam("SilverBullet") String cookie) {
+		UserStore userStore = SilverBulletServer.getStaticInstance().getUserStore();
+		
 		if (cookie != null) {
 			if (userStore.containsCookie(cookie)) {
-				PersonalResponse res = userStore.getByCookie(cookie);
+				PersonalResponse res = userStore.getBySessionID(cookie);
 				return Response.ok(new KeyValue("name", res.name)).build();
 			}
 		}
@@ -134,7 +137,8 @@ public class SystemResource {
 	@Path("/newLogin")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response newLogin(@QueryParam("code") final String code, @QueryParam("scope") final String scope,
-			@QueryParam("redirectUri") final String redirectUri, @QueryParam("service") final String service) throws Exception {
+			@QueryParam("redirectUri") final String redirectUri, @QueryParam("service") final String service,
+			@Context HttpServletRequest request) throws Exception {
 
 		GoogleAccressTokenResponse accessToken = googleHandler.retrieveAccessToken(code, redirectUri);
 
@@ -145,13 +149,20 @@ public class SystemResource {
 		personal.access_token = access_token;
 		personal.auth_code = code;
 
-		String sessionName = String.valueOf(System.currentTimeMillis()); 
+		String sessionId = request.getSession().getId();//String.valueOf(System.currentTimeMillis()); 
 
-		userStore.put(sessionName, personal);
+		SilverBulletServer.getStaticInstance().login(sessionId, personal);
 		
-		NewCookie newCookie = new NewCookie(new Cookie("SilverBullet", sessionName));
+		//NewCookie(Cookie cookie, String comment, int maxAge, Date expiry, boolean secure, boolean httpOnly)
+		NewCookie newCookie = new NewCookie(new Cookie("SilverBullet", sessionId));
 		
-		return Response.ok(new KeyValue("name", personal.name)).
+        Calendar cl = Calendar.getInstance();
+        cl.add(Calendar.YEAR, 1);
+        
+ //       System.out.println(cl.getTime());
+//		NewCookie newCookie = new NewCookie(new Cookie("SilverBullet", sessionId), "Session ID", -1, cl.getTime(), true, true);
+		
+		return Response.ok(new KeyValue("name", personal.name, sessionId)).
 				cookie(newCookie)
 				.build();		
 	}
@@ -205,63 +216,63 @@ public class SystemResource {
 	@Path("/logout")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response login(@CookieParam("SilverBullet") String cookie) {
+		UserStore userStore = SilverBulletServer.getStaticInstance().getUserStore();
+		
 		userStore.remove(cookie);
 		return Response.ok().build();
 	}
 		
-	@GET
-	@Path("/loginTmp")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response login2(@QueryParam("code") final String code, @QueryParam("scope") final String scope,
-			@QueryParam("redirectUri") final String redirectUri) throws URISyntaxException {
-
-		try {
-			String access_token;
-
-			if (authMap.stores(code)) {
-				access_token = authMap.getByCode(code).access_token;
-			}
-			else {
-				GoogleAccressTokenResponse accessToken = googleHandler.retrieveAccessToken(code, redirectUri);
-				access_token = accessToken.access_token;
-			}
-			PersonalResponse personal = googleHandler.retrievePersonal(access_token);
-			personal.access_token = access_token;
-			personal.auth_code = code;
-			
-			authMap.add(personal);
-			
-			String sessionName = String.valueOf(System.currentTimeMillis()); 
-			
-			return Response.ok(new KeyValue("Complete", personal.name)).
-					cookie(new NewCookie("SilverBullet", sessionName)).build();	
-		}
-		catch (Exception e) {
-//			e.printStackTrace();
-			String url = googleHandler.getAuthUri(redirectUri);
-			return Response.ok(new KeyValue("RedirectAuth", url)).build();
-			//return new KeyValue("RedirectAuth", url);
-		}
-	}
+//	@GET
+//	@Path("/loginTmp")
+//	@Produces(MediaType.APPLICATION_JSON)
+//	public Response login2(@QueryParam("code") final String code, @QueryParam("scope") final String scope,
+//			@QueryParam("redirectUri") final String redirectUri) throws URISyntaxException {
+//
+//		try {
+//			String access_token;
+//
+//			if (authMap.stores(code)) {
+//				access_token = authMap.getByCode(code).access_token;
+//			}
+//			else {
+//				GoogleAccressTokenResponse accessToken = googleHandler.retrieveAccessToken(code, redirectUri);
+//				access_token = accessToken.access_token;
+//			}
+//			PersonalResponse personal = googleHandler.retrievePersonal(access_token);
+//			personal.access_token = access_token;
+//			personal.auth_code = code;
+//			
+//			authMap.add(personal);
+//			
+//			String sessionName = String.valueOf(System.currentTimeMillis()); 
+//			
+//			return Response.ok(new KeyValue("Complete", personal.name)).
+//					cookie(new NewCookie("SilverBullet", sessionName)).build();	
+//		}
+//		catch (Exception e) {
+//			String url = googleHandler.getAuthUri(redirectUri);
+//			return Response.ok(new KeyValue("RedirectAuth", url)).build();
+//		}
+//	}
 	
-	@GET
-	@Produces(MediaType.TEXT_PLAIN)
-	@Path("/loginAndroid")
-	public String loginAndroid(@QueryParam("auth") final String auth)
-	{
-		try {
-			PersonalResponse personal = googleHandler.retrievePersonal(auth);
-			personal.access_token = auth;
-			personal.auth_code = auth;
-			
-			authMap.add(personal);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return "OK";
-	}
+//	@GET
+//	@Produces(MediaType.TEXT_PLAIN)
+//	@Path("/loginAndroid")
+//	public String loginAndroid(@QueryParam("auth") final String auth)
+//	{
+//		try {
+//			PersonalResponse personal = googleHandler.retrievePersonal(auth);
+//			personal.access_token = auth;
+//			personal.auth_code = auth;
+//			
+//			authMap.add(personal);
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//
+//		return "OK";
+//	}
 	
 	@GET
 	@Path("/undo")

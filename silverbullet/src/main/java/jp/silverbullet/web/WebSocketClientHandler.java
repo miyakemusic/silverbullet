@@ -13,10 +13,7 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 
-public abstract class WebSocketClientHandler {
-    public static final String DomainModel = "DomainModel";
-    public static final String UserClient = "UserClient";
-    
+public abstract class WebSocketClientHandler {    
 	private WebSocketClient client = new WebSocketClient();
 	private Session session;
 	private boolean closeRequested = false;
@@ -91,10 +88,10 @@ public abstract class WebSocketClientHandler {
 	abstract protected void onMessageReceived(String message2);
 	abstract protected void onRecconected();
 	
-	public void login(String type, String name) {
+	public void login(String message) {
         // Send a message
         try {
-			session.getRemote().sendString("RegisterAs:" + type +";name:" + name);
+			session.getRemote().sendString(message);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

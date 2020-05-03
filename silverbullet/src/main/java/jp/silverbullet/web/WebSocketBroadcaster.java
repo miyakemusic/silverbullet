@@ -10,12 +10,14 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.eclipse.jetty.websocket.client.WebSocketClient;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class WebSocketBroadcaster {
     private static WebSocketBroadcaster INSTANCE = new WebSocketBroadcaster();
-    private List<WebSocketObject> clients = new ArrayList<WebSocketObject>();
-    private Map<String, WebSocketObject> domainModels = new HashMap<>();
+    private Map<String, List<WebSocketObject>> clients = new HashMap<>(); // key is userid
+    private Map<String, Map<String, WebSocketObject>> domainModels = new HashMap<>();
     
     private WebSocketBroadcaster(){
     	senderThread.start();
@@ -25,21 +27,27 @@ public class WebSocketBroadcaster {
         return INSTANCE;
     }
 
+//
+//	public Map<String, WebSocketObject> getDomainModels() {
+//		return domainModels;
+//	}
 
-	public Map<String, WebSocketObject> getDomainModels() {
-		return domainModels;
-	}
-
-	public void resigerAs(String target, String name, WebSocketObject client) {
-		if (target.equals(WebSocketClientHandler.DomainModel)) {
-			this.domainModels.put(name, client);
-			sendMessageAsync("DEVICE", "Added");
+	public void registerAsBrowser(String sessionID, WebSocketObject client) {
+		String userid = SilverBulletServer.getStaticInstance().getUserStore().getBySessionID(sessionID).id;
+		if (!this.clients.containsKey(userid)) {
+			this.clients.put(userid, new ArrayList<WebSocketObject>());
 		}
-		else if (target.equals(WebSocketClientHandler.UserClient)) {
-			this.clients.add(client);
-		}
+		this.clients.get(userid).add(client);
 	}
 	
+	public void registerAsDevice(String userid, String name, WebSocketObject client) {
+		if (!this.domainModels.containsKey(userid)) {
+			this.domainModels.put(userid, new HashMap<String, WebSocketObject>());
+		}
+		this.domainModels.get(userid).put(name, client);			
+
+		sendMessageAsync(userid, "DEVICE", "Added");
+	}	
     /**
      * Add Client
      * */
@@ -50,33 +58,39 @@ public class WebSocketBroadcaster {
      * Delete Client
      * */
     protected void bye(WebSocketObject socket){
-    	if (clients.contains(socket)) {
-    		clients.remove(socket);
-    	}
-    	else {
-            for (Map.Entry<String, WebSocketObject> entry : domainModels.entrySet()) {
-            	if (entry.getValue().equals(socket)) {
-            		domainModels.remove(entry.getKey());
-            		sendMessageAsync("DEVICE", "Removed");
-            		break;
-            	}
-            }
-    	}
+        for (Map.Entry<String, List<WebSocketObject>> entry : clients.entrySet()) {
+        	for (WebSocketObject v : entry.getValue()) {
+        		if (v.equals(socket)) {
+        			entry.getValue().remove(v);
+        			return;
+        		}
+        	}
+        }
+
+        for (String userid : this.domainModels.keySet()) {
+        	Map<String, WebSocketObject> devices = this.domainModels.get(userid);
+        	for (String device : devices.keySet()) {
+        		WebSocketObject s = devices.get(device);
+        		if (s.equals(socket)) {
+        			devices.remove(device);
+        			sendMessageAsync(userid, "DEVICE", "Removed");
+        			return;
+        		}
+        	}
+        }
     }
 
     /**
      * BroadCast to joined member
      * */
-    protected void sendToAll(String message){
-        //for(WebSocketObject member: clients.keySet()){
-    	for (WebSocketObject member : clients) {
+    protected void sendToAll(String userid, String message){
+    	for (WebSocketObject member : clients.get(userid)) {
             member.getSession().getRemote().sendStringByFuture(message);
         }
     }
 	
-	public void sendMessage(final String message) {
-//		System.out.println(message);
-		for(final WebSocketObject member: clients){
+	public void sendMessage(String userid, final String message) {
+		for(final WebSocketObject member: clients.get(userid)){
 			new Thread() {
 				@Override
 				public void run() {
@@ -102,7 +116,7 @@ public class WebSocketBroadcaster {
 				while(true) {	
 					
 					TypeValue tv = queue.take();
-					send(tv.value, tv.type);
+					send(tv.userid, tv.value, tv.type);
 				}
 			}
 			catch (InterruptedException e) {
@@ -112,27 +126,33 @@ public class WebSocketBroadcaster {
 		}
 	};
 	class TypeValue {
-		public TypeValue(String type, String value) {
+		public TypeValue(String userid, String type, String value) {
+			this.userid = userid;
 			this.type = type;
 			this.value = value;
 		}
+		public String userid;
 		public String type;
 		public String value;
 	}
 	private BlockingQueue<TypeValue> queue = new LinkedBlockingQueue<>(10);
-	public void sendMessageAsync(String type, String value) {
+	public void sendMessageAsync(String userid, String type, String value) {
 		try {
-			queue.put(new TypeValue(type, value));
+			queue.put(new TypeValue(userid, type, value));
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	private void send(String ids, String currentType) {
+	private void send(String userid, String ids, String currentType) {
 //		System.out.println("sent   " + ids + "   " + currentType);
 		try {
 			String message = new ObjectMapper().writeValueAsString(new WebSocketMessage(currentType, ids));
-			for(final WebSocketObject member: clients){
+			List<WebSocketObject> cs = clients.get(userid);
+			if (cs == null) {
+				return;
+			}
+			for(final WebSocketObject member: cs){
 				if (member != null) {
 					member.getSession().getRemote().sendStringByFuture(message);
 				}
@@ -144,8 +164,12 @@ public class WebSocketBroadcaster {
 
 	}
 
-	public void sendMessageToDomainModel(String device, String message) {
-		WebSocketObject obj = this.domainModels.get(device);
+	public void sendMessageToDomainModel(String userid, String device, String message) {
+		Map<String, WebSocketObject> map = this.domainModels.get(userid);
+		if (map == null) {
+			return;
+		}
+		WebSocketObject obj = map.get(device);
 		if (obj != null) {
 			obj.getSession().getRemote().sendStringByFuture(message);
 		}
@@ -154,6 +178,10 @@ public class WebSocketBroadcaster {
 //				member.getSession().getRemote().sendStringByFuture(message);
 //			}
 //		}
+	}
+
+	public Map<String, WebSocketObject> getDomainModels(String userid) {
+		return this.domainModels.get(userid);
 	}
 
 }

@@ -8,10 +8,9 @@ class DependencyClass2 {
 			updateAll();
 		});
 				
-		new MyWebSocket(function(msg) {
+		websocket.addListener('ID', function(msg) {
 			updateIdList();
-		}
-		, 'ID');
+		});
 				
 		this.priorityId = div + '_priority';
 		$('#' + div).append('Priority: <input type="text" id="' + this.priorityId + '"></input>');

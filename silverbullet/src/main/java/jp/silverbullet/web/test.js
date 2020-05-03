@@ -233,13 +233,12 @@ class TestClass {
 				});
 				dialog.showModal();
 			}					
-			new MyWebSocket(function(msg) {
+			websocket.addListener('TEST', function(msg) {
 				if (msg == 'TestFinished') {
 					update();
 					$('#' + playId).prop('checked', false).button('refresh');
 				}
-			}
-			, 'TEST');
+			});
 			
 			table = $('#' + tableId).DataTable({
 				ordering: false,

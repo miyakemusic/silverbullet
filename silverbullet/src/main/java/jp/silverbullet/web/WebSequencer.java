@@ -14,8 +14,10 @@ import jp.silverbullet.core.sequncer.UserSequencer;
 public class WebSequencer implements UserSequencer{
 
 	private String device;
+	private String userid;
 
-	public WebSequencer(String device) {
+	public WebSequencer(String userid, String device) {
+		this.userid = userid;
 		this.device = device;
 	}
 
@@ -24,7 +26,7 @@ public class WebSequencer implements UserSequencer{
 			throws RequestRejectedException {
 		try {
 			String string = new ObjectMapper().writeValueAsString(new ChangesJson(changed));
-			WebSocketBroadcaster.getInstance().sendMessageToDomainModel(this.device, string);
+			WebSocketBroadcaster.getInstance().sendMessageToDomainModel(this.userid, this.device, string);
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

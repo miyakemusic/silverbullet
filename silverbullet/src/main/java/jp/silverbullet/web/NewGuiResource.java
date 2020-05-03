@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.ws.rs.CookieParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -23,8 +24,8 @@ public class NewGuiResource {
 	@GET
 	@Path("/getDesign")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public Pane getDesign(@PathParam("app") String app, @QueryParam("root") final String root, @QueryParam("link") final boolean link) {
-		Pane pane = getUiBuilder(app).getRootPane(root, link);
+	public Pane getDesign(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("root") final String root, @QueryParam("link") final boolean link) {
+		Pane pane = getUiBuilder(cookie, app).getRootPane(root, link);
 //		new PaneWalkThrough() {
 //
 //			@Override
@@ -40,32 +41,32 @@ public class NewGuiResource {
 		return pane;
 	}
 
-	private UiBuilder getUiBuilder(String app) {
-		return SilverBulletServer.getStaticInstance().getBuilderModel(app).getUiBuilder();
+	private UiBuilder getUiBuilder(String cookie, String app) {
+		return SilverBulletServer.getStaticInstance().getBuilderModel(cookie, app).getUiBuilder();
 	}	
 
 	@GET
 	@Path("/getDesignByName")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public Pane getDesignByName(@PathParam("app") String app, @QueryParam("name") final String name, @QueryParam("link") final boolean link,
+	public Pane getDesignByName(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("name") final String name, @QueryParam("link") final boolean link,
 			@QueryParam("initPos") final boolean initPos) {
 		
-		Pane pane = getUiBuilder(app).getPaneByName(name, link, initPos);
+		Pane pane = getUiBuilder(cookie, app).getPaneByName(name, link, initPos);
 		return pane;
 	}
 	
 	@GET
 	@Path("/getWidget")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public Pane getWidget(@PathParam("app") String app, @QueryParam("divid") final String divid) {
-		return getUiBuilder(app).getWidget(divid);
+	public Pane getWidget(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("divid") final String divid) {
+		return getUiBuilder(cookie, app).getWidget(divid);
 	}	
 	
 	@GET
 	@Path("/setSize")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String setSize(@PathParam("app") String app, @QueryParam("divid") final String divid, @QueryParam("width") final String width, @QueryParam("height") final String height) {
-		Pane widget = getUiBuilder(app).getWidget(divid);
+	public String setSize(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("divid") final String divid, @QueryParam("width") final String width, @QueryParam("height") final String height) {
+		Pane widget = getUiBuilder(cookie, app).getWidget(divid);
 		widget.css("width", width).css("height", height);
 		widget.fireLayoutChange();
 		return "OK";
@@ -74,8 +75,8 @@ public class NewGuiResource {
 	@GET
 	@Path("/setCss")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String setCss(@PathParam("app") String app, @QueryParam("divid") final String divid, @QueryParam("key") final String key, @QueryParam("value") final String value) {
-		Pane widget = getUiBuilder(app).getWidget(divid);
+	public String setCss(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("divid") final String divid, @QueryParam("key") final String key, @QueryParam("value") final String value) {
+		Pane widget = getUiBuilder(cookie, app).getWidget(divid);
 		widget.css(key, value);
 		widget.fireCssChange(divid, key, value);
 		return "OK";
@@ -84,8 +85,8 @@ public class NewGuiResource {
 	@GET
 	@Path("/setId")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String setId(@PathParam("app") String app, @QueryParam("divid") final String divid, @QueryParam("id") final String id, @QueryParam("subId") final String subId) {
-		Pane widget = getUiBuilder(app).getWidget(divid);
+	public String setId(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("divid") final String divid, @QueryParam("id") final String id, @QueryParam("subId") final String subId) {
+		Pane widget = getUiBuilder(cookie, app).getWidget(divid);
 		widget.setId(id, subId);
 		widget.fireIdChange();
 		return "OK";
@@ -94,8 +95,8 @@ public class NewGuiResource {
 	@GET
 	@Path("/setField")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String setField(@PathParam("app") String app, @QueryParam("divid") final String divid, @QueryParam("field") final String field) {
-		Pane widget = getUiBuilder(app).getWidget(divid);
+	public String setField(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("divid") final String divid, @QueryParam("field") final String field) {
+		Pane widget = getUiBuilder(cookie, app).getWidget(divid);
 		widget.field(PropertyField.valueOf(field));
 		widget.fireFieldChange();
 		return "OK";
@@ -104,15 +105,15 @@ public class NewGuiResource {
 	@GET
 	@Path("/getFieldTypes")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<String> getFieldTypes(@PathParam("app") String app) {
-		return getUiBuilder(app).getFieldTypes();
+	public List<String> getFieldTypes(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app) {
+		return getUiBuilder(cookie, app).getFieldTypes();
 	}
 	
 	@GET
 	@Path("/setLayout")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String setLayout(@PathParam("app") String app, @QueryParam("divid") final String divid, @QueryParam("layout") final String layout) {
-		Pane widget = getUiBuilder(app).getWidget(divid);
+	public String setLayout(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("divid") final String divid, @QueryParam("layout") final String layout) {
+		Pane widget = getUiBuilder(cookie, app).getWidget(divid);
 		widget.layout(Layout.valueOf(layout));
 		widget.fireLayoutChange();
 		return "OK";
@@ -131,8 +132,8 @@ public class NewGuiResource {
 	@GET
 	@Path("/setWidgetType")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String setWidgetType(@PathParam("app") String app, @QueryParam("divid") final String divid, @QueryParam("type") final String type) {
-		Pane widget = getUiBuilder(app).getWidget(divid);
+	public String setWidgetType(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("divid") final String divid, @QueryParam("type") final String type) {
+		Pane widget = getUiBuilder(cookie, app).getWidget(divid);
 		widget.setType(type);
 		
 		widget.fireTypeChange();
@@ -143,11 +144,11 @@ public class NewGuiResource {
 	@GET
 	@Path("/addWidget")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String addWidget(@PathParam("app") String app, @QueryParam("divid") final String divid) {
-		Pane widget = getUiBuilder(app).getWidget(divid);
+	public String addWidget(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("divid") final String divid) {
+		Pane widget = getUiBuilder(cookie, app).getWidget(divid);
 		widget.createPane(Layout.HORIZONTAL).css("width", "100").css("height", "30");//.css("border-style", "solid");
 		
-		Pane parent = getUiBuilder(app).getParentOf(divid);
+		Pane parent = getUiBuilder(cookie, app).getParentOf(divid);
 		if (parent != null) {
 			parent.fireLayoutChange();
 		}
@@ -157,9 +158,9 @@ public class NewGuiResource {
 	@GET
 	@Path("/removeWidget")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String removeWidget(@PathParam("app") String app, @QueryParam("divid") final String divid) {
-		Pane widget = getUiBuilder(app).getWidget(divid);
-		Pane parent = getUiBuilder(app).getParentOf(divid);
+	public String removeWidget(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("divid") final String divid) {
+		Pane widget = getUiBuilder(cookie, app).getWidget(divid);
+		Pane parent = getUiBuilder(cookie, app).getParentOf(divid);
 		parent.removeChild(widget);
 		parent.fireLayoutChange();
 		return "OK";
@@ -168,9 +169,9 @@ public class NewGuiResource {
 	@GET
 	@Path("/move")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String move(@PathParam("app") String app, @QueryParam("divid") final String divid, @QueryParam("top") final String top, @QueryParam("left") final String left) {
-		Pane widget = getUiBuilder(app).getWidget(divid);
-		Pane parent = getUiBuilder(app).getParentOf(divid);
+	public String move(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("divid") final String divid, @QueryParam("top") final String top, @QueryParam("left") final String left) {
+		Pane widget = getUiBuilder(cookie, app).getWidget(divid);
+		Pane parent = getUiBuilder(cookie, app).getParentOf(divid);
 		
 		if (parent.layout.equals(Layout.HORIZONTAL)) {
 			int sum = 0;
@@ -205,15 +206,15 @@ public class NewGuiResource {
 	@GET
 	@Path("/changeParent")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String move(@PathParam("app") String app, @QueryParam("divid") final String divid, @QueryParam("parent") final String parentId) {
-		Pane widget = getUiBuilder(app).getWidget(divid);
-		Pane parent = getUiBuilder(app).getParentOf(divid);
+	public String move(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("divid") final String divid, @QueryParam("parent") final String parentId) {
+		Pane widget = getUiBuilder(cookie, app).getWidget(divid);
+		Pane parent = getUiBuilder(cookie, app).getParentOf(divid);
 		
 		if (!parent.type.equals(WidgetType.Pane)) {
 			return "OK";
 		}
 		
-		Pane newParent = getUiBuilder(app).getWidget(parentId);
+		Pane newParent = getUiBuilder(cookie, app).getWidget(parentId);
 		if (newParent.equals(parent) || !newParent.type.equals(WidgetType.Pane)) {
 			return "OK";
 		}
@@ -226,9 +227,9 @@ public class NewGuiResource {
 	@GET
 	@Path("/buttonArray")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String buttonArray(@PathParam("app") String app, @QueryParam("divid") final String divid) {
-		Pane widget = getUiBuilder(app).getWidget(divid);
-		WidgetGeneratorHelper helper = new WidgetGeneratorHelper(SilverBulletServer.getStaticInstance().getBuilderModel(app).getPropertiesHolder2());
+	public String buttonArray(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("divid") final String divid) {
+		Pane widget = getUiBuilder(cookie, app).getWidget(divid);
+		WidgetGeneratorHelper helper = new WidgetGeneratorHelper(SilverBulletServer.getStaticInstance().getBuilderModel(cookie, app).getPropertiesHolder2());
 		helper.generateToggleButton(widget.id, widget);
 		widget.fireLayoutChange();
 		return "OK";
@@ -237,9 +238,9 @@ public class NewGuiResource {
 	@GET
 	@Path("/titledInput")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String titledInput(@PathParam("app") String app, @QueryParam("divid") final String divid) {
-		Pane widget = getUiBuilder(app).getWidget(divid);
-		WidgetGeneratorHelper helper = new WidgetGeneratorHelper(SilverBulletServer.getStaticInstance().getBuilderModel(app).getPropertiesHolder2());
+	public String titledInput(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("divid") final String divid) {
+		Pane widget = getUiBuilder(cookie, app).getWidget(divid);
+		WidgetGeneratorHelper helper = new WidgetGeneratorHelper(SilverBulletServer.getStaticInstance().getBuilderModel(cookie, app).getPropertiesHolder2());
 		
 		helper.generateTitledSetting(widget.id, widget);
 		widget.id = "";
@@ -261,8 +262,8 @@ public class NewGuiResource {
 	@GET
 	@Path("/setOptional")
 	@Produces(MediaType.APPLICATION_JSON)
-	public String setOptional (@PathParam("app") String app, @QueryParam("divid") final String divid, @QueryParam("optional") final String optional) {
-		Pane widget = getUiBuilder(app).getWidget(divid);
+	public String setOptional (@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("divid") final String divid, @QueryParam("optional") final String optional) {
+		Pane widget = getUiBuilder(cookie, app).getWidget(divid);
 		widget.setOptional(optional);
 		widget.fireFieldChange();
 		return "OK";
@@ -271,10 +272,10 @@ public class NewGuiResource {
 	@GET
 	@Path("/copySize")
 	@Produces(MediaType.APPLICATION_JSON)
-	public String copySize (@PathParam("app") String app, @QueryParam("divid") final String divid) {
-		Pane widget = getUiBuilder(app).getWidget(divid);
+	public String copySize (@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("divid") final String divid) {
+		Pane widget = getUiBuilder(cookie, app).getWidget(divid);
 	
-		Pane parent = getUiBuilder(app).getParentOf(divid);
+		Pane parent = getUiBuilder(cookie, app).getParentOf(divid);
 		
 		List<String> keys = Arrays.asList("display","width", "height", "padding", "margin", "font-size", "font-family");
 		for (Pane child : parent.widgets) {
@@ -291,30 +292,30 @@ public class NewGuiResource {
 	@GET
 	@Path("/getRootPanes")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<String> getRootPanes(@PathParam("app") String app) {
-		return getUiBuilder(app).getRootList();
+	public List<String> getRootPanes(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app) {
+		return getUiBuilder(cookie, app).getRootList();
 	}
 	
 	@GET
 	@Path("/addRootPane")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String addRootPanes(@PathParam("app") String app) {
-		getUiBuilder(app).createRoot();
+	public String addRootPanes(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app) {
+		getUiBuilder(cookie, app).createRoot();
 		return "OK";
 	}
 	
 	@GET
 	@Path("/changeName")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String changeName(@PathParam("app") String app, @QueryParam("oldName") final String oldName, @QueryParam("newName") final String newName) {
-		getUiBuilder(app).changeRootName(oldName, newName);
+	public String changeName(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("oldName") final String oldName, @QueryParam("newName") final String newName) {
+		getUiBuilder(cookie, app).changeRootName(oldName, newName);
 		return "OK";
 	}
 
 	@GET
 	@Path("/getRuntimeList")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<String> getRuntimeList(@PathParam("app") String app) {
-		return getUiBuilder(app).getNameList();
+	public List<String> getRuntimeList(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app) {
+		return getUiBuilder(cookie, app).getNameList();
 	}
 }

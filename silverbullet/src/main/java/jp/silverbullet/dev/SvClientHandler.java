@@ -32,14 +32,16 @@ public class SvClientHandler {
 	private static boolean debugEnabled = false;
 	private Object syncDialog = new Object();
 	private DialogAnswer answerDialog = null;
+	private String userid;
 	
-	public SvClientHandler(String device, BuilderModelImpl model) {
-		model.addUserSequencer(new WebSequencer(device));
+	public SvClientHandler(String userid, String device, BuilderModelImpl model) {
+		this.userid = userid;
+		model.addUserSequencer(new WebSequencer(userid, device));
 		model.addRuntimeListener(new RuntimeListener() {
 			@Override
 			public DialogAnswer dialog(String message) {
 				message = message.replace("\n", "<br>");
-				WebSocketBroadcaster.getInstance().sendMessageAsync("MESSAGE@" + device, message);
+				sendMessageAsync("MESSAGE@" + device, message);
 				synchronized(syncDialog) {
 					try {
 						syncDialog.wait();
@@ -47,7 +49,7 @@ public class SvClientHandler {
 						e.printStackTrace();
 					}
 				}
-				WebSocketBroadcaster.getInstance().sendMessageAsync("MESSAGE@" + device, "@CLOSE@");
+				sendMessageAsync("MESSAGE@" + device, "@CLOSE@");
 				return answerDialog;
 			}
 	
@@ -61,7 +63,7 @@ public class SvClientHandler {
 	
 			@Override
 			public void message(String message) {
-				WebSocketBroadcaster.getInstance().sendMessageAsync("MESSAGE@" + device, message);
+				sendMessageAsync("MESSAGE@" + device, message);
 			}
 		});
 	
@@ -79,9 +81,9 @@ public class SvClientHandler {
 	
 			@Override
 			public void onCompleted(String message) {
-				WebSocketBroadcaster.getInstance().sendMessageAsync("VALUES@" + device, message);
+				sendMessageAsync(device, message);
 				if (debugEnabled) {
-					WebSocketBroadcaster.getInstance().sendMessageAsync("DEBUG@" + device, toHtml(depHistory));
+					sendMessageAsync("DEBUG@" + device, toHtml(depHistory));
 				}
 			}
 	
@@ -100,8 +102,8 @@ public class SvClientHandler {
 	
 			@Override
 			public void onRejected(Id id, String message) {
-				WebSocketBroadcaster.getInstance().sendMessageAsync("VALUES@" + device, id.toString());
-				WebSocketBroadcaster.getInstance().sendMessageAsync("MESSAGE@" + device, message);
+				sendMessageAsync("VALUES@" + device, id.toString());
+				sendMessageAsync("MESSAGE@" + device, message);
 				
 			}
 	
@@ -132,7 +134,7 @@ public class SvClientHandler {
 			public void onChange(String id, String fieldName, Object value, Object prevValue) {
 				try {
 					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("ID", "Change:" + id));
-					WebSocketBroadcaster.getInstance().sendMessage(str);
+					sendMessage(str);
 				} catch (JsonProcessingException e) {
 					e.printStackTrace();
 				}
@@ -142,7 +144,7 @@ public class SvClientHandler {
 			public void onAdd(String id) {
 				try {
 					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("ID", "Add:" + id));
-					WebSocketBroadcaster.getInstance().sendMessage(str);
+					sendMessage(str);
 				} catch (JsonProcessingException e) {
 					e.printStackTrace();
 				}
@@ -152,7 +154,7 @@ public class SvClientHandler {
 			public void onRemove(String id, String replacedId) {
 				try {
 					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("ID", "Remove:" + id + ":" + replacedId));
-					WebSocketBroadcaster.getInstance().sendMessage(str);
+					sendMessage(str);
 				} catch (JsonProcessingException e) {
 					e.printStackTrace();
 				}
@@ -160,8 +162,6 @@ public class SvClientHandler {
 	
 			@Override
 			public void onLoad() {
-				// TODO Auto-generated method stub
-				
 			}
 	
 		});
@@ -175,7 +175,7 @@ public class SvClientHandler {
 					updates.setBits(Arrays.asList(new BitUpdates(bitName.toString(), String.valueOf(value))));
 					String val = new ObjectMapper().writeValueAsString(updates);
 					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("REGVAL", val));
-					WebSocketBroadcaster.getInstance().sendMessage(str);
+					sendMessage(str);
 				} catch (JsonGenerationException e) {
 					e.printStackTrace();
 				} catch (JsonMappingException e) {
@@ -196,8 +196,8 @@ public class SvClientHandler {
 					updates.setName(RegisterUpdates.INTERRUPT);
 					String val = new ObjectMapper().writeValueAsString(updates);
 					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("REGVAL", val));
-					WebSocketBroadcaster.getInstance().sendMessage(str);
-					WebSocketBroadcaster.getInstance().sendMessageToDomainModel(device, RegisterUpdates.INTERRUPT);
+					sendMessage(str);
+					sendMessageToDevice(device);
 				} catch (JsonGenerationException e) {
 					e.printStackTrace();
 				} catch (JsonMappingException e) {
@@ -214,7 +214,7 @@ public class SvClientHandler {
 			public void onTestFinished() {
 				try {
 					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("TEST", "TestFinished"));
-					WebSocketBroadcaster.getInstance().sendMessage(str);
+					sendMessage(str);
 				} catch (JsonProcessingException e) {
 					e.printStackTrace();
 				}
@@ -239,7 +239,7 @@ public class SvClientHandler {
 			public void onCssUpdate(String widgetId, String key, String value) {
 				try {
 					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("UIDESIGN", "CSS:" + widgetId + "," + key + "," + value));
-					WebSocketBroadcaster.getInstance().sendMessage(str);
+					sendMessage(str);
 				} catch (JsonProcessingException e) {
 					e.printStackTrace();
 				}
@@ -249,7 +249,7 @@ public class SvClientHandler {
 			public void onTypeUpdate(String widgetId, WidgetType type) {
 				try {
 					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("UIDESIGN", "TYPE:" + widgetId + "," + type.toString()));
-					WebSocketBroadcaster.getInstance().sendMessage(str);
+					sendMessage(str);
 				} catch (JsonProcessingException e) {
 					e.printStackTrace();
 				}
@@ -259,7 +259,7 @@ public class SvClientHandler {
 			public void onIdChange(String id, String subId) {
 				try {
 					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("UIDESIGN", "ID:" + id + "," + id + "," + subId));
-					WebSocketBroadcaster.getInstance().sendMessage(str);
+					sendMessage(str);
 				} catch (JsonProcessingException e) {
 					e.printStackTrace();
 				}
@@ -269,7 +269,7 @@ public class SvClientHandler {
 			public void onFieldChange(String id) {
 				try {
 					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("UIDESIGN", "FIELD:" + id + "," + id));
-					WebSocketBroadcaster.getInstance().sendMessage(str);
+					sendMessage(str);
 				} catch (JsonProcessingException e) {
 					e.printStackTrace();
 				}
@@ -279,12 +279,28 @@ public class SvClientHandler {
 			public void onLayoutChange(String id) {
 				try {
 					String str = new ObjectMapper().writeValueAsString(new WebSocketMessage("UIDESIGN", "LAYOUT:" + id + "," + id));
-					WebSocketBroadcaster.getInstance().sendMessage(str);
+					sendMessage(str);
 				} catch (JsonProcessingException e) {
 					e.printStackTrace();
 				}
 			}
 		});		
+	}
+//
+//	abstract protected void sendMessageAsync(String device, String message);
+//	abstract protected void sendMessage(String str);
+//	abstract protected void sendMessageToDevice(String device);
+	
+	private void sendMessageAsync(String device, String message) {
+		WebSocketBroadcaster.getInstance().sendMessageAsync(userid, "VALUES@" + device, message);
+	}
+
+	private void sendMessage(String str) {
+		WebSocketBroadcaster.getInstance().sendMessage(userid, str);
+	}
+
+	private void sendMessageToDevice(String device) {
+		WebSocketBroadcaster.getInstance().sendMessageToDomainModel(userid, device, RegisterUpdates.INTERRUPT);
 	}
 
 }

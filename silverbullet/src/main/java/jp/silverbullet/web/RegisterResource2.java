@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.CookieParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -29,25 +30,25 @@ public class RegisterResource2 {
 	@GET
 	@Path("/interrupt")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String interupt(@PathParam("app") String app) {
-		SilverBulletServer.getStaticInstance().getBuilderModel(app).getRuntimRegisterMap().getRegisterController().triggerInterrupt();
+	public String interupt(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app) {
+		SilverBulletServer.getStaticInstance().getBuilderModel(cookie, app).getRuntimRegisterMap().getRegisterController().triggerInterrupt();
 		return "OK";
 	}
 	
 	@GET
 	@Path("/getRegisters")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public SvRegisterJsonHolder getRegisters(@PathParam("app") String app) {
-		return new SvRegisterJsonHolder(SilverBulletServer.getStaticInstance().getBuilderModel(app).getRegisterSpecHolder());
+	public SvRegisterJsonHolder getRegisters(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app) {
+		return new SvRegisterJsonHolder(SilverBulletServer.getStaticInstance().getBuilderModel(cookie, app).getRegisterSpecHolder());
 	}
 	
 	@POST
 	@Path("/postChanges")
 	@Consumes(MediaType.APPLICATION_JSON) 
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String postChanges(@PathParam("app") String app, KeyValue[] changes) {
+	public String postChanges(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, KeyValue[] changes) {
 		RegisterJsonController controller = new RegisterJsonController(
-				SilverBulletServer.getStaticInstance().getBuilderModel(app).getRegisterSpecHolder());
+				SilverBulletServer.getStaticInstance().getBuilderModel(cookie, app).getRegisterSpecHolder());
 		controller.handle(changes);
 		
 		return "OK";
@@ -55,16 +56,16 @@ public class RegisterResource2 {
 	
 	@GET
 	@Path("/addNew")
-	public String addNew(@PathParam("app") String app) {
-		SilverBulletServer.getStaticInstance().getBuilderModel(app).getRegisterSpecHolder().addRegister();
+	public String addNew(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app) {
+		SilverBulletServer.getStaticInstance().getBuilderModel(cookie, app).getRegisterSpecHolder().addRegister();
 		return "OK";
 	}
 	
 	@GET
 	@Path("/addRow")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String addRow(@PathParam("app") String app, @QueryParam("row") final Integer row) {
-		SilverBulletServer.getStaticInstance().getBuilderModel(app).getRegisterSpecHolder().insertRegisterAt(row);
+	public String addRow(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("row") final Integer row) {
+		SilverBulletServer.getStaticInstance().getBuilderModel(cookie, app).getRegisterSpecHolder().insertRegisterAt(row);
 
 		return "OK";
 	}
@@ -72,8 +73,8 @@ public class RegisterResource2 {
 	@GET
 	@Path("/deleteRow")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String deleteRow(@PathParam("app") String app, @QueryParam("row") final Integer row) {
-		SilverBulletServer.getStaticInstance().getBuilderModel(app).getRegisterSpecHolder().removeRow(row);
+	public String deleteRow(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("row") final Integer row) {
+		SilverBulletServer.getStaticInstance().getBuilderModel(cookie, app).getRegisterSpecHolder().removeRow(row);
 
 		return "OK";
 	}
@@ -81,16 +82,16 @@ public class RegisterResource2 {
 	@GET
 	@Path("/addBitRow")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String addBitRow(@PathParam("app") String app, @QueryParam("row") final int row) {
-		SilverBulletServer.getStaticInstance().getBuilderModel(app).getRegisterSpecHolder().getRegisterByIndex(row).addBit();
+	public String addBitRow(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("row") final int row) {
+		SilverBulletServer.getStaticInstance().getBuilderModel(cookie, app).getRegisterSpecHolder().getRegisterByIndex(row).addBit();
 		return "OK";
 	}
 
 	@GET
 	@Path("/setCurrentValue")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String setCurrentValue(@PathParam("app") String app, @QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName, @QueryParam("value") final String value) {
-		SilverBulletServer.getStaticInstance().getBuilderModel(app).getRuntimRegisterMap().getRegisterController().updateValue(regName, bitName, Integer.valueOf(value));
+	public String setCurrentValue(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName, @QueryParam("value") final String value) {
+		SilverBulletServer.getStaticInstance().getBuilderModel(cookie, app).getRuntimRegisterMap().getRegisterController().updateValue(regName, bitName, Integer.valueOf(value));
 
 		return "OK";
 	}	
@@ -99,19 +100,19 @@ public class RegisterResource2 {
 	@Path("/setBlockData")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_PLAIN)
-	public String setBlockData(@PathParam("app") String app, String data, @QueryParam("regName") final String regName) {
+	public String setBlockData(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, String data, @QueryParam("regName") final String regName) {
 		byte[] b = Base64.getDecoder().decode(data.split(",")[1]);//data.replace("data:application/octet-stream;base64,", ""));
-		SilverBulletServer.getStaticInstance().getBuilderModel(app).getRuntimRegisterMap().getRegisterController().updateValue(regName, b);
+		SilverBulletServer.getStaticInstance().getBuilderModel(cookie, app).getRuntimRegisterMap().getRegisterController().updateValue(regName, b);
 		return "OK";
 	}
 	
 	@GET
 	@Path("/triggerShortcut")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String triggerShortcut(@PathParam("app") String app, @QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName) {
-		setCurrentValue(app, regName, bitName, "1");
-		if (SilverBulletServer.getStaticInstance().getBuilderModel(app).getRegisterShortCut().isInterruptEnabled(regName, bitName)) {
-			this.interupt(app);
+	public String triggerShortcut(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName) {
+		setCurrentValue(cookie, app, regName, bitName, "1");
+		if (SilverBulletServer.getStaticInstance().getBuilderModel(cookie, app).getRegisterShortCut().isInterruptEnabled(regName, bitName)) {
+			this.interupt(cookie, app);
 		}
 		return "OK";
 	}
@@ -119,40 +120,40 @@ public class RegisterResource2 {
 	@GET
 	@Path("/createShortCut")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String createShortCut(@PathParam("app") String app, @QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName) {
-		SilverBulletServer.getStaticInstance().getBuilderModel(app).getRegisterShortCut().add(regName, bitName);
+	public String createShortCut(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName) {
+		SilverBulletServer.getStaticInstance().getBuilderModel(cookie, app).getRegisterShortCut().add(regName, bitName);
 		return "OK";
 	}
 
 	@GET
 	@Path("/addToTest")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String addToTest(@PathParam("app") String app, @QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName) {
-		long value = SilverBulletServer.getStaticInstance().getBuilderModel(app).getRegisterAccessor().readRegister(regName, bitName);
-		SilverBulletServer.getStaticInstance().getBuilderModel(app).getTestRecorder().addRegisterQuery(regName, bitName, value);
+	public String addToTest(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName) {
+		long value = SilverBulletServer.getStaticInstance().getBuilderModel(cookie, app).getRegisterAccessor().readRegister(regName, bitName);
+		SilverBulletServer.getStaticInstance().getBuilderModel(cookie, app).getTestRecorder().addRegisterQuery(regName, bitName, value);
 		return "OK";
 	}
 	
 	@GET
 	@Path("/getShortCuts")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public List<RegisterShortCut> getShortCuts(@PathParam("app") String app) {
-		return SilverBulletServer.getStaticInstance().getBuilderModel(app).getRegisterShortCut().getShortcuts();
+	public List<RegisterShortCut> getShortCuts(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app) {
+		return SilverBulletServer.getStaticInstance().getBuilderModel(cookie, app).getRegisterShortCut().getShortcuts();
 	}
 	
 	@GET
 	@Path("/getCurrentValue")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String getCurrentValue(@PathParam("app") String app, @QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName) {
-		long ret = SilverBulletServer.getStaticInstance().getBuilderModel(app).getRegisterAccessor().readRegister(regName, bitName);
+	public String getCurrentValue(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("regName") final String regName, @QueryParam("bitName") final String bitName) {
+		long ret = SilverBulletServer.getStaticInstance().getBuilderModel(cookie, app).getRegisterAccessor().readRegister(regName, bitName);
 		return String.valueOf(ret);
 	}
 
 	@GET
 	@Path("/getSimulators")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<String> getSimulators(@PathParam("app") String app) {
-		List<RegisterAccessor> sims = SilverBulletServer.getStaticInstance().getBuilderModel(app).getSimulators();
+	public List<String> getSimulators(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app) {
+		List<RegisterAccessor> sims = SilverBulletServer.getStaticInstance().getBuilderModel(cookie, app).getSimulators();
 		List<String> ret = new ArrayList<>();
 		sims.forEach(a -> ret.add(a.getClass().getSimpleName()));
 		return ret;
@@ -161,8 +162,8 @@ public class RegisterResource2 {
 	@GET
 	@Path("getAddedSimulators")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<String> getAddedSimulators(@PathParam("app") String app) {
-		Set<RegisterAccessor> list = SilverBulletServer.getStaticInstance().getBuilderModel(app).getRuntimRegisterMap().getUserDevices();
+	public List<String> getAddedSimulators(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app) {
+		Set<RegisterAccessor> list = SilverBulletServer.getStaticInstance().getBuilderModel(cookie, app).getRuntimRegisterMap().getUserDevices();
 		List<String> ret = new ArrayList<>();
 		list.forEach(a -> ret.add(a.getClass().getSimpleName()));
 		return ret;
@@ -171,18 +172,18 @@ public class RegisterResource2 {
 	@GET
 	@Path("loadSimulator")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String loadSimulator(@PathParam("app") String app, @QueryParam("simulator") final String simulator) {
-		RegisterAccessor rg = SilverBulletServer.getStaticInstance().getBuilderModel(app).getSimulator(simulator);
-		SilverBulletServer.getStaticInstance().getBuilderModel(app).getRuntimRegisterMap().addDevice(DeviceType.SIMULATOR, rg);
+	public String loadSimulator(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("simulator") final String simulator) {
+		RegisterAccessor rg = SilverBulletServer.getStaticInstance().getBuilderModel(cookie, app).getSimulator(simulator);
+		SilverBulletServer.getStaticInstance().getBuilderModel(cookie, app).getRuntimRegisterMap().addDevice(DeviceType.SIMULATOR, rg);
 		return "OK";
 	}
 	
 	@GET
 	@Path("unloadSimulator")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String unloadSimulator(@PathParam("app") String app, @QueryParam("simulator") final String simulator) {
-		RegisterAccessor rg = SilverBulletServer.getStaticInstance().getBuilderModel(app).getSimulator(simulator);
-		SilverBulletServer.getStaticInstance().getBuilderModel(app).getRuntimRegisterMap().removeDevice(rg);
+	public String unloadSimulator(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("simulator") final String simulator) {
+		RegisterAccessor rg = SilverBulletServer.getStaticInstance().getBuilderModel(cookie, app).getSimulator(simulator);
+		SilverBulletServer.getStaticInstance().getBuilderModel(cookie, app).getRuntimRegisterMap().removeDevice(rg);
 		return "OK";
 	}
 	
@@ -196,16 +197,16 @@ public class RegisterResource2 {
 	@GET
 	@Path("/setRegisterType")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String setRegisterType(@PathParam("app") String app, @QueryParam("type") final String type) {
-		SilverBulletServer.getStaticInstance().getBuilderModel(app).setRegisterType(RegisterTypeEnum.valueOf(type));
+	public String setRegisterType(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("type") final String type) {
+		SilverBulletServer.getStaticInstance().getBuilderModel(cookie, app).setRegisterType(RegisterTypeEnum.valueOf(type));
 		return "OK";
 	}
 
 	@GET
 	@Path("/getRegSize")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public int getRegSize(@PathParam("app") String app) {
-		return SilverBulletServer.getStaticInstance().getBuilderModel(app).getRegisterSpecHolder().getRegSize();
+	public int getRegSize(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app) {
+		return SilverBulletServer.getStaticInstance().getBuilderModel(cookie, app).getRegisterSpecHolder().getRegSize();
 	}
 
 	@GET
@@ -218,8 +219,8 @@ public class RegisterResource2 {
 	@GET
 	@Path("/setRegSize")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String setRegSize(@PathParam("app") String app, @QueryParam("value") final int value) {
-		SilverBulletServer.getStaticInstance().getBuilderModel(app).getRegisterSpecHolder().setRegSize(value);
+	public String setRegSize(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("value") final int value) {
+		SilverBulletServer.getStaticInstance().getBuilderModel(cookie, app).getRegisterSpecHolder().setRegSize(value);
 		return "OK";
 	}
 }

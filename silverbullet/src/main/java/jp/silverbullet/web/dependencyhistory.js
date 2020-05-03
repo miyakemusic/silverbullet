@@ -28,9 +28,9 @@ class DependencyHistory {
 			height: 400
 		});
 				
-		new MyWebSocket(function(msg) {
+		websocket.addListener('DEBUG', function(msg) {
 			$('#' + depHistLog).html(msg.replace('\n', '<br>'));
-		}, 'DEBUG');
+		});
 		
 		function debugEnabled(enabled) {
 			$.ajax({

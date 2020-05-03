@@ -921,7 +921,7 @@ class NewLayout {
 		
 		me.currentRoot = "";
 		
-		var valueWebSocket = new MyWebSocket(function(msg) {
+		var valueHandler = function(msg) {
 			var ids = msg.split(',');
 			for (var idindex of ids) {
 				var id = idindex.split('#')[0];
@@ -933,11 +933,13 @@ class NewLayout {
 					}
 				});
 			}
-		}, 'VALUES@' + me.device);
+		};
+		
+		websocket.addListener('VALUES@' + me.device, valueHandler);
 
 		var messageDialogId = divBase + "_messageDialog";
 		var messageId = divBase + "_message";
-		var messageWebSocket = new MyWebSocket(function(msg) {
+		var messageHandler = function(msg) {
 			if (msg == '@CLOSE@') {
 				$('#' + messageDialogId).dialog('close');
 			}
@@ -945,8 +947,18 @@ class NewLayout {
 				$('#' + messageId).html(msg.replace('\n', '<br>'));
 				$('#' + messageDialogId).dialog('open');
 			}
-		}, 'MESSAGE@' + me.device);
-				
+		}
+		
+		websocket.addListener('MESSAGE@' + me.device, messageHandler);
+		
+		$('#' + divParent).bind('DOMSubtreeModified', function(){
+			if( $('#' + divParent).is(':empty') ) {  
+				websocket.removeListener(valueHandler);
+				websocket.removeListener(messageHandler);
+				websocket.removeListener(designHandler);
+			}
+		});		
+		
 		if (rootName == null) {
 			new NewLayoutLibrary(divLeft, function(selectedRoot) {
 				me.currentRoot = selectedRoot;
@@ -992,14 +1004,13 @@ class NewLayout {
 			$('#' + div).append('<select id="' + devicesId + '"></select>');
 			$('#' + devicesId).change(function() {
 				me.device = $(this).val();
-				valueWebSocket.changeType('VALUES@' + me.device);
-				messageWebSocket.changeType('MESSAGE@' + me.device);
+				websocket.changeType(valueHandler, 'VALUES@' + me.device);
+				websocket.changeType(messageHandler, 'MESSAGE@' + me.device);
 			});
 
-			new MyWebSocket(function(msg) {
+			websocket.addListener('DEVICE', function(msg) {
 				updateDevicesList();
-			}
-			, 'DEVICE');		
+			});		
 			
 			updateDevicesList();
 			function updateDevicesList() {	
@@ -1030,8 +1041,7 @@ class NewLayout {
 		
 		this.divNumber = 0;
 		
-		
-		new MyWebSocket(function(msg) {
+		var designHandler = function(msg) {
 			var type = msg.split(':')[0];
 			var value = msg.split(':')[1];
 			var tmp = value.split(',');
@@ -1052,7 +1062,8 @@ class NewLayout {
 				});
 			}		
 
-		}, 'UIDESIGN');
+		};
+		websocket.addListener('UIDESIGN', designHandler);
 						
 		
 		$('#' + divBase).append('<div id="' + messageDialogId + '"><label id="' + messageId + '"></label></div>');

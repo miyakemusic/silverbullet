@@ -1,0 +1,12 @@
+package jp.silverbullet.web;
+
+public class WsLoginMessage {
+    public static final String DomainModel = "DomainModel";
+    public static final String UserClient = "UserClient";
+    
+	public String type;
+	public String application;
+	public String device;
+	public String sessionID;
+	public String userid;
+}

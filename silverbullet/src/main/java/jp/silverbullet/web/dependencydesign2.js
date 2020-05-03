@@ -64,12 +64,11 @@ class DependencyDesign2 {
 				return value.candidates;
 			}	
 		}		
-		new MyWebSocket(function(msg) {				
-				if (msg == 'MatrixChanged') {
-					updatePriorityEditor();
-				}
+		websocket.addListener('DEPDESIGN', function(msg) {				
+			if (msg == 'MatrixChanged') {
+				updatePriorityEditor();
 			}
-			, 'DEPDESIGN');
+		});
 			
 		var configPaneId = div + "_configPane";
 		$('#' + div).append('<div id="' + configPaneId + '"></div>');

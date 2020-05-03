@@ -1,6 +1,5 @@
 package jp.silverbullet.web;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,46 +44,45 @@ public class UserStore {
 		try {
 			new JsonPersistent().saveJson(this.data, USERS_JSON);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	public void put(String cookie, PersonalResponse value) {
+	public void put(String sessionID, PersonalResponse value) {
 		if (data.getMap().containsKey(value.id)) {
 			PersonalCookie pc = data.getMap().get(value.id);
-			pc.cookie = cookie;
+			pc.sessionID = sessionID;
 			pc.personal= value;
 		}
 		else {
-			this.data.getMap().put(value.id, new PersonalCookie(cookie, value));
+			this.data.getMap().put(value.id, new PersonalCookie(sessionID, value));
 		}
 		save();
 	}
 
-	public boolean containsCookie(String cookie) {
+	public boolean containsCookie(String sessionID) {
 		for (PersonalCookie p : data.getMap().values()) {
-			if (p.cookie.equals(cookie)) {
+			if (p.sessionID.equals(sessionID)) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	public PersonalResponse getByCookie(String cookie) {
+	public PersonalResponse getBySessionID(String sessionID) {
 		for (PersonalCookie p : data.getMap().values()) {
-			if (p.cookie.equals(cookie)) {
+			if (p.sessionID.equals(sessionID)) {
 				return p.personal;
 			}
 		}
 		return null;
 	}
 
-	public void remove(String cookie) {
+	public void remove(String sessionID) {
 		for (String key : this.data.getMap().keySet()) {
 			PersonalCookie c = this.data.getMap().get(key);
-			if (c.cookie.equals(cookie)) {
+			if (c.sessionID.equals(sessionID)) {
 				//this.map.remove(key);
-				c.cookie = "";
+				c.sessionID = "";
 				return;
 			}
 		}
@@ -122,27 +120,34 @@ public class UserStore {
 		}
 	}
 
-	public void updateCookie(String username, String sessionName) {
+	public void updateCookie(String username, String sessionID) {
 		PersonalCookie c= this.findByUser(username);
-		c.cookie = sessionName;
+		c.sessionID = sessionID;
 	}
 
-	public PersonalCookie findByCookie(String cookie) {
+	public PersonalCookie findBySessionID(String sessionID) {
 		for (String key : this.data.getMap().keySet()) {
 			PersonalCookie c = this.data.getMap().get(key);
-			if (c.cookie.equals(cookie)) {
+			if (c.sessionID.equals(sessionID)) {
 				return c;
 			}
 		}
 		return null;
 	}
-}
-class PersonalCookie {
-	public PersonalCookie() {}
-	public PersonalCookie(String cookie2, PersonalResponse value) {
-		this.personal = value;
-		this.cookie = cookie2;
+
+	public PersonalCookie findByUsername(String username) {
+		for (String key : this.data.getMap().keySet()) {
+			PersonalCookie c = this.data.getMap().get(key);
+			if (c.personal.name.equals(username)) {
+				return c;
+			}
+		}
+		return null;
 	}
-	public PersonalResponse personal;
-	public String cookie;
+
+	public Map<String, PersonalCookie> getData() {
+		return data.getMap();
+	}
+	
+	
 }

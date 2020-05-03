@@ -35,7 +35,7 @@ class IdEditorClass {
 		
 		var me = this;
 
-		new MyWebSocket(function(msg) {
+		websocket.addListener('ID', function(msg) {
 			var command = msg.split(':')[0];
 			var id = msg.split(':')[1];
 			
@@ -53,8 +53,7 @@ class IdEditorClass {
 					});
 				}
 			}
-		}
-		, 'ID');
+		});
 			
 		$("#" + idUpdate).on('click', function() {
 			updateMainTable();

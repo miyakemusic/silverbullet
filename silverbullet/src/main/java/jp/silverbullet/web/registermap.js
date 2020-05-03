@@ -106,7 +106,7 @@ class RegisterMap {
 		}
 		
 		function initWebSocket() {
-			new MyWebSocket(function(msg) {				
+			websocket.addListener('REGVAL', function(msg) {				
 				var obj = JSON.parse(msg);
 				
 				var regName = obj.name;
@@ -128,8 +128,7 @@ class RegisterMap {
 					resetButtonColor();
 					$(buttonId).addClass('changed');
 				}
-			}
-			, 'REGVAL');
+			});
 		}
 		function createMap() {
 			$('#' + mainDiv).empty();

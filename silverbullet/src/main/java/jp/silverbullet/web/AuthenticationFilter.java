@@ -33,9 +33,9 @@ public class AuthenticationFilter implements ContainerRequestFilter
 		}
 		
 		if (requestContext.getCookies().containsKey("SilverBullet")) {
-			String cookie = requestContext.getCookies().get("SilverBullet").getValue();
+			String sessionID = requestContext.getCookies().get("SilverBullet").getValue();
 //			System.out.println("Cookie:" + cookie);
-			PersonalResponse rs = SystemResource.userStore.getByCookie(cookie);
+			PersonalResponse rs = SilverBulletServer.getStaticInstance().getUserStore().getBySessionID(sessionID);
 			return;
 		}
 		else {

@@ -23,39 +23,39 @@ public class IdResource2 {
 	@GET
 	@Path("/selection")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public JsonTable getSelections(@PathParam("app") String app, @QueryParam("id") final String id) {
-		JsonTable ret = new WebTableConverter(getPropertiesHolder(app)).createOptionTable(id);
+	public JsonTable getSelections(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("id") final String id) {
+		JsonTable ret = new WebTableConverter(getPropertiesHolder(cookie, app)).createOptionTable(id);
 		return ret;
 	}
 	
 	@GET
 	@Path("/addNew")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String addNewProperty(@PathParam("app") String app, @QueryParam("type") final String type) {
+	public String addNewProperty(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("type") final String type) {
 		String id = "ID_" + Calendar.getInstance().getTime().getTime();
-		getPropertiesHolder(app).addProperty(new PropertyFactory().create(id, PropertyType2.valueOf(type)));
+		getPropertiesHolder(cookie, app).addProperty(new PropertyFactory().create(id, PropertyType2.valueOf(type)));
 		return "OK";
 	}
 	
 	@GET
 	@Path("/remove")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String remove(@PathParam("app") String app, @QueryParam("id") final String id) {
-		getPropertiesHolder(app).remove(id);
+	public String remove(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("id") final String id) {
+		getPropertiesHolder(cookie, app).remove(id);
 		return "OK";
 	}
 
-	private PropertyHolder2 getPropertiesHolder(String app) {
-		return SilverBulletServer.getStaticInstance().getBuilderModel(app).getPropertiesHolder2();
+	private PropertyHolder2 getPropertiesHolder(String cookie, String app) {
+		return SilverBulletServer.getStaticInstance().getBuilderModel(cookie, app).getPropertiesHolder2();
 	}
 	
 	@GET
 	@Path("/addChoice")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String addNewChoice(@PathParam("app") String app, @QueryParam("id") final String id) {
+	public String addNewChoice(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("id") final String id) {
 		String optionId = id + "_" + Calendar.getInstance().getTime().getTime();
 		try {
-			getPropertiesHolder(app).addOption(id, optionId);
+			getPropertiesHolder(cookie, app).addOption(id, optionId);
 		} catch (Exception e) {
 			return e.toString();
 		}
@@ -65,10 +65,10 @@ public class IdResource2 {
 	@GET
 	@Path("/updateChoice")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public String updateChoice(@PathParam("app") String app, @QueryParam("id") final String id, @QueryParam("selectionId") final String selectionId, 
+	public String updateChoice(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("id") final String id, @QueryParam("selectionId") final String selectionId, 
 			@QueryParam("paramName") final String paramName, @QueryParam("value") final String value) {
 		
-		WebTableConverter converter = new WebTableConverter(getPropertiesHolder(app));
+		WebTableConverter converter = new WebTableConverter(getPropertiesHolder(cookie, app));
 		converter.updateOptionField(id, selectionId, paramName, value);
 		return "OK";
 	}
@@ -76,8 +76,8 @@ public class IdResource2 {
 	@GET
 	@Path("/properties")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public Response test(@PathParam("app") String app, @QueryParam("type") final String type) {
-		JsonTable table = new WebTableConverter(getPropertiesHolder(app)).
+	public Response test(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("type") final String type) {
+		JsonTable table = new WebTableConverter(getPropertiesHolder(cookie, app)).
 				createIdTable(PropertyType2.valueOf(type));
 		
 		Response res = Response
@@ -90,11 +90,11 @@ public class IdResource2 {
 	@GET
 	@Path("/update")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String updateValue(@PathParam("app") String app, @QueryParam("id") final String id, 
+	public String updateValue(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("id") final String id, 
 			@QueryParam("paramName") final String paramName,  
 			@QueryParam("value") final String value) {
 		
-		WebTableConverter converter = new WebTableConverter(getPropertiesHolder(app));
+		WebTableConverter converter = new WebTableConverter(getPropertiesHolder(cookie, app));
 		converter.updateMainField(id, paramName, value);
 
 		return "OK";
@@ -103,14 +103,14 @@ public class IdResource2 {
 	@GET
 	@Path("/typeNames")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public List<String> getTypeNames(@PathParam("app") String app, @CookieParam("SilverBullet") String cookie) {
-		return getPropertiesHolder(app).getTypes();
+	public List<String> getTypeNames(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app) {
+		return getPropertiesHolder(cookie, app).getTypes();
 	}
 
 	@GET
 	@Path("/ids")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public Set<String> getIds(@PathParam("app") String app) {
-		return getPropertiesHolder(app).getAllIds(PropertyType2.NotSpecified);
+	public Set<String> getIds(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app) {
+		return getPropertiesHolder(cookie, app).getAllIds(PropertyType2.NotSpecified);
 	}
 }

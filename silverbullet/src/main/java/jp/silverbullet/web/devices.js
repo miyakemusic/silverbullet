@@ -1,3 +1,4 @@
+
 class Devices {	
 	constructor(div, direction) {
 		var listId = div + "_deviceList";
@@ -16,12 +17,10 @@ class Devices {
 		}
 		
 		$('#' + div).append('<div id="' + listId + '"></div>');
-		
-		new MyWebSocket(function(msg) {
+	
+		websocket.addListener('DEVICE', function(result) {
 			retreiveDevices();
-		}
-		, 'DEVICE');	
-		
+		});
 		
 		retreiveDevices();
 		
@@ -80,10 +79,9 @@ class AllDevices {
 		
 		retreiveDevices(1);
 
-		var webSocket = new MyWebSocket(function(msg) {
+		webSocket.addListener(function(msg) {
 			retreiveDevices($('#' + columnCountId).val());
-		}
-		, 'DEVICE');
+		});
 				
 		function retreiveDevices(columns) {
 			$.ajax({
