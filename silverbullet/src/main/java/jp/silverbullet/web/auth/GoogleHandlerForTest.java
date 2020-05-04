@@ -29,7 +29,7 @@ public class GoogleHandlerForTest implements GoogleHanlder {
 	}
 
 	@Override
-	public void postFile(String access_token, String type, File file) {
+	public void postFile(String access_token, String type, String folder, File file) {
 		// TODO Auto-generated method stub
 		
 	}

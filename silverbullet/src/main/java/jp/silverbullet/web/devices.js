@@ -7,6 +7,22 @@ class Devices {
 		var contentId = div + "_content";
 		$('#' + div).append('<div id="' + contentId + '">Main</div>');
 		
+		var deviceId = div + "_device";
+		$('#' + contentId).append('<div id="' + deviceId + '"></div>');
+		
+		var toolId = div + "_tool";
+		$('#' + contentId).append('<div id="' + toolId + '"></div>');
+		
+		var uploadId = div + "_upload";
+		var fileId = div + "_file";
+//		$('#' + toolId).append('<form id="my_form"><input type="file" id="' + fileId + '"><button id="' + uploadId + '">Upload</button></form>');
+		$('#' + toolId).append('<input type="file" id="' + fileId + '"><button id="' + uploadId + '">Upload</button>');
+
+		$('#' + uploadId).click(function() {
+			postFile(me.device);
+		});
+		
+
 		if (direction == 'horizontal') {
 		}
 		else if (direction == 'vertical'){
@@ -24,6 +40,7 @@ class Devices {
 		
 		retreiveDevices();
 		
+		var me = this;
 		function retreiveDevices() {
 			$.ajax({
 				type: "GET", 
@@ -39,12 +56,11 @@ class Devices {
 						}
 					}
 					$('.deviceButton').on('click', function() {
-						$('#' + contentId).empty();
-						var device = $(this).text();
-						retreiveUiEntry(device, function(result) {
-							new NewLayout(contentId, result, device);
+						$('#' + deviceId).empty();
+						me.device = $(this).text();
+						retreiveUiEntry(me.device, function(result) {
+							new NewLayout(deviceId, result, me.device);
 						});
-						
 					});	
 			   }
 			});
@@ -59,6 +75,24 @@ class Devices {
 				}
 			});
 		}	
+		
+		function postFile(device) {
+			var file = $('#' + fileId)[0].files[0];
+			var reader = new FileReader();
+			reader.readAsDataURL(file);
+			reader.onload = function(event) {
+				$.ajax({
+		            url: "//" + window.location.host + "/rest/" + device + "/runtime" + "/postFile?filename=" + file.name,
+		            type: 'POST',
+		            contentType: 'text/plain',
+					data: event.target.result,
+					processData: false
+		        })
+		        .done(function( data ) {
+		
+		        });			
+			}
+		}
 	}
 }
 class AllDevices {

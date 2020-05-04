@@ -129,12 +129,14 @@ public class GoogleHandlerImpl implements GoogleHanlder {
 		}	
 	}
 		
-	private String useLibrary(Drive drive, String folderName) {
+	private String useLibrary(Drive drive, String folderName, String parentFolderID) {
 		
 		com.google.api.services.drive.model.File fileMetadata = new com.google.api.services.drive.model.File();
 		fileMetadata.setName(folderName);
 		fileMetadata.setMimeType("application/vnd.google-apps.folder");
-
+		if (!parentFolderID.isEmpty()) {
+			fileMetadata.setParents(Collections.singletonList(parentFolderID));
+		}
 		try {
 			com.google.api.services.drive.model.File file = drive.files().create(fileMetadata)
 			    .setFields("id")
@@ -147,29 +149,42 @@ public class GoogleHandlerImpl implements GoogleHanlder {
 		return null;
 	}
 	
-	private String getFolderID(Drive drive, String folder) throws IOException {
-		String pageToken = null;
-		do {
-		  FileList result = drive.files().list()
-		      .setQ("name='" + folder + "'")
-		      .setSpaces("drive")
-		      .setFields("nextPageToken, files(id, name)")
-		      .setPageToken(pageToken)
-		      .execute();
-		  for (com.google.api.services.drive.model.File file : result.getFiles()) {
-			  System.out.printf("Found file: %s (%s)\n", file.getName(), file.getId());
-			  if (file.getName().equals(folder)) {
-				  return file.getId();
-			  }
-		    
-		  }
-		  pageToken = result.getNextPageToken();
-		} while (pageToken != null);
+	private String getFolderID(Drive drive, String folder, String parentFolderID) {
 		
-		return this.createApplicationFolder(drive, "SilverBullet");
+		try {
+			String pageToken = null;
+			 
+			String query = "";
+			if (parentFolderID.isEmpty()) {
+				query = "name='" + folder + "' and trashed = false";
+			}
+			else {
+				query = "name='" + folder + "' and trashed = false and '" + parentFolderID + "' in parents";
+			}
+			do {
+			  FileList result = drive.files().list()
+			      .setQ(query)
+			      .setSpaces("drive")
+			      .setFields("nextPageToken, files(id, name)")
+			      .setPageToken(pageToken)
+			      .execute();
+			  for (com.google.api.services.drive.model.File file : result.getFiles()) {
+				  System.out.printf("Found file: %s (%s)\n", file.getName(), file.getId());
+				  if (file.getName().equals(folder)) {
+					  return file.getId();
+				  }
+			    
+			  }
+			  pageToken = result.getNextPageToken();
+			} while (pageToken != null);
+		}
+		catch (Exception e) {
+			
+		}
+		return this.createApplicationFolder(drive, folder, parentFolderID);
 	}
-	private String createApplicationFolder(Drive drive, String folderName) {
-		return useLibrary(drive, folderName);
+	private String createApplicationFolder(Drive drive, String folderName, String parentFolderID) {
+		return useLibrary(drive, folderName, parentFolderID);
 //		RequestBody requestBody = RequestBody.create(MediaType.get("application/json; charset=utf-8"), 
 //				"{\"name\":\"" + folderName + "\", \"mimeType\":\"application/vnd.google-apps.folder\"}");
 //		OkHttpClient client = new OkHttpClient();
@@ -189,21 +204,30 @@ public class GoogleHandlerImpl implements GoogleHanlder {
 	}
 
 	@Override
-	public void postFile(String access_token, String contentType, File file) {
+	public void postFile(String access_token, String contentType, String folder, File file) {
 		JacksonFactory jsonFactory = JacksonFactory.getDefaultInstance();
 		NetHttpTransport transport = new NetHttpTransport();
 
 		GoogleCredential credential = new GoogleCredential();
 		credential.setAccessToken(access_token);
 		
+
 		Drive drive =
 		    new Drive.Builder(transport, jsonFactory, credential)
 		        .setApplicationName("doctorssns")
 		        .build();
 		
+		String parentFolder = "";
+		if (!folder.equals("SilverBullet")) {
+			parentFolder = this.getFolderID(drive, "SilverBullet", "");
+		}		
+		
 		try {
-			String folderId = this.getFolderID(drive, "SilverBullet");
+			String folderId = this.getFolderID(drive, folder, parentFolder);
 			
+			if (!folder.isEmpty()) {
+				
+			}
 			String fileID = getFileID(drive, folderId, file);
 					
 			if (fileID != null) {

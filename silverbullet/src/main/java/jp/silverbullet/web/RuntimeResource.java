@@ -1,14 +1,25 @@
 package jp.silverbullet.web;
 
+import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+
+import org.apache.commons.codec.binary.Base64;
 
 import jp.silverbullet.core.property2.PropertyType2;
 import jp.silverbullet.core.property2.RuntimeProperty;
@@ -91,4 +102,37 @@ public class RuntimeResource {
 		return "OK";
 	}
 	
+	
+	@POST
+	@Path("/postFile")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String postFile(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @PathParam("device") String device,
+			@QueryParam("filename") String filename, String base64) {
+		String[] tmp = base64.split(",");
+		
+		String type = tmp[0].split("[:;]+")[1];
+		String data = tmp[1];
+
+		try {
+			DataOutputStream dataOutStream = 
+			        new DataOutputStream(
+			          new BufferedOutputStream(
+			            new FileOutputStream(filename)));
+			dataOutStream.write(Base64.decodeBase64(data.getBytes()));
+			dataOutStream.flush();
+			dataOutStream.close();
+			
+			String access_token = SilverBulletServer.getStaticInstance().getUserStore().getBySessionID(cookie).access_token;
+			SystemResource.googleHandler.postFile(access_token, type, device, new File(filename));
+			Files.delete(Paths.get(filename));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return "OK";
+	}
 }

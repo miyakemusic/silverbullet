@@ -92,7 +92,7 @@ public class SelfBuildResource {
 		String contentType = "application/octet-stream";
 		File file = new File(filename);
 		
-		SystemResource.googleHandler.postFile(r.getPersonal().access_token, contentType, file);
+		SystemResource.googleHandler.postFile(r.getPersonal().access_token, contentType, "SilverBullet", file);
 //		SystemResource..(cookie, new File(filename));
 		return "OK";
 	}
