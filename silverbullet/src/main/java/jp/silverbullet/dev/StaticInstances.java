@@ -1,9 +1,12 @@
 package jp.silverbullet.dev;
 
 import java.util.List;
+
+import jp.silverbullet.core.register2.RegisterUpdates;
 import jp.silverbullet.dev.sourcegenerator.PropertySourceGenerator;
 import jp.silverbullet.dev.sourcegenerator.RegisterSourceGenerator;
 import jp.silverbullet.web.UserStore;
+import jp.silverbullet.web.WebSocketBroadcaster;
 import jp.silverbullet.web.auth.PersonalResponse;
 
 public class StaticInstances {
@@ -85,6 +88,12 @@ public class StaticInstances {
 
 	public String getUserID(String sessionId) {
 		return this.userStore.findBySessionID(sessionId).getPersonal().id;
+	}
+
+	public void sendMessageToDevice(String sessionID, String app, String device, String message) {
+		String userid = userStore.findBySessionID(sessionID).getPersonal().id;
+		WebSocketBroadcaster.getInstance().sendMessageToDomainModel(userid, device, message);
+
 	}
 
 

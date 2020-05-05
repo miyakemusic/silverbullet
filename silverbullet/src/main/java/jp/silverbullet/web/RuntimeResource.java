@@ -21,6 +21,9 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.codec.binary.Base64;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jp.silverbullet.core.property2.PropertyType2;
 import jp.silverbullet.core.property2.RuntimeProperty;
 import jp.silverbullet.core.ui.UiProperty;
@@ -106,33 +109,28 @@ public class RuntimeResource {
 	@POST
 	@Path("/postFile")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String postFile(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @PathParam("device") String device,
-			@QueryParam("filename") String filename, String base64) {
+	public String postFile(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, 
+			@PathParam("device") String device,	@QueryParam("filename") String filename, String base64) {
+
+		String path = "SilverBullet/Automated/" + device + "/toDevice/" + filename;
+		String access_token = SilverBulletServer.getStaticInstance().getUserStore().getBySessionID(cookie).access_token;
+
 		String[] tmp = base64.split(",");
 		
 		String type = tmp[0].split("[:;]+")[1];
 		String data = tmp[1];
+		
+		String fileID = new GoogleDrivePost().base64(base64).post(access_token, path);
+		try {		
+			FileUploadMessage msg = new FileUploadMessage(fileID, path);
+			MessageToDevice message = new MessageToDevice(MessageToDevice.FILEREADY, FileUploadMessage.class.getName(), new ObjectMapper().writeValueAsString(msg));
 
-		try {
-			DataOutputStream dataOutStream = 
-			        new DataOutputStream(
-			          new BufferedOutputStream(
-			            new FileOutputStream(filename)));
-			dataOutStream.write(Base64.decodeBase64(data.getBytes()));
-			dataOutStream.flush();
-			dataOutStream.close();
-			
-			String access_token = SilverBulletServer.getStaticInstance().getUserStore().getBySessionID(cookie).access_token;
-			SystemResource.googleHandler.postFile(access_token, type, device, new File(filename));
-			Files.delete(Paths.get(filename));
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
+			SilverBulletServer.getStaticInstance().sendMessageToDevice(cookie, app, device, 
+					new ObjectMapper().writeValueAsString(message));
+		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 		return "OK";
 	}
 }

@@ -1,8 +1,11 @@
 package jp.silverbullet.web.auth;
 
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -28,7 +31,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class GoogleHandlerImpl implements GoogleHanlder {
+public class GoogleHandlerImpl implements ExternalStorageService {
 	
 	private String client_id;
 	private String client_secret;
@@ -111,23 +114,23 @@ public class GoogleHandlerImpl implements GoogleHanlder {
 	}
 
 //	@Override
-	public void postFile2(String access_token, String contentType, File file, String filename) {
-      final RequestBody requestBody = RequestBody.create(MediaType.parse(contentType), file);    
-		
-      Request request = new Request.Builder()
-              .url("https://www.googleapis.com/upload/drive/v3/files?uploadType=media")//&access_token=" + accessToken)
-              .addHeader("Authorization", "Bearer " + access_token)
-              .addHeader("Content-Type", contentType)
-              .addHeader("Content-Length", String.valueOf(file.length()))
-              .post(requestBody)
-              .build();
-      try {
-			Response responseOk = httpClient.newCall(request).execute();
-			System.out.println("Uploaded " + responseOk.toString());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}	
-	}
+//	public void postFile2(String access_token, String contentType, File file, String filename) {
+//      final RequestBody requestBody = RequestBody.create(MediaType.parse(contentType), file);    
+//		
+//      Request request = new Request.Builder()
+//              .url("https://www.googleapis.com/upload/drive/v3/files?uploadType=media")//&access_token=" + accessToken)
+//              .addHeader("Authorization", "Bearer " + access_token)
+//              .addHeader("Content-Type", contentType)
+//              .addHeader("Content-Length", String.valueOf(file.length()))
+//              .post(requestBody)
+//              .build();
+//      try {
+//			Response responseOk = httpClient.newCall(request).execute();
+//			System.out.println("Uploaded " + responseOk.toString());
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}	
+//	}
 		
 	private String useLibrary(Drive drive, String folderName, String parentFolderID) {
 		
@@ -203,32 +206,31 @@ public class GoogleHandlerImpl implements GoogleHanlder {
 //		}		
 	}
 
+	private JacksonFactory jsonFactory = JacksonFactory.getDefaultInstance();
+	private NetHttpTransport transport = new NetHttpTransport();
+	
 	@Override
-	public void postFile(String access_token, String contentType, String folder, File file) {
-		JacksonFactory jsonFactory = JacksonFactory.getDefaultInstance();
-		NetHttpTransport transport = new NetHttpTransport();
-
+	public String postFile(String access_token, String contentType, String path, File file) {
 		GoogleCredential credential = new GoogleCredential();
 		credential.setAccessToken(access_token);
 		
-
 		Drive drive =
 		    new Drive.Builder(transport, jsonFactory, credential)
 		        .setApplicationName("doctorssns")
 		        .build();
 		
-		String parentFolder = "";
-		if (!folder.equals("SilverBullet")) {
-			parentFolder = this.getFolderID(drive, "SilverBullet", "");
-		}		
+		String tmp[] = path.split("/");
+		String parentFolderID = "";
+		for (int i = 0; i < tmp.length-1; i++) {
+			String folder = tmp[i];
+			if (folder.isEmpty()) {
+				continue;
+			}
+			parentFolderID = this.getFolderID(drive, folder, parentFolderID);
+		}	
 		
 		try {
-			String folderId = this.getFolderID(drive, folder, parentFolder);
-			
-			if (!folder.isEmpty()) {
-				
-			}
-			String fileID = getFileID(drive, folderId, file);
+			String fileID = getFileID(drive, parentFolderID, file);
 					
 			if (fileID != null) {
 				deleteFile(drive, fileID);
@@ -236,18 +238,19 @@ public class GoogleHandlerImpl implements GoogleHanlder {
 
 			com.google.api.services.drive.model.File fileMetadata = new com.google.api.services.drive.model.File();
 			fileMetadata.setName(file.getName());
-			fileMetadata.setParents(Collections.singletonList(folderId));
+			fileMetadata.setParents(Collections.singletonList(parentFolderID));
 			FileContent mediaContent = new FileContent(contentType, file);
 			com.google.api.services.drive.model.File file2 = drive.files().create(fileMetadata, mediaContent)
 			    .setFields("id, parents")
 			    .execute();
 			System.out.println("File ID: " + file2.getId());
+			return file2.getId();
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		return null;
 	}
 	
 	private void deleteFile(Drive drive, String fileID) {
@@ -285,33 +288,67 @@ public class GoogleHandlerImpl implements GoogleHanlder {
 		return null;
 	}
 
-	//	@Override
-	public void postFile3(String access_token, String contentType, File file) {
-//		createApplicationFolder(access_token, "SilverBullet");
+	@Override
+	public File download(String access_token, String fileid) {
+		OutputStream outputStream = new ByteArrayOutputStream();
 		
-		OkHttpClient client = new OkHttpClient();
+		GoogleCredential credential = new GoogleCredential();
+		credential.setAccessToken(access_token);
 		
-		RequestBody requestBody = new MultipartBody.Builder(/*"--foo_bar_baz"*/)
-		        .setType(MultipartBody.FORM)
-		        .addPart(RequestBody.create(MediaType.parse("application/json"), "{\"name\":\"" + file.getName() + "\"}"))
-		        .addPart(RequestBody.create(MediaType.parse(contentType), file))
+		Drive drive =
+		    new Drive.Builder(transport, jsonFactory, credential)
+		        .setApplicationName("doctorssns")
 		        .build();
-
-		
-		Request request = new Request.Builder()
-              .url("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart")
-              .addHeader("Authorization", "Bearer " + access_token)
-              .addHeader("Content-Type", contentType)
-              .addHeader("Content-Length", String.valueOf(file.length()))
-              .post(requestBody)
-              .build();
 		try {
-			System.out.println(request.toString());
-			Response response = client.newCall(request).execute();
-			System.out.println("Uploaded " + response.toString());
+			com.google.api.services.drive.model.File file = drive.files().get(fileid).execute();
+			
+			drive.files().get(fileid).executeMediaAndDownloadTo(outputStream);
+
+			FileOutputStream fos = new FileOutputStream(new File(file.getName())); 
+		    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+		    // Put data in your baos
+
+		    baos.writeTo(fos);
+		    baos.close();
+		    
+		    File ret = new File(file.getName());
+		    
+		    Files.delete(Paths.get(file.getName()));
+		    return ret;
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}	
-	
+		return null;
+	}
+
+	//	@Override
+//	public void postFile3(String access_token, String contentType, File file) {
+////		createApplicationFolder(access_token, "SilverBullet");
+//		
+//		OkHttpClient client = new OkHttpClient();
+//		
+//		RequestBody requestBody = new MultipartBody.Builder(/*"--foo_bar_baz"*/)
+//		        .setType(MultipartBody.FORM)
+//		        .addPart(RequestBody.create(MediaType.parse("application/json"), "{\"name\":\"" + file.getName() + "\"}"))
+//		        .addPart(RequestBody.create(MediaType.parse(contentType), file))
+//		        .build();
+//
+//		
+//		Request request = new Request.Builder()
+//              .url("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart")
+//              .addHeader("Authorization", "Bearer " + access_token)
+//              .addHeader("Content-Type", contentType)
+//              .addHeader("Content-Length", String.valueOf(file.length()))
+//              .post(requestBody)
+//              .build();
+//		try {
+//			System.out.println(request.toString());
+//			Response response = client.newCall(request).execute();
+//			System.out.println("Uploaded " + response.toString());
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//	}	
 }

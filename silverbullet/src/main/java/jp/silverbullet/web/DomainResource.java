@@ -1,5 +1,6 @@
 package jp.silverbullet.web;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -118,5 +120,27 @@ public class DomainResource {
 			return "MAIN";
 		}
 		return "ERROR";
+	}
+	
+	@GET
+	@Path("/{device}/download")
+	@Produces(MediaType.APPLICATION_OCTET_STREAM) 
+	public File download(@PathParam("app") String app, @PathParam("device") String device, 
+			@QueryParam("userid") String userid, @QueryParam("fileid") String fileid) {
+		String access_token = SilverBulletServer.getStaticInstance().getUserStore().findByUseID(userid).getAccess_token();
+		
+		File file = SystemResource.googleHandler.download(access_token, fileid);
+		return file;
+	}
+	
+	@POST
+	@Path("/{device}/upload")
+	@Produces(MediaType.APPLICATION_OCTET_STREAM) 
+	public Response upload(@PathParam("app") String app, @PathParam("device") String device, 
+			@QueryParam("userid") String userid, @QueryParam("filepath") String filepath, String base64) {
+		String access_token = SilverBulletServer.getStaticInstance().getUserStore().findByUseID(userid).getAccess_token();
+		
+		String fileID = new GoogleDrivePost().type("application/octet-stream").base64(base64).post(access_token, filepath);
+		return Response.ok().build();
 	}
 }

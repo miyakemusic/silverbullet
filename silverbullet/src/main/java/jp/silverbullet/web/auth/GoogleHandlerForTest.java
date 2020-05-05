@@ -2,7 +2,7 @@ package jp.silverbullet.web.auth;
 
 import java.io.File;
 
-public class GoogleHandlerForTest implements GoogleHanlder {
+public class GoogleHandlerForTest implements ExternalStorageService {
 
 	@Override
 	public GoogleAccressTokenResponse retrieveAccessToken(String code, String redirectUri) throws Exception {
@@ -29,9 +29,14 @@ public class GoogleHandlerForTest implements GoogleHanlder {
 	}
 
 	@Override
-	public void postFile(String access_token, String type, String folder, File file) {
+	public String postFile(String access_token, String type, String folder, File file) {
 		// TODO Auto-generated method stub
-		
+		return "";
 	}
 
+	@Override
+	public File download(String access_token, String fileid) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

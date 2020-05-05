@@ -21,14 +21,14 @@ import org.apache.commons.codec.digest.DigestUtils;
 import jp.silverbullet.core.KeyValue;
 import jp.silverbullet.web.auth.GoogleAccressTokenResponse;
 import jp.silverbullet.web.auth.GoogleHandlerImpl;
-import jp.silverbullet.web.auth.GoogleHanlder;
+import jp.silverbullet.web.auth.ExternalStorageService;
 import jp.silverbullet.web.auth.PersonalResponse;
 
 //@Path("/system")
 @Path("/")
 public class SystemResource {
 //	private GoogleHanlder googleHandler = new GoogleHandlerForTest();
-	public static GoogleHanlder googleHandler = new GoogleHandlerImpl(ClientBuilder.newClient());
+	public static ExternalStorageService googleHandler = new GoogleHandlerImpl(ClientBuilder.newClient());
 //	public static AuthStore authMap = new AuthStore();
 	
 	@GET

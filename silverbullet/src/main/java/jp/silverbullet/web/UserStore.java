@@ -148,6 +148,8 @@ public class UserStore {
 	public Map<String, PersonalCookie> getData() {
 		return data.getMap();
 	}
-	
-	
+
+	public PersonalResponse findByUseID(String userid) {
+		return this.data.getMap().get(userid).getPersonal();
+	}	
 }
