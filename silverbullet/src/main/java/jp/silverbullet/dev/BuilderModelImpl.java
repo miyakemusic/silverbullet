@@ -1,15 +1,18 @@
 package jp.silverbullet.dev;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.xml.bind.JAXBException;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jp.silverbullet.core.BlobStore;
 import jp.silverbullet.core.JsonPersistent;
@@ -21,6 +24,7 @@ import jp.silverbullet.core.dependency2.DependencyEngine;
 import jp.silverbullet.core.dependency2.DependencySpecHolder;
 import jp.silverbullet.core.dependency2.IdValue;
 import jp.silverbullet.core.dependency2.RequestRejectedException;
+import jp.silverbullet.core.property2.IdValues;
 import jp.silverbullet.core.property2.PropertyDef2;
 import jp.silverbullet.core.property2.PropertyHolder2;
 import jp.silverbullet.core.property2.RuntimeProperty;
@@ -43,9 +47,10 @@ import jp.silverbullet.dev.dependency2.design.DependencyDesigner;
 import jp.silverbullet.dev.selfbuild.SelfBuilder;
 import jp.silverbullet.dev.test.TestRecorder;
 import jp.silverbullet.dev.test.TestRecorderInterface;
+import jp.silverbullet.web.PersistentSequencer;
 import jp.silverbullet.web.ValueSetResult;
 
-public class BuilderModelImpl implements Cloneable {
+public abstract class BuilderModelImpl implements Cloneable {
 
 	private static final String ID_DEF_JSON = "id_def.json";
 	private static final String REGISTERSHORTCUT = "registershortcuts.xml";
@@ -199,7 +204,9 @@ public class BuilderModelImpl implements Cloneable {
 	private RegisterAccessor hardwareAccessor;
 	private UiBuilder uiBuilder  = new UiBuilder();
 	private Set<RuntimeListener> runtimeListeners = new HashSet<>();
-
+	private PersistentHolder persistentHolder = new PersistentHolder();
+//	private PersistentSequencer persistentHandler;
+	
 	public enum RegisterTypeEnum {
 		Simulator,
 		Hardware,
@@ -237,11 +244,49 @@ public class BuilderModelImpl implements Cloneable {
 		};
 
 		sequencer.addSequencerListener(testRecorder);
+		
+		PersistentSequencer persistentHandler = new PersistentSequencer() {
+
+			@Override
+			public List<String> targetIds() {
+				return persistentHolder.getList();
+			}
+
+			@Override
+			protected String getPath() {
+				return "SilverBullet/Automated/" + device + "/fromDevice/" + Calendar.getInstance().getTimeInMillis() + ".json";
+			}
+
+			@Override
+			protected String getAccessToken() {
+				return BuilderModelImpl.this.getAccessToken();
+			}
+
+			@Override
+			protected String getFile() {
+				
+				//IdValues idValues = getRuntimePropertyStore().createSaveData();
+				
+				try {
+					getRuntimePropertyStore().save("tmp.tmp");
+					return "tmp.tmp";
+				} catch (SvFileException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				return null;
+			}
+			
+		};
+		sequencer.addUserSequencer(persistentHandler);
 //		this.uiLayoutHolder.createDefault();
 		createDependencyEngine();
 		
 		this.undoManager.set(propertiesHolder2, dependencySpecHolder2, uiBuilder, this.testRecorder);
 	}
+
+	abstract protected String getAccessToken() ;
 
 	public RuntimePropertyStore getRuntimePropertyStore() {
 		return store;
@@ -272,6 +317,8 @@ public class BuilderModelImpl implements Cloneable {
 		this.selfBuilder.load(folder);
 		
 		this.undoManager.set(propertiesHolder2, dependencySpecHolder2, uiBuilder, this.testRecorder);
+		
+		this.persistentHolder.load(folder);
 	}
 
 	public void createDependencyEngine() {
@@ -336,6 +383,8 @@ public class BuilderModelImpl implements Cloneable {
 		
 		this.dependencyDesigner.save(folder);
 		this.selfBuilder.save(folder);
+		
+		this.persistentHolder.save(folder);
 	}
 
 	private void saveJson(Object object, String filename) {
@@ -542,6 +591,7 @@ public class BuilderModelImpl implements Cloneable {
 	};
 	
 	private DialogAnswer dialogReply = DialogAnswer.OK;
+	private String device;
 	public ValueSetResult requestChange(String id, int index, String value, 
 			boolean forceChange, Actor actor) {
 		
@@ -649,4 +699,17 @@ public class BuilderModelImpl implements Cloneable {
 		}
 		return null;
 	}
+
+	public PersistentHolder getPersistent() {
+		return this.persistentHolder;
+	}
+
+	public void setDevice(String device) {
+		this.device = device;
+	}
+
+	public String getDevice() {
+		return device;
+	}
+	
 }

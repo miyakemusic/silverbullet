@@ -112,23 +112,18 @@ public class RuntimeResource {
 	public String postFile(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, 
 			@PathParam("device") String device,	@QueryParam("filename") String filename, String base64) {
 
-		String path = "SilverBullet/Automated/" + device + "/toDevice/" + filename;
 		String access_token = SilverBulletServer.getStaticInstance().getUserStore().getBySessionID(cookie).access_token;
-
-		String[] tmp = base64.split(",");
 		
-		String type = tmp[0].split("[:;]+")[1];
-		String data = tmp[1];
-		
-		String fileID = new GoogleDrivePost().base64(base64).post(access_token, path);
+		String path = "SilverBullet/Automated/" + device + "/toDevice";
+		new GoogleDrivePost().base64(base64).post(access_token, path + "/" + filename);
+		List<com.google.api.services.drive.model.File> files = SystemResource.googleHandler.getFileList(access_token, path);
 		try {		
-			FileUploadMessage msg = new FileUploadMessage(fileID, path);
-			MessageToDevice message = new MessageToDevice(MessageToDevice.FILEREADY, FileUploadMessage.class.getName(), new ObjectMapper().writeValueAsString(msg));
+			FilePendingResponse msg = new FilePendingResponse(files);
+			MessageToDevice message = new MessageToDevice(MessageToDevice.FILEREADY, FilePendingResponse.class.getName(), new ObjectMapper().writeValueAsString(msg));
 
 			SilverBulletServer.getStaticInstance().sendMessageToDevice(cookie, app, device, 
 					new ObjectMapper().writeValueAsString(message));
 		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return "OK";

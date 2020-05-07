@@ -34,7 +34,7 @@ class UserModel {
 	
 }
 
-public class BuilderModelHolder {
+public abstract class BuilderModelHolder {
 	public static final String PERSISTENT_FOLDER = "./persistent";
 	public static final String TMP_FOLDER = PERSISTENT_FOLDER + "/sv_tmp";
 	private static final String NO_DEVICE = "NO_DEVICE";
@@ -49,7 +49,7 @@ public class BuilderModelHolder {
 		createTmpFolderIfNotExists();
 		
 		allUsers.get(userid).getBuilderModel(app).save(TMP_FOLDER);
-//		builderModels.get(app).save(TMP_FOLDER);
+
 		
 		createFolderIfNotExists(PERSISTENT_FOLDER + "/" + userid);
 		String filename = PERSISTENT_FOLDER + "/" + userid + "/" + app + ".zip";
@@ -117,8 +117,14 @@ public class BuilderModelHolder {
 			createTmpFolderIfNotExists();
 			FileUtils.cleanDirectory(new File(TMP_FOLDER));
 			Zip.unzip(filename, TMP_FOLDER);
-			BuilderModelImpl model = new BuilderModelImpl();
+			BuilderModelImpl model = new BuilderModelImpl() {
+				@Override
+				protected String getAccessToken() {
+					return BuilderModelHolder.this.getAccessToken(userid);
+				}	
+			};
 			model.load(TMP_FOLDER);			
+			model.setDevice(device);
 			new SvClientHandler(userid, device, model);
 			return model;
 		}
@@ -159,11 +165,20 @@ public class BuilderModelHolder {
 	}
 
 	public void newApplication(String userid, String sesssionID) {
-		BuilderModelImpl model = new BuilderModelImpl();
+		BuilderModelImpl model = new BuilderModelImpl() {
+
+			@Override
+			protected String getAccessToken() {
+				return BuilderModelHolder.this.getAccessToken(userid);
+			}
+			
+		};
 		
 		Map<String, BuilderModelImpl> builderModels = this.allUsers.get(userid).getBuilderModels();
 		builderModels.put(String.valueOf(System.currentTimeMillis()), model);
 	}
+
+	abstract protected String getAccessToken(String userid);
 
 	public List<String> getApplications(String userid) {
 		Map<String, BuilderModelImpl> builderModels = this.allUsers.get(userid).getBuilderModels();

@@ -1,6 +1,7 @@
 package jp.silverbullet.web.auth;
 
 import java.io.File;
+import java.util.List;
 
 public class GoogleHandlerForTest implements ExternalStorageService {
 
@@ -35,7 +36,19 @@ public class GoogleHandlerForTest implements ExternalStorageService {
 	}
 
 	@Override
-	public File download(String access_token, String fileid) {
+	public byte[] download(String access_token, String fileid) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<com.google.api.services.drive.model.File> getFileList(String access_token, String string) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String downloadCompleted(String access_token, String fileid) {
 		// TODO Auto-generated method stub
 		return null;
 	}

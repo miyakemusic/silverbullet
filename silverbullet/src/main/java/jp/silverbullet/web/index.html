@@ -44,8 +44,8 @@
 <script type="text/javascript" src="dependencyspeceditor.js"></script>
 <script type="text/javascript" src="dependencyclass2.js"></script>
 <script type="text/javascript" src="devices.js"></script>
-
 <script type="text/javascript" src="build.js"></script>
+<script type="text/javascript" src="persistent.js"></script>
 
 <script type="text/javascript">
 $(function() {
@@ -88,6 +88,7 @@ $(function() {
 			var test = new TestClass('tab_test');
 			var dependency = new DependencyClass2('tab_dependency2');
 			var newLayout = new NewLayout('tab_newgui');
+			var persistent = new Persistent('tab_persistent');
 			var depenencyDesign = new DependencyDesign2('tab_dependencydesign2');
 			var build = new Build('tab_build');
 			var devices = new Devices('tab_device', 'vertical');
@@ -198,6 +199,7 @@ $(function() {
 	  	<li><a href="#tab_debug">Debug</a></li>
 	  	<li><a href="#tab_test">Test</a></li>
 	  	<li><a href="#tab_newgui">GUI</a></li>
+	  	<li><a href="#tab_persistent">Store</a></li>
 	  	<li><a href="#tab_build">Build</a></li>
 	  	<li><a href="#tab_device">Devices</a></li>
 	  </ul>
@@ -208,6 +210,7 @@ $(function() {
 	  <div id="tab_test"></div>
 	  <div id="tab_dependency2"></div>
 	  <div id="tab_newgui"></div>
+	  <div id="tab_persistent"></div>
 	  <div id="tab_dependencydesign2"></div>
 	  <div id="tab_build"></div>
 	  <div id="tab_device"></div>

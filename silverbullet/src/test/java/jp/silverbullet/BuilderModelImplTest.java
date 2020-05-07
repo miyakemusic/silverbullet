@@ -38,7 +38,15 @@ public class BuilderModelImplTest {
 	
 	@Test
 	public void test() throws Exception {
-		BuilderModelImpl builder = new BuilderModelImpl();
+		BuilderModelImpl builder = new BuilderModelImpl() {
+
+			@Override
+			protected String getAccessToken() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+		};
 		builder.setRegisterType(RegisterTypeEnum.Simulator);
 		PropertyFactory factory = new PropertyFactory();
 
@@ -117,7 +125,15 @@ public class BuilderModelImplTest {
 		
 		builder.save("testFoler");
 		
-		BuilderModelImpl builder2 = new BuilderModelImpl();
+		BuilderModelImpl builder2 = new BuilderModelImpl() {
+
+			@Override
+			protected String getAccessToken() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+		};
 		builder2.load("testFoler");
 		assertEquals("ID_MODE", builder2.getPropertiesHolder2().get("ID_MODE").getId());
 		assertEquals("ID_MODE", builder2.getRuntimePropertyStore().get("ID_MODE").getId());
@@ -262,7 +278,15 @@ public class BuilderModelImplTest {
 	
 	@Test
 	public void testRespondMessage() throws Exception {
-		BuilderModelImpl builder = new BuilderModelImpl();
+		BuilderModelImpl builder = new BuilderModelImpl() {
+
+			@Override
+			protected String getAccessToken() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+		};
 		builder.setRegisterType(RegisterTypeEnum.Simulator);
 		PropertyFactory factory = new PropertyFactory();
 
@@ -320,7 +344,15 @@ public class BuilderModelImplTest {
 	};
 	@Test
 	public void testSimulator() {
-		BuilderModelImpl builder = new BuilderModelImpl();
+		BuilderModelImpl builder = new BuilderModelImpl() {
+
+			@Override
+			protected String getAccessToken() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+		};
 		RegisterAccessor sim1;
 		builder.setSimulators(Arrays.asList(sim1 = new Sim1(), new Sim2()));
 		assertEquals(sim1, builder.getSimulator("Sim1"));
@@ -328,7 +360,15 @@ public class BuilderModelImplTest {
 	
 	@Test
 	public void testSource() {
-		BuilderModelImpl builder = new BuilderModelImpl();
+		BuilderModelImpl builder = new BuilderModelImpl() {
+
+			@Override
+			protected String getAccessToken() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+		};
 		builder.getSourceInfo();
 	}
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import jp.silverbullet.core.register2.RegisterUpdates;
 import jp.silverbullet.dev.sourcegenerator.PropertySourceGenerator;
 import jp.silverbullet.dev.sourcegenerator.RegisterSourceGenerator;
+import jp.silverbullet.web.PersistentSequencer;
 import jp.silverbullet.web.UserStore;
 import jp.silverbullet.web.WebSocketBroadcaster;
 import jp.silverbullet.web.auth.PersonalResponse;
@@ -12,7 +13,14 @@ import jp.silverbullet.web.auth.PersonalResponse;
 public class StaticInstances {
 
 	private UserStore userStore = new UserStore();
-	private BuilderModelHolder builderModelHolder = new BuilderModelHolder();
+	private BuilderModelHolder builderModelHolder = new BuilderModelHolder() {
+
+		@Override
+		protected String getAccessToken(String userid) {
+			return userStore.getData().get(userid).getPersonal().getAccess_token();
+		}
+		
+	};
 	
 	public UserStore getUserStore() {
 		return userStore;
@@ -95,6 +103,5 @@ public class StaticInstances {
 		WebSocketBroadcaster.getInstance().sendMessageToDomainModel(userid, device, message);
 
 	}
-
 
 }

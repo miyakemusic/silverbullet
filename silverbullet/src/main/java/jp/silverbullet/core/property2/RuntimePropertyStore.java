@@ -116,15 +116,20 @@ public class RuntimePropertyStore {
 	}
 
 	public void save(String filename) throws SvFileException {
-		IdValues idValues = new IdValues();
-		this.runtimeProperties.getRuntimeProperties().forEach((id, value)->{
-			idValues.idValue.add(new IdValue(id, value.getCurrentValue()));
-		});
+		IdValues idValues = createSaveData();
 		try {
 			new JsonPersistent().saveJson(idValues, filename);
 		} catch (IOException e) {
 			throw new SvFileException();
 		}
+	}
+
+	public IdValues createSaveData() {
+		IdValues idValues = new IdValues();
+		this.runtimeProperties.getRuntimeProperties().forEach((id, value)->{
+			idValues.idValue.add(new IdValue(id, value.getCurrentValue()));
+		});
+		return idValues;
 	}
 
 	public IdValues load(String filename) throws SvFileException {

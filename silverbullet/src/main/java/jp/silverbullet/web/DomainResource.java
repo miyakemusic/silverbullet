@@ -2,6 +2,8 @@ package jp.silverbullet.web;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +19,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.org.apache.xml.internal.security.utils.Base64;
 
 import jp.silverbullet.core.property2.LightProperty;
 import jp.silverbullet.core.property2.RuntimeProperty;
@@ -124,14 +127,25 @@ public class DomainResource {
 	
 	@GET
 	@Path("/{device}/download")
-	@Produces(MediaType.APPLICATION_OCTET_STREAM) 
-	public File download(@PathParam("app") String app, @PathParam("device") String device, 
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String download(@PathParam("app") String app, @PathParam("device") String device, 
 			@QueryParam("userid") String userid, @QueryParam("fileid") String fileid) {
 		String access_token = SilverBulletServer.getStaticInstance().getUserStore().findByUseID(userid).getAccess_token();
+		byte[] data = SystemResource.googleHandler.download(access_token, fileid);
 		
-		File file = SystemResource.googleHandler.download(access_token, fileid);
-		return file;
+		return Base64.encode(data);
 	}
+	
+	@GET
+	@Path("/{device}/downloadCompleted")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public Response downloadCompleted(@PathParam("app") String app, @PathParam("device") String device, 
+			@QueryParam("userid") String userid, @QueryParam("fileid") String fileid) {
+		String access_token = SilverBulletServer.getStaticInstance().getUserStore().findByUseID(userid).getAccess_token();
+		SystemResource.googleHandler.downloadCompleted(access_token, fileid);
+		
+		return Response.ok().build();
+	}	
 	
 	@POST
 	@Path("/{device}/upload")
@@ -142,5 +156,17 @@ public class DomainResource {
 		
 		String fileID = new GoogleDrivePost().type("application/octet-stream").base64(base64).post(access_token, filepath);
 		return Response.ok().build();
+	}
+	
+	@GET
+	@Path("/{device}/pendingFiles")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public FilePendingResponse download(@PathParam("app") String app, @PathParam("device") String device, 
+			@QueryParam("userid") String userid) {
+		String access_token = SilverBulletServer.getStaticInstance().getUserStore().findByUseID(userid).getAccess_token();
+		
+		List<com.google.api.services.drive.model.File> files = SystemResource.googleHandler.getFileList(access_token, "SilverBullet/Automated/" + device + "/toDevice");
+		FilePendingResponse ret = new FilePendingResponse(files);
+		return ret;
 	}
 }

@@ -4,10 +4,13 @@ package jp.silverbullet.web.auth;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -210,7 +213,7 @@ public class GoogleHandlerImpl implements ExternalStorageService {
 	private NetHttpTransport transport = new NetHttpTransport();
 	
 	@Override
-	public String postFile(String access_token, String contentType, String path, File file) {
+	public String postFile(String access_token, String contentType, String pathWithFilename, File file) {
 		GoogleCredential credential = new GoogleCredential();
 		credential.setAccessToken(access_token);
 		
@@ -219,25 +222,17 @@ public class GoogleHandlerImpl implements ExternalStorageService {
 		        .setApplicationName("doctorssns")
 		        .build();
 		
-		String tmp[] = path.split("/");
-		String parentFolderID = "";
-		for (int i = 0; i < tmp.length-1; i++) {
-			String folder = tmp[i];
-			if (folder.isEmpty()) {
-				continue;
-			}
-			parentFolderID = this.getFolderID(drive, folder, parentFolderID);
-		}	
-		
+		String parentFolderID = getFolderIDbyPath(excludeFilename(pathWithFilename), drive);	
+		String filename = new File(pathWithFilename).getName();
 		try {
-			String fileID = getFileID(drive, parentFolderID, file);
+			String fileID = getFileID(drive, parentFolderID, filename);
 					
 			if (fileID != null) {
 				deleteFile(drive, fileID);
 			}
 
 			com.google.api.services.drive.model.File fileMetadata = new com.google.api.services.drive.model.File();
-			fileMetadata.setName(file.getName());
+			fileMetadata.setName(filename);
 			fileMetadata.setParents(Collections.singletonList(parentFolderID));
 			FileContent mediaContent = new FileContent(contentType, file);
 			com.google.api.services.drive.model.File file2 = drive.files().create(fileMetadata, mediaContent)
@@ -252,6 +247,28 @@ public class GoogleHandlerImpl implements ExternalStorageService {
 		}
 		return null;
 	}
+
+	private String excludeFilename(String pathWithFilename) {
+		String ret = "";
+		String[] tmp = pathWithFilename.split("[//\\\\]+");
+		for (int i = 0; i < tmp.length -1 ; i++) {
+			ret += tmp[i] + "/";
+		}
+		return ret.substring(0, ret.length()-1);
+	}
+	
+	private String getFolderIDbyPath(String path, Drive drive) {
+		String tmp[] = path.split("/");
+		String parentFolderID = "";
+		for (int i = 0; i < tmp.length; i++) {
+			String folder = tmp[i];
+			if (folder.isEmpty()) {
+				continue;
+			}
+			parentFolderID = this.getFolderID(drive, folder, parentFolderID);
+		}
+		return parentFolderID;
+	}
 	
 	private void deleteFile(Drive drive, String fileID) {
 		try {
@@ -262,19 +279,19 @@ public class GoogleHandlerImpl implements ExternalStorageService {
 		}
 	}
 
-	private String getFileID(Drive drive, String folderId, File target) {
+	private String getFileID(Drive drive, String folderId, String targetFilename) {
 		try {
 			String pageToken = null;
 			do {
 			  FileList result = drive.files().list()
-			      .setQ("name='" + target.getName() + "' and trashed = false and '" + folderId + "' in parents")
+			      .setQ("name='" + targetFilename + "' and trashed = false and '" + folderId + "' in parents")
 			      .setSpaces("drive")
 			      .setFields("nextPageToken, files(id, name)")
 			      .setPageToken(pageToken)
 			      .execute();
 			  for (com.google.api.services.drive.model.File file : result.getFiles()) {
 				  System.out.printf("Found file: %s (%s)\n", file.getName(), file.getId());
-				  if (file.getName().equals(target.getName())) {
+				  if (file.getName().equals(targetFilename)) {
 					  return file.getId();
 				  }
 			    
@@ -289,8 +306,8 @@ public class GoogleHandlerImpl implements ExternalStorageService {
 	}
 
 	@Override
-	public File download(String access_token, String fileid) {
-		OutputStream outputStream = new ByteArrayOutputStream();
+	public byte[] download(String access_token, String fileid) {
+//		OutputStream outputStream = new ByteArrayOutputStream();
 		
 		GoogleCredential credential = new GoogleCredential();
 		credential.setAccessToken(access_token);
@@ -302,25 +319,115 @@ public class GoogleHandlerImpl implements ExternalStorageService {
 		try {
 			com.google.api.services.drive.model.File file = drive.files().get(fileid).execute();
 			
-			drive.files().get(fileid).executeMediaAndDownloadTo(outputStream);
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			
+			drive.files().get(fileid).executeMediaAndDownloadTo(baos);
 
-			FileOutputStream fos = new FileOutputStream(new File(file.getName())); 
-		    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//			File ret = new File(file.getName());
+//			FileOutputStream fos = new FileOutputStream(ret); 
+		    
 
 		    // Put data in your baos
 
-		    baos.writeTo(fos);
+//		    baos.writeTo(fos);
+			byte[]ret = baos.toByteArray();
 		    baos.close();
 		    
-		    File ret = new File(file.getName());
+//		    File ret = new File(file.getName());
 		    
-		    Files.delete(Paths.get(file.getName()));
+//		    Files.delete(Paths.get(file.getName()));
 		    return ret;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	@Override
+	public List<com.google.api.services.drive.model.File> getFileList(String access_token, String path) {
+		GoogleCredential credential = new GoogleCredential();
+		credential.setAccessToken(access_token);
+		
+		
+		Drive drive =
+		    new Drive.Builder(transport, jsonFactory, credential)
+		        .setApplicationName("doctorssns")
+		        .build();
+		
+		
+		String parentFolderID = getFolderIDbyPath(path, drive);	
+		String pageToken = null;
+		List<com.google.api.services.drive.model.File> ret = new ArrayList<>();
+		try {
+			do {
+				FileList result = drive.files().list()
+					    .setQ("'" + parentFolderID + "' in parents and trashed = false")
+					    .setSpaces("drive")
+					    .setFields("nextPageToken, files(id, name, parents)")
+					    .setPageToken(pageToken)
+					    .execute();
+				
+				result.values();
+				
+				
+				for (com.google.api.services.drive.model.File file : result.getFiles()) {
+					  System.out.printf("Found file: %s (%s)\n", file.getName(), file.getId());
+					  
+					  ret.add(file);
+				}
+				pageToken = result.getNextPageToken();
+			} 
+			while (pageToken != null);
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return ret;
+	}
+
+	@Override
+	public String downloadCompleted(String access_token, String fileid) {
+		GoogleCredential credential = new GoogleCredential();
+		credential.setAccessToken(access_token);
+				
+		Drive drive =
+		    new Drive.Builder(transport, jsonFactory, credential)
+		        .setApplicationName("doctorssns")
+		        .build();
+		
+		try {
+			com.google.api.services.drive.model.File file = drive.files().get(fileid).setFields("name, parents").execute();
+			com.google.api.services.drive.model.File fileMetadata = new com.google.api.services.drive.model.File();
+			fileMetadata.setName("downloaded." + file.getName());
+	
+			drive.files().update(fileid, fileMetadata).execute();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+//		try {
+//			com.google.api.services.drive.model.File file = drive.files().get(fileid).setFields("name, parents").execute();
+//			String parentID = file.getParents().get(0);
+//			
+//			File newfile = new File("downloaded_" + file.getName());
+//			FileWriter writer = new FileWriter(newfile);
+//			writer.append(Calendar.getInstance().getTime().toGMTString());
+//			writer.close();
+//			com.google.api.services.drive.model.File fileMetadata = new com.google.api.services.drive.model.File();
+//			fileMetadata.setName(newfile.getName());
+//			fileMetadata.setParents(Collections.singletonList(parentID));
+//			FileContent mediaContent = new FileContent("text/plain", newfile);
+//			com.google.api.services.drive.model.File ret = drive.files().create(fileMetadata, mediaContent).setFields("id, parents")
+//		    .execute();
+//			newfile.delete();
+//			return ret.getId();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+
+		return "";
 	}
 
 	//	@Override
