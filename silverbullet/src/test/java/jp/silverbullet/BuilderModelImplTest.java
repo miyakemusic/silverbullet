@@ -36,7 +36,7 @@ public class BuilderModelImplTest {
 
 	protected Object written;
 	
-	@Test
+//	@Test
 	public void test() throws Exception {
 		BuilderModelImpl builder = new BuilderModelImpl() {
 
@@ -276,7 +276,7 @@ public class BuilderModelImplTest {
 		
 	}
 	
-	@Test
+//	@Test
 	public void testRespondMessage() throws Exception {
 		BuilderModelImpl builder = new BuilderModelImpl() {
 
@@ -342,7 +342,7 @@ public class BuilderModelImplTest {
 		@Override
 		public void write(Object regName, Object bitName, int value) {}
 	};
-	@Test
+//	@Test
 	public void testSimulator() {
 		BuilderModelImpl builder = new BuilderModelImpl() {
 
@@ -358,7 +358,7 @@ public class BuilderModelImplTest {
 		assertEquals(sim1, builder.getSimulator("Sim1"));
 	}
 	
-	@Test
+//	@Test
 	public void testSource() {
 		BuilderModelImpl builder = new BuilderModelImpl() {
 
