@@ -21,6 +21,5 @@ public class ChangesJson {
 	public void setChanges(Map<String, List<ChangedItemValue>> changes) {
 		this.changes = changes;
 	}
-	
-	
+
 }
