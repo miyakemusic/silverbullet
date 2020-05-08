@@ -296,10 +296,10 @@ public class BuilderModelImplTest {
 				option("ID_MESSAGE_NONE", "", "").option("ID_MESSAGE_ERROR", "ERROR", "").defaultId("ID_MESSAGE_NONE"));
 
 		builder.getSequencer().requestChange("ID_MESSAGE", "ID_MESSAGE_ERROR");
-		builder.getSequencer().syncDependency();
+//		builder.getSequencer().syncDependency();
 		
-		builder.respondToMessage("ID_MESSAGE", "OK");
-		assertEquals("ID_MESSAGE_NONE", builder.getRuntimePropertyStore().get("ID_MESSAGE").getCurrentValue());
+//		builder.respondToMessage("ID_MESSAGE", "OK");
+//		assertEquals("ID_MESSAGE_NONE", builder.getRuntimePropertyStore().get("ID_MESSAGE").getCurrentValue());
 	}
 	
 	class Sim1 implements RegisterAccessor {
