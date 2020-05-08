@@ -12,8 +12,6 @@ import java.util.Map;
 import org.apache.commons.io.FileUtils;
 
 import jp.silverbullet.core.Zip;
-import jp.silverbullet.core.register2.RegisterUpdates;
-import jp.silverbullet.web.WebSocketBroadcaster;
 
 class UserModel {
 	private Map<String, BuilderModelImpl> builderModels = new HashMap<>();
@@ -30,8 +28,12 @@ class UserModel {
 	public Map<String, BuilderModelImpl> getRuntimeModels() {
 		return runtimeModels;
 	}
-	
-	
+
+	public void reloadRuntime(String folder) {
+		for (BuilderModelImpl model : runtimeModels.values()) {
+			model.load(folder);
+		}
+	}	
 }
 
 public abstract class BuilderModelHolder {
@@ -49,12 +51,12 @@ public abstract class BuilderModelHolder {
 		createTmpFolderIfNotExists();
 		
 		allUsers.get(userid).getBuilderModel(app).save(TMP_FOLDER);
-
 		
 		createFolderIfNotExists(PERSISTENT_FOLDER + "/" + userid);
 		String filename = PERSISTENT_FOLDER + "/" + userid + "/" + app + ".zip";
 		Zip.zip(TMP_FOLDER, filename);	
 		
+		allUsers.get(userid).reloadRuntime(TMP_FOLDER);
 		return filename;
 	}
 	

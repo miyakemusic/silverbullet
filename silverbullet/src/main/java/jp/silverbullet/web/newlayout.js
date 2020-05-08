@@ -1102,7 +1102,9 @@ class NewLayout {
 			   url: "//" + window.location.host + "/rest/newGui/getWidget?divid=" + divid,
 			   success: function(widget){
 			   		divMap.set(divid, widget);
-			   		me.propertyWindow.update(divMap.get(divid));
+			   		if (me.propertyWindow != null) {
+			   			me.propertyWindow.update(divMap.get(divid));
+			   		}
 			   		if (finished != null) {
 			   			finished();
 			   		}
