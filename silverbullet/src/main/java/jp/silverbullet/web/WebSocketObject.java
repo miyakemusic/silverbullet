@@ -35,7 +35,7 @@ public class WebSocketObject {
     		
     	}
     	catch (Exception e) {
-    		
+    		e.printStackTrace();
     	}
     }
 

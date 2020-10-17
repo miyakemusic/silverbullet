@@ -25,17 +25,6 @@ public abstract class SilverBulletServer {
 
 	public void start(String port, String protocol) {
 		staticInstance.load();
-
-//		BuilderModelImpl model = staticInstance.getBuilderModel();
-//		this.onStart(model);
-//		model.setSimulators(getSimulators());
-//		model.setHardwareAccessor(getHardwareAccessor(model));
-//		getUserSequencers(model).forEach(sequencer -> {
-//			model.addUserSequencer(sequencer);
-//		});	
-//		model.setDefaultValues();
-		
-//		registerWebClientManager();
 		
 		startWebServer(Integer.valueOf(port), protocol);
 		

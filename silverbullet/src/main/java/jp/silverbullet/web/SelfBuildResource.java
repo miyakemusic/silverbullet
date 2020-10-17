@@ -106,7 +106,12 @@ public class SelfBuildResource {
 		String contentType = "application/octet-stream";
 		File file = new File(filename);
 		
-		SystemResource.googleHandler.postFile(r.getPersonal().access_token, contentType, "SilverBullet/Applications", file);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
+		String dstring = sdf.format(Calendar.getInstance().getTime());
+		//String name =file.getName();
+		//String fname = name.split("\\.")[0] + "(" + dstring + ")." + name.split("\\.")[1];
+		SystemResource.googleHandler.postFile(r.getPersonal().access_token, 
+				contentType, "SilverBullet/Applications/" + app + "/" + dstring + ".zip", file);
 //		SystemResource..(cookie, new File(filename));
 		return "OK";
 	}

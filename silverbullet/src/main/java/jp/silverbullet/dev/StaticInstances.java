@@ -57,12 +57,12 @@ public class StaticInstances {
 	}
 	
 	public void generateSource(String sessionID, String app) {
-		String userid = userStore.findBySessionID(sessionID).getPersonal().id;
-		String info = getBuilderModel(userid, app).getSourceInfo();
+//		String userid = userStore.findBySessionID(sessionID).getPersonal().id;
+		String info = getBuilderModel(sessionID, app).getSourceInfo();
 		String folder = info.split(";")[0];
 		String packageName = info.split(";")[1];
-		new PropertySourceGenerator(getBuilderModel(userid, app).getPropertiesHolder2()).generate(folder, packageName);
-		new RegisterSourceGenerator(getBuilderModel(userid, app).getRegisterSpecHolder()).
+		new PropertySourceGenerator(getBuilderModel(sessionID, app).getPropertiesHolder2()).generate(folder, packageName);
+		new RegisterSourceGenerator(getBuilderModel(sessionID, app).getRegisterSpecHolder()).
 			exportFile(folder, packageName);
 	}
 

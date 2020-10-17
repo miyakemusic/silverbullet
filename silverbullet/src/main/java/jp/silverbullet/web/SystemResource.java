@@ -80,7 +80,7 @@ public class SystemResource {
 	
 	@GET
 	@Path("/nativeLogin")
-	@Produces(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response nativeLogin(@QueryParam("username") final String username, 
 			@QueryParam("password") final String password) {
 		
@@ -99,9 +99,10 @@ public class SystemResource {
 		userStore.updateCookie(username, sessionName);
 		NewCookie newCookie = new NewCookie(new Cookie("SilverBullet", sessionName));
 		
-		return Response.ok(new String()).
+		return Response.ok(new KeyValue("name", username, sessionName)).
 				cookie(newCookie)
 				.build();	
+		
 	}
 	
 	@GET

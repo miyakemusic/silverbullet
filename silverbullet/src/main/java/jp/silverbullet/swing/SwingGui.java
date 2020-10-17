@@ -171,6 +171,9 @@ public class SwingGui extends JFrame {
 		else if (pane.type.equals(WidgetType.Chart)) {
 			new SbChart(pane, uiModel, parent);
 		}
+		else if (pane.type.equals(WidgetType.Image)) {
+			new SbImage(pane, uiModel, parent);
+		}
 		else if (pane.type.equals(WidgetType.Table)) {
 			new SbTable(pane, uiModel, parent);
 		}

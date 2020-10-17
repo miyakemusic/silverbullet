@@ -110,12 +110,7 @@ class Login {
 				url: window.location.origin + resourceRootPath + "newLogin?code=" + code + "&scope=" + scope + "&redirectUri=" + redirectUri,
 				success: function(response, status, xhr) {
 					Cookies.set('silverbulletid', response.value2);
-					var cookie = Cookies.get('silverbulletid');
 					
-/*					var cookie = xhr.getResponseHeader('Set-Cookie');
-					var contentType = xhr.getResponseHeader('Content-Type');
-					var server = xhr.getResponseHeader('Server');
-					var expires = xhr.getResponseHeader('Expires');*/
 					if (response.key == 'name') {
 		 				window.location.href = window.location.origin + me.pathname;
 				   	}
