@@ -117,13 +117,17 @@ public class SwingGui extends JFrame {
 	private BlobStore blobStore;
 	private Sequencer sequencer;
 	
-	public SwingGui(UiBuilder uiBuilder, RuntimePropertyStore runtimePropertyStore, BlobStore blobStore, Sequencer sequencer) {
+	public SwingGui(UiBuilder uiBuilder, RuntimePropertyStore runtimePropertyStore, 
+			BlobStore blobStore, Sequencer sequencer, String gui, String title) {
 		this.runtimePropertyStore = runtimePropertyStore;
 		this.blobStore = blobStore;
 		this.sequencer = sequencer;
 		
+		this.setTitle(title);
+		
 		JComboBox<String> rootPanes = new JComboBox<>();
 		uiBuilder.getRootList().forEach(root -> rootPanes.addItem(root));
+
 		this.getContentPane().setLayout(new BorderLayout());
 		JPanel mainPane = new JPanel();
 
@@ -136,13 +140,13 @@ public class SwingGui extends JFrame {
 				mainPane.removeAll();
 				
 				Pane pane = uiBuilder.getRootPane(rootPanes.getSelectedItem().toString(), true);
-//				mainPane.setBorder(new TitledBorder("FRAME " + pane.layout.toString()));
 				parsePane(pane, mainPane);
 				getContentPane().repaint();
 			}
 		});
-			
-		this.setSize(new Dimension(1200, 800));
+		
+		rootPanes.setSelectedItem(gui);
+		this.setSize(new Dimension(800, 600));
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 
@@ -185,23 +189,6 @@ public class SwingGui extends JFrame {
 				panel.setBorder(new TitledBorder(uiModel.getUiProperty(pane.id).getTitle()));
 			}
 			
-//			try {
-//				float width = Float.parseFloat(pane.css("width"));
-//				float height = Float.parseFloat(pane.css("height"));
-//				panel.setSize(new Dimension((int)width, (int)height));
-//			}
-//			catch(Exception e) {
-//				
-//			}
-//			try {
-//				float top = Float.valueOf(pane.css("top").replace("px", ""));
-//				float left = Float.valueOf(pane.css("left").replace("px", ""));
-//				panel.setLocation((int)left, (int)top);
-//			}
-//			catch(Exception e) {
-//				panel.setLocation(0, 0);
-//			}			
-//			panel.setBorder(new TitledBorder(""));
 			if (pane.layout.equals(Layout.VERTICAL)) {
 				//panel.setLayout(new VerticalLayout());
 				panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
