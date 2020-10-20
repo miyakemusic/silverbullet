@@ -3,6 +3,9 @@ package jp.silverbullet.swing;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -35,7 +38,15 @@ public class SbTextField extends SbWidget {
 //		panel.add(title);
 //		panel.add(field);
 //		panel.add(unit);
-		
+		field.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				  int keycode = e.getKeyCode();
+				  if (keycode == KeyEvent.VK_ENTER){
+					  setValue(field.getText());
+				  }
+			}
+		});
 		parent.add(field);
 	}
 
