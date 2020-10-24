@@ -13,7 +13,7 @@ class MyWebSocket {
 		connection.onopen = function () {
 			var obj = new Object();
 			obj.type = 'UserClient';
-			obj.sessionID = Cookies.get('silverbulletid');
+			obj.sessionName = Cookies.get('silverbulletid');
 			obj.application = '';
 			obj.device = '';
 			connection.send(JSON.stringify(obj));
@@ -50,6 +50,9 @@ class MyWebSocket {
 
 class MyWebSocket2 {
 	constructor() {
+	}
+	
+	start() {
 		this.listeners = new Map();
 		////////// WebSocket //////////
 		var wsHeader = "ws";
@@ -62,7 +65,7 @@ class MyWebSocket2 {
 		connection.onopen = function () {
 			var obj = new Object();
 			obj.type = 'UserClient';
-			obj.sessionID = Cookies.get('silverbulletid');
+			obj.sessionName = Cookies.get('silverbulletid');
 			obj.application = '';
 			obj.device = '';
 			connection.send(JSON.stringify(obj));

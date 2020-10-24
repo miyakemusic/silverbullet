@@ -1,17 +1,31 @@
 package jp.silverbullet.dev;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
-import jp.silverbullet.core.register2.RegisterUpdates;
+
 import jp.silverbullet.dev.sourcegenerator.PropertySourceGenerator;
 import jp.silverbullet.dev.sourcegenerator.RegisterSourceGenerator;
-import jp.silverbullet.web.PersistentSequencer;
 import jp.silverbullet.web.UserStore;
 import jp.silverbullet.web.WebSocketBroadcaster;
 import jp.silverbullet.web.auth.PersonalResponse;
 
 public class StaticInstances {
-
+//	public enum ServerMode {
+//		DEV,
+//		RUNTIME
+//	}
+//	private ServerMode serverMode;
+//	public void setServerMode(String mode) {
+//		serverMode = ServerMode.valueOf(mode);
+//	}
+//
+//	public ServerMode getServerMode() {
+//		return serverMode;
+//	}
+	
 	private UserStore userStore = new UserStore();
 	private BuilderModelHolder builderModelHolder = new BuilderModelHolder() {
 
@@ -30,8 +44,8 @@ public class StaticInstances {
 
 	}
 	
-	public String save(String sessionID, String app) {
-		String userid = userStore.findBySessionID(sessionID).getPersonal().id;
+	public String save(String sessionName, String app) {
+		String userid = userStore.findBySessionName(sessionName).getPersonal().id;
 		return this.builderModelHolder.save(userid, app);
 	}
 
@@ -42,13 +56,13 @@ public class StaticInstances {
 		}
 	}
 
-	public BuilderModelImpl getBuilderModel(String sessionID, String app) {
-		String userid = userStore.findBySessionID(sessionID).getPersonal().id;
+	public BuilderModelImpl getBuilderModel(String sessionName, String app) {
+		String userid = userStore.findBySessionName(sessionName).getPersonal().id;
 		return this.builderModelHolder.get(userid, app);
 	}
 
-	public BuilderModelImpl getBuilderModelBySessionID(String sessionID, String app, String device) {
-		String userid = userStore.findBySessionID(sessionID).getPersonal().id;
+	public BuilderModelImpl getBuilderModelBySessionName(String sessionName, String app, String device) {
+		String userid = userStore.findBySessionName(sessionName).getPersonal().id;
 		return this.builderModelHolder.getBuilderModel(userid, app, device);
 	}
 
@@ -56,24 +70,23 @@ public class StaticInstances {
 		return this.builderModelHolder.getBuilderModel(userid, app, device);
 	}
 	
-	public void generateSource(String sessionID, String app) {
-//		String userid = userStore.findBySessionID(sessionID).getPersonal().id;
-		String info = getBuilderModel(sessionID, app).getSourceInfo();
+	public void generateSource(String sessionName, String app) {
+		String info = getBuilderModel(sessionName, app).getSourceInfo();
 		String folder = info.split(";")[0];
 		String packageName = info.split(";")[1];
-		new PropertySourceGenerator(getBuilderModel(sessionID, app).getPropertiesHolder2()).generate(folder, packageName);
-		new RegisterSourceGenerator(getBuilderModel(sessionID, app).getRegisterSpecHolder()).
+		new PropertySourceGenerator(getBuilderModel(sessionName, app).getPropertiesHolder2()).generate(folder, packageName);
+		new RegisterSourceGenerator(getBuilderModel(sessionName, app).getRegisterSpecHolder()).
 			exportFile(folder, packageName);
 	}
 
-	public void newApplication(String sessionID) {
-		String userid = userStore.findBySessionID(sessionID).getPersonal().id;
-		this.builderModelHolder.newApplication(userid, sessionID);
+	public void newApplication(String sessionName) {
+		String userid = userStore.findBySessionName(sessionName).getPersonal().id;
+		this.builderModelHolder.newApplication(userid, sessionName);
 	}
 
 
-	public List<String> getApplications(String sessionID) {
-		String userid = userStore.findBySessionID(sessionID).getPersonal().id;
+	public List<String> getApplications(String sessionName) {
+		String userid = userStore.findBySessionName(sessionName).getPersonal().id;
 		return this.builderModelHolder.getApplications(userid);
 	}
 
@@ -86,22 +99,45 @@ public class StaticInstances {
 		this.builderModelHolder.deleteDevice(userid, app, device);
 	}
 
-	public void login(String sessionID, PersonalResponse personal) {
-		//UserStore userStore = SilverBulletServer.getStaticInstance().getUserStore();
-		userStore.put(sessionID, personal);
+	public void login(String sessionName, PersonalResponse personal) {
+		userStore.put(sessionName, personal);
 		if (!builderModelHolder.containsId(personal.id)) {
 			builderModelHolder.createNewAccount(personal.id);
 		}
 	}
 
-	public String getUserID(String sessionId) {
-		return this.userStore.findBySessionID(sessionId).getPersonal().id;
+	public String getUserID(String sessionName) {
+		return this.userStore.findBySessionName(sessionName).getPersonal().id;
 	}
 
-	public void sendMessageToDevice(String sessionID, String app, String device, String message) {
-		String userid = userStore.findBySessionID(sessionID).getPersonal().id;
+	public void sendMessageToDevice(String sessionName, String app, String device, String message) {
+		String userid = userStore.findBySessionName(sessionName).getPersonal().id;
 		WebSocketBroadcaster.getInstance().sendMessageToDomainModel(userid, device, message);
 
 	}
+
+	public void copyConfigToDefault(String id, String application) {
+		String sourceFile = BuilderModelHolder.PERSISTENT_FOLDER + "/" + id + "/" + application + ".zip";
+		String targetFolder = BuilderModelHolder.PERSISTENT_FOLDER + "/" + BuilderModelHolder.DEFAULT_USER_SERIAL;
+		if (!Files.exists(Paths.get(targetFolder))) {
+	 		try {
+				Files.createDirectory(Paths.get(targetFolder));
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}		
+		}
+
+		String targetFile = BuilderModelHolder.PERSISTENT_FOLDER + "/" + BuilderModelHolder.DEFAULT_USER_SERIAL + 
+				"/" + BuilderModelHolder.DEFAULT_USER_FILE;
+		
+		try {
+			Files.copy(Paths.get(sourceFile), Paths.get(targetFile));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+
 
 }

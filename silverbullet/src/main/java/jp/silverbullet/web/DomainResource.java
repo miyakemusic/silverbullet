@@ -113,16 +113,7 @@ public class DomainResource {
 	@Path("/{device}/getUiEntry")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String getUiEntry(@PathParam("app") String app, @PathParam("device") String device) {
-		if (device.startsWith("OTDR")) {
-			return "OTDR2";
-		}
-		else if (device.startsWith("OSC")) {
-			return "OSC2";
-		}
-		else if (device.startsWith("COMBI")) {
-			return "MAIN";
-		}
-		return "ERROR";
+		return device.replaceAll("[0-9]", "");
 	}
 	
 	@GET

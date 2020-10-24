@@ -10,6 +10,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 
+import jp.silverbullet.dev.StaticInstances;
 import jp.silverbullet.web.auth.PersonalResponse;
 
 @Provider
@@ -24,6 +25,9 @@ public class AuthenticationFilter implements ContainerRequestFilter
 			SYSTEMPATH + "getAuthUrl", SYSTEMPATH + "loginAndroid");
 	@Override
 	public void filter(ContainerRequestContext requestContext) throws IOException {	  
+//		if (SilverBulletServer.getStaticInstance().getServerMode().equals(StaticInstances.ServerMode.RUNTIME)) {
+//			return;
+//		}
 		MultivaluedMap<String, String> queryParameters = requestContext.getUriInfo().getQueryParameters();
 		
 		for (String path : extPath) {
@@ -33,9 +37,9 @@ public class AuthenticationFilter implements ContainerRequestFilter
 		}
 		
 		if (requestContext.getCookies().containsKey("SilverBullet")) {
-			String sessionID = requestContext.getCookies().get("SilverBullet").getValue();
+			String sessionName = requestContext.getCookies().get("SilverBullet").getValue();
 //			System.out.println("Cookie:" + cookie);
-			PersonalResponse rs = SilverBulletServer.getStaticInstance().getUserStore().getBySessionID(sessionID);
+			PersonalResponse rs = SilverBulletServer.getStaticInstance().getUserStore().getBySessionName(sessionName);
 			return;
 		}
 		else {

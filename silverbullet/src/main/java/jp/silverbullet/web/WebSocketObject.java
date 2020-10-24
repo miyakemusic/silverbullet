@@ -27,7 +27,7 @@ public class WebSocketObject {
     	try {
     		WsLoginMessage obj = new ObjectMapper().readValue(message, WsLoginMessage.class);
     		if (obj.type.equals(WsLoginMessage.UserClient)) {
-    			WebSocketBroadcaster.getInstance().registerAsBrowser(obj.sessionID, this);
+    			WebSocketBroadcaster.getInstance().registerAsBrowser(obj.sessionName, this);
     		}
     		else if (obj.type.equals(WsLoginMessage.DomainModel)) {
     			WebSocketBroadcaster.getInstance().registerAsDevice(obj.userid, obj.device, this);

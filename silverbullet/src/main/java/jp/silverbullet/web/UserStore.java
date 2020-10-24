@@ -47,42 +47,42 @@ public class UserStore {
 			e.printStackTrace();
 		}
 	}
-	public void put(String sessionID, PersonalResponse value) {
+	public void put(String sessionName, PersonalResponse value) {
 		if (data.getMap().containsKey(value.id)) {
 			PersonalCookie pc = data.getMap().get(value.id);
-			pc.setSessionID(sessionID);
+			pc.setSessionName(sessionName);
 			pc.setPersonal(value);
 		}
 		else {
-			this.data.getMap().put(value.id, new PersonalCookie(sessionID, value));
+			this.data.getMap().put(value.id, new PersonalCookie(sessionName, value));
 		}
 		save();
 	}
 
-	public boolean containsCookie(String sessionID) {
+	public boolean containsCookie(String sessionName) {
 		for (PersonalCookie p : data.getMap().values()) {
-			if (p.getSessionID().equals(sessionID)) {
+			if (p.getSessionName().equals(sessionName)) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	public PersonalResponse getBySessionID(String sessionID) {
+	public PersonalResponse getBySessionName(String sessionName) {
 		for (PersonalCookie p : data.getMap().values()) {
-			if (p.getSessionID().equals(sessionID)) {
+			if (p.getSessionName().equals(sessionName)) {
 				return p.getPersonal();
 			}
 		}
 		return null;
 	}
 
-	public void remove(String sessionID) {
+	public void remove(String sessionName) {
 		for (String key : this.data.getMap().keySet()) {
 			PersonalCookie c = this.data.getMap().get(key);
-			if (c.getSessionID().equals(sessionID)) {
+			if (c.getSessionName().equals(sessionName)) {
 				//this.map.remove(key);
-				c.setSessionID("");
+				c.setSessionName("");
 				return;
 			}
 		}
@@ -120,15 +120,15 @@ public class UserStore {
 		}
 	}
 
-	public void updateCookie(String username, String sessionID) {
+	public void updateCookie(String username, String sessionName) {
 		PersonalCookie c= this.findByUser(username);
-		c.setSessionID(sessionID);
+		c.setSessionName(sessionName);
 	}
 
-	public PersonalCookie findBySessionID(String sessionID) {
+	public PersonalCookie findBySessionName(String sessionName) {
 		for (String key : this.data.getMap().keySet()) {
 			PersonalCookie c = this.data.getMap().get(key);
-			if (c.getSessionID().equals(sessionID)) {
+			if (c.getSessionName().equals(sessionName)) {
 				return c;
 			}
 		}

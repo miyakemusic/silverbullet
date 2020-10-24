@@ -7,6 +7,6 @@ public class WsLoginMessage {
 	public String type;
 	public String application;
 	public String device;
-	public String sessionID;
+	public String sessionName;
 	public String userid;
 }

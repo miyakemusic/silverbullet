@@ -11,7 +11,6 @@
 <script type="text/javascript" src="lib/jquery.ui-contextmenu.min.js"></script>
 <script type="text/javascript" src="lib/jquery.keyboard.min.js"></script>
 <script type="text/javascript" src="lib/jquery.keyboard.extension-all.min.js"></script>
-<script type="text/javascript" src="lib/jquery.resizableColumns.min.js"></script>
 
 <script type="text/javascript" src="mywebsocket.js"></script>
 <script type="text/javascript" src="login.js"></script>
@@ -53,6 +52,7 @@ $(function() {
 		$('#mainFunction').hide();
 
 		var loginListener = function(name) {
+			websocket.start();
 			$.ajax({
 				type: "GET", 
 				url: "//" + window.location.host + "/rest/getApplications",
@@ -139,6 +139,14 @@ $(function() {
 				   }
 				});
 			});
+			$('#updateDefault').click(function() {
+				$.ajax({
+				   type: "GET", 
+				   url: "//" + window.location.host + "/rest/updateDefaultAccount?application=" + application,
+				   success: function(property){
+				   }
+				});
+			});
 		}
 	});
 	
@@ -186,6 +194,7 @@ $(function() {
 	<button id="newApplication">New Application</button>
 	<button id="save">Save</button><button id="generateSource">Generate Source</button>
 	<button id="saveParameters">Save Parameters</button><button id="loadParameters">Load Parameters</button>
+	<button id="updateDefault">Update Default</button>
 	<span id="loginName"></span>
 	<div id="tab">
 	  <ul>
@@ -216,6 +225,5 @@ $(function() {
 </div>
 <div id="login">
 </div>
-<div><a href="mailto:sora-info@anritsu.com?subject=Forgot Email&body=Serial:123456789">Mail</a></div>
 </body>
 </html>

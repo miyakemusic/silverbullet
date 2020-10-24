@@ -146,7 +146,7 @@ public class SwingGui extends JFrame {
 		});
 		
 		rootPanes.setSelectedItem(gui);
-		this.setSize(new Dimension(500, 400));
+		this.setSize(new Dimension(600, 400));
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 

@@ -68,7 +68,7 @@ public class SelfBuildResource {
 			String[] tmp = filename.split("\\.");
 			String fname  = tmp[0] + "_" + sdf.format(Calendar.getInstance().getTime()) + "." + tmp[1];
 			SilverBulletServer.getStaticInstance().getBuilderModel(cookie, app).saveParameters(fname);		
-			String access_token = SilverBulletServer.getStaticInstance().getUserStore().findBySessionID(cookie).getPersonal().getAccess_token();
+			String access_token = SilverBulletServer.getStaticInstance().getUserStore().findBySessionName(cookie).getPersonal().getAccess_token();
 
 			String fileID = new GoogleDrivePost().type("application/json").type("text/plain").filename(fname)
 					.post(access_token, "/SilverBullet/Applications/" + app + "/parameters/" + fname);
@@ -99,7 +99,7 @@ public class SelfBuildResource {
 		UserStore userStore = SilverBulletServer.getStaticInstance().getUserStore();
 		
 		String filename = SilverBulletServer.getStaticInstance().save(cookie, app);
-		PersonalCookie r = userStore.findBySessionID(cookie);
+		PersonalCookie r = userStore.findBySessionName(cookie);
 		
 //		filename = "C:\\Users\\miyak\\git\\openti\\openti\\sv_tmp\\id_def.json";
 		

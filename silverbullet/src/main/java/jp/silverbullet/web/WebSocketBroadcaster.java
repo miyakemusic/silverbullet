@@ -10,8 +10,6 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.eclipse.jetty.websocket.client.WebSocketClient;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class WebSocketBroadcaster {
@@ -32,8 +30,9 @@ public class WebSocketBroadcaster {
 //		return domainModels;
 //	}
 
-	public void registerAsBrowser(String sessionID, WebSocketObject client) {
-		String userid = SilverBulletServer.getStaticInstance().getUserStore().getBySessionID(sessionID).id;
+	public void registerAsBrowser(String sessionName, WebSocketObject client) {
+		System.out.println("registerAsBrowser -> " + sessionName);
+		String userid = SilverBulletServer.getStaticInstance().getUserStore().getBySessionName(sessionName).id;
 		if (!this.clients.containsKey(userid)) {
 			this.clients.put(userid, new ArrayList<WebSocketObject>());
 		}

@@ -9,13 +9,13 @@ import org.eclipse.jetty.webapp.WebAppContext;
 public class BuilderServer {
 	
 	public static void main(String[] arg) {
-		new BuilderServer(8081, "http", new BuilderServerListener() {
-			@Override
-			public void onStarted() {
-				// TODO Auto-generated method stub
-				
-			}
-		});
+//		new BuilderServer(8081, "http", new BuilderServerListener() {
+//			@Override
+//			public void onStarted() {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//		});
 	}
 
 	private BuilderServerListener listener;
@@ -30,9 +30,7 @@ public class BuilderServer {
 		}.start();
 	}
 	
-	private void initializeWebServer(int port, String protocol) {
-//		new AuthenticationFilter();
-		
+	private void initializeWebServer(int port, String protocol) {	
 		Server server = null;//new Server(port);
         
 		System.out.println(protocol);

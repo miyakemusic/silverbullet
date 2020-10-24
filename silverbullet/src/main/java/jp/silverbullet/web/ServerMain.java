@@ -1,6 +1,5 @@
 package jp.silverbullet.web;
 
-import java.util.Arrays;
 import java.util.List;
 
 import jp.silverbullet.core.register2.RegisterAccessor;

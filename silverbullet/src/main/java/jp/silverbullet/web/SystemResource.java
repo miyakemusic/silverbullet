@@ -19,6 +19,7 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import jp.silverbullet.core.KeyValue;
+import jp.silverbullet.dev.BuilderModelHolder;
 import jp.silverbullet.web.auth.GoogleAccressTokenResponse;
 import jp.silverbullet.web.auth.GoogleHandlerImpl;
 import jp.silverbullet.web.auth.ExternalStorageService;
@@ -47,6 +48,64 @@ public class SystemResource {
 		return list;
 	}
 
+	@GET
+	@Path("/createDefaultAccound")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response createDefault() {
+		String sessionName = String.valueOf(System.currentTimeMillis()); 
+		String userSerial = BuilderModelHolder.DEFAULT_USER_SERIAL;
+
+		String username = "silverbullet";
+		String password = "silverbullet";
+		
+		PersonalResponse personal = createNative(username, password, "", "", "", userSerial, sessionName);
+		if (personal == null) {
+			return Response.serverError().build();
+		}
+		NewCookie newCookie = new NewCookie(new Cookie("SilverBullet", sessionName));
+		
+		return Response.ok(new String()).
+				cookie(newCookie)
+				.build();	
+	}
+	
+	@GET
+	@Path("/updateDefaultAccount")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response updateDefaultAccount(@CookieParam("SilverBullet") String cookie, 
+			@QueryParam("application") final String application) {
+		UserStore userStore = SilverBulletServer.getStaticInstance().getUserStore();
+		
+		if (!userStore.containsNativeUser(BuilderModelHolder.DEFAULT_USER_SERIAL)) {
+			createDefault();
+		}
+		SilverBulletServer.getStaticInstance().copyConfigToDefault(userStore.getBySessionName(cookie).getId(), application);
+		return Response.ok(new String())
+				.build();	
+	}
+	
+	private PersonalResponse createNative(String username, String password, String firstName,
+			String familyName, String email, String useSerial, String sessionName) {
+		
+		UserStore userStore = SilverBulletServer.getStaticInstance().getUserStore();
+		
+		if (userStore.containsNativeUser(username)) {
+			//return Response.serverError().build();
+			return null;
+		}
+		
+		PersonalResponse personal = new PersonalResponse();
+		personal.name = username;
+		personal.id = useSerial;
+		personal.basicPassword = DigestUtils.shaHex(password);
+		personal.email = email;
+		personal.given_name = firstName;
+		personal.family_name = familyName;
+		
+		userStore.put(sessionName, personal);
+		
+		return personal;
+	}
 	
 	@GET
 	@Path("/nativeCreate")
@@ -55,22 +114,29 @@ public class SystemResource {
 			@QueryParam("password") final String password, @QueryParam("firstname") final String firstname,
 			@QueryParam("familyname") final String familyname, @QueryParam("email") final String email) {
 		
-		UserStore userStore = SilverBulletServer.getStaticInstance().getUserStore();
+		String sessionName = String.valueOf(System.currentTimeMillis()); 
 		
-		if (userStore.containsNativeUser(username)) {
+//		UserStore userStore = SilverBulletServer.getStaticInstance().getUserStore();
+//		
+//		if (userStore.containsNativeUser(username)) {
+//			return Response.serverError().build();
+//		}
+//		
+//		
+//		PersonalResponse personal = new PersonalResponse();
+//		personal.name = username;
+//		personal.id = "Native" + sessionName;
+//		personal.basicPassword = DigestUtils.shaHex(password);
+//		personal.email = email;
+//		personal.given_name = firstname;
+//		personal.family_name = familyname;
+//		
+//		userStore.put(sessionName, personal);
+		PersonalResponse personal = createNative(username, password, firstname, familyname, email, sessionName, "Navive"+sessionName);
+		if (personal == null) {
 			return Response.serverError().build();
 		}
-
-		PersonalResponse personal = new PersonalResponse();
-		personal.name = username;
-		personal.id = "Native" + String.valueOf(System.currentTimeMillis());
-		personal.basicPassword = DigestUtils.shaHex(password);
-		personal.email = email;
-		personal.given_name = firstname;
-		personal.family_name = familyname;
-		String sessionName = String.valueOf(System.currentTimeMillis()); 
-
-		userStore.put(sessionName, personal);
+		
 		NewCookie newCookie = new NewCookie(new Cookie("SilverBullet", sessionName));
 		
 		return Response.ok(new String()).
@@ -84,6 +150,8 @@ public class SystemResource {
 	public Response nativeLogin(@QueryParam("username") final String username, 
 			@QueryParam("password") final String password) {
 		
+		System.out.println("nativeLogin " + username + "/" + password);
+		
 		UserStore userStore = SilverBulletServer.getStaticInstance().getUserStore();
 		if (!userStore.containsNativeUser(username)) {
 			return Response.serverError().build();
@@ -91,8 +159,6 @@ public class SystemResource {
 		if (!userStore.matchesNativePassword(username, password)) {
 			return Response.serverError().build();
 		}
-//		PersonalResponse personal = new PersonalResponse();
-//		personal.name = username;
 
 		String sessionName = String.valueOf(System.currentTimeMillis()); 
 
@@ -127,7 +193,7 @@ public class SystemResource {
 		
 		if (cookie != null) {
 			if (userStore.containsCookie(cookie)) {
-				PersonalResponse res = userStore.getBySessionID(cookie);
+				PersonalResponse res = userStore.getBySessionName(cookie);
 				return Response.ok(new KeyValue("name", res.name)).build();
 			}
 		}
@@ -150,69 +216,19 @@ public class SystemResource {
 		personal.access_token = access_token;
 		personal.auth_code = code;
 
-		String sessionId = request.getSession().getId();//String.valueOf(System.currentTimeMillis()); 
+		String sessionName = request.getSession().getId();//String.valueOf(System.currentTimeMillis()); 
 
-		SilverBulletServer.getStaticInstance().login(sessionId, personal);
-		
-		//NewCookie(Cookie cookie, String comment, int maxAge, Date expiry, boolean secure, boolean httpOnly)
-		NewCookie newCookie = new NewCookie(new Cookie("SilverBullet", sessionId));
+		SilverBulletServer.getStaticInstance().login(sessionName, personal);
+		NewCookie newCookie = new NewCookie(new Cookie("SilverBullet", sessionName));
 		
         Calendar cl = Calendar.getInstance();
         cl.add(Calendar.YEAR, 1);
-        
- //       System.out.println(cl.getTime());
-//		NewCookie newCookie = new NewCookie(new Cookie("SilverBullet", sessionId), "Session ID", -1, cl.getTime(), true, true);
-		
-		return Response.ok(new KeyValue("name", personal.name, sessionId)).
+	
+		return Response.ok(new KeyValue("name", personal.name, sessionName)).
 				cookie(newCookie)
 				.build();		
 	}
-	
-//	@GET
-//	@Path("/login")
-//	@Produces(MediaType.APPLICATION_JSON)
-//	public Response login(@CookieParam("SilverBullet") String cookie, @QueryParam("code") final String code, @QueryParam("scope") final String scope,
-//			@QueryParam("redirectUri") final String redirectUri) throws URISyntaxException {
-//
-//		try {
-//			String access_token;
-//			PersonalResponse personal;
-//			
-//			if (userStore.containsCookie(cookie)) {
-//				access_token = userStore.get(cookie).access_token;
-//				personal = userStore.get(cookie);
-//				return Response.ok(new KeyValue("Complete", personal.name)).build();
-//			}
-//			else {
-//				GoogleAccressTokenResponse accessToken = googleHandler.retrieveAccessToken(code, redirectUri);
-//				access_token = accessToken.access_token;
-//				personal = googleHandler.retrievePersonal(access_token);
-//				personal.access_token = access_token;
-//				personal.auth_code = code;
-//
-//				String sessionName = String.valueOf(System.currentTimeMillis()); 
-//
-//				userStore.put(sessionName, personal);
-//				
-//				NewCookie newCookie = new NewCookie(new Cookie("SilverBullet", sessionName, "/rest", ""));
-//				//NewCookie newCookie = new NewCookie("SilverBullet", sessionName);
-//				//NewCookie newCookie = new NewCookie(new Cookie("SilverBullet", sessionName));
-//				return Response.ok(new KeyValue("Complete", personal.name)).
-//						cookie(newCookie)
-//						.build();
-//					
-//			}
-//			
-//			//return new KeyValue("Complete", personal.name);	
-//		}
-//		catch (Exception e) {
-////			e.printStackTrace();
-//			String url = googleHandler.getAuthUri(redirectUri);
-//			return Response.ok(new KeyValue("RedirectAuth", url)).build();
-//			//return new KeyValue("RedirectAuth", url);
-//		}
-//	}
-	
+		
 	@GET
 	@Path("/logout")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -222,59 +238,7 @@ public class SystemResource {
 		userStore.remove(cookie);
 		return Response.ok().build();
 	}
-		
-//	@GET
-//	@Path("/loginTmp")
-//	@Produces(MediaType.APPLICATION_JSON)
-//	public Response login2(@QueryParam("code") final String code, @QueryParam("scope") final String scope,
-//			@QueryParam("redirectUri") final String redirectUri) throws URISyntaxException {
-//
-//		try {
-//			String access_token;
-//
-//			if (authMap.stores(code)) {
-//				access_token = authMap.getByCode(code).access_token;
-//			}
-//			else {
-//				GoogleAccressTokenResponse accessToken = googleHandler.retrieveAccessToken(code, redirectUri);
-//				access_token = accessToken.access_token;
-//			}
-//			PersonalResponse personal = googleHandler.retrievePersonal(access_token);
-//			personal.access_token = access_token;
-//			personal.auth_code = code;
-//			
-//			authMap.add(personal);
-//			
-//			String sessionName = String.valueOf(System.currentTimeMillis()); 
-//			
-//			return Response.ok(new KeyValue("Complete", personal.name)).
-//					cookie(new NewCookie("SilverBullet", sessionName)).build();	
-//		}
-//		catch (Exception e) {
-//			String url = googleHandler.getAuthUri(redirectUri);
-//			return Response.ok(new KeyValue("RedirectAuth", url)).build();
-//		}
-//	}
-	
-//	@GET
-//	@Produces(MediaType.TEXT_PLAIN)
-//	@Path("/loginAndroid")
-//	public String loginAndroid(@QueryParam("auth") final String auth)
-//	{
-//		try {
-//			PersonalResponse personal = googleHandler.retrievePersonal(auth);
-//			personal.access_token = auth;
-//			personal.auth_code = auth;
-//			
-//			authMap.add(personal);
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//
-//		return "OK";
-//	}
-	
+			
 	@GET
 	@Path("/undo")
 	public String undo() {
