@@ -109,7 +109,8 @@ class Login {
 				type: "GET", 
 				url: window.location.origin + resourceRootPath + "newLogin?code=" + code + "&scope=" + scope + "&redirectUri=" + redirectUri,
 				success: function(response, status, xhr) {
-					Cookies.set('silverbulletid', response.value2);
+					//Cookies.set('silverbulletid', response.value2);
+					myCookie.set(response.value2);
 					
 					if (response.key == 'name') {
 		 				window.location.href = window.location.origin + me.pathname;

@@ -10,6 +10,7 @@ import java.awt.event.ComponentEvent;
 import java.util.Set;
 
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -36,6 +37,7 @@ import jp.silverbullet.core.ui.part2.UiBuilder;
 import jp.silverbullet.core.ui.part2.WidgetType;
 
 public class SwingGui extends JFrame {
+	protected void onReload() {}
 	private CommitListener commitListener = new CommitListener() {
 
 		@Override
@@ -131,17 +133,27 @@ public class SwingGui extends JFrame {
 		this.getContentPane().setLayout(new BorderLayout());
 		JPanel mainPane = new JPanel();
 
+		JButton reloadButton = new JButton("Reload");
+		JPanel toolBar = new JPanel();
+		this.getContentPane().add(toolBar, BorderLayout.NORTH);
+		toolBar.add(reloadButton);
+		reloadButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				onReload();
+				updateGUI(uiBuilder, rootPanes, mainPane);
+			}
+			
+		});
+		
 		this.getContentPane().add(rootPanes, BorderLayout.SOUTH);
 		this.getContentPane().add(new JScrollPane(mainPane), BorderLayout.CENTER);
 		
 		rootPanes.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				mainPane.removeAll();
-				
-				Pane pane = uiBuilder.getRootPane(rootPanes.getSelectedItem().toString(), true);
-				parsePane(pane, mainPane);
-				getContentPane().repaint();
+				updateGUI(uiBuilder, rootPanes, mainPane);
 			}
 		});
 		
@@ -267,5 +279,13 @@ public class SwingGui extends JFrame {
 //				parsePane(subPane, panel);
 //			}
 //		}
+	}
+
+	private void updateGUI(UiBuilder uiBuilder, JComboBox<String> rootPanes, JPanel mainPane) {
+		mainPane.removeAll();
+		
+		Pane pane = uiBuilder.getRootPane(rootPanes.getSelectedItem().toString(), true);
+		parsePane(pane, mainPane);
+		getContentPane().repaint();
 	}
 }

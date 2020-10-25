@@ -1,3 +1,4 @@
+
 class MyWebSocket {
 	constructor(callback, type) {
 		
@@ -13,7 +14,7 @@ class MyWebSocket {
 		connection.onopen = function () {
 			var obj = new Object();
 			obj.type = 'UserClient';
-			obj.sessionName = Cookies.get('silverbulletid');
+			obj.sessionName = myCookie.get();//Cookies.get('silverbulletid');
 			obj.application = '';
 			obj.device = '';
 			connection.send(JSON.stringify(obj));
@@ -48,6 +49,21 @@ class MyWebSocket {
 	}
 }
 
+class MyCookie {
+	constructor() {
+		this._key = 'silverbulletid';
+	}	
+	key(key) {
+		this._key = key;
+	}
+	set(value) {
+		Cookies.set(this._key, value);
+	}
+	get() {
+		return Cookies.get(this._key);
+	}
+}
+var myCookie = new MyCookie();
 class MyWebSocket2 {
 	constructor() {
 	}
@@ -65,7 +81,7 @@ class MyWebSocket2 {
 		connection.onopen = function () {
 			var obj = new Object();
 			obj.type = 'UserClient';
-			obj.sessionName = Cookies.get('silverbulletid');
+			obj.sessionName = myCookie.get();//Cookies.get('silverbulletid');
 			obj.application = '';
 			obj.device = '';
 			connection.send(JSON.stringify(obj));
@@ -110,4 +126,5 @@ class MyWebSocket2 {
 		this.listeners.get(handler).condition = type;
 	}
 }
+
 var websocket = new MyWebSocket2();

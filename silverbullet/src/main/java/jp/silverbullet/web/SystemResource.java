@@ -148,7 +148,7 @@ public class SystemResource {
 	@Path("/nativeLogin")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response nativeLogin(@QueryParam("username") final String username, 
-			@QueryParam("password") final String password) {
+			@QueryParam("password") final String password, @Context HttpServletRequest request) {
 		
 		System.out.println("nativeLogin " + username + "/" + password);
 		
@@ -160,7 +160,7 @@ public class SystemResource {
 			return Response.serverError().build();
 		}
 
-		String sessionName = String.valueOf(System.currentTimeMillis()); 
+		String sessionName = request.getSession().getId();//String.valueOf(System.currentTimeMillis()); 
 
 		userStore.updateCookie(username, sessionName);
 		NewCookie newCookie = new NewCookie(new Cookie("SilverBullet", sessionName));

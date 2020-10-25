@@ -10,6 +10,7 @@ import jp.silverbullet.core.JsonPersistent;
 import jp.silverbullet.web.auth.PersonalResponse;
 
 class UserStoreData {
+	// key is user serial number
 	private Map<String, PersonalCookie> map = new HashMap<>();
 
 	public Map<String, PersonalCookie> getMap() {
