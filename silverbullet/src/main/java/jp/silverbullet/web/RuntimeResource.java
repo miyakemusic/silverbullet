@@ -10,6 +10,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -78,6 +79,19 @@ public class RuntimeResource {
 		return SilverBulletServer.getStaticInstance().getBuilderModelBySessionName(cookie, app, device).requestChangeByUser(id, index, value);
 	}
 
+	@GET
+	@Path("/justSelect")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public Response justSelect(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @PathParam("device") String device,
+			@QueryParam("id") String id, @QueryParam("index") Integer index) {
+		
+		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
+		RuntimeProperty prop = SilverBulletServer.getStaticInstance().getBuilderModelBySessionName(cookie, app, device).getRuntimePropertyStore().get(id);
+		SilverBulletServer.getStaticInstance().getBuilderModelHolder().getAutomator(userid).addEval(device,id, prop.getCurrentValue());
+		
+		return Response.ok().build();
+	}
+	
 	@GET
 	@Path("/defaultValues")
 	@Produces(MediaType.TEXT_PLAIN) 

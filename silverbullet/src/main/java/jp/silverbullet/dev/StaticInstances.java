@@ -56,6 +56,10 @@ public class StaticInstances {
 		}
 	}
 
+	public BuilderModelHolder getBuilderModelHolder() {
+		return builderModelHolder;
+	}
+
 	public BuilderModelImpl getBuilderModel(String sessionName, String app) {
 		String userid = userStore.findBySessionName(sessionName).getPersonal().id;
 		return this.builderModelHolder.get(userid, app);

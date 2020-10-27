@@ -23,6 +23,7 @@ import com.sun.org.apache.xml.internal.security.utils.Base64;
 
 import jp.silverbullet.core.property2.LightProperty;
 import jp.silverbullet.core.property2.RuntimeProperty;
+import jp.silverbullet.dev.Automator;
 
 @Path("/{app}/domain")
 public class DomainResource {
@@ -40,7 +41,33 @@ public class DomainResource {
 			return new ArrayList<String>();
 		}
 	}
-
+	@GET
+	@Path("/record")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public Response record(@CookieParam("SilverBullet") String cookie) {
+		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
+		Automator automator = SilverBulletServer.getStaticInstance().getBuilderModelHolder().getAutomator(userid);
+		automator.clear();
+		return Response.ok().build();
+	}
+	@GET
+	@Path("/script")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public List<String> selectDevice(@CookieParam("SilverBullet") String cookie) {
+		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
+		Automator automator = SilverBulletServer.getStaticInstance().getBuilderModelHolder().getAutomator(userid);
+		return automator.getLines();
+	}
+	
+//	@GET
+//	@Path("/{device}/selectDevice")
+//	@Produces(MediaType.APPLICATION_JSON) 
+//	public Response selectDevice(@CookieParam("SilverBullet") String cookie) {
+//		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
+//		Map<String, WebSocketObject> set = WebSocketBroadcaster.getInstance().getDomainModels(userid);
+//		return Response.ok().build();
+//	}
+	
 	@GET
 	@Path("/{device}/login")
 	@Produces(MediaType.TEXT_PLAIN) 

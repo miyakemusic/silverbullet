@@ -11,7 +11,9 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 
+import jp.silverbullet.core.RuntimeListener;
 import jp.silverbullet.core.Zip;
+import jp.silverbullet.core.sequncer.SystemAccessor.DialogAnswer;
 
 class UserModel {
 	private Map<String, BuilderModelImpl> builderModels = new HashMap<>();
@@ -44,9 +46,14 @@ public abstract class BuilderModelHolder {
 	public static final String DEFAULT_USER_FILE = "silverbullet.zip";
 	
 	private Map<String, UserModel> allUsers = new HashMap<>();
+	private Map<String, Automator> automators = new HashMap<>(); // key is userid
 	
 	public BuilderModelHolder() {
 
+	}
+
+	public Automator getAutomator(String userid) {
+		return automators.get(userid);
 	}
 
 	public String save(String userid, String app) {
@@ -155,6 +162,8 @@ public abstract class BuilderModelHolder {
 			Map<String, BuilderModelImpl> runtimeModels = this.allUsers.get(userid).getRuntimeModels();
 			BuilderModelImpl r = this.loadAfile(userid, PERSISTENT_FOLDER + "/" + userid + "/" + app + ".zip", device);
 			runtimeModels.put(device, r);
+			
+			r.getSequencer().addSequencerListener(createAutomator(userid).createListener(device));
 			System.out.println("Runtime Model was generated. :" + 
 					device + " @" + Thread.currentThread().getName() + ":" + runtimeModels.hashCode());
 			return r;
@@ -162,6 +171,13 @@ public abstract class BuilderModelHolder {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	private Automator createAutomator(String userid) {
+		if (!this.automators.containsKey(userid)) {
+			this.automators.put(userid, new Automator());
+		}
+		return this.automators.get(userid);
 	}
 
 	public void createDevice(String userid, String app, String device) {

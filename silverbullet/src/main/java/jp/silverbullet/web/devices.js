@@ -58,6 +58,7 @@ class Devices {
 					$('.deviceButton').on('click', function() {
 						$('#' + deviceId).empty();
 						me.device = $(this).text();
+//						selectDevice(me.device);
 						retreiveUiEntry(me.device, function(result) {
 							new NewLayout(deviceId, result, me.device);
 						});
@@ -76,6 +77,15 @@ class Devices {
 			});
 		}	
 		
+//		function selectDevice(device) {
+//			$.ajax({
+//				type: "GET", 
+//				url: "//" + window.location.host + "/rest/domain/" + device + "/select",
+//				success: function(msg){
+//				}
+//			});
+//		}	
+		
 		function postFile(device) {
 			var file = $('#' + fileId)[0].files[0];
 			var reader = new FileReader();
@@ -93,6 +103,38 @@ class Devices {
 		        });			
 			}
 		}
+		
+		var script = div + "_script";
+		var record = div + "_record";
+		$('#' + div).append('<button id="' + record + '">Record</button>');
+		$('#' + record).click(function() {
+			$.ajax({
+				type: "GET", 
+				url: "//" + window.location.host + "/rest/domain/record",
+				success: function(msg){
+
+				}
+			});
+		});
+		
+		var reload = div + "_reload";
+		$('#' + div).append('<button id="' + reload + '">Reload</button>');
+		$('#' + reload).click(function() {
+			$.ajax({
+				type: "GET", 
+				url: "//" + window.location.host + "/rest/domain/script",
+				success: function(msg){
+					$('#' + script).empty();
+					var lines = '';
+					for (var s of msg) {
+						lines += s + '\n';
+					}
+					$('#' + script).text(lines);
+				}
+			});
+		});
+		
+		$('#' + div).append('<textarea id="' + script + '"></textarea>');
 	}
 }
 class AllDevices {

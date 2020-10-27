@@ -6,9 +6,10 @@ class Widget {
 		this.ajaxRuntime = ajaxRuntime;
 	}
 	
-	accessor(setter, getter) {
+	accessor(setter, getter, selector) {
 		this.setter =  setter;
 		this.getter = getter;
+		this.selector = selector;
 	}
 	
 	onUpdateValue(property) {
@@ -494,9 +495,13 @@ class Button extends Widget {
 class Label extends Widget {
 	constructor(widget, parent, divid) {
 		super(widget, parent, divid);
+		var me = this;
 		
 		this.labelId = divid + "_label";
 		$('#' + this.parent).append('<div id="' + this.divid + '"><label id="' + this.labelId + '"></label></div>');	
+		$('#' + this.labelId).click(function() {
+			me.selector(me.widget.id, 0);
+		});
 	}
 	
 	onUpdateValue(property) {
@@ -1186,6 +1191,16 @@ class NewLayout {
 			}
 		}
 		
+		function selectWidget(id, index) {
+			$.ajax({
+			   type: "GET", 
+			   url: "//" + window.location.host + "/rest/" + me.device + "/runtime/justSelect?id="  +  id + "&index=" + index,
+			   success: function(property){
+			   	
+			   }
+			});		
+		}
+		
 		function retrieveProperty(id, index, callback) {
 			$.ajax({
 			   type: "GET", 
@@ -1333,6 +1348,9 @@ class NewLayout {
 				},
 				function(id, index, callback) {
 					getProperty(id, index, callback);
+				},
+				function(id, index) {
+					selectWidget(id, index);
 				}
 			);
 			
