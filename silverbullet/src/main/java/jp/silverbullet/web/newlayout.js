@@ -6,6 +6,19 @@ class Widget {
 		this.ajaxRuntime = ajaxRuntime;
 	}
 	
+	longPress(targetDiv) {
+		var LONGPRESS = 1500;
+		var timerId;
+		var me = this;
+		$('#' + targetDiv).on("mousedown touchstart",function() {
+			timerId = setTimeout(function() {
+		  		me.selector(me.widget.id, 0);
+			}, LONGPRESS);
+		}).on("mouseup mouseleave touchend",function() {
+		  clearTimeout(timerId);
+		});
+	}
+	
 	accessor(setter, getter, selector) {
 		this.setter =  setter;
 		this.getter = getter;
@@ -499,9 +512,10 @@ class Label extends Widget {
 		
 		this.labelId = divid + "_label";
 		$('#' + this.parent).append('<div id="' + this.divid + '"><label id="' + this.labelId + '"></label></div>');	
-		$('#' + this.labelId).click(function() {
-			me.selector(me.widget.id, 0);
-		});
+//		$('#' + this.labelId).dblclick(function() {
+//			me.selector(me.widget.id, 0);
+//		});
+		this.longPress(this.labelId);
 	}
 	
 	onUpdateValue(property) {
@@ -683,6 +697,8 @@ class ComboBox extends Widget {
 		$('#' + this.comboId).change(function() {
 			me.setter(me.widget.id, 0, $(this).val());
 		});
+		
+		this.longPress(this.comboId);
 	}
 	
 	onUpdateValue(property) {

@@ -16,7 +16,7 @@ public class Automator {
 //	private Set<String> devices = new HashSet<>();
 	private Integer deviceNumber = 1;
 	private Integer variableNumber = 1;
-	
+	private long currentTime = 0;
 	public Automator() {
 
 	}
@@ -27,14 +27,20 @@ public class Automator {
 		AutomatorListener automatorListener = new AutomatorListener() {
 			@Override
 			public void onChangeByUser(String device, String id, String value) {
+				if (currentTime > 0) {
+					long diff = System.currentTimeMillis() - currentTime; 
+					lines.add("//sb.sleep(" + diff + ");");
+				}
 				String line = "sb.write(" + device.toLowerCase() + ", '" + id + "=" + value + "');";
 				lines.add(line);
+
+				currentTime = System.currentTimeMillis();
 			}
 
 			@Override
 			public void onChangeBySystem(String device, String id, String value) {
-				String line = "sb.waitEqual(" + device.toLowerCase() + ", '" + id + "','" + value + "');";
-				lines.add(line);
+//				String line = "sb.waitEqual(" + device.toLowerCase() + ", '" + id + "','" + value + "');";
+//				lines.add(line);
 			}
 		};
 		
