@@ -14,6 +14,7 @@ import org.apache.commons.io.IOUtils;
 
 import jp.silverbullet.dev.sourcegenerator.PropertySourceGenerator;
 import jp.silverbullet.dev.sourcegenerator.RegisterSourceGenerator;
+import jp.silverbullet.web.SilverBulletServer;
 import jp.silverbullet.web.UserStore;
 import jp.silverbullet.web.WebSocketBroadcaster;
 import jp.silverbullet.web.auth.PersonalResponse;
@@ -94,7 +95,6 @@ public class StaticInstances {
 		this.builderModelHolder.newApplication(userid, sessionName);
 	}
 
-
 	public List<String> getApplications(String sessionName) {
 		String userid = userStore.findBySessionName(sessionName).getPersonal().id;
 		return this.builderModelHolder.getApplications(userid);
@@ -105,7 +105,6 @@ public class StaticInstances {
 	}
 
 	public void deleteDevice(String userid, String app, String device) {
-//		String userid = userStore.findByCookie(cookie).personal.id;
 		this.builderModelHolder.deleteDevice(userid, app, device);
 	}
 
@@ -151,18 +150,26 @@ public class StaticInstances {
 	public void createFile(String sessionName, byte bytes[], String filename) {
 		String userid = userStore.findBySessionName(sessionName).getPersonal().id;
 		String path = BuilderModelHolder.PERSISTENT_FOLDER + "/" + userid + "/" + filename;
-
+		
 		try {
-//			FileInputStream inputStream = new FileInputStream(file);
-//	        byte[] bytes = IOUtils.toByteArray(inputStream);
 			Files.write(Paths.get(path), bytes);
+			this.builderModelHolder.load(userid, path);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
+	}
+
+	public void createUser(PersonalResponse personal) {
+		userStore.put(personal);
+		getBuilderModelHolder().createNewAccount(personal.id);
+		try {
+			Files.createDirectories(Paths.get(BuilderModelHolder.PERSISTENT_FOLDER + "/" + personal.id));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 

@@ -60,6 +60,10 @@ public class UserStore {
 		save();
 	}
 
+	public void put(PersonalResponse value) {
+		this.data.getMap().put(value.id, new PersonalCookie("", value));
+	}
+	
 	public boolean containsCookie(String sessionName) {
 		for (PersonalCookie p : data.getMap().values()) {
 			if (p.getSessionName().equals(sessionName)) {

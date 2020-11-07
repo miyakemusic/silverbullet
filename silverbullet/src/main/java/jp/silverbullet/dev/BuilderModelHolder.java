@@ -201,7 +201,8 @@ public abstract class BuilderModelHolder {
 	abstract protected String getAccessToken(String userid);
 
 	public List<String> getApplications(String userid) {
-		Map<String, BuilderModelImpl> builderModels = this.allUsers.get(userid).getBuilderModels();
+		UserModel userModel = this.allUsers.get(userid);
+		Map<String, BuilderModelImpl> builderModels = userModel.getBuilderModels();
 		return new ArrayList<String>(builderModels.keySet());
 	}
 
@@ -237,5 +238,14 @@ public abstract class BuilderModelHolder {
 				e.printStackTrace();
 			}		
 		}
+	}
+
+	public void load(String userid, String path) {
+		try {
+			BuilderModelImpl model = loadAfile(userid, path, NO_DEVICE);
+			this.allUsers.get(userid).getBuilderModels().put(new File(path).getName().replace(".zip", ""), model);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}		
 	}
 }

@@ -99,13 +99,13 @@ public class SystemResource {
 	
 	private PersonalResponse createNative(String username, String password, String firstName,
 			String familyName, String email, String useSerial, String sessionName) {
-		
-		UserStore userStore = SilverBulletServer.getStaticInstance().getUserStore();
-		
-		if (userStore.containsNativeUser(username)) {
-			//return Response.serverError().build();
-			return null;
-		}
+//		
+//		UserStore userStore = SilverBulletServer.getStaticInstance().getUserStore();
+//		
+//		if (userStore.containsNativeUser(username)) {
+//			//return Response.serverError().build();
+//			return null;
+//		}
 		
 		PersonalResponse personal = new PersonalResponse();
 		personal.name = username;
@@ -114,9 +114,7 @@ public class SystemResource {
 		personal.email = email;
 		personal.given_name = firstName;
 		personal.family_name = familyName;
-		
-		userStore.put(sessionName, personal);
-		
+				
 		return personal;
 	}
 	
@@ -125,14 +123,16 @@ public class SystemResource {
 	@Produces(MediaType.TEXT_PLAIN)
 	public Response nativeCreate(@QueryParam("username") final String username, 
 			@QueryParam("password") final String password, @QueryParam("firstname") final String firstname,
-			@QueryParam("familyname") final String familyname, @QueryParam("email") final String email) {
+			@QueryParam("familyname") final String familyname, @QueryParam("email") final String email, @Context HttpServletRequest request) {
 		
-		String sessionName = String.valueOf(System.currentTimeMillis()); 
-
-		PersonalResponse personal = createNative(username, password, firstname, familyname, email, sessionName, "Navive"+sessionName);
+		String sessionName = request.getSession().getId();
+		String userSerial = "Native" + String.valueOf(System.currentTimeMillis());
+		PersonalResponse personal = createNative(username, password, firstname, familyname, email, userSerial, sessionName);
 		if (personal == null) {
 			return Response.serverError().build();
 		}
+		
+		SilverBulletServer.getStaticInstance().createUser(personal);
 		
 		NewCookie newCookie = new NewCookie(new Cookie("SilverBullet", sessionName));
 		
