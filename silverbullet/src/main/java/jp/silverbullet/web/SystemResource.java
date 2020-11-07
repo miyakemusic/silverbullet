@@ -64,7 +64,7 @@ public class SystemResource {
 	@GET
 	@Path("/createDefaultAccound")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response createDefault() {
+	public Response createDefaultAccound() {
 		String sessionName = String.valueOf(System.currentTimeMillis()); 
 		String userSerial = BuilderModelHolder.DEFAULT_USER_SERIAL;
 
@@ -90,7 +90,7 @@ public class SystemResource {
 		UserStore userStore = SilverBulletServer.getStaticInstance().getUserStore();
 		
 		if (!userStore.containsNativeUser(BuilderModelHolder.DEFAULT_USER_SERIAL)) {
-			createDefault();
+			createDefaultAccound();
 		}
 		SilverBulletServer.getStaticInstance().copyConfigToDefault(userStore.getBySessionName(cookie).getId(), application);
 		return Response.ok(new String())
@@ -115,6 +115,7 @@ public class SystemResource {
 		personal.given_name = firstName;
 		personal.family_name = familyName;
 				
+		SilverBulletServer.getStaticInstance().createUser(personal);
 		return personal;
 	}
 	
@@ -132,7 +133,7 @@ public class SystemResource {
 			return Response.serverError().build();
 		}
 		
-		SilverBulletServer.getStaticInstance().createUser(personal);
+		
 		
 		NewCookie newCookie = new NewCookie(new Cookie("SilverBullet", sessionName));
 		

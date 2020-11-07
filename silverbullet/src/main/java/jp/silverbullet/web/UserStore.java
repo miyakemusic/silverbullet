@@ -62,6 +62,7 @@ public class UserStore {
 
 	public void put(PersonalResponse value) {
 		this.data.getMap().put(value.id, new PersonalCookie("", value));
+		save();
 	}
 	
 	public boolean containsCookie(String sessionName) {

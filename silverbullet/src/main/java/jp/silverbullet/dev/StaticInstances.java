@@ -165,13 +165,11 @@ public class StaticInstances {
 	public void createUser(PersonalResponse personal) {
 		userStore.put(personal);
 		getBuilderModelHolder().createNewAccount(personal.id);
+		
 		try {
 			Files.createDirectories(Paths.get(BuilderModelHolder.PERSISTENT_FOLDER + "/" + personal.id));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-
-
-
 }
