@@ -37,7 +37,6 @@ import jp.silverbullet.core.ui.part2.UiBuilder;
 import jp.silverbullet.core.ui.part2.WidgetType;
 
 public class SwingGui extends JFrame {
-	protected void onReload() {}
 	private CommitListener commitListener = new CommitListener() {
 
 		@Override
@@ -122,12 +121,20 @@ public class SwingGui extends JFrame {
 	private RuntimePropertyStore runtimePropertyStore;
 	private BlobStore blobStore;
 	private Sequencer sequencer;
+
+	private JPanel mainPane;
+
+	private UiBuilder uiBuilder;
+
+	private String gui;
 	
 	public SwingGui(UiBuilder uiBuilder, RuntimePropertyStore runtimePropertyStore, 
 			BlobStore blobStore, Sequencer sequencer, String gui, String title, Image bgImage) {
 		this.runtimePropertyStore = runtimePropertyStore;
 		this.blobStore = blobStore;
 		this.sequencer = sequencer;
+		this.uiBuilder = uiBuilder;
+		this.gui = gui;
 		
 		this.setTitle(title);
 		
@@ -139,26 +146,18 @@ public class SwingGui extends JFrame {
 //		uiBuilder.getRootList().forEach(root -> rootPanes.addItem(root));
 
 		this.getContentPane().setLayout(new BorderLayout());
-		JPanel mainPane = new JPanel();
+		mainPane = new JPanel();
 		
 //		if (getBackgroundImage() != null) {
 //			Image background = Toolkit.getDefaultToolkit().createImage(getBackgroundImage());
 //			mainPane.drawImage(background, 0, 0, null);
 //		}
 		
-		JButton reloadButton = new JButton("Reload");
+		
 		JPanel toolBar = new JPanel();
 		this.getContentPane().add(toolBar, BorderLayout.NORTH);
-		toolBar.add(reloadButton);
-		reloadButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				onReload();
-				updateGUI(uiBuilder, gui, mainPane);
-			}
-			
-		});
+		initToolbar(toolBar);
+		
 		JPanel backgroundPane = new JPanel() {
 			@Override
 			public void paintComponent(Graphics g) {
@@ -219,8 +218,13 @@ public class SwingGui extends JFrame {
 			
 		}.start();
 		
-		updateGUI(uiBuilder, gui, mainPane);
+		updateGUI();
 
+	}
+
+	protected void initToolbar(JPanel toolBar) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	protected String getBackgroundImage() {
@@ -346,11 +350,12 @@ public class SwingGui extends JFrame {
 //		}
 	}
 
-	private void updateGUI(UiBuilder uiBuilder, String rootPane, JPanel mainPane) {
+	public void updateGUI() {
 		mainPane.removeAll();
 		
-		Pane pane = uiBuilder.getRootPane(rootPane, true);
+		Pane pane = uiBuilder.getRootPane(gui, true);
 		parsePane(pane, mainPane);
 		getContentPane().repaint();
 	}
+
 }
