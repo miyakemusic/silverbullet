@@ -309,7 +309,7 @@ public abstract class DependencyEngine {
 			}
 			else {
 				boolean satisfied = true;
-				satisfied &= Boolean.valueOf(calculator.calculate("ret=" + spec.getExpression().getTrigger()));
+				satisfied &= Boolean.valueOf(calculator.calculate("ret=(" + spec.getExpression().getTrigger() + ")"));
 				if (spec.getExpression().isValueCalculationEnabled()) {
 				//	satisfied &= Boolean.valueOf(calculator.calculate("ret=" + spec.getExpression().getValue()));
 				}

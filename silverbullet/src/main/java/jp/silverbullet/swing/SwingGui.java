@@ -3,6 +3,8 @@ package jp.silverbullet.swing;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -11,12 +13,10 @@ import java.util.Set;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.border.TitledBorder;
 
 import jp.silverbullet.core.BlobStore;
@@ -58,6 +58,10 @@ public class SwingGui extends JFrame {
 	};
 	
 	private UiModel uiModel = new UiModel() {
+		@Override
+		public Object getBlob(String id) {
+			return blobStore.get(id);
+		}
 		
 		@Override
 		public UiProperty getUiProperty(String id, String extention) {
@@ -120,19 +124,28 @@ public class SwingGui extends JFrame {
 	private Sequencer sequencer;
 	
 	public SwingGui(UiBuilder uiBuilder, RuntimePropertyStore runtimePropertyStore, 
-			BlobStore blobStore, Sequencer sequencer, String gui, String title) {
+			BlobStore blobStore, Sequencer sequencer, String gui, String title, Image bgImage) {
 		this.runtimePropertyStore = runtimePropertyStore;
 		this.blobStore = blobStore;
 		this.sequencer = sequencer;
 		
 		this.setTitle(title);
 		
-		JComboBox<String> rootPanes = new JComboBox<>();
-		uiBuilder.getRootList().forEach(root -> rootPanes.addItem(root));
+//		if (getBackgroundImage() != null) {
+//			setContentPane(new JLabel(new ImageIcon(getBackgroundImage())));
+//		}
+		
+//		JComboBox<String> rootPanes = new JComboBox<>();
+//		uiBuilder.getRootList().forEach(root -> rootPanes.addItem(root));
 
 		this.getContentPane().setLayout(new BorderLayout());
 		JPanel mainPane = new JPanel();
-
+		
+//		if (getBackgroundImage() != null) {
+//			Image background = Toolkit.getDefaultToolkit().createImage(getBackgroundImage());
+//			mainPane.drawImage(background, 0, 0, null);
+//		}
+		
 		JButton reloadButton = new JButton("Reload");
 		JPanel toolBar = new JPanel();
 		this.getContentPane().add(toolBar, BorderLayout.NORTH);
@@ -142,24 +155,76 @@ public class SwingGui extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				onReload();
-				updateGUI(uiBuilder, rootPanes, mainPane);
+				updateGUI(uiBuilder, gui, mainPane);
 			}
 			
 		});
-		
-		this.getContentPane().add(rootPanes, BorderLayout.SOUTH);
-		this.getContentPane().add(new JScrollPane(mainPane), BorderLayout.CENTER);
-		
-		rootPanes.addActionListener(new ActionListener() {
+		JPanel backgroundPane = new JPanel() {
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				updateGUI(uiBuilder, rootPanes, mainPane);
-			}
-		});
+			public void paintComponent(Graphics g) {
+				super.paintComponent(g);
+				g.drawImage(bgImage, 0, 0, null);
+			}			
+		};
+		mainPane.setPreferredSize(new Dimension(550, 400));
+		backgroundPane.setLayout(new BorderLayout());
 		
-		rootPanes.setSelectedItem(gui);
-		this.setSize(new Dimension(600, 400));
+		int topM = 93;
+		int sizeM = 113;
+		JLabel topMargin = new JLabel();
+		JLabel bottomMargin = new JLabel();
+		JLabel leftMargin = new JLabel();
+		JLabel rightMargin = new JLabel();
+		topMargin.setPreferredSize(new Dimension(120, topM));
+		bottomMargin.setPreferredSize(new Dimension(120, topM));
+		leftMargin.setPreferredSize(new Dimension(sizeM, 50));
+		rightMargin.setPreferredSize(new Dimension(sizeM, 50));
+		backgroundPane.add(topMargin, BorderLayout.NORTH);
+		backgroundPane.add(mainPane, BorderLayout.CENTER);
+		backgroundPane.add(bottomMargin, BorderLayout.SOUTH);
+		backgroundPane.add(leftMargin, BorderLayout.EAST);
+		backgroundPane.add(rightMargin, BorderLayout.WEST);
+//		this.getContentPane().add(rootPanes, BorderLayout.SOUTH);
+		this.getContentPane().add(backgroundPane/*new JScrollPane(mainPane)*/, BorderLayout.CENTER);
+		
+//		rootPanes.addActionListener(new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent arg0) {
+//				updateGUI(uiBuilder, rootPanes, mainPane);
+//			}
+//		});
+//		
+//		rootPanes.setSelectedItem(gui);
+		this.setSize(new Dimension(985, 641));
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		
+//		SwingUtilities.invokeLater(new Runnable() {
+//			@Override
+//			public void run() {
+//				SwingGui.this.getContentPane().setVisible(true);
+//			}	
+//		});
+		new Thread() {
+
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				backgroundPane.repaint();
+			}
+			
+		}.start();
+		
+		updateGUI(uiBuilder, gui, mainPane);
+
+	}
+
+	protected String getBackgroundImage() {
+		return null;
 	}
 
 	private void parsePane(Pane pane, JPanel parent) {
@@ -281,10 +346,10 @@ public class SwingGui extends JFrame {
 //		}
 	}
 
-	private void updateGUI(UiBuilder uiBuilder, JComboBox<String> rootPanes, JPanel mainPane) {
+	private void updateGUI(UiBuilder uiBuilder, String rootPane, JPanel mainPane) {
 		mainPane.removeAll();
 		
-		Pane pane = uiBuilder.getRootPane(rootPanes.getSelectedItem().toString(), true);
+		Pane pane = uiBuilder.getRootPane(rootPane, true);
 		parsePane(pane, mainPane);
 		getContentPane().repaint();
 	}

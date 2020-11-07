@@ -6,13 +6,13 @@ class Widget {
 		this.ajaxRuntime = ajaxRuntime;
 	}
 	
-	longPress(targetDiv) {
+	longPress(targetDiv, action) {
 		var LONGPRESS = 1500;
 		var timerId;
 		var me = this;
 		$('#' + targetDiv).on("mousedown touchstart",function() {
 			timerId = setTimeout(function() {
-		  		me.selector(me.widget.id, 0);
+		  		me.selector(me.widget.id, 0, action);
 			}, LONGPRESS);
 		}).on("mouseup mouseleave touchend",function() {
 		  clearTimeout(timerId);
@@ -439,7 +439,7 @@ class Button extends Widget {
 				me.setter(me.widget.id, 0, me.alternative(me.property));
 			}
 		});		
-		
+		this.longPress(divid, 'WAITFOR');
 	}
 	
 	onUpdateValue(property) {
@@ -512,10 +512,8 @@ class Label extends Widget {
 		
 		this.labelId = divid + "_label";
 		$('#' + this.parent).append('<div id="' + this.divid + '"><label id="' + this.labelId + '"></label></div>');	
-//		$('#' + this.labelId).dblclick(function() {
-//			me.selector(me.widget.id, 0);
-//		});
-		this.longPress(this.labelId);
+
+		this.longPress(this.labelId, 'JUDGE');
 	}
 	
 	onUpdateValue(property) {
@@ -698,7 +696,7 @@ class ComboBox extends Widget {
 			me.setter(me.widget.id, 0, $(this).val());
 		});
 		
-		this.longPress(this.comboId);
+		this.longPress(this.comboId, 'WAITFOR');
 	}
 	
 	onUpdateValue(property) {
@@ -1207,10 +1205,10 @@ class NewLayout {
 			}
 		}
 		
-		function selectWidget(id, index) {
+		function selectWidget(id, index, action) {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/" + me.device + "/runtime/justSelect?id="  +  id + "&index=" + index,
+			   url: "//" + window.location.host + "/rest/" + me.device + "/runtime/justSelect?id="  +  id + "&index=" + index + "&action=" + action,
 			   success: function(property){
 			   	
 			   }
@@ -1365,8 +1363,8 @@ class NewLayout {
 				function(id, index, callback) {
 					getProperty(id, index, callback);
 				},
-				function(id, index) {
-					selectWidget(id, index);
+				function(id, index, action) {
+					selectWidget(id, index, action);
 				}
 			);
 			

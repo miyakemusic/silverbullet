@@ -80,17 +80,29 @@ public class Automator {
 		return this.lines;
 	}
 
-	public void addEval(String device, String id, String value) {
-		String line = "var v" + variableNumber + " = sb.read(" + device.toLowerCase() + ", '" + id + "');";
-		lines.add(line);
+	public enum Action {
+		WAITFOR,
+		JUDGE
+	}
+	public void addAction(String device, String id, String value, String action2) {
+		Action action = Action.valueOf(action2);
+
 		
-		line = "if (v" + variableNumber + " == '" + value + "') {";
-		lines.add(line);
-		lines.add("  /// put code here");
-		line = "}";
-		lines.add(line);
-		
-		variableNumber++;
+		if (action.equals(Action.JUDGE)) {
+			String line = "var v" + variableNumber + " = sb.read(" + device.toLowerCase() + ", '" + id + "');";
+			lines.add(line);
+			line = "if (v" + variableNumber + " == '" + value + "') {";
+			lines.add(line);
+			lines.add("  /// put code here");
+			line = "}";
+			lines.add(line);
+			
+			variableNumber++;
+		}
+		else if (action.equals(Action.WAITFOR)) {
+			String line = "sb.waitEqual(" + device.toLowerCase() + ",'" + id + "','" + value + "');";
+			lines.add(line);
+		}
 	}
 
 	public void clear() {

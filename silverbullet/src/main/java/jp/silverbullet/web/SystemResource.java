@@ -1,11 +1,15 @@
 package jp.silverbullet.web;
 
+import java.io.File;
+import java.io.InputStream;
 import java.util.Calendar;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -17,6 +21,8 @@ import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.codec.digest.DigestUtils;
+
+import com.google.api.client.repackaged.org.apache.commons.codec.binary.Base64;
 
 import jp.silverbullet.core.KeyValue;
 import jp.silverbullet.dev.BuilderModelHolder;
@@ -31,6 +37,16 @@ public class SystemResource {
 //	private GoogleHanlder googleHandler = new GoogleHandlerForTest();
 	public static ExternalStorageService googleHandler = new GoogleHandlerImpl(ClientBuilder.newClient());
 //	public static AuthStore authMap = new AuthStore();
+	
+	@POST
+	@Path("/postZip")
+	@Consumes(MediaType.APPLICATION_OCTET_STREAM)
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String postZip(@CookieParam("SilverBullet") String cookie, @QueryParam("filename") String filename, String base64) {
+		byte[] bytes = Base64.decodeBase64(base64.split("base64,")[1]);
+		SilverBulletServer.getStaticInstance().createFile(cookie, bytes, filename);
+		return "OK";
+	}
 	
 	@GET
 	@Path("/newApplication")
@@ -115,23 +131,7 @@ public class SystemResource {
 			@QueryParam("familyname") final String familyname, @QueryParam("email") final String email) {
 		
 		String sessionName = String.valueOf(System.currentTimeMillis()); 
-		
-//		UserStore userStore = SilverBulletServer.getStaticInstance().getUserStore();
-//		
-//		if (userStore.containsNativeUser(username)) {
-//			return Response.serverError().build();
-//		}
-//		
-//		
-//		PersonalResponse personal = new PersonalResponse();
-//		personal.name = username;
-//		personal.id = "Native" + sessionName;
-//		personal.basicPassword = DigestUtils.shaHex(password);
-//		personal.email = email;
-//		personal.given_name = firstname;
-//		personal.family_name = familyname;
-//		
-//		userStore.put(sessionName, personal);
+
 		PersonalResponse personal = createNative(username, password, firstname, familyname, email, sessionName, "Navive"+sessionName);
 		if (personal == null) {
 			return Response.serverError().build();

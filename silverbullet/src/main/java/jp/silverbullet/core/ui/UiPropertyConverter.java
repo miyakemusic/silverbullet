@@ -16,6 +16,8 @@ import jp.silverbullet.core.property2.RuntimeProperty;
 
 public class UiPropertyConverter {
 
+	public static final String REQUEST_AGAIN = "REQUEST_AGAIN";
+
 	public static UiProperty convert(RuntimeProperty property, String ext, BlobStore blobStore) {
 		UiProperty ret = new UiProperty();
 		ret.setId(property.getId());
@@ -36,7 +38,7 @@ public class UiPropertyConverter {
 		
 		if (property.isChartProperty()) {
 			if (ext == null || ext.isEmpty()) {
-				ret.setCurrentValue("REQUEST_AGAIN");
+				ret.setCurrentValue(REQUEST_AGAIN);
 			}
 			else {
 				try {

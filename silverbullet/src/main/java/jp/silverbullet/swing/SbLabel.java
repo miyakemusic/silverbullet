@@ -2,6 +2,7 @@ package jp.silverbullet.swing;
 
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Font;
 
 import javax.swing.JLabel;
 
@@ -44,15 +45,31 @@ public class SbLabel extends SbWidget {
 	}
 
 	private void updateText(UiProperty uiProp) {
+		String fontSize = this.getPane().css("font-size");
+		
+		String body = "";
 		if (this.getPane().field.equals(PropertyField.TITLE)) {
-			this.label.setText(uiProp.getTitle());
+			body = uiProp.getTitle();
 		}
 		else if (this.getPane().field.equals(PropertyField.VALUE)) {
-			this.label.setText(uiProp.getCurrentValue());
+			body = uiProp.getCurrentValue();
 		}
 		else if (this.getPane().field.equals(PropertyField.UNIT)) {
-			this.label.setText(uiProp.getUnit());
+			body = uiProp.getUnit();
 		}
+		
+		String html = "<html>";
+		if (fontSize != null) {
+			this.label.setFont(new Font("Arial", Font.PLAIN, Integer.valueOf(fontSize.replace("px", ""))));
+			//html += "<font size=\"" + fontSize.replace("", "") + "\">";
+			html += body;
+			//html += "</font>";
+		}
+		else {
+			html += body;
+		}
+		html += "</html>";
+		this.label.setText(html);
 	}
 
 }

@@ -62,8 +62,6 @@ public abstract class Sequencer {
 		@Override
 		public void requestChange(String id, int index, String value) throws RequestRejectedException {
 			try {
-			//	fireChangeFromSystem(id, value);
-			//	getDependency().requestChange(new Id(id, index), value, false);
 				Sequencer.this.requestChange(id, index, value, false, null, Actor.System);
 				debugDepLog.addAll(getDependency().getDebugLog());
 				

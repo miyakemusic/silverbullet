@@ -58,11 +58,22 @@ public class SbButton extends SbWidget {
 
 		@Override
 		public void updateUi(UiProperty uiProp) {
-			String nextValue = uiProp.getElements().get(getNextIndex(uiProp)).getTitle();
+			int index = getCurrentIndex(uiProp);//getNextIndex(uiProp);
+			String displayValue = uiProp.getElements().get(index).getTitle();
 			button.setText("<html><div style=\"text-align:center\">"  + uiProp.getTitle() + 
-					"<br><font color=\"blue\">" + nextValue + "</font></div><html/>");
+					"<br><font color=\"blue\">" + displayValue + "</font></div><html/>");
 		}
 
+		private int getCurrentIndex(UiProperty uiProp) {
+			for (int i = 0; i < uiProp.getElements().size(); i++) {
+				ListDetailElement e = uiProp.getElements().get(i);
+				if (e.getId().contentEquals(uiProp.getCurrentSelectionId())) {
+					return i;
+				}
+			}		
+			return -1;
+		}
+		
 		private int getNextIndex(UiProperty uiProp) {
 			int currentIndex = -1;
 			for (int i = 0; i < uiProp.getElements().size(); i++) {

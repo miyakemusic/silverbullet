@@ -14,4 +14,8 @@ public class BlobStore {
 	public Object get(String id) {
 		return this.data.get(id);
 	}
+
+	public boolean stores(String id) {
+		return this.data.containsKey(id);
+	}
 }

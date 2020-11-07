@@ -279,6 +279,11 @@ public class RuntimeProperty implements Cloneable {
 	}
 
 	@JsonIgnore
+	public boolean isImageProperty() {
+		return this.getType().equals(PropertyType2.Image);
+	}
+	
+	@JsonIgnore
 	public int getDecimals() {
 		return this.property.getDecimals();
 	}
@@ -348,4 +353,6 @@ public class RuntimeProperty implements Cloneable {
 		}
 		return id;
 	}
+
+
 }

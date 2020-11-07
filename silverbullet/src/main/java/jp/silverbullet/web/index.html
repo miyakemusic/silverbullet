@@ -149,6 +149,23 @@ $(function() {
 				   }
 				});
 			});
+			$('#uploadZip').click(function() {
+				var file = $('#zipFile')[0].files[0];
+				var reader = new FileReader();
+				reader.readAsDataURL(file);
+				reader.onload = function(event) {
+					$.ajax({
+			            url: "//" + window.location.host + "/rest/postZip?filename=" + file.name,
+			            type: 'POST',
+			            contentType: 'application/octet-stream',
+						data: event.target.result,
+						processData: false
+			        })
+			        .done(function( data ) {
+			
+			        });			
+				}
+			});
 		}
 	});
 	
@@ -197,6 +214,7 @@ $(function() {
 	<button id="save">Save</button><button id="generateSource">Generate Source</button>
 	<button id="saveParameters">Save Parameters</button><button id="loadParameters">Load Parameters</button>
 	<button id="updateDefault">Update Default</button>
+	<input type="file" id="zipFile"><button id="uploadZip">Upload Zip</button>
 	<span id="loginName"></span>
 	<div id="tab">
 	  <ul>

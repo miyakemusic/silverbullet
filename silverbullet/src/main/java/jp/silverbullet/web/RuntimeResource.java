@@ -82,12 +82,13 @@ public class RuntimeResource {
 	@GET
 	@Path("/justSelect")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public Response justSelect(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @PathParam("device") String device,
-			@QueryParam("id") String id, @QueryParam("index") Integer index) {
+	public Response justSelect(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, 
+			@PathParam("device") String device,
+			@QueryParam("id") String id, @QueryParam("index") Integer index, @QueryParam("action") String action) {
 		
 		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
 		RuntimeProperty prop = SilverBulletServer.getStaticInstance().getBuilderModelBySessionName(cookie, app, device).getRuntimePropertyStore().get(id);
-		SilverBulletServer.getStaticInstance().getBuilderModelHolder().getAutomator(userid).addEval(device,id, prop.getCurrentValue());
+		SilverBulletServer.getStaticInstance().getBuilderModelHolder().getAutomator(userid).addAction(device,id, prop.getCurrentValue(), action);
 		
 		return Response.ok().build();
 	}

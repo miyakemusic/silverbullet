@@ -1,10 +1,16 @@
 package jp.silverbullet.dev;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 
 import jp.silverbullet.dev.sourcegenerator.PropertySourceGenerator;
 import jp.silverbullet.dev.sourcegenerator.RegisterSourceGenerator;
@@ -140,6 +146,23 @@ public class StaticInstances {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void createFile(String sessionName, byte bytes[], String filename) {
+		String userid = userStore.findBySessionName(sessionName).getPersonal().id;
+		String path = BuilderModelHolder.PERSISTENT_FOLDER + "/" + userid + "/" + filename;
+
+		try {
+//			FileInputStream inputStream = new FileInputStream(file);
+//	        byte[] bytes = IOUtils.toByteArray(inputStream);
+			Files.write(Paths.get(path), bytes);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 

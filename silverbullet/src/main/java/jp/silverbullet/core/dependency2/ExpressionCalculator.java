@@ -16,6 +16,7 @@ public abstract class ExpressionCalculator {
 	private IdUtility idCollector = new IdUtility();
 
 	public ExpressionCalculator() {
+		System.setProperty("polyglot.js.nashorn-compat", "true");
 		scriptEngine = new ScriptEngineManager().getEngineByName("JavaScript");
 		if (scriptEngine == null) { // for Android
 			scriptEngine = new ScriptEngineManager().getEngineByName("rhino");

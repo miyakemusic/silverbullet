@@ -10,7 +10,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 
-import jp.silverbullet.dev.StaticInstances;
 import jp.silverbullet.web.auth.PersonalResponse;
 
 @Provider
@@ -22,7 +21,7 @@ public class AuthenticationFilter implements ContainerRequestFilter
 	private static List<String> extPath = Arrays.asList(
 			SYSTEMPATH + "login", SYSTEMPATH + "autoLogin", SYSTEMPATH + "newLogin", 
 			SYSTEMPATH + "nativeLogin", SYSTEMPATH + "nativeCreate", 
-			SYSTEMPATH + "getAuthUrl", SYSTEMPATH + "loginAndroid");
+			SYSTEMPATH + "getAuthUrl", SYSTEMPATH + "loginAndroid", SYSTEMPATH + "open");
 	@Override
 	public void filter(ContainerRequestContext requestContext) throws IOException {	  
 //		if (SilverBulletServer.getStaticInstance().getServerMode().equals(StaticInstances.ServerMode.RUNTIME)) {
@@ -31,7 +30,7 @@ public class AuthenticationFilter implements ContainerRequestFilter
 		MultivaluedMap<String, String> queryParameters = requestContext.getUriInfo().getQueryParameters();
 		
 		for (String path : extPath) {
-			if (requestContext.getUriInfo().getRequestUri().getPath().equals(path)) {
+			if (requestContext.getUriInfo().getRequestUri().getPath().startsWith(path)) {
 				return;
 			}
 		}
