@@ -1,10 +1,8 @@
 package jp.silverbullet.web;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import javax.ws.rs.Consumes;
@@ -19,8 +17,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.org.apache.xml.internal.security.utils.Base64;
-
 import jp.silverbullet.core.property2.LightProperty;
 import jp.silverbullet.core.property2.RuntimeProperty;
 import jp.silverbullet.dev.Automator;
@@ -151,7 +147,7 @@ public class DomainResource {
 		String access_token = SilverBulletServer.getStaticInstance().getUserStore().findByUseID(userid).getAccess_token();
 		byte[] data = SystemResource.googleHandler.download(access_token, fileid);
 		
-		return Base64.encode(data);
+		return new String(Base64.getEncoder().encode(data));
 	}
 	
 	@GET

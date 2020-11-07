@@ -1,7 +1,5 @@
 package jp.silverbullet.web;
 
-import java.io.File;
-import java.io.InputStream;
 import java.util.Base64;
 import java.util.Calendar;
 import java.util.List;
