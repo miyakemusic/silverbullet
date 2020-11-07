@@ -2,6 +2,7 @@ package jp.silverbullet.web;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.List;
 
@@ -22,8 +23,6 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
-import com.google.api.client.repackaged.org.apache.commons.codec.binary.Base64;
-
 import jp.silverbullet.core.KeyValue;
 import jp.silverbullet.dev.BuilderModelHolder;
 import jp.silverbullet.web.auth.GoogleAccressTokenResponse;
@@ -43,7 +42,7 @@ public class SystemResource {
 	@Consumes(MediaType.APPLICATION_OCTET_STREAM)
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String postZip(@CookieParam("SilverBullet") String cookie, @QueryParam("filename") String filename, String base64) {
-		byte[] bytes = Base64.decodeBase64(base64.split("base64,")[1]);
+		byte[] bytes = Base64.getDecoder().decode(base64.split("base64,")[1]);
 		SilverBulletServer.getStaticInstance().createFile(cookie, bytes, filename);
 		return "OK";
 	}
