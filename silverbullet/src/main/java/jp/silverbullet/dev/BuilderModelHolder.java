@@ -44,6 +44,7 @@ public abstract class BuilderModelHolder {
 	private static final String NO_DEVICE = "NO_DEVICE";
 	public static final String DEFAULT_USER_SERIAL = "Default00";
 	public static final String DEFAULT_USER_FILE = "silverbullet.zip";
+	public static final String DEFAULT_USER_NAME = "silverbullet";
 	
 	private Map<String, UserModel> allUsers = new HashMap<>();
 	private Map<String, Automator> automators = new HashMap<>(); // key is userid

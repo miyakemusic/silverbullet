@@ -263,91 +263,13 @@ public class SwingGui extends JFrame {
 			new SbTable(pane, uiModel, parent);
 		}
 		else if (pane.type.equals(WidgetType.Pane)) {
-			JPanel panel = new JPanel();
-			parent.add(panel);
-			
-			if (!pane.id.isEmpty()) {
-				panel.setBorder(new TitledBorder(uiModel.getUiProperty(pane.id).getTitle()));
-			}
-			
-			if (pane.layout.equals(Layout.VERTICAL)) {
-				//panel.setLayout(new VerticalLayout());
-				panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-//				panel.setPreferredSize(new Dimension(-1, parent.getHeight()));
-			}
-			else if (pane.layout.equals(Layout.HORIZONTAL)) {
-				try {
-					int padding = Integer.valueOf(pane.css("padding").replace("px", ""));
-					panel.setLayout(new FlowLayout(FlowLayout.LEFT, padding, padding));
+			new SbPanel(pane, uiModel, parent) {
+				@Override
+				void processSubPane(JPanel pane2, Pane subPane) {
+					parsePane(subPane, pane2);
 				}
-				catch (Exception e) {
-					panel.setLayout(new FlowLayout(FlowLayout.LEFT));
-				}
-				//panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
-				parent.addComponentListener(new ComponentAdapter() {
-					@Override
-					public void componentResized(ComponentEvent arg0) {
-//						int width = panel.getWidth();
-//						panel.setSize(new Dimension(width, parent.getHeight()));
-					}					
-				});
-				//panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-			}
-			else if (pane.layout.equals(Layout.ABSOLUTE)){
-				panel.setLayout(new VerticalLayout());
-			}
-			else {
-				System.err.println("Invalid Layout");
-			}
-			
-//			panel.setBorder(new EtchedBorder(1));
-			
-			for (Pane subPane : pane.widgets) {
-				parsePane(subPane, panel);
-			}
-			
+			};
 		}
-//		else if (pane.type.equals(WidgetType.Pane)) {	
-//			
-//			if (!pane.id.isEmpty()) {
-//				parent.setBorder(new TitledBorder(uiModel.getUiProperty(pane.id).getTitle()));
-//			}
-//			for (Pane subPane : pane.widgets) {
-//				JPanel panel = new JPanel();
-//
-//				try {
-//					float width = Float.parseFloat(subPane.css("width"));
-//					float height = Float.parseFloat(subPane.css("height"));
-//					panel.setSize(new Dimension((int)width, (int)height));
-//				}
-//				catch(Exception e) {
-//					
-//				}
-//				try {
-//					float top = Float.valueOf(subPane.css("top").replace("px", ""));
-//					float left = Float.valueOf(subPane.css("left").replace("px", ""));
-//				}
-//				catch(Exception e) {
-//					//e.printStackTrace();
-//				}
-//				
-//				if (subPane.layout.equals(Layout.VERTICAL)) {
-//				//	panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-//					panel.setLayout(new VerticalLayout());
-//				}
-//				else if (subPane.layout.equals(Layout.HORIZONTAL)) {
-//					panel.setLayout(new FlowLayout());
-//				}
-//				else if (subPane.layout.equals(Layout.ABSOLUTE)){
-//					panel.setLayout(null);
-//				}
-//				else {
-//					System.err.println("Invalid Layout");
-//				}
-//				parent.add(panel);
-//				parsePane(subPane, panel);
-//			}
-//		}
 	}
 
 	public void updateGUI() {

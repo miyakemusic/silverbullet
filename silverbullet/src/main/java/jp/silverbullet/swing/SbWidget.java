@@ -15,15 +15,19 @@ public abstract class SbWidget {
 	public SbWidget(Pane pane, UiModel uiModel, Container parent) {
 		this.uiModel = uiModel;
 		this.pane = pane;
-		this.uiModel.addListener(pane.id, new UiModelListener() {
-			@Override
-			public void onUpdate(UiProperty prop) {
-				uiProperty = prop;
-				SbWidget.this.onUpdate(prop);
-			}
-		});
 		
-		uiProperty = uiModel.getUiProperty(pane.id);
+		if (!pane.id.isEmpty()) {
+			this.uiModel.addListener(pane.id, new UiModelListener() {
+				@Override
+				public void onUpdate(UiProperty prop) {
+					uiProperty = prop;
+					SbWidget.this.onUpdate(prop);
+				}
+			});
+			
+			uiProperty = uiModel.getUiProperty(pane.id);
+		}
+		
 		onInit(pane, uiProperty, parent);
 		
 		if (pane.css("width") != null && pane.css("height") != null) {

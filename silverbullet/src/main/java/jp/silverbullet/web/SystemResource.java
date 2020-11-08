@@ -89,7 +89,7 @@ public class SystemResource {
 			@QueryParam("application") final String application) {
 		UserStore userStore = SilverBulletServer.getStaticInstance().getUserStore();
 		
-		if (!userStore.containsNativeUser(BuilderModelHolder.DEFAULT_USER_SERIAL)) {
+		if (!userStore.containsNativeUser(BuilderModelHolder.DEFAULT_USER_NAME)) {
 			createDefaultAccound();
 		}
 		SilverBulletServer.getStaticInstance().copyConfigToDefault(userStore.getBySessionName(cookie).getId(), application);
@@ -99,14 +99,7 @@ public class SystemResource {
 	
 	private PersonalResponse createNative(String username, String password, String firstName,
 			String familyName, String email, String useSerial, String sessionName) {
-//		
-//		UserStore userStore = SilverBulletServer.getStaticInstance().getUserStore();
-//		
-//		if (userStore.containsNativeUser(username)) {
-//			//return Response.serverError().build();
-//			return null;
-//		}
-		
+
 		PersonalResponse personal = new PersonalResponse();
 		personal.name = username;
 		personal.id = useSerial;
@@ -132,9 +125,7 @@ public class SystemResource {
 		if (personal == null) {
 			return Response.serverError().build();
 		}
-		
-		
-		
+
 		NewCookie newCookie = new NewCookie(new Cookie("SilverBullet", sessionName));
 		
 		return Response.ok(new String()).
