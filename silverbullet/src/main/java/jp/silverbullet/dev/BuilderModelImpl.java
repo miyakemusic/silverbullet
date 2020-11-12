@@ -128,6 +128,7 @@ public abstract class BuilderModelImpl implements Cloneable {
 		public String getSelectedListTitle(String id) {
 			return store.get(id).getSelectedListTitle();
 		}
+
 	};
 	
 	public RegisterAccessor getRegisterAccessor() {

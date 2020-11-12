@@ -455,6 +455,9 @@ public abstract class DependencyEngine {
 	}
 
 	public List<String> getDebugLog() {
+		if (cachedPropertyStore == null) {
+			System.out.println();
+		}
 		return cachedPropertyStore.getDebugLog();
 	}
 

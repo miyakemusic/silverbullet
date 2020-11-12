@@ -32,6 +32,8 @@ import jp.silverbullet.core.sequncer.SequencerListener;
 
 public class TestRecorder implements SequencerListener, RegisterAccessorListener {
 	private static final String TEST_FOLDER = "testdata/";
+
+	public static final String TESTRECORDER = "TESTRECORDER";
 	
 	private TestScript script = new TestScript();
 	private TestResult result = new TestResult(script);

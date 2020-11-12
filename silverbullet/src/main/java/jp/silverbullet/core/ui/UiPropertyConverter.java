@@ -45,8 +45,14 @@ public class UiPropertyConverter {
 					if (property.getCurrentValue().isEmpty()) {
 						return ret;
 					}
-					ChartContent chartContent = (ChartContent)blobStore.get(property.getId());
 					
+					ChartContent chartContent = null;
+					try {
+						chartContent = (ChartContent)blobStore.get(property.getId());
+					}
+					catch(Exception e) {
+						e.printStackTrace();
+					}
 //					ChartContent chartContent = new ObjectMapper().readValue(property.getCurrentValue(), ChartContent.class);
 					int point = Integer.valueOf(ext);
 					int allSize = chartContent.getY().length;

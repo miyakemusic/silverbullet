@@ -1,7 +1,6 @@
 package jp.silverbullet.core.sequncer;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -25,16 +24,20 @@ import jp.silverbullet.core.property2.RuntimePropertyStore;
 import jp.silverbullet.core.register2.RegisterAccessor;
 
 public abstract class Sequencer {
+	final public static String LOCAL = "LOCAL";
+
 	protected abstract RuntimePropertyStore getPropertiesStore();
+
 	protected abstract DependencyEngine getDependency();
+
 //	protected abstract EasyAccessInterface getEasyAccessInterface();
 	protected abstract RegisterAccessor getRegisterAccessor();
 
 	private Set<SequencerListener> listeners = new HashSet<SequencerListener>();
 	private List<UserSequencer> userSequencers = new ArrayList<>();
-	private List<String> debugDepLog;
+	private List<String> debugDepLog = new ArrayList<>();
 	private Object sync = new Object();
-	
+
 	private SvHandlerModel model = new SvHandlerModel() {
 		@Override
 		public RegisterAccessor getRegisterAccessor() {
@@ -63,20 +66,22 @@ public abstract class Sequencer {
 		public void requestChange(String id, int index, String value) throws RequestRejectedException {
 			try {
 				Sequencer.this.requestChange(id, index, value, false, null, Actor.System);
-				debugDepLog.addAll(getDependency().getDebugLog());
-				
+				//debugDepLog.addAll(getDependency().getDebugLog());
+
 			} catch (RequestRejectedException e) {
 				e.printStackTrace();
 			}
-		
+
 		}
+
 		@Override
 		public String getCurrentValue(String id) {
 			return getPropertiesStore().get(id).getCurrentValue();
 		}
 
 		@Override
-		public void requestChange(String id, Object blobData, String name) throws RequestRejectedException {
+		public void requestChange(String id, Object blobData, String name)
+				throws RequestRejectedException {
 			storeBlob(id, blobData);
 			requestChange(id, name);
 		}
@@ -85,64 +90,64 @@ public abstract class Sequencer {
 		public String getSelectedListTitle(String id) {
 			return getPropertiesStore().get(id).getSelectedListTitle();
 		}
-		
 	};
-				
+
 	public Sequencer() {
 		createDependencyThread(MyThread.DEFAULT);
 	}
-	
+
 	public void requestChange(String id, String value, CommitListener commitListener) throws RequestRejectedException {
 		requestChange(id, 0, value, false, commitListener, Actor.User);
 	}
-	
+
 	public void requestChange(String id, String value) throws RequestRejectedException {
 		requestChange(id, 0, value, false);
 	}
 
-	protected abstract SystemAccessor getSystemAccessor();
 	public void requestChange(String id, String value, boolean forceChange) throws RequestRejectedException {
 		requestChange(id, 0, value, forceChange);
 	}
-	
+
 	private void storeBlob(String id, Object blobData) {
 		getBlobStore().put(id, blobData);
 	}
-	
+
+	protected abstract SystemAccessor getSystemAccessor();
+
 	protected abstract BlobStore getBlobStore();
-	
-	public void requestChange(String id, Integer index, String value, boolean forceChange) throws RequestRejectedException {
+
+	public void requestChange(String id, Integer index, String value, boolean forceChange)
+			throws RequestRejectedException {
 		requestChange(id, index, value, forceChange, new CommitListener() {
 			@Override
 			public Reply confirm(Set<IdValue> message) {
 				return Reply.Accept;
-			}	
+			}
 		}, Actor.User);
 	}
-	
+
 	public enum Actor {
-		User,
-		System
+		User, System
 	};
 
 	private BlockingQueue<DepenendencyRequest> dependencyQueue = new LinkedBlockingQueue<>();
 	RequestRejectedException exception = null;
-	
+
 //	private Map<String, MyThread> threads = new HashMap<>();
-	
+
 	private void createDependencyThread(String user) {
 //		BlockingQueue<DepenendencyRequest> dependencyQueue = new LinkedBlockingQueue<>();
 		Thread thread = new Thread() {
 			@Override
 			public void run() {
-				while(true) {
+				while (true) {
 					try {
 						DepenendencyRequest req = dependencyQueue.take();
 						String id = req.getId().getId();
 						int index = req.getId().getIndex();
-						handleRequestChange(id, index, req.getValue(), req.isForceChange(), 
-								req.getCommitListener(), req.getActor());
-						synchronized(sync) {
+						handleRequestChange(id, index, req.getValue(), req.isForceChange(), req.getCommitListener(),
+								req.getActor());
+						synchronized (sync) {
 							sync.notify();
 						}
 					} catch (InterruptedException e) {
@@ -154,31 +159,28 @@ public abstract class Sequencer {
 			}
 		};
 		thread.start();
-		
+
 //		threads.put(user, new MyThread(dependencyQueue, thread));
 	}
-	
-	public void requestChange(String id, Integer index, String value, boolean forceChange, 
-			CommitListener commitListener, Actor actor)
-			throws RequestRejectedException {
-	
+
+	public void requestChange(String id, Integer index, String value, boolean forceChange,
+			CommitListener commitListener, Actor actor) throws RequestRejectedException {
+
 		dependencyQueue.add(new DepenendencyRequest(id, index, value, forceChange, commitListener, actor));
 //		this.threads.get(MyThread.DEFAULT).requestDependency(id, index, value, forceChange, commitListener, actor);
 	}
-	
-	private void handleRequestChange(String id, Integer index, String value, boolean forceChange, 
-			CommitListener commitListener, Actor actor)
-			throws RequestRejectedException {
-		
+
+	private void handleRequestChange(String id, Integer index, String value, boolean forceChange,
+			CommitListener commitListener, Actor actor) throws RequestRejectedException {
+
 //		System.out.println("handleRequestChange " + id + " -> " + value + " ; " + dependencyQueue.size());
 		if (actor.equals(Actor.User)) {
 			fireRequestChangeByUser(id, value);
-		}
-		else if (actor.equals(Actor.System)) {
+		} else if (actor.equals(Actor.System)) {
 			fireChangeFromSystem(id, value);
 		}
 		// resolves dependencies
-		
+
 		DependencyEngine engine = getDependency();
 		engine.setCommitListener(commitListener);
 		try {
@@ -188,17 +190,17 @@ public abstract class Sequencer {
 			e1.printStackTrace();
 		}
 		debugDepLog = engine.getDebugLog();
-		
+
 		List<String> changedIds = engine.getChangedIdsWithMaskingBlockPropagation();
-			
+
 //		Map<String, List<ChangedItemValue>> changes = deepCopy(getDependency().getChagedItems());
-		
+
 		Set<UserSequencer> matchedSequencer = new LinkedHashSet<>();
 		for (UserSequencer us : userSequencers) {
 			if (matches(us.targetIds(), changedIds)) {
-				matchedSequencer.add(us);	
+				matchedSequencer.add(us);
 			}
-		}	
+		}
 		for (UserSequencer us : matchedSequencer) {
 			try {
 				us.handle(model, getDependency().getChagedItemsWithMaskingBlockPropagation());
@@ -207,7 +209,7 @@ public abstract class Sequencer {
 				e.printStackTrace();
 			}
 		}
-		
+
 	}
 
 	private Map<String, List<ChangedItemValue>> deepCopy(Map<String, List<ChangedItemValue>> original) {
@@ -217,7 +219,7 @@ public abstract class Sequencer {
 		}
 		return ret;
 	}
-	
+
 	private boolean matches(List<String> targetIds, List<String> changedIds) {
 		if (targetIds == null) {
 			return true;
@@ -229,14 +231,17 @@ public abstract class Sequencer {
 		}
 		return false;
 	}
+
 	public List<String> getDebugDepLog() {
 		return debugDepLog;
 	}
+
 	protected void fireChangeFromSystem(String id, String value) {
 		for (SequencerListener listener : this.listeners) {
 			listener.onChangedBySystem(id, value);
 		}
 	}
+
 	private void fireRequestChangeByUser(String id, String value) {
 		for (SequencerListener listener : this.listeners) {
 			listener.onChangedByUser(id, value);
@@ -250,18 +255,21 @@ public abstract class Sequencer {
 	public void addSequencerListener(SequencerListener sequencerListener) {
 		this.listeners.add(sequencerListener);
 	}
-	
+
 	public void removeSequencerListener(SequencerListener sequencerListener) {
 		this.listeners.remove(sequencerListener);
 	}
+
 	public void removeDependencyListener(DependencyListener listener) {
 		this.getDependency().removeDependencyListener(listener);
 	}
+
 	public void addUserSequencer(UserSequencer testSequencer) {
 		this.userSequencers.add(testSequencer);
 	}
+
 	public void syncDependency() {
-		synchronized(sync) {
+		synchronized (sync) {
 			try {
 				sync.wait();
 			} catch (InterruptedException e) {
@@ -270,6 +278,7 @@ public abstract class Sequencer {
 			}
 		}
 	}
+
 	public EasyAccessInterface getAccessFromSystem() {
 		return accessFromSystem;
 	}

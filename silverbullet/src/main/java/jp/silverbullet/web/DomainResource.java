@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.GET;
@@ -13,6 +15,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -67,7 +70,8 @@ public class DomainResource {
 	@GET
 	@Path("/{device}/login")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String longin(@QueryParam("userid") String userid, @PathParam("app") String app, @PathParam("device") String device) {
+	public String longin(@QueryParam("userid") String userid, @PathParam("app") String app, 
+			@PathParam("device") String device, @Context HttpServletRequest request) {
 		System.out.println("login: + " + app + "@" + device);
 		SilverBulletServer.getStaticInstance().createDevice(userid, app, device);
 		return "OK";
@@ -102,14 +106,14 @@ public class DomainResource {
 	@Path("/{device}/setValueBySystem")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String setValueBySystem(@QueryParam("userid") String userid, @PathParam("app") String app, @PathParam("device") String device, 
-			String json) {
+	public String setValueBySystem(@QueryParam("userid") String userid, @PathParam("app") String app, 
+			@PathParam("device") String device, String json) {
 		try {
 			LightProperty prop = new ObjectMapper().readValue(json, LightProperty.class);
-			SilverBulletServer.getStaticInstance().getBuilderModelByUserId(userid, app, device).requestChangeBySystem(prop.id, 0, prop.currentValue);
+			SilverBulletServer.getStaticInstance().getBuilderModelByUserId(userid, app, device)
+				.requestChangeBySystem(prop.id, 0, prop.currentValue);
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return "OK";
@@ -119,13 +123,15 @@ public class DomainResource {
 	@Path("/{device}/postValueBySystem")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.TEXT_PLAIN)
-	public String postValue(@QueryParam("userid") String userid, @PathParam("app") String app, @PathParam("device") String device, 
+	public String postValue(@QueryParam("userid") String userid, 
+			@PathParam("app") String app, @PathParam("device") String device, 
 			@QueryParam("id") String id, @QueryParam("index") Integer index, 
 			@QueryParam("name") String name, @QueryParam("classname") String classname, String json) {
 //		System.out.println("postValue " + object);
 		try {
 			Object object = new ObjectMapper().readValue(json, Class.forName(classname));
-			return SilverBulletServer.getStaticInstance().getBuilderModelByUserId(userid, app, device).requestBlobChangeBySystem(id, index, object, name);
+			return SilverBulletServer.getStaticInstance().getBuilderModelByUserId(userid, app, device)
+					.requestBlobChangeBySystem(id, index, object, name);
 		} catch (ClassNotFoundException | IOException e) {
 			e.printStackTrace();
 		}
@@ -136,6 +142,9 @@ public class DomainResource {
 	@Path("/{device}/getUiEntry")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String getUiEntry(@PathParam("app") String app, @PathParam("device") String device) {
+		if (device.startsWith("MT")) {
+			return "MAIN";
+		}
 		return device.replaceAll("[0-9]", "");
 	}
 	
