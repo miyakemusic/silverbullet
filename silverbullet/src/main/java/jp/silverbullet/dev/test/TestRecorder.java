@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jp.silverbullet.core.Zip;
+import jp.silverbullet.core.dependency2.Id;
 import jp.silverbullet.core.dependency2.RequestRejectedException;
 import jp.silverbullet.core.property2.RuntimeProperty;
 import jp.silverbullet.core.register2.RegisterAccessorListener;
@@ -68,15 +69,15 @@ public class TestRecorder implements SequencerListener, RegisterAccessorListener
 	}
 
 	@Override
-	public void onChangedBySystem(String id, String value) {
+	public void onChangedBySystem(Id id, String value) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onChangedByUser(String id, String value) {
+	public void onChangedByUser(Id id, String value) {
 		if (this.redording) {
-			this.script.add(new TestItem(TestItem.TYPE_PROPERTY, id, value));
+			this.script.add(new TestItem(TestItem.TYPE_PROPERTY, id.getId(), value));
 		}
 	}
 

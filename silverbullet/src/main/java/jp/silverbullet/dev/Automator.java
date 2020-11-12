@@ -7,6 +7,7 @@ import java.util.Set;
 
 import javax.ws.rs.core.Response;
 
+import jp.silverbullet.core.dependency2.Id;
 import jp.silverbullet.core.sequncer.SequencerListener;
 import jp.silverbullet.web.ValueSetResult;
 
@@ -65,13 +66,13 @@ public class Automator {
 		}
 
 		@Override
-		public void onChangedBySystem(String id, String value) {
-			automatorListener.onChangeBySystem(device, id, value);
+		public void onChangedBySystem(Id id, String value) {
+			automatorListener.onChangeBySystem(device, id.getId(), value);
 		}
 
 		@Override
-		public void onChangedByUser(String id, String value) {
-			automatorListener.onChangeByUser(device, id, value);
+		public void onChangedByUser(Id id, String value) {
+			automatorListener.onChangeByUser(device, id.getId(), value);
 		}
 		
 	}

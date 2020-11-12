@@ -20,6 +20,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jp.silverbullet.core.dependency2.Id;
 import jp.silverbullet.core.property2.LightProperty;
 import jp.silverbullet.core.property2.RuntimeProperty;
 import jp.silverbullet.dev.Automator;
@@ -111,7 +113,7 @@ public class DomainResource {
 		try {
 			LightProperty prop = new ObjectMapper().readValue(json, LightProperty.class);
 			SilverBulletServer.getStaticInstance().getBuilderModelByUserId(userid, app, device)
-				.requestChangeBySystem(prop.id, 0, prop.currentValue);
+				.requestChangeBySystem(new Id(prop.id, 0, device), prop.currentValue);
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -131,7 +133,7 @@ public class DomainResource {
 		try {
 			Object object = new ObjectMapper().readValue(json, Class.forName(classname));
 			return SilverBulletServer.getStaticInstance().getBuilderModelByUserId(userid, app, device)
-					.requestBlobChangeBySystem(id, index, object, name);
+					.requestBlobChangeBySystem(new Id(id, index, device), object, name);
 		} catch (ClassNotFoundException | IOException e) {
 			e.printStackTrace();
 		}

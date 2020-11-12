@@ -269,7 +269,7 @@ public class BuilderModelImplTest {
 		});
 		// test from web server
 		builder.getRuntimePropertyStore().get("ID_START").setCurrentValue("ID_START_OFF");
-		ValueSetResult result = builder.requestChange("ID_NEWMODE", 0, "ID_NEWMODE_B", Actor.User);
+		ValueSetResult result = builder.requestChange("ID_NEWMODE", "ID_NEWMODE_B", Actor.User);
 		builder.getSequencer().syncDependency();
 		
 		assertEquals("ID_NEWMODE#0:Value:ID_NEWMODE_B", debugLog.get(0));

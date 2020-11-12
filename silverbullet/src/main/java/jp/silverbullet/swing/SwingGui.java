@@ -21,6 +21,7 @@ import javax.swing.border.TitledBorder;
 
 import jp.silverbullet.core.BlobStore;
 import jp.silverbullet.core.dependency2.CommitListener;
+import jp.silverbullet.core.dependency2.Id;
 import jp.silverbullet.core.dependency2.IdValue;
 import jp.silverbullet.core.dependency2.RequestRejectedException;
 import jp.silverbullet.core.property2.RuntimeProperty;
@@ -112,7 +113,7 @@ public class SwingGui extends JFrame {
 		public void setValue(String id, String value) {
 			try {
 				//sequencer.requestChange(id, value, commitListener);
-				sequencer.requestChange(id, value, commitListener);
+				sequencer.requestChange(new Id(id), value, commitListener);
 			} catch (RequestRejectedException e) {
 				e.printStackTrace();
 			}

@@ -58,14 +58,9 @@ public abstract class Sequencer {
 
 	private EasyAccessInterface accessFromSystem = new EasyAccessInterface() {
 		@Override
-		public void requestChange(final String id, final String value) throws RequestRejectedException {
-			requestChange(id, 0, value);
-		}
-
-		@Override
-		public void requestChange(String id, int index, String value) throws RequestRejectedException {
+		public void requestChange(Id id, String value) throws RequestRejectedException {
 			try {
-				Sequencer.this.requestChange(id, index, value, false, null, Actor.System);
+				Sequencer.this.requestChange(id, value, false, null, Actor.System);
 				//debugDepLog.addAll(getDependency().getDebugLog());
 
 			} catch (RequestRejectedException e) {
@@ -80,7 +75,7 @@ public abstract class Sequencer {
 		}
 
 		@Override
-		public void requestChange(String id, Object blobData, String name)
+		public void requestChange(Id id, Object blobData, String name)
 				throws RequestRejectedException {
 			storeBlob(id, blobData);
 			requestChange(id, name);
@@ -90,35 +85,35 @@ public abstract class Sequencer {
 		public String getSelectedListTitle(String id) {
 			return getPropertiesStore().get(id).getSelectedListTitle();
 		}
+
 	};
 
 	public Sequencer() {
 		createDependencyThread(MyThread.DEFAULT);
 	}
 
-	public void requestChange(String id, String value, CommitListener commitListener) throws RequestRejectedException {
-		requestChange(id, 0, value, false, commitListener, Actor.User);
+	public void requestChange(Id id, String value, CommitListener commitListener) throws RequestRejectedException {
+		requestChange(id, value, false, commitListener, Actor.User);
+	}
+
+	public void requestChange(Id id, String value) throws RequestRejectedException {
+		requestChange(id, value, false);
 	}
 
 	public void requestChange(String id, String value) throws RequestRejectedException {
-		requestChange(id, 0, value, false);
+		requestChange(new Id(id), value, false);
 	}
-
-	public void requestChange(String id, String value, boolean forceChange) throws RequestRejectedException {
-		requestChange(id, 0, value, forceChange);
-	}
-
-	private void storeBlob(String id, Object blobData) {
-		getBlobStore().put(id, blobData);
+	
+	private void storeBlob(Id id, Object blobData) {
+		getBlobStore().put(id.getId(), blobData);
 	}
 
 	protected abstract SystemAccessor getSystemAccessor();
 
 	protected abstract BlobStore getBlobStore();
 
-	public void requestChange(String id, Integer index, String value, boolean forceChange)
-			throws RequestRejectedException {
-		requestChange(id, index, value, forceChange, new CommitListener() {
+	public void requestChange(Id id, String value, boolean forceChange)	throws RequestRejectedException {
+		requestChange(id, value, forceChange, new CommitListener() {
 			@Override
 			public Reply confirm(Set<IdValue> message) {
 				return Reply.Accept;
@@ -143,9 +138,8 @@ public abstract class Sequencer {
 				while (true) {
 					try {
 						DepenendencyRequest req = dependencyQueue.take();
-						String id = req.getId().getId();
-						int index = req.getId().getIndex();
-						handleRequestChange(id, index, req.getValue(), req.isForceChange(), req.getCommitListener(),
+
+						handleRequestChange(req.getId(), req.getValue(), req.isForceChange(), req.getCommitListener(),
 								req.getActor());
 						synchronized (sync) {
 							sync.notify();
@@ -163,14 +157,14 @@ public abstract class Sequencer {
 //		threads.put(user, new MyThread(dependencyQueue, thread));
 	}
 
-	public void requestChange(String id, Integer index, String value, boolean forceChange,
+	public void requestChange(Id id, String value, boolean forceChange,
 			CommitListener commitListener, Actor actor) throws RequestRejectedException {
 
-		dependencyQueue.add(new DepenendencyRequest(id, index, value, forceChange, commitListener, actor));
+		dependencyQueue.add(new DepenendencyRequest(id, value, forceChange, commitListener, actor));
 //		this.threads.get(MyThread.DEFAULT).requestDependency(id, index, value, forceChange, commitListener, actor);
 	}
 
-	private void handleRequestChange(String id, Integer index, String value, boolean forceChange,
+	private void handleRequestChange(Id id, String value, boolean forceChange,
 			CommitListener commitListener, Actor actor) throws RequestRejectedException {
 
 //		System.out.println("handleRequestChange " + id + " -> " + value + " ; " + dependencyQueue.size());
@@ -184,7 +178,7 @@ public abstract class Sequencer {
 		DependencyEngine engine = getDependency();
 		engine.setCommitListener(commitListener);
 		try {
-			engine.requestChange(new Id(id, index), value, forceChange);
+			engine.requestChange(id, value, forceChange);
 		} catch (RequestRejectedException e1) {
 			exception = e1;
 			e1.printStackTrace();
@@ -236,13 +230,13 @@ public abstract class Sequencer {
 		return debugDepLog;
 	}
 
-	protected void fireChangeFromSystem(String id, String value) {
+	protected void fireChangeFromSystem(Id id, String value) {
 		for (SequencerListener listener : this.listeners) {
 			listener.onChangedBySystem(id, value);
 		}
 	}
 
-	private void fireRequestChangeByUser(String id, String value) {
+	private void fireRequestChangeByUser(Id id, String value) {
 		for (SequencerListener listener : this.listeners) {
 			listener.onChangedByUser(id, value);
 		}

@@ -117,12 +117,12 @@ public class SvClientHandler {
 		model.getSequencer().addSequencerListener(new SequencerListener() {
 	
 			@Override
-			public void onChangedBySystem(String id, String value) {
+			public void onChangedBySystem(Id id, String value) {
 				depHistory.add("--------------- by STSTEM ----------------- " + Thread.currentThread().getId());
 			}
 	
 			@Override
-			public void onChangedByUser(String id, String value) {
+			public void onChangedByUser(Id id, String value) {
 				depHistory.clear();
 			}
 			

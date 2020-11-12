@@ -9,10 +9,10 @@ public class DepenendencyRequest {
 	private boolean forceChange;
 	private CommitListener commitListener;
 	
-	public DepenendencyRequest(String id2, Integer index, String value2, boolean forceChange2,
+	public DepenendencyRequest(Id id, String value2, boolean forceChange2,
 			CommitListener commitListener2, Actor actor) {
 
-		this.id = new Id(id2, index);
+		this.id = id;
 		this.value = value2;
 		this.forceChange = forceChange2;
 		this.commitListener = commitListener2;

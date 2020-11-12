@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import jp.silverbullet.core.dependency2.Id;
 import jp.silverbullet.core.dependency2.RequestRejectedException;
 import jp.silverbullet.core.property2.PropertyDef2;
 import jp.silverbullet.core.property2.PropertyFactory;
@@ -164,7 +165,7 @@ public class TestRecorderTest {
 		RegisterAccessorListener registerAccessorListener = testRecorder;
 		
 		testRecorder.startRecording(); // start recording
-		sequencerListener.onChangedByUser("ID_CONTROL", "ID_CONTROL_START");
+		sequencerListener.onChangedByUser(new Id("ID_CONTROL"), "ID_CONTROL_START");
 		registerAccessorListener.onUpdate("REG1", "BIT1", 1);
 		byte[] image = new byte[2];
 		//image[0] = 0x01; image[1] = 0x02;
@@ -242,7 +243,7 @@ public class TestRecorderTest {
 		SequencerListener sequencerListener = testRecorder;
 		RegisterAccessorListener registerAccessorListener = testRecorder;
 		
-		sequencerListener.onChangedByUser("ID_CONTROL", "ID_CONTROL_START");
+		sequencerListener.onChangedByUser(new Id("ID_CONTROL"), "ID_CONTROL_START");
 		registerAccessorListener.onUpdate("REG1", "BIT1", 1);
 		byte[] image = new byte[2];
 		registerAccessorListener.onUpdate("REG2", "image".getBytes());

@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jp.silverbullet.core.dependency2.Id;
 import jp.silverbullet.core.property2.PropertyType2;
 import jp.silverbullet.core.property2.RuntimeProperty;
 import jp.silverbullet.core.ui.UiProperty;
@@ -76,7 +77,7 @@ public class RuntimeResource {
 	@Produces(MediaType.APPLICATION_JSON) 
 	public ValueSetResult setCurrentValue(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @PathParam("device") String device,
 			@QueryParam("id") String id, @QueryParam("index") Integer index, @QueryParam("value") String value) {
-		return SilverBulletServer.getStaticInstance().getBuilderModelBySessionName(cookie, app, device).requestChangeByUser(id, index, value);
+		return SilverBulletServer.getStaticInstance().getBuilderModelBySessionName(cookie, app, device).requestChangeByUser(new Id(id, index), value);
 	}
 
 	@GET

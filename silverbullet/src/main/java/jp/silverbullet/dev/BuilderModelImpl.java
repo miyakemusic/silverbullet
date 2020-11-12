@@ -22,6 +22,7 @@ import jp.silverbullet.core.XmlPersistent;
 import jp.silverbullet.core.dependency2.CommitListener;
 import jp.silverbullet.core.dependency2.DependencyEngine;
 import jp.silverbullet.core.dependency2.DependencySpecHolder;
+import jp.silverbullet.core.dependency2.Id;
 import jp.silverbullet.core.dependency2.IdValue;
 import jp.silverbullet.core.dependency2.RequestRejectedException;
 import jp.silverbullet.core.property2.IdValues;
@@ -106,16 +107,12 @@ public abstract class BuilderModelImpl implements Cloneable {
 
 	private EasyAccessInterface easyAccessInterface = new EasyAccessInterface() {
 
-		public void requestChange(String id, String value) throws RequestRejectedException {
+		public void requestChange(Id id, String value) throws RequestRejectedException {
 			getSequencer().requestChange(id, value, false);
 		}
 		
-		public void requestChange(String id, int index, String value) throws RequestRejectedException {
-			getSequencer().requestChange(id, index, value, false);
-		}
-
 		@Override
-		public void requestChange(String id, Object blobData, String name) throws RequestRejectedException {
+		public void requestChange(Id id, Object blobData, String name) throws RequestRejectedException {
 			System.err.println("requestChange blob");
 		}
 
@@ -153,7 +150,7 @@ public abstract class BuilderModelImpl implements Cloneable {
 		}
 
 		public void requestChange(String id, String value) throws RequestRejectedException {
-			sequencer.requestChange(id, value, false);
+			sequencer.requestChange(new Id(id), value, false);
 		}
 		
 		public List<RuntimeProperty> getProperties() {
@@ -593,17 +590,21 @@ public abstract class BuilderModelImpl implements Cloneable {
 	
 	private DialogAnswer dialogReply = DialogAnswer.OK;
 	private String device;
-	public ValueSetResult requestChange(String id, int index, String value, 
+	
+	public ValueSetResult requestChange(String id, String value, 
+			boolean forceChange, Actor actor) {
+		return requestChange(new Id(id), value, forceChange, actor);
+	}
+	
+	public ValueSetResult requestChange(Id id, String value, 
 			boolean forceChange, Actor actor) {
 		
 		ValueSetResult ret = new ValueSetResult();
 		
 		try {
-			sequencer.requestChange(id, index, value, forceChange, 
+			sequencer.requestChange(id, value, forceChange, 
 					forceChange ? null : commitListener, actor);
 			
-//			getUiLayoutHolder().getCurrentUi().doAutoDynamicPanel();
-
 			ret.result = "Accepted";
 		} catch (RequestRejectedException e) {
 			ret.message = e.getMessage();
@@ -619,8 +620,12 @@ public abstract class BuilderModelImpl implements Cloneable {
 		return ret;
 	}
 	
-	public ValueSetResult requestChange(String id, Integer index, String value, Actor actor) {
-		return requestChange(id, index, value, false, actor);
+	public ValueSetResult requestChange(String id, String value, Actor actor) {
+		return requestChange(new Id(id), value, false, actor);
+	}
+	
+	public ValueSetResult requestChange(Id id, String value, Actor actor) {
+		return requestChange(id, value, false, actor);
 	}
 
 //	public void setUiBuilder(UiBuilder ui) {
@@ -648,7 +653,7 @@ public abstract class BuilderModelImpl implements Cloneable {
 				return;
 			}
 			prop.resetValue();
-			this.requestChange(prop.getId(), prop.getIndex(), prop.getCurrentValue(), true, Actor.System);
+			this.requestChange(new Id(prop.getId(), prop.getIndex()), prop.getCurrentValue(), true, Actor.System);
 		});
 	}
 
@@ -664,24 +669,24 @@ public abstract class BuilderModelImpl implements Cloneable {
 		return selfBuilder;
 	}
 
-	public ValueSetResult requestChangeByUser(String id, Integer index, String value) {
-		return this.requestChange(id, index, value, false, Actor.User);
+	public ValueSetResult requestChangeByUser(Id id, String value) {
+		return this.requestChange(id, value, false, Actor.User);
 	}
 
 	public void addUserSequencer(UserSequencer sequencer2) {
 		this.getSequencer().addUserSequencer(sequencer2);
 	}
 
-	public void requestChangeBySystem(String id, int index, String value) {
+	public void requestChangeBySystem(Id id, String value) {
 		try {
-			this.getSequencer().getAccessFromSystem().requestChange(id, index, value);
+			this.getSequencer().getAccessFromSystem().requestChange(id, value);
 		} catch (RequestRejectedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
-	public String requestBlobChangeBySystem(String id, Integer index, Object object, String name) {
+	public String requestBlobChangeBySystem(Id id, Object object, String name) {
 		try {
 			this.getSequencer().getAccessFromSystem().requestChange(id, object, name);
 		} catch (RequestRejectedException e) {
