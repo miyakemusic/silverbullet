@@ -197,7 +197,7 @@ public abstract class Sequencer {
 		}
 		for (UserSequencer us : matchedSequencer) {
 			try {
-				us.handle(model, getDependency().getChagedItemsWithMaskingBlockPropagation());
+				us.handle(model, getDependency().getChagedItemsWithMaskingBlockPropagation(), id);
 			} catch (RequestRejectedException e) {
 				exception = e;
 				e.printStackTrace();

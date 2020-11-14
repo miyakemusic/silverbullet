@@ -13,6 +13,7 @@ import jp.silverbullet.core.PropertyGetter;
 import jp.silverbullet.core.dependency2.ChangedItemValue;
 import jp.silverbullet.core.dependency2.DependencyEngine;
 import jp.silverbullet.core.dependency2.DependencySpecHolder;
+import jp.silverbullet.core.dependency2.Id;
 import jp.silverbullet.core.dependency2.RequestRejectedException;
 import jp.silverbullet.core.property2.PropertyFactory;
 import jp.silverbullet.core.property2.PropertyHolder2;
@@ -32,7 +33,7 @@ public class SequencerTest {
 		private Map<String, List<ChangedItemValue>> changed;
 		
 		@Override
-		public void handle(SvHandlerModel model, Map<String, List<ChangedItemValue>> changed2)
+		public void handle(SvHandlerModel model, Map<String, List<ChangedItemValue>> changed2, Id sourceId)
 				throws RequestRejectedException {
 			changed = changed2;
 

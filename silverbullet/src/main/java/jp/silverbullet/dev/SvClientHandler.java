@@ -16,6 +16,7 @@ import jp.silverbullet.core.dependency2.ChangedItemValue;
 import jp.silverbullet.core.dependency2.DependencyListener;
 import jp.silverbullet.core.dependency2.Id;
 import jp.silverbullet.core.property2.PropertyDefHolderListener;
+import jp.silverbullet.core.property2.RuntimeProperty;
 import jp.silverbullet.core.register2.BitUpdates;
 import jp.silverbullet.core.register2.RegisterAccessorListener;
 import jp.silverbullet.core.register2.RegisterUpdates;
@@ -41,7 +42,7 @@ public class SvClientHandler {
 			@Override
 			public DialogAnswer dialog(String message) {
 				message = message.replace("\n", "<br>");
-				sendMessageAsync("MESSAGE@" + device, message);
+				sendMessagePromptAsync(device, message);
 				synchronized(syncDialog) {
 					try {
 						syncDialog.wait();
@@ -49,7 +50,7 @@ public class SvClientHandler {
 						e.printStackTrace();
 					}
 				}
-				sendMessageAsync("MESSAGE@" + device, "@CLOSE@");
+				sendMessagePromptAsync(device, "@CLOSE@");
 				return answerDialog;
 			}
 	
@@ -63,7 +64,7 @@ public class SvClientHandler {
 	
 			@Override
 			public void message(String message) {
-				sendMessageAsync("MESSAGE@" + device, message);
+				sendMessagePromptAsync(device, message);
 			}
 		});
 	
@@ -81,10 +82,12 @@ public class SvClientHandler {
 	
 			@Override
 			public void onCompleted(String message) {
-				sendMessageAsync(device, message);
-				if (debugEnabled) {
-					sendMessageAsync("DEBUG@" + device, toHtml(depHistory));
-				}
+//				if (sourceId != null && !device.equals(sourceId.getSource())) {
+					sendMessageValueAsync(device, message);
+					if (debugEnabled) {
+						sendMessageValueAsync("DEBUG@" + device, toHtml(depHistory));
+					}
+//				}
 			}
 	
 			private String toHtml(List<String> lines) {
@@ -102,8 +105,8 @@ public class SvClientHandler {
 	
 			@Override
 			public void onRejected(Id id, String message) {
-				sendMessageAsync("VALUES@" + device, id.toString());
-				sendMessageAsync("MESSAGE@" + device, message);
+				sendMessageValueAsync("VALUES@" + device, id.toString());
+				sendMessageValueAsync("MESSAGE@" + device, message);
 				
 			}
 	
@@ -291,10 +294,14 @@ public class SvClientHandler {
 //	abstract protected void sendMessage(String str);
 //	abstract protected void sendMessageToDevice(String device);
 	
-	private void sendMessageAsync(String device, String message) {
+	private void sendMessageValueAsync(String device, String message) {
 		WebSocketBroadcaster.getInstance().sendMessageAsync(userid, "VALUES@" + device, message);
 	}
 
+	private void sendMessagePromptAsync(String device, String message) {
+		WebSocketBroadcaster.getInstance().sendMessageAsync(userid, "MESSAGE@" + device, message);
+	}
+	
 	private void sendMessage(String str) {
 		WebSocketBroadcaster.getInstance().sendMessage(userid, str);
 	}

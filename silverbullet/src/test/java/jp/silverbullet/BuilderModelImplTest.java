@@ -93,7 +93,7 @@ public class BuilderModelImplTest {
 		});
 		builder.getSequencer().addUserSequencer(new UserSequencer() {
 			@Override
-			public void handle(SvHandlerModel model, Map<String, List<ChangedItemValue>> changed)
+			public void handle(SvHandlerModel model, Map<String, List<ChangedItemValue>> changed, Id sourceId)
 					throws RequestRejectedException {
 				model.getRegisterAccessor().write("START", Arrays.asList(new BitValue("BIT", 2)));
 			}
