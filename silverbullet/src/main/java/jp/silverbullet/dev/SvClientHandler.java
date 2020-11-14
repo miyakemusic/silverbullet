@@ -16,7 +16,6 @@ import jp.silverbullet.core.dependency2.ChangedItemValue;
 import jp.silverbullet.core.dependency2.DependencyListener;
 import jp.silverbullet.core.dependency2.Id;
 import jp.silverbullet.core.property2.PropertyDefHolderListener;
-import jp.silverbullet.core.property2.RuntimeProperty;
 import jp.silverbullet.core.register2.BitUpdates;
 import jp.silverbullet.core.register2.RegisterAccessorListener;
 import jp.silverbullet.core.register2.RegisterUpdates;

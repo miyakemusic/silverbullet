@@ -93,7 +93,8 @@ $(function() {
 			var depenencyDesign = new DependencyDesign2('tab_dependencydesign2');
 			var build = new Build('tab_build');
 			var devices = new Devices('tab_device', 'vertical');
-	
+//			var devices = new AllDevices('tab_device');
+			
 			$('#applications').change(function() {
 			    var r = $('option:selected').val();
 			    application = r;

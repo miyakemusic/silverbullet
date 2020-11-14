@@ -60,6 +60,15 @@ public class DomainResource {
 		return automator.getLines();
 	}
 	
+	@POST
+	@Path("/playback")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public String playback(@CookieParam("SilverBullet") String cookie, String script) {
+		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
+		Automator automator = SilverBulletServer.getStaticInstance().getBuilderModelHolder().getAutomator(userid);
+		automator.playback(script);
+		return "OK";
+	}
 //	@GET
 //	@Path("/{device}/selectDevice")
 //	@Produces(MediaType.APPLICATION_JSON) 

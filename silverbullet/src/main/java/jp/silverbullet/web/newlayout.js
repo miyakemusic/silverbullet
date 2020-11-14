@@ -890,7 +890,7 @@ class Table2 extends Widget {
 }
 
 class NewLayout {
-	constructor(divParent, rootName, device) {
+	constructor(divParent, rootName, device, listener) {
 		var propertyMap = new Map();
 		var widgetMap = new Map();
 		var divMap = new Map();
@@ -1052,7 +1052,7 @@ class NewLayout {
 			}		
 		}
 		else {
-			getDesignByName(rootName, true, true);
+			getDesignByName(rootName, true, true, listener);
 		}
 		
 		var mainDiv = div + "_mainDiv";
@@ -1173,14 +1173,23 @@ class NewLayout {
 			getDesignByName(name, link, false);
 		}
 				
-		function getDesignByName(name, link, initPos) {
+		function getDesignByName(name, link, initPos, listener) {
 			$.ajax({
 			   type: "GET", 
 			   url: "//" + window.location.host + "/rest/newGui/getDesignByName?name=" + name + "&link=" + link + "&initPos=" + initPos,
 			   success: function(pane){
+			   		listener(getCss(pane.css, 'height'));
 			   		build(pane, div);
 			   }
 			});	
+		}
+		
+		function getCss(csses, key) {
+			for (var css of csses) {
+				if (css.key == key) {
+					return css.value;
+				}			
+			}
 		}
 		
 		function ajaxRuntimePath(path, result) {

@@ -15,7 +15,6 @@ class Devices {
 		
 		var uploadId = div + "_upload";
 		var fileId = div + "_file";
-//		$('#' + toolId).append('<form id="my_form"><input type="file" id="' + fileId + '"><button id="' + uploadId + '">Upload</button></form>');
 		$('#' + toolId).append('<input type="file" id="' + fileId + '"><button id="' + uploadId + '">Upload</button>');
 
 		$('#' + uploadId).click(function() {
@@ -46,7 +45,20 @@ class Devices {
 				type: "GET", 
 				url: "//" + window.location.host + "/rest/domain/devices",
 				success: function(msg){
-					$('#' + listId).empty();
+					$('#' + deviceId).empty();
+					for (var o of msg) {
+
+						retreiveUiEntry(o, function(result, device) {
+							var deviceIdOne = deviceId + '_' + device;
+							$('#' + deviceId).append(device + '<div id="' + deviceIdOne + '"></div>');
+							
+							new NewLayout(deviceIdOne, result, device, function(height) {
+								$('#' + deviceIdOne).css({'min-height':height, 'overflow':'hidden'});
+							});
+						});					
+					}
+					
+/*					$('#' + listId).empty();
 					for (var o of msg) {
 						if (direction == 'horizontal') {
 							$('#' + listId).append('<button class="deviceButton">' + o + '</button>');
@@ -58,11 +70,11 @@ class Devices {
 					$('.deviceButton').on('click', function() {
 						$('#' + deviceId).empty();
 						me.device = $(this).text();
-//						selectDevice(me.device);
-						retreiveUiEntry(me.device, function(result) {
+						retreiveUiEntry(me.device, function(result, device) {
 							new NewLayout(deviceId, result, me.device);
 						});
 					});	
+*/
 			   }
 			});
 		}
@@ -72,7 +84,7 @@ class Devices {
 				type: "GET", 
 				url: "//" + window.location.host + "/rest/domain/" + device + "/getUiEntry",
 				success: function(msg){
-					result(msg);
+					result(msg, device);
 				}
 			});
 		}	
@@ -104,9 +116,26 @@ class Devices {
 			}
 		}
 		
+		var dialogId = div + "_dialog";
+		$('#' + div).append('<div id="' + dialogId + '"></div>');
+		$('#' + dialogId).dialog({
+//			  dialogClass: "no-titlebar", 
+			  autoOpen: false,
+			  title: 'Automator',
+			  closeOnEscape: false,
+			  modal: false,
+			width: 1200,
+			height: 300
+		});	
+		var automatorId = div + "_automator";
+		$('#' + div).append('<button id=' + automatorId + '>Automator</button>');
+		$('#' + automatorId).click(function() {
+			$('#' + dialogId).dialog('open');
+		});
+		
 		var script = div + "_script";
 		var record = div + "_record";
-		$('#' + div).append('<button id="' + record + '">Record</button>');
+		$('#' + dialogId).append('<button id="' + record + '">Record</button>');
 		$('#' + record).click(function() {
 			$.ajax({
 				type: "GET", 
@@ -118,7 +147,7 @@ class Devices {
 		});
 		
 		var reload = div + "_reload";
-		$('#' + div).append('<button id="' + reload + '">Reload</button>');
+		$('#' + dialogId).append('<button id="' + reload + '">Reload</button>');
 		$('#' + reload).click(function() {
 			$.ajax({
 				type: "GET", 
@@ -134,7 +163,25 @@ class Devices {
 			});
 		});
 		
-		$('#' + div).append('<textarea id="' + script + '"></textarea>');
+		$('#' + dialogId).append('<textarea id="' + script + '"></textarea>');
+		
+		var playbackScript = div + "_playbackScript";
+		$('#' + dialogId).append('<textarea id="' + playbackScript + '"></textarea>');
+		
+		var playback = div + "_playback";
+		$('#' + dialogId).append('<button id="' + playback + '">Play Back</button>');
+		$('#' + playback).click(function() {
+			$.ajax({
+	            url: "//" + window.location.host + "/rest/domain/playback",
+	            type: 'POST',
+	            contentType: 'text/plain',
+				data: $('#' + playbackScript).val(),
+				processData: false
+	        })
+	        .done(function( data ) {
+	
+	        });		
+		});
 	}
 }
 class AllDevices {
@@ -170,7 +217,7 @@ class AllDevices {
 					var tablestr = '<table><tr>';
 					for (var device of msg) {
 						var contentId = div + '_' + device;
-						tablestr += '<td><input type="checkbox" class="deviceButton" id="' + device + '" name="' + contentId + '">' + device + '</button></td><td id="' + contentId + '"></td>';
+						tablestr += '<td><input type="checkbox" class="deviceButton" id="' + device + '" name="' + contentId + '">' + device + '</td><td id="' + contentId + '"></td>';
 					
 						col++;
 						if (col == columns) {

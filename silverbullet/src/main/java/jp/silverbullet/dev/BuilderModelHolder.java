@@ -13,6 +13,8 @@ import org.apache.commons.io.FileUtils;
 
 import jp.silverbullet.core.RuntimeListener;
 import jp.silverbullet.core.Zip;
+import jp.silverbullet.core.dependency2.RequestRejectedException;
+import jp.silverbullet.core.sequncer.Sequencer;
 import jp.silverbullet.core.sequncer.SystemAccessor.DialogAnswer;
 
 class UserModel {
@@ -176,7 +178,19 @@ public abstract class BuilderModelHolder {
 
 	private Automator createAutomator(String userid) {
 		if (!this.automators.containsKey(userid)) {
-			this.automators.put(userid, new Automator());
+			AutomatorInterface automaterInterface = new AutomatorInterface() {
+
+				@Override
+				public void write(String device, String id, String value) {
+					Sequencer sequencer = allUsers.get(userid).getRuntimeModels().get(device).getSequencer();
+					try {
+						sequencer.requestChange(id, value);
+					} catch (RequestRejectedException e) {
+						e.printStackTrace();
+					}
+				}				
+			};
+			this.automators.put(userid, new Automator(automaterInterface));
 		}
 		return this.automators.get(userid);
 	}

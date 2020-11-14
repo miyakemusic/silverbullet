@@ -14,25 +14,25 @@ import jp.silverbullet.web.ValueSetResult;
 public class Automator {
 
 	private List<String> lines = new ArrayList<>();
-//	private Set<String> devices = new HashSet<>();
 	private Integer deviceNumber = 1;
 	private Integer variableNumber = 1;
 	private long currentTime = 0;
-	public Automator() {
-
+	private AutomatorInterface automaterInterface;
+	public Automator(AutomatorInterface automaterInterface) {
+		this.automaterInterface = automaterInterface;
 	}
 	
 	public SequencerListener createListener(String device) {
-		lines.add(0, "var " + device.toLowerCase() + " = '192.168.0." + deviceNumber.toString() + ":8080';");
+		lines.add(0, "var " + device + " = '192.168.0." + deviceNumber.toString() + ":8080';");
 		deviceNumber++;
 		AutomatorListener automatorListener = new AutomatorListener() {
 			@Override
 			public void onChangeByUser(String device, String id, String value) {
 				if (currentTime > 0) {
 					long diff = System.currentTimeMillis() - currentTime; 
-					lines.add("//sb.sleep(" + diff + ");");
+					lines.add("sb.sleep(" + diff + ");");
 				}
-				String line = "sb.write(" + device.toLowerCase() + ", '" + id + "=" + value + "');";
+				String line = "sb.write(" + device + ", '" + id + "=" + value + "');";
 				lines.add(line);
 
 				currentTime = System.currentTimeMillis();
@@ -90,7 +90,7 @@ public class Automator {
 
 		
 		if (action.equals(Action.JUDGE)) {
-			String line = "var v" + variableNumber + " = sb.read(" + device.toLowerCase() + ", '" + id + "');";
+			String line = "var v" + variableNumber + " = sb.read(" + device + ", '" + id + "');";
 			lines.add(line);
 			line = "if (v" + variableNumber + " == '" + value + "') {";
 			lines.add(line);
@@ -101,12 +101,32 @@ public class Automator {
 			variableNumber++;
 		}
 		else if (action.equals(Action.WAITFOR)) {
-			String line = "sb.waitEqual(" + device.toLowerCase() + ",'" + id + "','" + value + "');";
+			String line = "sb.waitEqual(" + device + ",'" + id + "','" + value + "');";
 			lines.add(line);
 		}
 	}
 
 	public void clear() {
 		this.lines.clear();;
+	}
+
+	public void playback(String script) {
+		for (String line: script.split("\n")) {
+			if (line.startsWith("sb.write")) {
+				String[] tmp = line.split("[(',)=]+");
+				this.automaterInterface.write(tmp[1], tmp[3], tmp[4]);
+				//automaterInterface.write();
+			}
+			else if (line.startsWith("sb.sleep")){
+				String[] tmp = line.split("[()]+");
+				try {
+					Thread.sleep(Integer.valueOf(tmp[1]));
+				} catch (NumberFormatException e) {
+					e.printStackTrace();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 }
