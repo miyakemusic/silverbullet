@@ -69,6 +69,26 @@ public class DomainResource {
 		automator.playback(script);
 		return "OK";
 	}
+	
+	@POST
+	@Path("/saveScript")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public String saveScript(@CookieParam("SilverBullet") String cookie, String script, @QueryParam("name") String name) {
+		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
+		Automator automator = SilverBulletServer.getStaticInstance().getBuilderModelHolder().getAutomator(userid);
+		automator.register(name, script);
+		return "OK";
+	}
+	
+	@GET
+	@Path("/scriptList")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public List<String> scriptList(@CookieParam("SilverBullet") String cookie) {
+		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
+		Automator automator = SilverBulletServer.getStaticInstance().getBuilderModelHolder().getAutomator(userid);
+		return automator.scriptList();
+	}
+	
 //	@GET
 //	@Path("/{device}/selectDevice")
 //	@Produces(MediaType.APPLICATION_JSON) 

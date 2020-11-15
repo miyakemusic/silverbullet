@@ -11,9 +11,6 @@ import java.util.Set;
 
 import javax.xml.bind.JAXBException;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import jp.silverbullet.core.BlobStore;
 import jp.silverbullet.core.JsonPersistent;
 import jp.silverbullet.core.PropertyGetter;
@@ -25,7 +22,6 @@ import jp.silverbullet.core.dependency2.DependencySpecHolder;
 import jp.silverbullet.core.dependency2.Id;
 import jp.silverbullet.core.dependency2.IdValue;
 import jp.silverbullet.core.dependency2.RequestRejectedException;
-import jp.silverbullet.core.property2.IdValues;
 import jp.silverbullet.core.property2.PropertyDef2;
 import jp.silverbullet.core.property2.PropertyHolder2;
 import jp.silverbullet.core.property2.RuntimeProperty;

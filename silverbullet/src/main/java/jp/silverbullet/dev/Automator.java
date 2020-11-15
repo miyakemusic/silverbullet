@@ -1,15 +1,9 @@
 package jp.silverbullet.dev;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
-import javax.ws.rs.core.Response;
-
 import jp.silverbullet.core.dependency2.Id;
 import jp.silverbullet.core.sequncer.SequencerListener;
-import jp.silverbullet.web.ValueSetResult;
 
 public class Automator {
 
@@ -18,6 +12,8 @@ public class Automator {
 	private Integer variableNumber = 1;
 	private long currentTime = 0;
 	private AutomatorInterface automaterInterface;
+	private AutomatorStore store = new AutomatorStore();
+	
 	public Automator(AutomatorInterface automaterInterface) {
 		this.automaterInterface = automaterInterface;
 	}
@@ -128,5 +124,13 @@ public class Automator {
 				}
 			}
 		}
+	}
+
+	public void register(String name, String script) {
+		store.put(name, script);
+	}
+
+	public List<String> scriptList() {
+		return store.nameList();
 	}
 }

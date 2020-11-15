@@ -9,10 +9,11 @@ class Devices {
 		
 		var deviceId = div + "_device";
 		$('#' + contentId).append('<div id="' + deviceId + '"></div>');
-		
+
+/*			
 		var toolId = div + "_tool";
 		$('#' + contentId).append('<div id="' + toolId + '"></div>');
-		
+	
 		var uploadId = div + "_upload";
 		var fileId = div + "_file";
 		$('#' + toolId).append('<input type="file" id="' + fileId + '"><button id="' + uploadId + '">Upload</button>');
@@ -20,7 +21,7 @@ class Devices {
 		$('#' + uploadId).click(function() {
 			postFile(me.device);
 		});
-		
+*/		
 
 		if (direction == 'horizontal') {
 		}
@@ -137,40 +138,100 @@ class Devices {
 		var record = div + "_record";
 		$('#' + dialogId).append('<button id="' + record + '">Record</button>');
 		$('#' + record).click(function() {
-			$.ajax({
-				type: "GET", 
-				url: "//" + window.location.host + "/rest/domain/record",
-				success: function(msg){
+			if ($(this).text() == "Record") {
+				$(this).text("Stop");
+				$.ajax({
+					type: "GET", 
+					url: "//" + window.location.host + "/rest/domain/record",
+					success: function(msg){
+	
+					}
+				});
+			}
+			else {
+				$(this).text("Record");
+				$.ajax({
+					type: "GET", 
+					url: "//" + window.location.host + "/rest/domain/script",
+					success: function(msg){
+						$('#' + script).empty();
+						var lines = '';
+						for (var s of msg) {
+							lines += s + '\n';
+						}
+						$('#' + script).text(lines);
+					}
+				});
+			}
 
-				}
-			});
 		});
+		var copy = div + "_copy";
+		$('#' + dialogId).append('<button id="' + copy + '">Copy to script</button>');
 		
 		var reload = div + "_reload";
-		$('#' + dialogId).append('<button id="' + reload + '">Reload</button>');
-		$('#' + reload).click(function() {
-			$.ajax({
-				type: "GET", 
-				url: "//" + window.location.host + "/rest/domain/script",
-				success: function(msg){
-					$('#' + script).empty();
-					var lines = '';
-					for (var s of msg) {
-						lines += s + '\n';
-					}
-					$('#' + script).text(lines);
-				}
-			});
-		});
-		
-		$('#' + dialogId).append('<textarea id="' + script + '"></textarea>');
+		$('#' + dialogId).append('<div><textarea readonly id="' + script + '"></textarea></div>');
 		
 		var playbackScript = div + "_playbackScript";
-		$('#' + dialogId).append('<textarea id="' + playbackScript + '"></textarea>');
-		
 		var playback = div + "_playback";
-		$('#' + dialogId).append('<button id="' + playback + '">Play Back</button>');
+		var save = div + "_save";
+		var list = div + "_list";
+		var toolbar = div + "_toolbar";
+		$('#' + dialogId).append('<div id="' + toolbar + '"></div>');	
+		$('#' + toolbar).append('<button id="' + playback + '">Play Back</button>');	
+		$('#' + toolbar).append('<button id="' + save + '">Save</button>');	
+		$('#' + toolbar).append('<select id="' + list + '"></select></div>');	
+		$('#' + dialogId).append('<div><textarea id="' + playbackScript + '"></textarea></div>');
+
+		var saveDialogId = div + "_savedialog";
+		$('#' + div).append('<div id="' + saveDialogId + '"></div>');
+		$('#' + saveDialogId).dialog({
+			  autoOpen: false,
+			  title: 'Automator',
+			  closeOnEscape: false,
+			  modal: false,
+			width: 500,
+			height: 200
+		});	
+		var saveName = div + "_saveName";
+		var saveButton = div + "_saveButton";
+		
+		$('#' + saveDialogId).append('<input type="text" id="' + saveName + '"></input>');
+		$('#' + saveDialogId).append('<button id="' + saveButton + '">Save</button>');
+		
+		$('#' + save).click(function() {
+			$('#' + saveDialogId).dialog('open');
+		});
+		$('#' + saveButton).click(function() {
+			registerScript($('#' + saveName).val());
+			$('#' + saveDialogId).dialog('close');
+			updateScriptList();
+		});
+						
+		$('#' + copy).click(function() {
+			$('#' + playbackScript).val($('#' + script).val());
+		});
+		
 		$('#' + playback).click(function() {
+			playbackScript();
+		});
+	
+		updateScriptList();
+		
+		function updateScriptList() {
+			$.ajax({
+				type: "GET", 
+				url: "//" + window.location.host + "/rest/domain/scriptList",
+				success: function(msg){
+					$('#' + list + ' > option').remove();
+					for (var i in msg) {
+						var val = msg[i];
+						$('#' + list).append($('<option>').html(val).val(val));
+					}
+				}
+			});
+		}
+		
+		function playbackScript() {
 			$.ajax({
 	            url: "//" + window.location.host + "/rest/domain/playback",
 	            type: 'POST',
@@ -181,7 +242,20 @@ class Devices {
 	        .done(function( data ) {
 	
 	        });		
-		});
+		}
+		
+		function registerScript(name) {
+			$.ajax({
+	            url: "//" + window.location.host + "/rest/domain/saveScript?name=" + name,
+	            type: 'POST',
+	            contentType: 'text/plain',
+				data: $('#' + playbackScript).val(),
+				processData: false
+	        })
+	        .done(function( data ) {
+	
+	        });		
+		}
 	}
 }
 class AllDevices {

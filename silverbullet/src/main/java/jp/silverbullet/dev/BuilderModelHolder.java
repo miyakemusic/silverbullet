@@ -11,11 +11,9 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 
-import jp.silverbullet.core.RuntimeListener;
 import jp.silverbullet.core.Zip;
 import jp.silverbullet.core.dependency2.RequestRejectedException;
 import jp.silverbullet.core.sequncer.Sequencer;
-import jp.silverbullet.core.sequncer.SystemAccessor.DialogAnswer;
 
 class UserModel {
 	private Map<String, BuilderModelImpl> builderModels = new HashMap<>();
@@ -57,21 +55,7 @@ public abstract class BuilderModelHolder {
 
 	public Automator getAutomator(String userid) {
 		return automators.get(userid);
-	}
-
-	public String save(String userid, String app) {
-		createTmpFolderIfNotExists();
-		
-		allUsers.get(userid).getBuilderModel(app).save(TMP_FOLDER);
-		
-		createFolderIfNotExists(PERSISTENT_FOLDER + "/" + userid);
-		String filename = PERSISTENT_FOLDER + "/" + userid + "/" + app + ".zip";
-		Zip.zip(TMP_FOLDER, filename);	
-		
-		allUsers.get(userid).reloadRuntime(TMP_FOLDER);
-		return filename;
-	}
-	
+	}	
 
 	private void createFolderIfNotExists(String folder) {
 		if (!Files.exists(Paths.get(folder))) {
@@ -234,6 +218,19 @@ public abstract class BuilderModelHolder {
 		this.allUsers.put(id, new UserModel());
 	}
 
+	public String save(String userid, String app) {
+		createTmpFolderIfNotExists();
+		
+		allUsers.get(userid).getBuilderModel(app).save(TMP_FOLDER);
+		
+		createFolderIfNotExists(PERSISTENT_FOLDER + "/" + userid);
+		String filename = PERSISTENT_FOLDER + "/" + userid + "/" + app + ".zip";
+		Zip.zip(TMP_FOLDER, filename);	
+		
+		allUsers.get(userid).reloadRuntime(TMP_FOLDER);
+		return filename;
+	}
+	
 	public void load(String userid) {
 		UserModel userModel = new UserModel();
 		this.allUsers.put(userid, userModel);
