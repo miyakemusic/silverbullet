@@ -287,7 +287,7 @@ public class RegisterSpecHolderTest {
 			newBit("bit 3", 0, 1, ReadWriteType.RW, "").
 			newBit("bit$4", 1, 1, ReadWriteType.RW, "");
 		
-		RegisterSourceGenerator generator = new RegisterSourceGenerator(holder);
+		RegisterSourceGenerator generator = new RegisterSourceGenerator(holder, null);
 //		generator.exportFile("src\\test\\java", "jp.silverbullet.register");
 		
 //		assertTrue(Files.exists(Paths.get("src/test/java/jp/silverbullet/register/UserRegister.java")));

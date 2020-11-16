@@ -978,29 +978,47 @@ class NewLayout {
 			}
 		});		
 		
+		this.retreiveDesign = function(finished) {
+			widgetMap.clear();
+			divMap.clear();
+			
+			$('#' + mainDiv).empty();
+			var link = $('#' + linkId).prop('checked') || !$('#' + editId).prop('checked');
+			$.ajax({
+			   type: "GET", 
+			   url: "//" + window.location.host + "/rest/newGui/getDesign?root=" + me.currentRoot + "&link=" + link,
+			   success: function(pane){
+			   		build(pane, mainDiv);
+			   		if (finished != null) {
+			   			finished();
+			   		}
+			   }
+			});	
+		};
+		
 		if (rootName == null) {
-			new NewLayoutLibrary(divLeft, function(selectedRoot) {
+			this.library = new NewLayoutLibrary(divLeft, function(selectedRoot) {
 				me.currentRoot = selectedRoot;
-				retreiveDesign();
+				me.retreiveDesign();
 			});
 	
 			
 			$('#' + div).append('<input type="checkbox" id="' + editId + '"><label>Edit</label>');
 			$('#' + editId).click(function() {
-				retreiveDesign();
+				me.retreiveDesign();
 				$('#' + actionId).prop('disabled', !$('#' + editId).prop('checked'));
 			});		
 			
 			$('#' + div).append('<input type="checkbox" id="' + actionId + '"><label>Action</label>');
 			$('#' + actionId).prop('checked', true);
 			$('#' + actionId).click(function() {
-				retreiveDesign();
+				me.retreiveDesign();
 			});	
 	
 			$('#' + div).append('<input type="checkbox" id="' + linkId + '"><label>Link</label>');
 			$('#' + linkId).prop('checked', false);
 			$('#' + linkId).click(function() {
-				retreiveDesign();
+				me.retreiveDesign();
 			});
 					
 			var defaultValueId = div + "_default";
@@ -1076,7 +1094,7 @@ class NewLayout {
 				
 			}
 			else if (type == 'TYPE' || type == 'ID' || type == 'FIELD'|| type == 'LAYOUT') {
-				retreiveDesign(function() {
+				me.retreiveDesign(function() {
 					selectEditable(divid);
 				});
 			}		
@@ -1149,25 +1167,7 @@ class NewLayout {
 				});
 			}
 		}
-		
-		function retreiveDesign(finished) {
-			widgetMap.clear();
-			divMap.clear();
-			
-			$('#' + mainDiv).empty();
-			var link = $('#' + linkId).prop('checked') || !$('#' + editId).prop('checked');
-			$.ajax({
-			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/newGui/getDesign?root=" + me.currentRoot + "&link=" + link,
-			   success: function(pane){
-			   		build(pane, mainDiv);
-			   		if (finished != null) {
-			   			finished();
-			   		}
-			   }
-			});	
-		}
-		
+				
 		function retreiveDesignDialog(name, div) {			
 			var link = $('#' + linkId).prop('checked') || !$('#' + editId).prop('checked');
 			getDesignByName(name, link, false);
@@ -1452,5 +1452,9 @@ class NewLayout {
 			return 'div' + me.divNumber++;
 		}
 
+	}
+	
+	rebuild(application) {
+		this.library.update();
 	}
 }

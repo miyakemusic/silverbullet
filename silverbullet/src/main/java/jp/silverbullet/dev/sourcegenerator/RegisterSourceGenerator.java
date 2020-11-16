@@ -14,10 +14,12 @@ public class RegisterSourceGenerator {
 
 	private RegisterSpecHolder holder;
 	private String className;
+	private String idClassName;
 
-	public RegisterSourceGenerator(RegisterSpecHolder holder) {
+	public RegisterSourceGenerator(RegisterSpecHolder holder, String app) {
 		this.holder = holder;
-		this.className = "UserRegister";
+		idClassName = app.substring(0, 1).toUpperCase() + app.substring(1);
+		this.className = idClassName + "UserRegister";
 	}
 
 	public void exportFile(String filename, String packageName) {

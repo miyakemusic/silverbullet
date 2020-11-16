@@ -35,7 +35,7 @@ public class PropertySourceGeneratorTest {
 		holder.addProperty(factory.createTable("ID_TABLE"));
 		
 		PropertySourceGenerator generator = new PropertySourceGenerator(holder);
-		generator.generate(".", "mypackage");
+		generator.generate(".", "mypackage", null);
 		
 		List<String> ids = Files.readAllLines(Paths.get("./mypackage/ID.java"));
 		assertEquals("	public static final String ID_LIST=\"ID_LIST\";", ids.get(2));

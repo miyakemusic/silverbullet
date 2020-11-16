@@ -99,6 +99,10 @@ $(function() {
 			    var r = $('option:selected').val();
 			    application = r;
 			    idEditor.rebuild(application);
+			    dependency.rebuild(application);
+			    newLayout.rebuild(application);
+//			    depenencyDesign.rebuild(application);
+//			    build.rebuild(application);
 			});
 
 			$('#newApplication').click(function() {

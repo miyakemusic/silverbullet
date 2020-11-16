@@ -9,7 +9,8 @@ class DependencyClass2 {
 		});
 				
 		websocket.addListener('ID', function(msg) {
-			updateIdList();
+			//updateIdList();
+			me.updateIdList();
 		});
 				
 		this.priorityId = div + '_priority';
@@ -96,11 +97,8 @@ class DependencyClass2 {
 			width: 800,
 //			height: 600
 		});	
-				
-		updateIdList();
-
-							
-		function updateIdList() {
+											
+		this.updateIdList = function() {
 			$.ajax({
 			   type: "GET", 
 			   url: "//" + window.location.host + "/rest/id2/ids",
@@ -119,6 +117,9 @@ class DependencyClass2 {
 			});	
 		}
 		
+		//updateIdList();
+		this.updateIdList();
+			
 		$('#' + div).append('<div id="' + me.rootId + '"></div>');
 		var editor = new DependencySpecEditor(me.rootId);
 		
@@ -216,5 +217,9 @@ class DependencyClass2 {
 
 		   }
 		});	
+	}
+	
+	rebuild(application) {
+		this.updateIdList();
 	}
 }

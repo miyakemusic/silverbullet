@@ -1,5 +1,6 @@
 class NewLayoutLibrary {
 	constructor(div, selector) {
+		var me = this;
 		var addId = div + "_add";
 		$('#' + div).append('<button id="' + addId + '">Add</button>');
 		$('#' + addId).click(function() {			
@@ -7,7 +8,7 @@ class NewLayoutLibrary {
 			   type: "GET", 
 			   url: "//" + window.location.host + "/rest/newGui/addRootPane",
 			   success: function(types){
-			   		updateList();
+			   		me.updateList();
 			   }
 			});			
 		});
@@ -28,7 +29,7 @@ class NewLayoutLibrary {
 		var listId = div + '_list';
 		$('#' + div).append('<div id="' + listId + '"></div>');
 
-		function updateList() {
+		this.updateList = function () {
 			$.ajax({
 			   type: "GET", 
 			   url: "//" + window.location.host + "/rest/newGui/getRootPanes",
@@ -50,14 +51,14 @@ class NewLayoutLibrary {
 			});	
 		}
 		
-		updateList();
+		this.updateList();
 		
 		function changeName(oldName, newName) {
 			$.ajax({
 			   type: "GET", 
 			   url: "//" + window.location.host + "/rest/newGui/changeName?oldName=" + oldName + "&newName=" + newName,
 			   success: function(types){
-			   		updateList();
+			   		me.updateList();
 			   }
 			});	
 		}
@@ -79,8 +80,10 @@ class NewLayoutLibrary {
 			  },
 			width: 400,
 			height: 300
-		});	
-		
-		
+		});			
+	}
+	
+	update() {
+		this.updateList();
 	}
 }
