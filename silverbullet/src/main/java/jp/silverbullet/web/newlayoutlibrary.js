@@ -1,12 +1,13 @@
 class NewLayoutLibrary {
-	constructor(div, selector) {
+	constructor(div, selector, newGuiPath2) {
+		this.newGuiPath = newGuiPath2;
 		var me = this;
 		var addId = div + "_add";
 		$('#' + div).append('<button id="' + addId + '">Add</button>');
 		$('#' + addId).click(function() {			
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/newGui/addRootPane",
+			   url: me.newGuiPath + "/addRootPane",
 			   success: function(types){
 			   		me.updateList();
 			   }
@@ -32,7 +33,7 @@ class NewLayoutLibrary {
 		this.updateList = function () {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/newGui/getRootPanes",
+			   url: me.newGuiPath + "/getRootPanes",
 			   success: function(types){
 			   		$('#' + listId).empty();
 					for (var option of types) {
@@ -56,7 +57,7 @@ class NewLayoutLibrary {
 		function changeName(oldName, newName) {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/newGui/changeName?oldName=" + oldName + "&newName=" + newName,
+			   url: me.newGuiPath + "/changeName?oldName=" + oldName + "&newName=" + newName,
 			   success: function(types){
 			   		me.updateList();
 			   }
@@ -85,5 +86,9 @@ class NewLayoutLibrary {
 	
 	update() {
 		this.updateList();
+	}
+	
+	path(newGuiPath2) {
+		this.newGuiPath = newGuiPath2;
 	}
 }

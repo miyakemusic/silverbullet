@@ -1,6 +1,8 @@
 class DependencySpec {	
 		
 	constructor(id, base, callback) {
+		this.dependencyPath = "//" + window.location.host + "/rest/dependencySpec";
+		
 		this.id = id;
 		this.table = base + 'depTable';
 		this.callback = callback;
@@ -57,7 +59,7 @@ class DependencySpec {
 						
 		$.ajax({
 			type: "GET", 
-			url: "//" + window.location.host + "/rest/dependencySpec/specTable?id=" + me.id,
+			url: me.dependencyPath + "/specTable?id=" + me.id,
 			success: function(msg) {
 				me.data = [];
 				for (var i = 0; i < msg.length; i++) {

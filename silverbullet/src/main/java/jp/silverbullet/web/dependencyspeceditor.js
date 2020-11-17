@@ -1,6 +1,8 @@
 class DependencySpecEditor {
 
 	constructor(div) {	
+		this.dependencyPath = "//" + window.location.host + "/rest/dependencySpec2";
+		
 		this.div = div;
 
 		this.valueText = div + '_valueText';
@@ -15,7 +17,7 @@ class DependencySpecEditor {
 		var me = this;
 		$.ajax({
 		   type: "GET", 
-		   url: "//" + window.location.host + "/rest/dependencySpec2/updateSpec?id=" + me.id + 
+		   url: me.dependencyPath + "/updateSpec?id=" + me.id + 
 		   	'&element=' + me.currentElement + '&row=' + me.currentRow + '&col=' + me.currentColumn + '&value=' + me.currentValue,
 		   success: function(msg){
 				me.update(me.id);
@@ -67,7 +69,7 @@ class DependencySpecEditor {
 	
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/dependencySpec2/copySpec?id=" + me.id + "&from=" + from + "&to=" + to,
+			   url: me.dependencyPath + "/copySpec?id=" + me.id + "&from=" + from + "&to=" + to,
 			   success: function(msg){
 			   	me.update(me.id);
 			   }
@@ -108,7 +110,7 @@ class DependencySpecEditor {
 		var me = this;
 		$.ajax({
 		   type: "GET", 
-		   url: "//" + window.location.host + "/rest/dependencySpec2/getSpec?id=" + id,
+		   url: me.dependencyPath + "/getSpec?id=" + id,
 		   success: function(msg){
 		   
 		   		for (var i = 0; i < msg.list.length; i++) {

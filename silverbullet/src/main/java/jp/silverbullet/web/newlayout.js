@@ -47,7 +47,7 @@ class Widget {
 }
 
 class RegisterShortcut extends Widget {
-	constructor(widget, parent, divid, buildSub) {
+	constructor(widget, parent, divid, buildSub, registerPath) {
 		super(widget, parent, divid);
 		
 		$('#' + parent).append('<div id="' + divid + '"></div>');
@@ -67,7 +67,7 @@ class RegisterShortcut extends Widget {
 			
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/register2/triggerShortcut?regName=" + addr + "&bitName=" + bit,
+			   url: registerPath + "/triggerShortcut?regName=" + addr + "&bitName=" + bit,
 			   success: function(options){
 		
 			   }
@@ -315,16 +315,6 @@ class SbImage extends Widget {
 		me.ajaxRuntime("getBlob?id=" + property.id + "&name=" + property.currentValue, function(blob) {
 			me.image.src = blob.data;
 		});		
-/*		
-		var url =  "//" + window.location.host + "/rest/" + me.device + "/runtime/getBlob?id=" + property.id + "&name=" + property.currentValue;		
-		$.ajax({
-		   type: "GET", 
-		   url: url,
-		   success: function(blob){
-			me.image.src = blob.data;
-		   }
-		});
-*/
 	}
 }
 
@@ -896,8 +886,14 @@ class NewLayout {
 		var divMap = new Map();
 		
 		var me = this;
-		
-		if (device == null) {
+
+		this.basePath = "//" + window.location.host + "/rest";
+		this.newGuiPath = me.basePath + "/newGui";
+		this.runtimePath = me.basePath + "/" + device + "/runtime";
+		this.domainPath = me.basePath + "/domain";
+		this.registerPath = me.basePath + "/register2";
+
+		if (me.device == null) {
 			me.device = 'NO_DEVICE';
 		}
 		else {
@@ -986,7 +982,7 @@ class NewLayout {
 			var link = $('#' + linkId).prop('checked') || !$('#' + editId).prop('checked');
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/newGui/getDesign?root=" + me.currentRoot + "&link=" + link,
+			   url: me.newGuiPath + "/getDesign?root=" + me.currentRoot + "&link=" + link,
 			   success: function(pane){
 			   		build(pane, mainDiv);
 			   		if (finished != null) {
@@ -1000,9 +996,9 @@ class NewLayout {
 			this.library = new NewLayoutLibrary(divLeft, function(selectedRoot) {
 				me.currentRoot = selectedRoot;
 				me.retreiveDesign();
-			});
+			}, me.newGuiPath);
 	
-			
+			url: 
 			$('#' + div).append('<input type="checkbox" id="' + editId + '"><label>Edit</label>');
 			$('#' + editId).click(function() {
 				me.retreiveDesign();
@@ -1026,7 +1022,7 @@ class NewLayout {
 			$('#' + defaultValueId).click(function() {
 				$.ajax({
 				   type: "GET", 
-				   url: "//" + window.location.host + "/rest/" + me.device + "/runtime/defaultValues",
+				   url: me.runtimePath + "/defaultValues",
 				   success: function(widget){
 	
 				   }
@@ -1035,7 +1031,7 @@ class NewLayout {
 			
 			new DependencyHistory(div);
 			
-			this.propertyWindow = new NewLayoutProperty(div);
+			this.propertyWindow = new NewLayoutProperty(div, me.newGuiPath, me.registerPath);
 			
 			var devicesId = div + "_devices";
 			$('#' + div).append('<select id="' + devicesId + '"></select>');
@@ -1053,7 +1049,7 @@ class NewLayout {
 			function updateDevicesList() {	
 				$.ajax({
 					type: "GET", 
-					url: "//" + window.location.host + "/rest/domain/devices",
+					url: me.domainPath + "/devices",
 					success: function(msg){
 						$('#' + devicesId).empty();
 						for (var o of msg) {
@@ -1126,7 +1122,7 @@ class NewLayout {
 		function replyDialog(messageId, reply) {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/" + me.device + "/runtime/replyDialog?messageId=" + messageId + "&reply=" + reply,
+			   url: me.runtimePath + "/replyDialog?messageId=" + messageId + "&reply=" + reply,
 			   success: function(widget){
 
 			   }
@@ -1136,7 +1132,7 @@ class NewLayout {
 		function retreiveWidget(divid, finished) {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/newGui/getWidget?divid=" + divid,
+			   url: me.newGuiPath + "/getWidget?divid=" + divid,
 			   success: function(widget){
 			   		divMap.set(divid, widget);
 			   		if (me.propertyWindow != null) {
@@ -1176,7 +1172,7 @@ class NewLayout {
 		function getDesignByName(name, link, initPos, listener) {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/newGui/getDesignByName?name=" + name + "&link=" + link + "&initPos=" + initPos,
+			   url: me.newGuiPath + "/getDesignByName?name=" + name + "&link=" + link + "&initPos=" + initPos,
 			   success: function(pane){
 			   		listener(getCss(pane.css, 'height'));
 			   		build(pane, div);
@@ -1195,7 +1191,7 @@ class NewLayout {
 		function ajaxRuntimePath(path, result) {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/" + me.device + "/runtime/" + path,
+			   url: me.runtimePath + "/" + path,
 			   success: function(msg){
 			   	result(msg);
 			   }
@@ -1217,7 +1213,7 @@ class NewLayout {
 		function selectWidget(id, index, action) {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/" + me.device + "/runtime/justSelect?id="  +  id + "&index=" + index + "&action=" + action,
+			   url: me.runtimePath + "/justSelect?id="  +  id + "&index=" + index + "&action=" + action,
 			   success: function(property){
 			   	
 			   }
@@ -1227,7 +1223,7 @@ class NewLayout {
 		function retrieveProperty(id, index, callback) {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/" + me.device + "/runtime/getProperty?id="  +  id + "&index=" + index,
+			   url: me.runtimePath + "/getProperty?id="  +  id + "&index=" + index,
 			   success: function(property){
 			   		callback(property);
 			   }
@@ -1250,7 +1246,7 @@ class NewLayout {
 		function setValue(id, index, value) {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/" + me.device + "/runtime/setValue?id=" + id + "&index=" + index + "&value=" + value,
+			   url: me.runtimePath + "/setValue?id=" + id + "&index=" + index + "&value=" + value,
 			   success: function(property){
 			   }
 			});			
@@ -1316,7 +1312,7 @@ class NewLayout {
 				wrappedWidget = new Pane(widget, parentDiv, divid, buildSub);
 			}
 			else if (widget.type == 'Debug_Register') {
-				wrappedWidget = new RegisterShortcut(widget, parentDiv, divid, buildSub);
+				wrappedWidget = new RegisterShortcut(widget, parentDiv, divid, buildSub, me.registerPath);
 			}		
 			else if (widget.type == 'TabPane') {
 				wrappedWidget = new TabPane(widget, parentDiv, divid, buildSub, addWidget);
@@ -1424,7 +1420,7 @@ class NewLayout {
 		function changeParent(divid, parentId) {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/newGui/changeParent?divid=" + divid + "&parent=" + parentId,
+			   url: me.newGuiPath + "/changeParent?divid=" + divid + "&parent=" + parentId,
 			   success: function(ret){
 			   }
 			});	
@@ -1433,7 +1429,7 @@ class NewLayout {
 		function updateSize(divid, width, height) {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/newGui/setSize?divid=" + divid + "&width=" + width + "&height=" + height,
+			   url: me.newGuiPath + "/setSize?divid=" + divid + "&width=" + width + "&height=" + height,
 			   success: function(ret){
 			   }
 			});	
@@ -1442,7 +1438,7 @@ class NewLayout {
 		function updatePosition(divid, top, left) {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/newGui/move?divid=" + divid + "&top=" + top + "&left=" + left,
+			   url: me.newGuiPath + "/move?divid=" + divid + "&top=" + top + "&left=" + left,
 			   success: function(ret){
 			   }
 			});	
@@ -1455,6 +1451,14 @@ class NewLayout {
 	}
 	
 	rebuild(application) {
+		this.newGuiPath = this.basePath + "/" + application + "/newGui";
+		this.runtimePath = this.basePath + "/" + application + "/" + this.device + "/runtime";
+		this.domainPath = this.basePath + "/" + application + "/domain";
+		this.registerPath = this.basePath + "/" + application + "/register2";	
+		
+		this.library.path(this.newGuiPath);
+		this.propertyWindow.path(this.newGuiPath, this.registerPath);
+		
 		this.library.update();
 	}
 }

@@ -5,6 +5,9 @@ class DependencyDesign2 {
 		var current;
 		var priorityEditor;
 
+		this.dependencyDesignPath = "//" + window.location.host + "/rest/dependencyDesign2";
+		this.idPath = "//" + window.location.host + "/rest/id2";
+		
 		var me = this;
 		var colDefEnabledTable = function(k, row, type) {
 			if (type == 'type') {
@@ -112,15 +115,14 @@ class DependencyDesign2 {
 		function setConfirmSamePriority(enabled) {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/dependencyDesign2/confirmSamePriority?enabled=" + enabled,
+			   url: me.dependencyDesignPath + "/confirmSamePriority?enabled=" + enabled,
 			   success: function(msg){
 	
 			   }
 			});			
 		}
 		
-		getDependencyDesignConfigList();
-		
+				
 		// ID Pane //
 		var idPane = div + "_idPane";
 		$('#' + div).append('<div id="' + idPane + '"></div>');
@@ -231,7 +233,7 @@ class DependencyDesign2 {
 				var trigger = current.xTitle[k-1];
 				$.ajax({
 				   type: "GET", 
-				   url: "//" + window.location.host + "/rest/dependencyDesign2/setSpecEnabled?trigger=" + trigger + "&target=" + target + "&enabled=" + enabled,
+				   url: me.dependencyDesignPath + "/setSpecEnabled?trigger=" + trigger + "&target=" + target + "&enabled=" + enabled,
 				   success: function(msg){
 						updatePriorityEditor();
 						getMatrix();
@@ -250,7 +252,7 @@ class DependencyDesign2 {
 				var encValue = encodeURIComponent(value);
 				$.ajax({
 				   type: "GET", 
-				   url: "//" + window.location.host + "/rest/dependencyDesign2/setSpecValue?trigger=" + trigger + "&target=" + target + "&value=" + encValue,
+				   url: me.dependencyDesignPath + "/setSpecValue?trigger=" + trigger + "&target=" + target + "&value=" + encValue,
 				   success: function(msg){
 						updatePriorityEditor();
 						getMatrix();
@@ -267,7 +269,7 @@ class DependencyDesign2 {
 				var encValue = encodeURIComponent(value);
 				$.ajax({
 				   type: "GET", 
-				   url: "//" + window.location.host + "/rest/dependencyDesign2/setSpecValue?trigger=" + trigger + "&target=" + target + "&value=" + encValue,
+				   url: me.dependencyDesignPath + "/setSpecValue?trigger=" + trigger + "&target=" + target + "&value=" + encValue,
 				   success: function(msg){
 						updatePriorityEditor();
 						getMatrix();
@@ -283,7 +285,7 @@ class DependencyDesign2 {
 				var enabled = value;
 				$.ajax({
 				   type: "GET", 
-				   url: "//" + window.location.host + "/rest/dependencyDesign2/setBlockPropagation?trigger=" + trigger + "&target=" + target + "&enabled=" + enabled,
+				   url: me.dependencyDesignPath + "/setBlockPropagation?trigger=" + trigger + "&target=" + target + "&enabled=" + enabled,
 				   success: function(msg){
 						updatePriorityEditor();
 						getMatrix();
@@ -309,7 +311,7 @@ class DependencyDesign2 {
 		function setCondition(trigger, target, condition) {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/dependencyDesign2/setSpecValueCondition?trigger=" + 
+			   url: me.dependencyDesignPath + "/setSpecValueCondition?trigger=" + 
 			   	trigger + "&target=" + target + "&condition=" + condition,
 			   success: function(msg){
 					getMatrix();
@@ -317,10 +319,10 @@ class DependencyDesign2 {
 			});	
 		}
 		
-		function getDependencyDesignConfigList() {
+		this.getDependencyDesignConfigList = function() {
 			$.ajax({
 				type: "GET", 
-				url: "//" + window.location.host + "/rest/dependencyDesign2/getDependencyDesignConfigList",
+				url: me.dependencyDesignPath + "/getDependencyDesignConfigList",
 				success: function(response) {
 					$('#' + configId).empty();
 					for (var config of response) {
@@ -336,11 +338,12 @@ class DependencyDesign2 {
 				}
 			});			
 		}
+		me.getDependencyDesignConfigList();
 		
 		function getDependencyDesignConfig(name) {
 			$.ajax({
 				type: "GET", 
-				url: "//" + window.location.host + "/rest/dependencyDesign2/getDependencyDesignConfig?name=" + name,
+				url: me.dependencyDesignPath + "/getDependencyDesignConfig?name=" + name,
 				success: function(response) {
 					triggers = response.triggers;
 					targets = response.targets;
@@ -366,7 +369,7 @@ class DependencyDesign2 {
 			
 			$.ajax({
 				type: "GET", 
-				url: "//" + window.location.host + "/rest/dependencyDesign2/getMatrix?triggers=" + 
+				url: me.dependencyDesignPath + "/getMatrix?triggers=" + 
 					triggersText + "&targets=" + targetsText,
 				success: function(response) {
 					updateTable(response);
@@ -416,7 +419,7 @@ class DependencyDesign2 {
 		function initIdSelection() {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/id2/ids",
+			   url: me.idPath + "/ids",
 			   success: function(msg) {
 			   		$('#' + idsId).empty();
 			   		
@@ -433,10 +436,10 @@ class DependencyDesign2 {
 			currentConfig = name;
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/dependencyDesign2/updateDependencyDesignConfig?name=" + name +
+			   url: me.dependencyDesignPath + "/updateDependencyDesignConfig?name=" + name +
 			   	"&triggers=" + triggers + "&targets=" + targets,
 			   success: function(msg) {
-					getDependencyDesignConfigList();
+					me.getDependencyDesignConfigList();
 			   }
 			});			
 		
@@ -461,5 +464,11 @@ class DependencyDesign2 {
 			height: 300
 		});	
 				
+	}
+	
+	rebuild(application) {
+		this.dependencyDesignPath = "//" + window.location.host + "/rest/" + application + "/dependencyDesign2";
+		this.idPath = "//" + window.location.host + "/rest/"+ application + "/id2";
+		this.getDependencyDesignConfigList();
 	}
 }

@@ -1,5 +1,7 @@
 class DependencyDesign {
 	constructor(div) {
+		this.depDesignPath = "http://" + window.location.host + "/rest/dependencyDesign";
+		
 		var me = this;
 		var colDefEnabledTable = function(k, row, type) {
 			if (type == 'type') {
@@ -75,7 +77,7 @@ class DependencyDesign {
 		function addId(id, type) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/dependencyDesign/addId?id=" + id + "&type=" + type,
+			   url: me.depDesignPath + "/addId?id=" + id + "&type=" + type,
 			   success: function(msg) {
 			   	initOptions();
 			   	initTable();
@@ -95,7 +97,7 @@ class DependencyDesign {
 		$('#' + showAllId).click(function() {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/dependencyDesign/showAll",
+			   url: me.depDesignPath + "/showAll",
 			   success: function(msg) {
 			   	initOptions();
 			   	initTable();
@@ -109,7 +111,7 @@ class DependencyDesign {
 		$('#' + switchId).click(function() {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/dependencyDesign/switch",
+			   url: me.depDesignPath + "/switch",
 			   success: function(msg) {
 			   	initOptions();
 			   	initTable();
@@ -123,7 +125,7 @@ class DependencyDesign {
 		$('#' + buttonId).click(function() {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/dependencyDesign/build",
+			   url: me.depDesignPath + "/build",
 			   success: function(msg) {
 			   }
 			});
@@ -159,7 +161,7 @@ class DependencyDesign {
 		function initOptions() {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/dependencyDesign/getTargets",
+			   url: me.depDesignPath + "/getTargets",
 			   success: function(msg){
 				//$('#' + targetId).val(msg);
 				$('#' + addedTargets).empty();
@@ -175,7 +177,7 @@ class DependencyDesign {
 			});	
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/dependencyDesign/getTriggers",
+			   url: me.depDesignPath + "/getTriggers",
 			   success: function(msg){
 				//$('#' + triggerId).val(msg);
 				$('#' + addedTriggers).empty();
@@ -193,7 +195,7 @@ class DependencyDesign {
 		function removeId(id, type) {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/dependencyDesign/removeId?id=" + id + "&type=" + type,
+			   url: me.depDesignPath + "/removeId?id=" + id + "&type=" + type,
 			   success: function(msg){
 			   	initOptions();
 				initTable();
@@ -207,7 +209,7 @@ class DependencyDesign {
 						
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/dependencyDesign/setCombination?trigger=" + trigger + "&target=" + target,
+			   url: me.depDesignPath + "/setCombination?trigger=" + trigger + "&target=" + target,
 			   success: function(msg){
 				initTable();
 			   }
@@ -221,7 +223,7 @@ class DependencyDesign {
 		var idValueTableDiv = idMain + "_valueTable";
 		$('#' + idMain).append('<div id="' + idValueTableDiv + '">value table</div>');
 		
-		var priorityEditor = new PriorityEditor(idMain, 'dependencyDesign');
+		var priorityEditor = new PriorityEditor(idMain);
 		
 		function updatePriorityEditor() {
 			priorityEditor.update();
@@ -232,7 +234,7 @@ class DependencyDesign {
 		function updateTable() {
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/dependencyDesign/getSpec",
+			   url: me.depDesignPath + "/getSpec",
 			   success: function(msg){
 					replaceTable(msg);
 			   }
@@ -256,7 +258,7 @@ class DependencyDesign {
 				var colIndex = k - 1;
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/dependencyDesign/changeSpec?row=" + rowIndex + "&col=" + colIndex + "&checked=" + checked,
+				   url: me.depDesignPath + "/changeSpec?row=" + rowIndex + "&col=" + colIndex + "&checked=" + checked,
 				   success: function(msg){
 					
 				   }
@@ -270,7 +272,7 @@ class DependencyDesign {
 				var colIndex = k - 1;
 				$.ajax({
 				   type: "GET", 
-				   url: "http://" + window.location.host + "/rest/dependencyDesign/changeSpecValue?row=" + rowIndex + "&col=" + colIndex + "&value=" + value,
+				   url: me.depDesignPath + "/changeSpecValue?row=" + rowIndex + "&col=" + colIndex + "&value=" + value,
 				   success: function(msg){
 					
 				   }
@@ -279,7 +281,7 @@ class DependencyDesign {
 			
 			$.ajax({
 			   type: "GET", 
-			   url: "http://" + window.location.host + "/rest/dependencyDesign/getSpec",
+			   url: me.depDesignPath + "/getSpec",
 			   success: function(msg){
 					updateEnableList(msg);
 			   }

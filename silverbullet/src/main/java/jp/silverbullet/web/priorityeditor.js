@@ -1,6 +1,8 @@
 class PriorityEditor {
-	constructor(divid, url) {
-	
+	constructor(divid) {
+		this.depDesignPath = "//" + window.location.host + "/rest/dependencyDesign";
+		var me = this;
+		
 		var mainId = divid + "_main";
 		$('#' + divid).append('<div class="priorityArea" id="' + mainId + '"></div>');
 		
@@ -17,7 +19,7 @@ class PriorityEditor {
 			}
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/" + url + "/getDefinedPriorities",
+			   url: me.depDesignPath + "/getDefinedPriorities",
 			   success: function(priorities){
 					build2(priorities, filterIds);
 			   }
@@ -28,7 +30,7 @@ class PriorityEditor {
 		function build2(priorities, ids) {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/" + url + "/getPriorities",
+			   url: me.depDesignPath + "/getPriorities",
 			   success: function(msg){
 			   	build(priorities, msg, ids);
 			   }
@@ -90,7 +92,7 @@ class PriorityEditor {
 			function setPriority(id, num) {
 				$.ajax({
 				   type: "GET", 
-				   url: "//" + window.location.host + "/rest/" + url + "/setPriority?id=" + id + "&value=" + num,
+				   url: me.depDesignPath + "/setPriority?id=" + id + "&value=" + num,
 				   success: function(msg){
 						buildNew();
 				   }

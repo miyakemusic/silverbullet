@@ -1,5 +1,8 @@
 class NewLayoutProperty {
-	constructor(div) {
+	constructor(div, newGuiPath2, registerPath2) {
+		this.newGuiPath = newGuiPath2;
+		this.registerPath = registerPath2;
+		
 		this.dialogId = div + "_dialog";
 		this.mainDiv = div + "_main";
 		$('#' + div).append('<div id="' + this.dialogId + '"></div>');
@@ -20,7 +23,7 @@ class NewLayoutProperty {
 			}
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/newGui/setId?divid=" + me.widget.widgetId + "&id=" + ids[0] + "&subId=" + subId,
+			   url: me.newGuiPath + "/setId?divid=" + me.widget.widgetId + "&id=" + ids[0] + "&subId=" + subId,
 			   success: function(keys){
 
 			   }
@@ -38,7 +41,7 @@ class NewLayoutProperty {
 //		}
 		$.ajax({
 		   type: "GET", 
-		   url: "//" + window.location.host + "/rest/newGui/getFieldTypes",
+		   url: me.newGuiPath + "/getFieldTypes",
 		   success: function(types){
 				for (var option of types) {
 					$('#' + me.fieldId).append($('<option>').text(option).val(option));
@@ -54,7 +57,7 @@ class NewLayoutProperty {
 //		}
 		$.ajax({
 		   type: "GET", 
-		   url: "//" + window.location.host + "/rest/newGui/widgetTypes",
+		   url: me.newGuiPath + "/widgetTypes",
 		   success: function(types){
 				for (var option of types) {
 					$('#' + me.typeId).append($('<option>').text(option).val(option));
@@ -68,7 +71,7 @@ class NewLayoutProperty {
 
 		$.ajax({
 		   type: "GET", 
-		   url: "//" + window.location.host + "/rest/newGui/getCssKeys",
+		   url: me.newGuiPath + "/getCssKeys",
 		   success: function(keys){
 				for (var key of keys) {
 					$('#' + me.cssKeys).append($('<option>').text(key).val(key));
@@ -94,7 +97,7 @@ class NewLayoutProperty {
 		function setOptional(optional) {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/newGui/setOptional?divid=" + me.widget.widgetId + "&optional=" + optional,
+			   url: me.newGuiPath + "/setOptional?divid=" + me.widget.widgetId + "&optional=" + optional,
 			   success: function(result){
 			   }
 			});		
@@ -110,7 +113,7 @@ class NewLayoutProperty {
 		$('#' + this.copySizeId).click(function() {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/newGui/copySize?divid=" + me.widget.widgetId,
+			   url: me.newGuiPath + "/copySize?divid=" + me.widget.widgetId,
 			   success: function(result){
 			   }
 			});				
@@ -144,7 +147,7 @@ class NewLayoutProperty {
 		$('#' + this.typeId).change(function() {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/newGui/setWidgetType?divid=" + me.widget.widgetId + "&type=" + 
+			   url: me.newGuiPath + "/setWidgetType?divid=" + me.widget.widgetId + "&type=" + 
 			   	$('#' + me.typeId).val(),
 			   success: function(result){
 			   }
@@ -154,7 +157,7 @@ class NewLayoutProperty {
 		$('#' + this.fieldId).change(function() {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/newGui/setField?divid=" + me.widget.widgetId + "&field=" + 
+			   url: me.newGuiPath + "/setField?divid=" + me.widget.widgetId + "&field=" + 
 			   		$('#' + me.fieldId).val(),
 			   success: function(result){
 			   }
@@ -166,7 +169,7 @@ class NewLayoutProperty {
 		$('#' + addWidget).click(function() {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/newGui/addWidget?divid=" + me.widget.widgetId,
+			   url: me.newGuiPath + "/addWidget?divid=" + me.widget.widgetId,
 			   success: function(design){
 		
 			   }
@@ -178,7 +181,7 @@ class NewLayoutProperty {
 		$('#' + removeWidget).click(function() {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/newGui/removeWidget?divid=" + me.widget.widgetId,
+			   url: me.newGuiPath + "/removeWidget?divid=" + me.widget.widgetId,
 			   success: function(design){
 		
 			   }
@@ -188,7 +191,7 @@ class NewLayoutProperty {
 		$('#' + this.layoutId).change(function() {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/newGui/setLayout?divid=" + me.widget.widgetId + "&layout=" + $('#' + me.layoutId).val(),
+			   url: me.newGuiPath + "/setLayout?divid=" + me.widget.widgetId + "&layout=" + $('#' + me.layoutId).val(),
 			   success: function(design){
 		
 			   }
@@ -200,7 +203,7 @@ class NewLayoutProperty {
 		$('#' + buttonArray).click(function() {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/newGui/buttonArray?divid=" + me.widget.widgetId,
+			   url: me.newGuiPath + "/buttonArray?divid=" + me.widget.widgetId,
 			   success: function(design){
 		
 			   }
@@ -212,7 +215,7 @@ class NewLayoutProperty {
 		$('#' + titledValue).click(function() {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/newGui/titledInput?divid=" + me.widget.widgetId,
+			   url: me.newGuiPath + "/titledInput?divid=" + me.widget.widgetId,
 			   success: function(design){
 	
 			   }
@@ -236,7 +239,7 @@ class NewLayoutProperty {
 		function updateRegisterShortcut() {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/register2/getShortCuts",
+			   url: me.registerPath + "/getShortCuts",
 			   success: function(options){
 					for (var option of options) {
 						var s = option.bitName + "@" + option.regName;
@@ -275,7 +278,7 @@ class NewLayoutProperty {
 	setCss(divid, key, value) {
 		$.ajax({
 		   type: "GET", 
-		   url: "//" + window.location.host + "/rest/newGui/setCss?divid=" + divid + "&key=" + key + "&value=" + value,
+		   url: me.newGuiPath + "/setCss?divid=" + divid + "&key=" + key + "&value=" + value,
 		   success: function(design){
 	
 		   }
@@ -289,4 +292,10 @@ class NewLayoutProperty {
 	hide() {
 		$('#' + this.dialogId).dialog('close');
 	}
+	
+	path(newGuiPath2, registerPath2) {
+		this.newGuiPath = newGuiPath2;
+		this.registerPath = registerPath2;
+	}
+	
 }

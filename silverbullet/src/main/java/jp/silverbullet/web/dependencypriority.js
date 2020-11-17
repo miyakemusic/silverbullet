@@ -1,6 +1,8 @@
 class DependencyPriority {
 
 	constructor(div) {
+		this.dependencyPath = "//" + window.location.host + "/rest/dependencySpec2";
+		
 		var idPriorityTable = div + "_priorityTable";
 		$('#' + div).append('<div id="' + idPriorityTable + '">Priority Table</div>');
 		
@@ -10,7 +12,7 @@ class DependencyPriority {
 			var obj = me.data[r];
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/dependencySpec2/setPriority?id=" + obj.id + '&priority=' + v,
+			   url: this.dependencyPath + "/setPriority?id=" + obj.id + '&priority=' + v,
 			   success: function(msg){
 			   }
 			});	
@@ -22,7 +24,7 @@ class DependencyPriority {
 		var me = this;
 		$.ajax({
 		   type: "GET", 
-		   url: "//" + window.location.host + "/rest/dependencySpec2/getPriorityList",
+		   url: this.dependencyPath + "/getPriorityList",
 		   success: function(msg){
 		   	me.data = msg;
 		   	me.table.appendRows(msg);

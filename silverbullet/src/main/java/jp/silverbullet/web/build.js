@@ -1,5 +1,8 @@
 class Build {
 	constructor (div) {
+		this.buildPath = "//" + window.location.host + "/rest/selfbuild";
+		var me = this;
+		
 		var pathId = div + "_path";
 		$('#' + div).append('<div>Source Path: <input type="text" id="' + pathId + '"></div>');
 		$('#' + pathId).css('width', '100%');
@@ -15,7 +18,7 @@ class Build {
 		$('#' + submitId).click(function() {
 			$.ajax({
 				type: "GET", 
-				url: "//" + window.location.host + "/rest/selfbuild/setInfo?path=" + $('#' + pathId).val() + "&package=" + 
+				url: me.buildPath + "/setInfo?path=" + $('#' + pathId).val() + "&package=" + 
 					$('#' + packageId).val(),
 					success: function(msg) {
 
@@ -28,7 +31,7 @@ class Build {
 		$('#' + buildId).click(function() {
 			$.ajax({
 				type: "GET", 
-				url: "//" + window.location.host + "/rest/selfbuild/build",
+				url: me.buildPath + "/build",
 					success: function(msg) {
 
 					}		
@@ -38,7 +41,7 @@ class Build {
 		function getInfo(id, res) {
 			$.ajax({
 				type: "GET", 
-				url: "//" + window.location.host + "/rest/selfbuild/" + res,
+				url: me.buildPath + "/" + res,
 					success: function(msg) {
 						$('#' + id).val(msg);
 					}		

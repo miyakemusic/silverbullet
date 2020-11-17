@@ -1,5 +1,8 @@
 class DependencyClass2 {
 	constructor(div) {
+		this.dependencyPath = "//" + window.location.host + "/rest/dependencySpec2";
+		this.idPath = "//" + window.location.host + "/rest/id2";
+		
 		var me = this;
 		this.rootId = div + "_root";
 		this.idsId = me.rootId + '_ids';
@@ -19,25 +22,13 @@ class DependencyClass2 {
 			if (event.which == 13) { // Enter
 				$.ajax({
 				   type: "GET", 
-				   url: "//" + window.location.host + "/rest/dependencySpec2/setPriority?id=" + $('#' + me.idsId).val() + "&priority=" + $(this).val(),
+				   url: me.dependencyPath + "/setPriority?id=" + $('#' + me.idsId).val() + "&priority=" + $(this).val(),
 				   success: function(msg){
 				   }
 				});				
 			}
 		});
-		
-//		var alternativeId = div + '_alternative';
-//		$('#' + div).append('Alternative<input type="checkbox" id="' + alternativeId + '">');
-//		$('#' + alternativeId).change(function() {
-//			$.ajax({
-//			   type: "GET", 
-//			   url: "//" + window.location.host + "/rest/dependencySpec2/setAlternative?enabled=" + $('#' + alternativeId).prop('checked'),
-//			   success: function(msg){
-//				updateAll();
-//			   }
-//			});					
-//		});
-		
+				
 		var diagramActive = false;
 		
 		var idDiagramButton = div + "_diagamButton";
@@ -63,7 +54,7 @@ class DependencyClass2 {
 		$('#' + idRestriction).click(function() {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/dependencySpec2/getRestrictions",
+			   url: me.dependencyPath + "/getRestrictions",
 			   success: function(msg) {
 			   }
 			});			
@@ -101,7 +92,7 @@ class DependencyClass2 {
 		this.updateIdList = function() {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/id2/ids",
+			   url: me.idPath + "/ids",
 	
 			   success: function(msg) {
 			   		var current = $('#' + me.idsId).val();
@@ -177,7 +168,7 @@ class DependencyClass2 {
 		var id = $('#' + this.idsId).val();
 		$.ajax({
 		   type: "GET", 
-		   url: "//" + window.location.host + "/rest/dependencySpec2/getPriority?id=" + id,
+		   url: me.dependencyPath + "/getPriority?id=" + id,
 		   success: function(msg){
 		   	$('#' + me.priorityId).val(msg);
 		   }
@@ -195,7 +186,7 @@ class DependencyClass2 {
 		var me = this;
 		$.ajax({
 		   type: "GET", 
-		   url: "//" + window.location.host + "/rest/dependencySpec2/getLinks?id=" + id,
+		   url: me.dependencyPath + "/getLinks?id=" + id,
 		   success: function(msg){
 			   var link = [];
 			   var links = msg.links;
@@ -220,6 +211,8 @@ class DependencyClass2 {
 	}
 	
 	rebuild(application) {
+		this.dependencyPath = "//" + window.location.host + "/rest/" + application + "/dependencySpec2";
+		this.idPath = "//" + window.location.host + "/rest/" + application + "/id2";
 		this.updateIdList();
 	}
 }

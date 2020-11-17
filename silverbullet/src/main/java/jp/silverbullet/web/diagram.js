@@ -1,5 +1,7 @@
 class DependencyDiagram {	
 	constructor(diagram) {
+		this.dependencyPath = window.location.origin + "/rest/dependencySpec";
+		
 	    var $ = go.GraphObject.make;  // for conciseness in defining templates
 	
 	    // Must name or refer to the DIV HTML element
@@ -50,7 +52,7 @@ class DependencyDiagram {
 		var me = this;
 		$.ajax({
 		   type: "GET", 
-		   url: window.location.origin + "/rest/dependencySpec/target?id=" + id,
+		   url: me.dependencyPath + "/target?id=" + id,
 		   success: function(msg){
 			   var link = [];
 				for (var i in msg) {

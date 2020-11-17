@@ -1,5 +1,7 @@
 class DependencyHistory {
 	constructor(div) {
+		this.runtimePath = "//" + window.location.host + "/rest/runtime";
+		
 		var depHistButton = div + "_depHistButton";
 		var depHistLog = div + "_depHistLog";
 		var dialogId = div + "_depHistDialog";
@@ -32,10 +34,11 @@ class DependencyHistory {
 			$('#' + depHistLog).html(msg.replace('\n', '<br>'));
 		});
 		
+		var me = this;
 		function debugEnabled(enabled) {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/runtime/dependencyDebug?enabled=" + enabled,
+			   url: me.runtimePath + "/dependencyDebug?enabled=" + enabled,
 			   success: function(widget){
 
 			   }

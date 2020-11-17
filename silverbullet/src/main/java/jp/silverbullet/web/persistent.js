@@ -1,5 +1,7 @@
 class IdSelector {
 	constructor(div, listener) {
+		this.idPath =  "//" + window.location.host + "/rest/id2";
+		
 		this.id = div + "_idlist";
  		var me = this;
  		
@@ -18,7 +20,7 @@ class IdSelector {
 		
 		function get() {
 		    $.ajax({
-		        url: "//" + window.location.host + '/rest/id2/ids',
+		        url: me.idPath + "/ids",
 		        type:'GET'
 		    })
 		    .done( (data) => {
@@ -50,6 +52,9 @@ class IdSelector {
  
 class Persistent {
 	constructor(div) {
+		this.storagePath = "//" + window.location.host + "/rest/storage";
+		
+		var me = this;
 		var idSelector = new IdSelector(div, function(v) {
 		
 		});
@@ -68,7 +73,7 @@ class Persistent {
 		
 		function addId(id) {
 		    $.ajax({
-		        url: "//" + window.location.host + '/rest/storage/add?id=' + id,
+		        url: me.storagePath + "/add?id=" + id,
 		        type:'GET'
 		    })
 		    .done( (data) => {
@@ -84,7 +89,7 @@ class Persistent {
 		
 		function updateList() {
 		    $.ajax({
-		        url: "//" + window.location.host + '/rest/storage/ids',
+		        url: me.storagePath + "/rest/storage/ids",
 		        type:'GET'
 		    })
 		    .done( (data) => {
@@ -110,7 +115,7 @@ class Persistent {
 		
 		function removeId(id) {
 		    $.ajax({
-		        url: "//" + window.location.host + '/rest/storage/removeId?id=' + id,
+		        url: me.storagePath + "/removeId?id=" + id,
 		        type:'GET'
 		    })
 		    .done( (data) => {
