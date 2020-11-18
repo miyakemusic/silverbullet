@@ -1,5 +1,6 @@
 class RegisterSpec {
-	constructor(div) {
+	constructor(div, registerPath2) {
+		this.registerPath = registerPath2;
 		$('#' + div).append('<button id="addNew">Add New</button>');
 
 		$('#' + div).append('<div id="mainDiv" class="regtable"></div>');
@@ -14,7 +15,7 @@ class RegisterSpec {
 		function getListAsync() {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/register2/getRegisters",
+			   url: me.registerPath + "/getRegisters",
 			   success: function(msg){
 					getList(msg);
 			   }
@@ -166,7 +167,7 @@ class RegisterSpec {
 		function addRow(row) {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/register2/addRow?row=" + row,
+			   url: me.registerPath + "/addRow?row=" + row,
 			   success: function(msg){
 					getListAsync();
 			   }
@@ -175,7 +176,7 @@ class RegisterSpec {
 		function delRow(row) {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/register2/deleteRow?row=" + row,
+			   url: me.registerPath + "/deleteRow?row=" + row,
 			   success: function(msg){
 					getListAsync();
 			   }
@@ -184,7 +185,7 @@ class RegisterSpec {
 		function addBitRow(row) {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/register2/addBitRow?row=" + row,
+			   url: me.registerPath + "/addBitRow?row=" + row,
 			   success: function(msg){
 					getListAsync();
 			   }
@@ -202,7 +203,7 @@ class RegisterSpec {
 			
 			$.ajax({
 			   type: "POST", 
-			   url: "//" + window.location.host + "/rest/register2/postChanges",
+			   url: me.registerPath + "/postChanges",
 			   contentType: 'application/json',
 			   data :JSON.stringify(changesList),
 			   success: function(msg){
@@ -223,7 +224,7 @@ class RegisterSpec {
 		$('#addNew').click(function() {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/register2/addNew",
+			   url: me.registerPath + "/addNew",
 			   success: function(msg){
 					getListAsync();
 			   }

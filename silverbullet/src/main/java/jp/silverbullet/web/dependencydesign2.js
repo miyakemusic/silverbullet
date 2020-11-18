@@ -1,12 +1,11 @@
 class DependencyDesign2 {
-	constructor(div) {
+	constructor(div, application) {
 		var triggers = [];
 		var targets = [];
 		var current;
-		var priorityEditor;
 
-		this.dependencyDesignPath = "//" + window.location.host + "/rest/dependencyDesign2";
-		this.idPath = "//" + window.location.host + "/rest/id2";
+		this.dependencyDesignPath = "//" + window.location.host + "/rest/" + application + "/dependencyDesign2";
+		this.idPath = "//" + window.location.host + "/rest/" + application + "/id2";
 		
 		var me = this;
 		var colDefEnabledTable = function(k, row, type) {
@@ -205,7 +204,7 @@ class DependencyDesign2 {
 		
 		var idPriority = div + "_priority";
 		$('#' + div).append('<div id="' + idPriority + '"></div>');	
-		priorityEditor = new PriorityEditor(idPriority, 'dependencyDesign2');
+		this.priorityEditor = new PriorityEditor(idPriority, application);
 		
 		function updatePriorityEditor() {
 			var prioTargets = [];
@@ -215,7 +214,7 @@ class DependencyDesign2 {
 			for (var v of targets) {
 				prioTargets.push(v);
 			}
-			priorityEditor.update(prioTargets);
+			me.priorityEditor.update(prioTargets);
 		}
 		
 		
@@ -293,9 +292,9 @@ class DependencyDesign2 {
 				});	
 			}
 			
-			var equationEditor = new EquationEditor(div);
+			me.equationEditor = new EquationEditor(div, application);
 			valueTable.setButtonListener(function(row, k, v) {
-				equationEditor.show(v, function(value) {
+				me.equationEditor.show(v, function(value) {
 					var rowIndex = current.yValueTitle.indexOf(row);
 					var colIndex = k - 1;
 					
@@ -470,5 +469,7 @@ class DependencyDesign2 {
 		this.dependencyDesignPath = "//" + window.location.host + "/rest/" + application + "/dependencyDesign2";
 		this.idPath = "//" + window.location.host + "/rest/"+ application + "/id2";
 		this.getDependencyDesignConfigList();
+		this.equationEditor.path(application);
+		this.priorityEditor.path(application);
 	}
 }

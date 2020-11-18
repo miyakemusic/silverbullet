@@ -51,11 +51,12 @@ class Devices {
 
 						retreiveUiEntry(o, function(result, device) {
 							var deviceIdOne = deviceId + '_' + device;
+							var application = "";
 							$('#' + deviceId).append(device + '<div id="' + deviceIdOne + '"></div>');
 							
 							new NewLayout(deviceIdOne, result, device, function(height) {
 								$('#' + deviceIdOne).css({'min-height':height, 'overflow':'hidden'});
-							});
+							}, application);
 						});					
 					}
 					

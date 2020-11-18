@@ -1,9 +1,9 @@
 class IdSelectDialog {
-	constructor(base, okClicked) {
+	constructor(base, okClicked, application) {
 		this.idSelectDialog = base + "idSelectDialog";
 		
 		$('#' + base).append('<div id="' + this.idSelectDialog + '"></div>');
-		this.idEditor = new IdEditorClass(this.idSelectDialog);		
+		this.idEditor = new IdEditorClass(this.idSelectDialog, application);		
 		var me = this;
 		
 		$('#' + this.idSelectDialog).dialog({
@@ -34,5 +34,9 @@ class IdSelectDialog {
 		
 		$('#' + this.idSelectDialog).dialog("open");
 		this.idEditor.update();
+	}
+	
+	path(application) {
+		this.idEditor.rebuild(application);
 	}
 }

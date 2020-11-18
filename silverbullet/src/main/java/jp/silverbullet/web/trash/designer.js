@@ -1,5 +1,5 @@
 class DesignerClass {
-	constructor(div) {
+	constructor(div, application) {
 
 		var prefix = 'designer';
 		var idToolbar = prefix + 'toolBar';
@@ -168,7 +168,7 @@ class DesignerClass {
 			}
 		);
 	
-		var dialog = new IdSelectDialog(div, function(ids) {
+		this.dialog = new IdSelectDialog(div, function(ids) {
 			$.ajax({
 			   type: "GET", 
 			   url: "http://" + window.location.host + "/rest/design/addWidget?id=" + ids + "&div=" + layout.selectedDiv,
@@ -176,7 +176,7 @@ class DesignerClass {
 					layout.updateUI();
 			   }
 			});	
-		});	
+		}, application);	
 	
 		$('#' + idDialog).dialog({
 			  autoOpen: false,

@@ -1,5 +1,5 @@
 class EquationEditor {
-	constructor(div) {
+	constructor(div, application) {
 		var me = this;
 		var idSelectorId = div + "_idselector";
 		var idSelectorDialog = div + '_idSelectorDialog';
@@ -16,7 +16,7 @@ class EquationEditor {
 			autoOpen:false,
 		});
 		
-		var idSelector = new IdEditorClass(idSelectorDialogContent);
+		this.idSelector = new IdEditorClass(idSelectorDialogContent, application);
 		var idClear = div + "_clear";
 		
 		$('#' + div).append('<div id="' + newSpecDiv+ '">' + 
@@ -71,8 +71,8 @@ class EquationEditor {
 				buttons: {
 					"OK": function(){
 						$(this).dialog('close');
-						var id = idSelector.getCurrentId();
-						var subId = idSelector.getSelectionId();
+						var id = me.idSelector.getCurrentId();
+						var subId = me.idSelector.getSelectionId();
 						result(id, subId);
 				    }
 				    ,
@@ -82,7 +82,7 @@ class EquationEditor {
 				},
 			});
 			$('#' + idSelectorDialog).dialog("open");
-			idSelector.update();
+			me.idSelector.update();
 		}
 				
 		$('#' + newSpecDiv).dialog({
@@ -113,5 +113,9 @@ class EquationEditor {
 	
 	show(defaultValue, callback) {
 		this.showDialog(defaultValue, callback);
+	}
+	
+	path(application) {
+		this.idSelector.rebuild(application);
 	}
 }

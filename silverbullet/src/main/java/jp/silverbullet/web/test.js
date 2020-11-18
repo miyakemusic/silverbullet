@@ -1,5 +1,5 @@
 class TestClass {
-	constructor(div) {
+	constructor(div, application) {
 		var toDialogId = div + '_toDialog';
 		$('#' + div).append('<button id="' + toDialogId + '">To Dialog</button>');
 				

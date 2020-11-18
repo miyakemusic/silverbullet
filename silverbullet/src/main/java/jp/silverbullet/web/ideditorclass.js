@@ -1,6 +1,6 @@
 class IdEditorClass {    
-    constructor(div) {
-    	this.idPath = "//" + window.location.host + "/rest/id2";
+    constructor(div, application) {
+    	this.idPath = "//" + window.location.host + "/rest/" + application + "/id2";
     	
     	var prefix = div + 'ideditorclass';
         	

@@ -1,7 +1,7 @@
 class DependencySpecEditor {
 
-	constructor(div) {	
-		this.dependencyPath = "//" + window.location.host + "/rest/dependencySpec2";
+	constructor(div, application) {	
+		this.dependencyPath = "//" + window.location.host + "/rest/" + application + "/dependencySpec2";
 		
 		this.div = div;
 
@@ -9,7 +9,7 @@ class DependencySpecEditor {
 
 		var me = this;
 			
-		me.equationEditor = new EquationEditor(div);
+		me.equationEditor = new EquationEditor(div, application);
 		
 	}
 	
@@ -123,5 +123,9 @@ class DependencySpecEditor {
 				}
 		   }
 		});	
+	}
+	
+	path(application) {
+		this.dependencyPath = "//" + window.location.host + "/rest/" + application + "/dependencySpec2";
 	}
 }

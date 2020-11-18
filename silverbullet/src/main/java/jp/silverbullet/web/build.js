@@ -1,6 +1,6 @@
 class Build {
-	constructor (div) {
-		this.buildPath = "//" + window.location.host + "/rest/selfbuild";
+	constructor (div, application) {
+		this.buildPath = "//" + window.location.host + "/rest/" + application + "/selfbuild";
 		var me = this;
 		
 		var pathId = div + "_path";

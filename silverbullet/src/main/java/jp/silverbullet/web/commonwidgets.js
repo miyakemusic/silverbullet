@@ -60,19 +60,21 @@ class EditableText {
 
 class ListBox {
 	constructor(parent, title, path, resource) {
+		var me = this;
 		var listId = parent + "_listbox";
 		$('#' + parent).append(title + '<select id="' + listId + '"></select>');
 		
-		var getPath = path + "/get" + resource;
-		var setPath = path + "/set" + resource;
-		var listPath = path + "/get" + resource + "List";
+		this.getPath = path + "/get" + resource;
+		this.setPath = path + "/set" + resource;
+		this.listPath = path + "/get" + resource + "List";
+		this.resource  = resource;
 		
 		getList();
 		
 		function getList() {
 			$.ajax({
 				type: "GET", 
-				url: listPath,
+				url: me.listPath,
 				success: function(msg){
 					for (var option of msg) {
 						$('#' + listId).append($('<option />').val(option).html(option));
@@ -85,7 +87,7 @@ class ListBox {
 		function getValue() {
 			$.ajax({
 				type: "GET", 
-				url: getPath,
+				url: me.getPath,
 				success: function(msg){
 					$('#' + listId).val(msg);
 				}
@@ -95,11 +97,17 @@ class ListBox {
 		$('#' + listId).change(function() {
 			$.ajax({
 				type: "GET", 
-				url: setPath + "?value=" + $(this).val(),
+				url: me.setPath + "?value=" + $(this).val(),
 				success: function(msg){
 
 				}
 			});	
 		});
+	}
+	
+	path(path) {
+		this.getPath = path + "/get" + this.resource;
+		this.setPath = path + "/set" + this.resource;
+		this.listPath = path + "/get" + this.resource + "List";
 	}
 }

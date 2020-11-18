@@ -1,5 +1,5 @@
 class NewLayoutProperty {
-	constructor(div, newGuiPath2, registerPath2) {
+	constructor(div, newGuiPath2, registerPath2, application) {
 		this.newGuiPath = newGuiPath2;
 		this.registerPath = registerPath2;
 		
@@ -17,7 +17,7 @@ class NewLayoutProperty {
 			
 		var me = this;
 			
-		var idSelector = new IdSelectDialog(this.mainDiv, function(ids, subId) {
+		this.idSelector = new IdSelectDialog(this.mainDiv, function(ids, subId) {
 			if (subId == null) {
 				subId = "";
 			}
@@ -28,9 +28,9 @@ class NewLayoutProperty {
 
 			   }
 			});			
-		});
+		}, application);
 		$('#' + this.titleId).click(function() {
-			idSelector.showModal();
+			me.idSelector.showModal();
 		});
 		
 		this.fieldId = div + "_field";
@@ -293,9 +293,10 @@ class NewLayoutProperty {
 		$('#' + this.dialogId).dialog('close');
 	}
 	
-	path(newGuiPath2, registerPath2) {
+	path(newGuiPath2, registerPath2, application) {
 		this.newGuiPath = newGuiPath2;
 		this.registerPath = registerPath2;
+		this.idSelector.path(application);
 	}
 	
 }

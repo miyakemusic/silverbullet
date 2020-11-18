@@ -1,9 +1,12 @@
 class RegisterClass {
-	constructor(div) {
+	constructor(div, application) {
 		var selectId = div + '_depselect';		
 		var showExternalId = div + '_external';
+				
+		var me = this;
+		me.registerPath = "//" + window.location.host + "/rest/" + application + "/register2";
 		
-		new ListBox(div, 'Register Size', "//" + window.location.host + "/rest/register2", "RegSize");
+		this.listBox = new ListBox(div, 'Register Size', me.registerPath, "RegSize");
 		
 		var hardOrSimId = div + '_hardOrSim';
 		
@@ -22,16 +25,15 @@ class RegisterClass {
 		
 		$('#' + selectId).append($('<option>').text('Specification').val('Specification'));
 		$('#' + selectId).append($('<option>').text('Map').val('Map'));
-		
-		var me = this;
+
 		
 		$('#' + selectId).change(function() {
 			$('#' + regDiv).empty();
 			if ($(this).val() == 'Specification') {
-				me.registerSpec = new RegisterSpec(regDiv);
+				me.registerSpec = new RegisterSpec(regDiv, me.registerPath);
 			}
 			else {
-				me.registerMap = new RegisterMap(regDiv);
+				me.registerMap = new RegisterMap(regDiv, me.registerPath);
 			}
 		});
 		
@@ -47,7 +49,7 @@ class RegisterClass {
 		
 		$('#' + hardOrSimId).val('Simulator');
 		
-		new RegisterSpec(regDiv);
+		me.registerSpec = new RegisterSpec(regDiv, me.registerPath);
 		
 		var dialogId = div + '_mapDialog';
 		var dialogPaneId = dialogId + '_pane';
@@ -71,10 +73,15 @@ class RegisterClass {
 		function setRegisterType(type) {
 			$.ajax({
 			   type: "GET", 
-			   url: "//" + window.location.host + "/rest/register2/setRegisterType?type=" + type,
+			   url: me.registerPath + "/setRegisterType?type=" + type,
 			   success: function(msg){
 			   }
 			});		
 		}
+	}
+	
+	rebuild(application) {
+		this.registerPath = "//" + window.location.host + "/rest/" + application + "/register2";	
+		this.listBox.path(this.registerPath);
 	}
 }

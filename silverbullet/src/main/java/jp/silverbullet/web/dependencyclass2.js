@@ -1,7 +1,7 @@
 class DependencyClass2 {
-	constructor(div) {
-		this.dependencyPath = "//" + window.location.host + "/rest/dependencySpec2";
-		this.idPath = "//" + window.location.host + "/rest/id2";
+	constructor(div, application) {
+		this.dependencyPath = "//" + window.location.host + "/rest/" + application + "/dependencySpec2";
+		this.idPath = "//" + window.location.host + "/rest/" + application + "/id2";
 		
 		var me = this;
 		this.rootId = div + "_root";
@@ -112,11 +112,11 @@ class DependencyClass2 {
 		this.updateIdList();
 			
 		$('#' + div).append('<div id="' + me.rootId + '"></div>');
-		var editor = new DependencySpecEditor(me.rootId);
+		this.editor = new DependencySpecEditor(me.rootId, application);
 		
 		function updateAll() {
 			var sel = $('#' + me.idsId).val();
-			editor.update(sel);
+			me.editor.update(sel);
 			me.updateLink();
 			me.retrievePriority();
 		}
@@ -213,6 +213,7 @@ class DependencyClass2 {
 	rebuild(application) {
 		this.dependencyPath = "//" + window.location.host + "/rest/" + application + "/dependencySpec2";
 		this.idPath = "//" + window.location.host + "/rest/" + application + "/id2";
+		this.editor.path(application);
 		this.updateIdList();
 	}
 }

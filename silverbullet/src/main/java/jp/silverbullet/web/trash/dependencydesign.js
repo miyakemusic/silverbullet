@@ -1,5 +1,5 @@
 class DependencyDesign {
-	constructor(div) {
+	constructor(div, application) {
 		this.depDesignPath = "http://" + window.location.host + "/rest/dependencyDesign";
 		
 		var me = this;
@@ -223,7 +223,7 @@ class DependencyDesign {
 		var idValueTableDiv = idMain + "_valueTable";
 		$('#' + idMain).append('<div id="' + idValueTableDiv + '">value table</div>');
 		
-		var priorityEditor = new PriorityEditor(idMain);
+		var priorityEditor = new PriorityEditor(idMain, application);
 		
 		function updatePriorityEditor() {
 			priorityEditor.update();

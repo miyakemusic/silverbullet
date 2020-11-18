@@ -1,6 +1,6 @@
 class PriorityEditor {
-	constructor(divid) {
-		this.depDesignPath = "//" + window.location.host + "/rest/dependencyDesign";
+	constructor(divid, application) {
+		this.depDesignPath = "//" + window.location.host + "/rest/" + application + "/dependencyDesign2";
 		var me = this;
 		
 		var mainId = divid + "_main";
@@ -103,5 +103,9 @@ class PriorityEditor {
 	
 	update(ids) {
 		this.onUpdate(ids);
+	}
+	
+	path(application) {
+		this.depDesignPath = "//" + window.location.host + "/rest/" + application + "/dependencyDesign2";
 	}
 }

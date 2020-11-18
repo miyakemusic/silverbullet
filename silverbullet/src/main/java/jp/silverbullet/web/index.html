@@ -82,16 +82,16 @@ $(function() {
 		
 			$('#tab').tabs();
 					
-			var idEditor = new IdEditorClass('tab_id');
-			var register = new RegisterClass('tab_register');
-			var controller = new ControllerClass('tab_control');
-			var deb = new DebugClass('tab_debug');
-			var test = new TestClass('tab_test');
-			var dependency = new DependencyClass2('tab_dependency2');
-			var newLayout = new NewLayout('tab_newgui');
-			var persistent = new Persistent('tab_persistent');
-			var depenencyDesign = new DependencyDesign2('tab_dependencydesign2');
-			var build = new Build('tab_build');
+			var idEditor = new IdEditorClass('tab_id', application);
+			var register = new RegisterClass('tab_register', application);
+			var controller = new ControllerClass('tab_control', application);
+			var deb = new DebugClass('tab_debug', application);
+//			var test = new TestClass('tab_test', application);
+			var dependency = new DependencyClass2('tab_dependency2', application);
+			var newLayout = new NewLayout('tab_newgui', null, null, null, application);
+			var persistent = new Persistent('tab_persistent', application);
+			var depenencyDesign = new DependencyDesign2('tab_dependencydesign2', application);
+			var build = new Build('tab_build', application);
 			var devices = new Devices('tab_device', 'vertical');
 //			var devices = new AllDevices('tab_device');
 			
@@ -102,7 +102,9 @@ $(function() {
 			    dependency.rebuild(application);
 			    newLayout.rebuild(application);
 			    depenencyDesign.rebuild(application);
+			    register.rebuild(application);
 //			    build.rebuild(application);
+				persistent.rebuild(application);
 			});
 
 			$('#newApplication').click(function() {
@@ -230,7 +232,7 @@ $(function() {
 	  	<li><a href="#tab_dependencydesign2">Dependency Designer2</a></li>
 	  	<li><a href="#tab_control">Control</a></li>
 	  	<li><a href="#tab_debug">Debug</a></li>
-	  	<li><a href="#tab_test">Test</a></li>
+<!--	  	<li><a href="#tab_test">Test</a></li> -->
 	  	<li><a href="#tab_newgui">GUI</a></li>
 	  	<li><a href="#tab_persistent">Store</a></li>
 	  	<li><a href="#tab_build">Build</a></li>
@@ -240,7 +242,7 @@ $(function() {
 	  <div id="tab_register"></div>
 	  <div id="tab_control"></div>
 	  <div id="tab_debug"></div>
-	  <div id="tab_test"></div>
+<!--	  <div id="tab_test"></div> -->
 	  <div id="tab_dependency2"></div>
 	  <div id="tab_newgui"></div>
 	  <div id="tab_persistent"></div>

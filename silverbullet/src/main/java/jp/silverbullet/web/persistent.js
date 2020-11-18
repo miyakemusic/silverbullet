@@ -1,6 +1,6 @@
 class IdSelector {
-	constructor(div, listener) {
-		this.idPath =  "//" + window.location.host + "/rest/id2";
+	constructor(div, listener, application) {
+		this.idPath =  "//" + window.location.host + "/rest/" + application + "/id2";
 		
 		this.id = div + "_idlist";
  		var me = this;
@@ -48,22 +48,26 @@ class IdSelector {
 	getId() {
 		return this.getId();
 	}
+	
+	path(application) {
+		this.idPath =  "//" + window.location.host + "/rest/" + application + "/id2";
+	}
 }
  
 class Persistent {
-	constructor(div) {
-		this.storagePath = "//" + window.location.host + "/rest/storage";
+	constructor(div, application) {
+		this.storagePath = "//" + window.location.host + "/rest/" + application + "/storage";
 		
 		var me = this;
-		var idSelector = new IdSelector(div, function(v) {
+		this.idSelector = new IdSelector(div, function(v) {
 		
-		});
+		}, application);
 		
 		var idAdd = div + "_add";
 		$('#' + div).append('<button id="' + idAdd + '">Add</button>');
 		
 		$('#' + idAdd).on('click', function(e) {
-			addId(idSelector.getId());
+			addId(me.idSelector.getId());
 		});
 		
 		var listId = div + "_list";
@@ -89,7 +93,7 @@ class Persistent {
 		
 		function updateList() {
 		    $.ajax({
-		        url: me.storagePath + "/rest/storage/ids",
+		        url: me.storagePath + "/ids",
 		        type:'GET'
 		    })
 		    .done( (data) => {
@@ -128,5 +132,10 @@ class Persistent {
 		
 		    });
 		}
+	}
+	
+	rebuild(application) {
+		this.storagePath = "//" + window.location.host + "/rest/" + application + "/storage";
+		this.idSelector.path(application);
 	}
 }

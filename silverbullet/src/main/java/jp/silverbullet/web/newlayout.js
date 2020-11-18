@@ -880,7 +880,7 @@ class Table2 extends Widget {
 }
 
 class NewLayout {
-	constructor(divParent, rootName, device, listener) {
+	constructor(divParent, rootName, device, listener, application) {
 		var propertyMap = new Map();
 		var widgetMap = new Map();
 		var divMap = new Map();
@@ -888,11 +888,10 @@ class NewLayout {
 		var me = this;
 
 		this.basePath = "//" + window.location.host + "/rest";
-		this.newGuiPath = me.basePath + "/newGui";
-		this.runtimePath = me.basePath + "/" + device + "/runtime";
-		this.domainPath = me.basePath + "/domain";
-		this.registerPath = me.basePath + "/register2";
-
+		this.newGuiPath = this.basePath + "/" + application + "/newGui";
+		this.runtimePath = this.basePath + "/" + application + "/" + this.device + "/runtime";
+		this.domainPath = this.basePath + "/" + application + "/domain";
+		this.registerPath = this.basePath + "/" + application + "/register2";	
 		if (me.device == null) {
 			me.device = 'NO_DEVICE';
 		}
@@ -997,8 +996,7 @@ class NewLayout {
 				me.currentRoot = selectedRoot;
 				me.retreiveDesign();
 			}, me.newGuiPath);
-	
-			url: 
+
 			$('#' + div).append('<input type="checkbox" id="' + editId + '"><label>Edit</label>');
 			$('#' + editId).click(function() {
 				me.retreiveDesign();
@@ -1031,8 +1029,8 @@ class NewLayout {
 			
 			new DependencyHistory(div);
 			
-			this.propertyWindow = new NewLayoutProperty(div, me.newGuiPath, me.registerPath);
-			
+			this.propertyWindow = new NewLayoutProperty(div, me.newGuiPath, me.registerPath, application);
+					
 			var devicesId = div + "_devices";
 			$('#' + div).append('<select id="' + devicesId + '"></select>');
 			$('#' + devicesId).change(function() {
@@ -1455,9 +1453,8 @@ class NewLayout {
 		this.runtimePath = this.basePath + "/" + application + "/" + this.device + "/runtime";
 		this.domainPath = this.basePath + "/" + application + "/domain";
 		this.registerPath = this.basePath + "/" + application + "/register2";	
-		
 		this.library.path(this.newGuiPath);
-		this.propertyWindow.path(this.newGuiPath, this.registerPath);
+		this.propertyWindow.path(this.newGuiPath, this.registerPath, application);
 		
 		this.library.update();
 	}
