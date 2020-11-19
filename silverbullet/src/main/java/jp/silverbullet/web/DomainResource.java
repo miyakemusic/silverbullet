@@ -34,13 +34,8 @@ public class DomainResource {
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<String> getDevices(@CookieParam("SilverBullet") String cookie) {
 		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
-		Map<String, WebSocketObject> set = WebSocketBroadcaster.getInstance().getDomainModels(userid);
-		if (set != null) {
-			return new ArrayList<String>(set.keySet());
-		}
-		else {
-			return new ArrayList<String>();
-		}
+		return SilverBulletServer.getStaticInstance().getBuilderModelHolder().getActiveDevices(userid);
+
 	}
 	@GET
 	@Path("/record")

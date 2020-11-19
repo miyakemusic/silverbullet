@@ -44,14 +44,19 @@ class Devices {
 		function retreiveDevices() {
 			$.ajax({
 				type: "GET", 
-				url: "//" + window.location.host + "/rest/domain/devices",
+				url: "//" + window.location.host + "/rest/any/domain/devices",
 				success: function(msg){
+				
 					$('#' + deviceId).empty();
 					for (var o of msg) {
+						var device = o.split(',')[0];
+						var application = o.split(',')[1];
+						
+						retreiveUiEntry(application, device, function(result, application, device) {
 
-						retreiveUiEntry(o, function(result, device) {
+							
 							var deviceIdOne = deviceId + '_' + device;
-							var application = "";
+							
 							$('#' + deviceId).append(device + '<div id="' + deviceIdOne + '"></div>');
 							
 							new NewLayout(deviceIdOne, result, device, function(height) {
@@ -59,46 +64,20 @@ class Devices {
 							}, application);
 						});					
 					}
-					
-/*					$('#' + listId).empty();
-					for (var o of msg) {
-						if (direction == 'horizontal') {
-							$('#' + listId).append('<button class="deviceButton">' + o + '</button>');
-						}
-						else if (direction == 'vertical'){
-							$('#' + listId).append('<div><button class="deviceItem deviceButton">' + o + '</button></div>');
-						}
-					}
-					$('.deviceButton').on('click', function() {
-						$('#' + deviceId).empty();
-						me.device = $(this).text();
-						retreiveUiEntry(me.device, function(result, device) {
-							new NewLayout(deviceId, result, me.device);
-						});
-					});	
-*/
 			   }
 			});
 		}
 		
-		function retreiveUiEntry(device, result) {
+		function retreiveUiEntry(application, device, result) {
 			$.ajax({
 				type: "GET", 
-				url: "//" + window.location.host + "/rest/domain/" + device + "/getUiEntry",
+				url: "//" + window.location.host + "/rest/" + application + "/domain/" + device + "/getUiEntry",
 				success: function(msg){
-					result(msg, device);
+					result(msg, application, device);
 				}
 			});
 		}	
-		
-//		function selectDevice(device) {
-//			$.ajax({
-//				type: "GET", 
-//				url: "//" + window.location.host + "/rest/domain/" + device + "/select",
-//				success: function(msg){
-//				}
-//			});
-//		}	
+
 		
 		function postFile(device) {
 			var file = $('#' + fileId)[0].files[0];
@@ -307,8 +286,8 @@ class AllDevices {
 						if (checked == true) {
 							var device = $(this).prop('id');
 							var contentId = $(this).prop('name');
-							retreiveUiEntry(device, contentId, function(d, dv, result) {
-								new NewLayout(d, result, dv);
+							retreiveUiEntry(device, contentId, function(d, application, device, result) {
+								new NewLayout(d, result, device);
 							});
 						}
 						else {
@@ -319,10 +298,10 @@ class AllDevices {
 			   }
 			});
 		}	
-		function retreiveUiEntry(device, contentId, result) {
+		function retreiveUiEntry(application, device, contentId, result) {
 			$.ajax({
 				type: "GET", 
-				url: "//" + window.location.host + "/rest/domain/" + device + "/getUiEntry",
+				url: "//" + window.location.host + "/rest/" + application + "/domain/" + device + "/getUiEntry",
 				success: function(msg){
 					result(contentId, device, msg);
 				}

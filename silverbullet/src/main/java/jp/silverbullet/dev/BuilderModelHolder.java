@@ -148,6 +148,7 @@ public abstract class BuilderModelHolder {
 		try {
 			Map<String, BuilderModelImpl> runtimeModels = this.allUsers.get(userid).getRuntimeModels();
 			BuilderModelImpl r = this.loadAfile(userid, PERSISTENT_FOLDER + "/" + userid + "/" + app + ".zip", device);
+			r.setApplicationName(app);
 			runtimeModels.put(device, r);
 			
 			r.getSequencer().addSequencerListener(createAutomator(userid).createListener(device));
@@ -259,5 +260,15 @@ public abstract class BuilderModelHolder {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}		
+	}
+
+	public List<String> getActiveDevices(String userid) {
+		List<String> ret = new ArrayList<>();
+		
+		Map<String, BuilderModelImpl> models = this.allUsers.get(userid).getRuntimeModels();
+		for (String key : models.keySet()) {
+			ret.add(key + "," + models.get(key).getApplicationName());
+		}
+		return ret;
 	}
 }

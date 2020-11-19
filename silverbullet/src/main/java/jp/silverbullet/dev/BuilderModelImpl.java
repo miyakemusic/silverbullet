@@ -586,6 +586,7 @@ public abstract class BuilderModelImpl implements Cloneable {
 	
 	private DialogAnswer dialogReply = DialogAnswer.OK;
 	private String device;
+	private String applicationName;
 	
 	public ValueSetResult requestChange(String id, String value, 
 			boolean forceChange, Actor actor) {
@@ -713,5 +714,14 @@ public abstract class BuilderModelImpl implements Cloneable {
 	public String getDevice() {
 		return device;
 	}
+
+	public void setApplicationName(String app) {
+		this.applicationName = app;
+	}
+
+	public String getApplicationName() {
+		return applicationName;
+	}
+	
 	
 }
