@@ -884,20 +884,22 @@ class NewLayout {
 		var propertyMap = new Map();
 		var widgetMap = new Map();
 		var divMap = new Map();
-		
+
 		var me = this;
 
+		if (device == null) {
+			this.device = 'NO_DEVICE';
+		}
+		else {
+			this.device = device;
+		}
+		
 		this.basePath = "//" + window.location.host + "/rest";
 		this.newGuiPath = this.basePath + "/" + application + "/newGui";
 		this.runtimePath = this.basePath + "/" + application + "/" + this.device + "/runtime";
 		this.domainPath = this.basePath + "/" + application + "/domain";
 		this.registerPath = this.basePath + "/" + application + "/register2";	
-		if (me.device == null) {
-			me.device = 'NO_DEVICE';
-		}
-		else {
-			me.device = device;
-		}
+
 		var div;
 		
 		var divBase = divParent + "_newLayout";

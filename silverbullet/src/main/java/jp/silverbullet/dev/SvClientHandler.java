@@ -36,7 +36,9 @@ public class SvClientHandler {
 	
 	public SvClientHandler(String userid, String device, BuilderModelImpl model) {
 		this.userid = userid;
-		model.addUserSequencer(new WebSequencer(userid, device));
+		if (!device.equals(BuilderModelHolder.NO_DEVICE)) {
+			model.addUserSequencer(new WebSequencer(userid, device));
+		}
 		model.addRuntimeListener(new RuntimeListener() {
 			@Override
 			public DialogAnswer dialog(String message) {

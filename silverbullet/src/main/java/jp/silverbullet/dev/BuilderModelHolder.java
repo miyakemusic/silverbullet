@@ -41,7 +41,7 @@ class UserModel {
 public abstract class BuilderModelHolder {
 	public static final String PERSISTENT_FOLDER = "./persistent";
 	public static final String TMP_FOLDER = PERSISTENT_FOLDER + "/sv_tmp";
-	private static final String NO_DEVICE = "NO_DEVICE";
+	public static final String NO_DEVICE = "NO_DEVICE";
 	public static final String DEFAULT_USER_SERIAL = "Default00";
 	public static final String DEFAULT_USER_FILE = "silverbullet.zip";
 	public static final String DEFAULT_USER_NAME = "silverbullet";
