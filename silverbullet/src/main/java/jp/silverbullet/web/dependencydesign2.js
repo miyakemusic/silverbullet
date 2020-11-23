@@ -120,7 +120,21 @@ class DependencyDesign2 {
 			   }
 			});			
 		}
-		
+							
+		this.initIdSelection = function() {
+			$.ajax({
+			   type: "GET", 
+			   url: me.idPath + "/ids",
+			   success: function(msg) {
+			   		$('#' + idsId).empty();
+			   		
+			   		for (var i = 0; i < msg.length; i++) {
+						var id = msg[i];
+						$('#' + idsId).append($('<option>').text(id).val(id));
+					}
+			   }
+			});	
+		}
 				
 		// ID Pane //
 		var idPane = div + "_idPane";
@@ -128,7 +142,7 @@ class DependencyDesign2 {
 		
 		var idsId = div + "_ids";
 		$('#' + idPane).append('ID <select id="' + idsId + '"></select>');
-		initIdSelection();
+		me.initIdSelection();
 		
 		var idAddTrigger = div + "_addTrigger";
 		$('#' + idPane).append('<button id="' + idAddTrigger + '">Add Trigger</button>');
@@ -414,21 +428,6 @@ class DependencyDesign2 {
 				valueTable.appendRow(col, val);	
 			}
 		}
-					
-		function initIdSelection() {
-			$.ajax({
-			   type: "GET", 
-			   url: me.idPath + "/ids",
-			   success: function(msg) {
-			   		$('#' + idsId).empty();
-			   		
-			   		for (var i = 0; i < msg.length; i++) {
-						var id = msg[i];
-						$('#' + idsId).append($('<option>').text(id).val(id));
-					}
-			   }
-			});	
-		}
 		
 		function registerConfig() {
 			var name = $('#' + nameId).val();
@@ -468,6 +467,8 @@ class DependencyDesign2 {
 	rebuild(application) {
 		this.dependencyDesignPath = "//" + window.location.host + "/rest/" + application + "/dependencyDesign2";
 		this.idPath = "//" + window.location.host + "/rest/"+ application + "/id2";
+		this.initIdSelection();
+		
 		this.getDependencyDesignConfigList();
 		this.equationEditor.path(application);
 		this.priorityEditor.path(application);

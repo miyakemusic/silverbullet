@@ -127,5 +127,7 @@ class DependencySpecEditor {
 	
 	path(application) {
 		this.dependencyPath = "//" + window.location.host + "/rest/" + application + "/dependencySpec2";
+		
+		this.equationEditor.path(application);
 	}
 }

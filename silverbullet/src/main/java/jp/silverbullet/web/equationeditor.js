@@ -6,8 +6,10 @@ class EquationEditor {
 		var idSelectorDialogContent = div + '_idSelectorDialogContent';
 		var newSpecDiv = div + "_newSpec";
 		var valueText = div + "_valueText";
-			
+		
 		var equationDialogId = div + "_equationDialog";
+		
+		this.application = application;
 					
 		$('#' + div).append('<div id="' + idSelectorDialog + '">' +
 				'<div id="' + idSelectorDialogContent + '"></div>' + 
@@ -16,7 +18,6 @@ class EquationEditor {
 			autoOpen:false,
 		});
 		
-		this.idSelector = new IdEditorClass(idSelectorDialogContent, application);
 		var idClear = div + "_clear";
 		
 		$('#' + div).append('<div id="' + newSpecDiv+ '">' + 
@@ -62,6 +63,8 @@ class EquationEditor {
 		});				
 		
 		function showIdSelectDialog(result) {
+			me.idSelector = new IdEditorClass(idSelectorDialogContent, me.application);
+					
 			$('#' + idSelectorDialog).dialog({
 				autoOpen:false,
 				modal:true,
@@ -74,15 +77,19 @@ class EquationEditor {
 						var id = me.idSelector.getCurrentId();
 						var subId = me.idSelector.getSelectionId();
 						result(id, subId);
+						me.idSelector.close();
+						me.idSelector = null;
 				    }
 				    ,
 				    "Cancel": function(){
 				      $(this).dialog('close');
+				      me.idSelector.close();
+				      me.idSelector = null;
 				    }
 				},
 			});
 			$('#' + idSelectorDialog).dialog("open");
-			me.idSelector.update();
+//			me.idSelector.update();
 		}
 				
 		$('#' + newSpecDiv).dialog({
@@ -116,6 +123,6 @@ class EquationEditor {
 	}
 	
 	path(application) {
-		this.idSelector.rebuild(application);
+		this.application = application;
 	}
 }

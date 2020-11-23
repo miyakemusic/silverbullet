@@ -43,6 +43,10 @@ class PriorityEditor {
 		}
 		
 		function build(priorities, msg, filterIds) {
+			if (priorities.length == 0) {
+				return;
+			}
+			
 			$('#' + mainId).empty();
 			var firstIndex = priorities[0];
 			var number = msg[firstIndex].value;

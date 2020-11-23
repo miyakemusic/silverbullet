@@ -1,6 +1,7 @@
 class IdEditorClass {    
     constructor(div, application) {
     	this.idPath = "//" + window.location.host + "/rest/" + application + "/id2";
+    	this.div = div;
     	
     	var prefix = div + 'ideditorclass';
         	
@@ -37,7 +38,7 @@ class IdEditorClass {
 		
 		var me = this;
 
-		websocket.addListener('ID', function(msg) {
+		me.websocketListener = function(msg) {
 			var command = msg.split(':')[0];
 			var id = msg.split(':')[1];
 			
@@ -55,7 +56,9 @@ class IdEditorClass {
 					});
 				}
 			}
-		});
+		};
+		
+		websocket.addListener('ID', me.websocketListener);
 			
 		$("#" + idUpdate).on('click', function() {
 			updateMainTable();
@@ -117,7 +120,6 @@ class IdEditorClass {
 		this.updateTypes();
 		
 		function collectSelections(id, callback) {
-			var me = this;
 			$.ajax({
 				type: "GET", 
 				url: me.idPath + "/selection?id=" + id,
@@ -324,5 +326,9 @@ class IdEditorClass {
 		this.rebuilder(application);
 	}
 	
+	close() {
+		websocket.removeListener(this.websocketListener);
+		$('#' + this.div).empty();
+	}
 }
 
