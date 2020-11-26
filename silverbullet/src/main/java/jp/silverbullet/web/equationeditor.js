@@ -89,11 +89,10 @@ class EquationEditor {
 				},
 			});
 			$('#' + idSelectorDialog).dialog("open");
-//			me.idSelector.update();
+
 		}
 				
 		$('#' + newSpecDiv).dialog({
-//			  dialogClass: "no-titlebar", 
 			  autoOpen: false,
 			  title: 'Name',
 			  closeOnEscape: true,

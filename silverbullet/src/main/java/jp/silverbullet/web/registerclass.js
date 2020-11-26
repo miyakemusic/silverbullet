@@ -67,7 +67,7 @@ class RegisterClass {
 		$('#' + showExternalId).click(function() {
 			$('#' + dialogPaneId).empty();
 			$('#' + dialogId).dialog('open');
-			new RegisterMap(dialogPaneId);
+			new RegisterMap(dialogPaneId, me.registerPath);
 		});
 		
 		function setRegisterType(type) {

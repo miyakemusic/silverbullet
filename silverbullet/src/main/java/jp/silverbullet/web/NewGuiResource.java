@@ -26,17 +26,6 @@ public class NewGuiResource {
 	@Produces(MediaType.APPLICATION_JSON) 
 	public Pane getDesign(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("root") final String root, @QueryParam("link") final boolean link) {
 		Pane pane = getUiBuilder(cookie, app).getRootPane(root, link);
-//		new PaneWalkThrough() {
-//
-//			@Override
-//			protected boolean handle(Pane widget, Pane parent) {
-//				if (!widget.id.isEmpty()) {
-//					System.out.println(widget.id + "." + widget.subId);
-//				}
-//				return true;
-//			}
-//			
-//		}.walkThrough(pane, null);
 		
 		return pane;
 	}

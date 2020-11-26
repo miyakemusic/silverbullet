@@ -3,6 +3,7 @@ package jp.silverbullet.web;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -164,14 +165,24 @@ public class DomainResource {
 		return "OK";
 	}
 	
+	private static Map<String, String> uiEntry = new HashMap<>();
 	@GET
 	@Path("/{device}/getUiEntry")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String getUiEntry(@PathParam("app") String app, @PathParam("device") String device) {
-		if (device.startsWith("MT")) {
-			return "MAIN";
+		String ret = uiEntry.get(device);
+		if (ret == null) {
+			ret = "";
 		}
-		return device.replaceAll("[0-9]", "");
+		return ret;
+	}
+	
+	@GET
+	@Path("/{device}/setUiEntry")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String setDeviceUi(@PathParam("app") String app, @PathParam("device") String device, @QueryParam("ui") String ui) {
+		uiEntry.put(device, ui);
+		return "OK";
 	}
 	
 	@GET

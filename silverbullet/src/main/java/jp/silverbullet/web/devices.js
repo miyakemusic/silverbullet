@@ -53,11 +53,13 @@ class Devices {
 						var application = o.split(',')[1];
 						
 						retreiveUiEntry(application, device, function(result, application, device) {
-
-							
 							var deviceIdOne = deviceId + '_' + device;
+							var deviceIdOneButton = deviceIdOne + '_button';
+							$('#' + deviceId).append('<button id="' + deviceIdOneButton + '">' + device + '</button><div id="' + deviceIdOne + '"></div>');
 							
-							$('#' + deviceId).append(device + '<div id="' + deviceIdOne + '"></div>');
+							$('#' + deviceIdOneButton).click(function() {
+								registerUiEntry(application, $(this).text());
+							});
 							
 							new NewLayout(deviceIdOne, result, device, function(height) {
 								$('#' + deviceIdOne).css({'min-height':height, 'overflow':'hidden'});
@@ -65,6 +67,59 @@ class Devices {
 						});					
 					}
 			   }
+			});
+		}
+		
+		var selectedDevice;		
+		var selectedApplication;
+		var uiDialog = div + '_uiDialog';
+		var uiSelect = div + '_uiSelect';
+		$('#' + div).append('<div id="' + uiDialog + '"></div>');
+		$('#' + uiDialog).dialog({
+			  autoOpen: false,
+			  title: "UI",
+			  closeOnEscape: false,
+			  modal: false,
+			  buttons: {
+			    "OK": function(){
+			    	$(this).dialog('close');
+			    	setUiEntry();
+			    },
+			    "Cancel": function(){
+			    	$(this).dialog('close');
+			    }
+			  },
+			width: 600,
+			height: 400
+		});
+		
+		$('#' + uiDialog).append('<select id="' + uiSelect + '"></select>');
+		function registerUiEntry(application, device) {
+			$.ajax({
+				type: "GET", 
+				url: "//" + window.location.host + "/rest/" + application + "/newGui/getRootPanes",
+				success: function(msg){
+					$('#' + uiSelect).empty();
+					for (var o of msg) {
+						var option = $('<option>').val(o).text(o);
+						$('#' + uiSelect).append(option);		
+					}
+					
+				}
+			});	
+			selectedDevice = device;
+			selectedApplication = application;
+			$('#' + uiDialog).dialog('open');
+		}
+		
+		function setUiEntry() {
+			$.ajax({
+				type: "GET", 
+				url: "//" + window.location.host + "/rest/" + selectedApplication + "/domain/" + 
+					selectedDevice + "/setUiEntry?ui=" + $('#' + uiSelect).val(),
+				success: function(msg){
+					retreiveDevices();
+				}
 			});
 		}
 		

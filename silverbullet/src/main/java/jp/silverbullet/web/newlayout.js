@@ -1172,7 +1172,8 @@ class NewLayout {
 		function getDesignByName(name, link, initPos, listener) {
 			$.ajax({
 			   type: "GET", 
-			   url: me.newGuiPath + "/getDesignByName?name=" + name + "&link=" + link + "&initPos=" + initPos,
+			   //url: me.newGuiPath + "/getDesignByName?name=" + name + "&link=" + link + "&initPos=" + initPos,
+			   url: me.newGuiPath + "/getDesign?root=" + name + "&link=" + link + "&initPos=" + initPos,
 			   success: function(pane){
 			   		listener(getCss(pane.css, 'height'));
 			   		build(pane, div);
