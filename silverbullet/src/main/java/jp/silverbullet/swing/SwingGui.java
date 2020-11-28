@@ -2,23 +2,14 @@ package jp.silverbullet.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.util.Set;
 
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.border.TitledBorder;
-
 import jp.silverbullet.core.BlobStore;
 import jp.silverbullet.core.dependency2.CommitListener;
 import jp.silverbullet.core.dependency2.Id;
@@ -32,7 +23,6 @@ import jp.silverbullet.core.ui.UiModel;
 import jp.silverbullet.core.ui.UiModelListener;
 import jp.silverbullet.core.ui.UiProperty;
 import jp.silverbullet.core.ui.UiPropertyConverter;
-import jp.silverbullet.core.ui.part2.Layout;
 import jp.silverbullet.core.ui.part2.Pane;
 import jp.silverbullet.core.ui.part2.UiBuilder;
 import jp.silverbullet.core.ui.part2.WidgetType;
@@ -119,14 +109,12 @@ public class SwingGui extends JFrame {
 			}
 		}		
 	};
+	
 	private RuntimePropertyStore runtimePropertyStore;
 	private BlobStore blobStore;
 	private Sequencer sequencer;
-
 	private JPanel mainPane;
-
 	private UiBuilder uiBuilder;
-
 	private String gui;
 	
 	public SwingGui(UiBuilder uiBuilder, RuntimePropertyStore runtimePropertyStore, 
@@ -139,20 +127,8 @@ public class SwingGui extends JFrame {
 		
 		this.setTitle(title);
 		
-//		if (getBackgroundImage() != null) {
-//			setContentPane(new JLabel(new ImageIcon(getBackgroundImage())));
-//		}
-		
-//		JComboBox<String> rootPanes = new JComboBox<>();
-//		uiBuilder.getRootList().forEach(root -> rootPanes.addItem(root));
-
 		this.getContentPane().setLayout(new BorderLayout());
 		mainPane = new JPanel();
-		
-//		if (getBackgroundImage() != null) {
-//			Image background = Toolkit.getDefaultToolkit().createImage(getBackgroundImage());
-//			mainPane.drawImage(background, 0, 0, null);
-//		}
 		
 		
 		JPanel toolBar = new JPanel();
@@ -232,6 +208,18 @@ public class SwingGui extends JFrame {
 		return null;
 	}
 
+	RetreiveDesignDialog retreiveDesignDialog = new RetreiveDesignDialog() {
+
+		@Override
+		public void build(JPanel panel, String name) {
+			Pane pane = uiBuilder.getRootPane(name, true);
+			parsePane(pane, panel);
+		}
+		
+	};
+
+	private Pane selectedRootPane;
+	
 	private void parsePane(Pane pane, JPanel parent) {
 		if (pane.type.equals(WidgetType.Button)) {
 			new SbButton(pane, uiModel, parent);
@@ -263,6 +251,9 @@ public class SwingGui extends JFrame {
 		else if (pane.type.equals(WidgetType.Table)) {
 			new SbTable(pane, uiModel, parent);
 		}
+		else if (pane.type.equals(WidgetType.Dialog)) {
+			new SbDialog(pane, uiModel, parent, this, retreiveDesignDialog);
+		}
 		else if (pane.type.equals(WidgetType.Pane)) {
 			new SbPanel(pane, uiModel, parent) {
 				@Override
@@ -276,8 +267,8 @@ public class SwingGui extends JFrame {
 	public void updateGUI() {
 		mainPane.removeAll();
 		
-		Pane pane = uiBuilder.getRootPane(gui, true);
-		parsePane(pane, mainPane);
+		selectedRootPane = uiBuilder.getRootPane(gui, true);
+		parsePane(selectedRootPane, mainPane);
 		getContentPane().repaint();
 	}
 

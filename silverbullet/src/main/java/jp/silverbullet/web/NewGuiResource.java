@@ -37,7 +37,8 @@ public class NewGuiResource {
 	@GET
 	@Path("/getDesignByName")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public Pane getDesignByName(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @QueryParam("name") final String name, @QueryParam("link") final boolean link,
+	public Pane getDesignByName(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, 
+			@QueryParam("name") final String name, @QueryParam("link") final boolean link,
 			@QueryParam("initPos") final boolean initPos) {
 		
 		Pane pane = getUiBuilder(cookie, app).getPaneByName(name, link, initPos);

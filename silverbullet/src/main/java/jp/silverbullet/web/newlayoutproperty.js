@@ -276,6 +276,7 @@ class NewLayoutProperty {
 	}
 	
 	setCss(divid, key, value) {
+		var me = this;
 		$.ajax({
 		   type: "GET", 
 		   url: me.newGuiPath + "/setCss?divid=" + divid + "&key=" + key + "&value=" + value,

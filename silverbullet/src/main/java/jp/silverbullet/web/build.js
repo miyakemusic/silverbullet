@@ -50,4 +50,7 @@ class Build {
 		
 	}
 	
+	rebuild(application) {
+		this.buildPath = "//" + window.location.host + "/rest/" + application + "/selfbuild";
+	}
 }

@@ -1,6 +1,7 @@
 class IdSelectDialog {
 	constructor(base, okClicked, application) {
 		this.idSelectDialog = base + "idSelectDialog";
+		this.okClicked = okClicked;
 		
 		$('#' + base).append('<div id="' + this.idSelectDialog + '"></div>');
 			
@@ -20,7 +21,7 @@ class IdSelectDialog {
 			    "OK": function(){
 			    	var ids = [];
 					ids.push(me.idEditor.getCurrentId());
-			    	okClicked(ids, me.idEditor.getSelectionId());
+			    	me.okClicked(ids, me.idEditor.getSelectionId());
 			   		$(this).dialog('close');
 			   		me.idEditor.close();
 			    	$('#' + me.idSelectDialog).empty();

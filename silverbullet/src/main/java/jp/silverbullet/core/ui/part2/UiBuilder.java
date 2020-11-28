@@ -94,7 +94,7 @@ public class UiBuilder {
 				if (widget.type.equals(WidgetType.Dialog)) {
 					if (widget.optional.startsWith("$CONTENT")) {
 						String linkId = widget.optional.split("=")[1];
-						Pane content = getPaneByName(linkId, false, true);
+						Pane content = getRootPane(linkId, true);
 
 						widget.volatileInfo.add("width="  + String.valueOf((Integer.valueOf(content.css("width")) + 100)));
 						widget.volatileInfo.add("height="  + String.valueOf((Integer.valueOf(content.css("height")) + 150)));
@@ -172,7 +172,7 @@ public class UiBuilder {
 		}
 		return null;
 	}
-
+	
 	private Pane removePosition(Pane clone) {
 		clone.removeCss("top");
 		clone.removeCss("left");

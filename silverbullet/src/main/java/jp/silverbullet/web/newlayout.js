@@ -355,7 +355,7 @@ class Dialog extends Widget {
 				    "OK": function(){
 				    	$('#' + me.dialogId).empty();
 				    	$(this).dialog('destroy');
-				    	
+				    	me.setter(me.widget.id, 0, alternative(me.property));
 				    },
 				    "Cancel": function(){
 				    	$('#' + me.dialogId).empty();
@@ -377,7 +377,14 @@ class Dialog extends Widget {
 			}
 		});
 		
-		
+		function alternative(property) {
+			if (property.currentValue == 'true') { 
+				return 'false';
+			}
+			else {
+				return 'true';
+			}
+		}
 	}
 	
 	onUpdateValue(property) {
@@ -1166,7 +1173,15 @@ class NewLayout {
 				
 		function retreiveDesignDialog(name, div) {			
 			var link = $('#' + linkId).prop('checked') || !$('#' + editId).prop('checked');
-			getDesignByName(name, link, false);
+			//getDesignByName(name, link, false, function(height){});
+			$.ajax({
+			   type: "GET", 
+			   url: me.newGuiPath + "/getDesign?root=" + name + "&link=" + link + "&initPos=false",
+			   success: function(pane){
+			   		//listener(getCss(pane.css, 'height'));
+			   		build(pane, div);
+			   }
+			});	
 		}
 				
 		function getDesignByName(name, link, initPos, listener) {
