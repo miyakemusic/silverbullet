@@ -34,6 +34,7 @@ import jp.silverbullet.core.register2.RegisterSpecHolder;
 import jp.silverbullet.core.register2.RuntimeRegisterMap;
 import jp.silverbullet.core.register2.RuntimeRegisterMap.DeviceType;
 import jp.silverbullet.core.sequncer.EasyAccessInterface;
+import jp.silverbullet.core.sequncer.LocalPersistent;
 import jp.silverbullet.core.sequncer.Sequencer;
 import jp.silverbullet.core.sequncer.SystemAccessor;
 import jp.silverbullet.core.sequncer.UserSequencer;
@@ -243,7 +244,7 @@ public abstract class BuilderModelImpl implements Cloneable {
 
 			@Override
 			public List<String> targetIds() {
-				return persistentHolder.getList();
+				return persistentHolder.triggerList();
 			}
 
 			@Override
@@ -258,9 +259,6 @@ public abstract class BuilderModelImpl implements Cloneable {
 
 			@Override
 			protected String getFile() {
-				
-				//IdValues idValues = getRuntimePropertyStore().createSaveData();
-				
 				try {
 					getRuntimePropertyStore().save("tmp.tmp");
 					return "tmp.tmp";
@@ -268,13 +266,12 @@ public abstract class BuilderModelImpl implements Cloneable {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-
 				return null;
 			}
 			
 		};
-		sequencer.addUserSequencer(persistentHandler);
-//		this.uiLayoutHolder.createDefault();
+//		sequencer.addUserSequencer(persistentHandler);
+		sequencer.addUserSequencer(new LocalPersistent(persistentHolder, this.store, this.blobStore));
 		createDependencyEngine();
 		
 		this.undoManager.set(propertiesHolder2, dependencySpecHolder2, uiBuilder, this.testRecorder);
