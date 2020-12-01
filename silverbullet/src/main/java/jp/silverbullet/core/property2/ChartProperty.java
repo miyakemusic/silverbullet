@@ -1,6 +1,9 @@
 package jp.silverbullet.core.property2;
 
-public class ChartContent {
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+public class ChartProperty {
 	public enum ChartType {
 		XY,
 	}
@@ -48,6 +51,15 @@ public class ChartContent {
 	}
 	public String getYmin() {
 		return ymin;
+	}
+	@Override
+	public String toString() {
+		try {
+			return new ObjectMapper().writeValueAsString(this);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	

@@ -9,12 +9,12 @@ import org.junit.jupiter.api.Test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jp.silverbullet.core.BlobStore;
-import jp.silverbullet.core.property2.ChartContent;
 import jp.silverbullet.core.property2.PropertyFactory;
 import jp.silverbullet.core.property2.PropertyHolder2;
 import jp.silverbullet.core.property2.PropertyType2;
 import jp.silverbullet.core.property2.RuntimePropertyStore;
-import jp.silverbullet.core.property2.ChartContent.ChartType;
+import jp.silverbullet.core.property2.ChartProperty;
+import jp.silverbullet.core.property2.ChartProperty.ChartType;
 import jp.silverbullet.core.ui.UiProperty;
 import jp.silverbullet.core.ui.UiPropertyConverter;
 
@@ -55,7 +55,7 @@ public class JsPropertyTest {
 		}
 		
 		{
-			ChartContent content = new ChartContent();
+			ChartProperty content = new ChartProperty();
 			content.setChartType(ChartType.XY);
 			content.setYmax("100");
 			content.setYmin("0");

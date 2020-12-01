@@ -13,7 +13,7 @@ import org.jfree.data.xy.XYSeriesCollection;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import jp.silverbullet.core.property2.ChartContent;
+import jp.silverbullet.core.property2.ChartProperty;
 import jp.silverbullet.core.ui.UiModel;
 import jp.silverbullet.core.ui.UiProperty;
 import jp.silverbullet.core.ui.part2.Pane;
@@ -68,7 +68,7 @@ public class SbChart extends SbWidget {
 		chart.setTitle(uiProp.getTitle());
 
 		try {
-			ChartContent chart = new ObjectMapper().readValue(val, ChartContent.class);
+			ChartProperty chart = new ObjectMapper().readValue(val, ChartProperty.class);
 			for (int i = 0; i < chart.getY().length; i++) {
 				series.add(i, Double.valueOf(chart.getY()[i]));
 			}

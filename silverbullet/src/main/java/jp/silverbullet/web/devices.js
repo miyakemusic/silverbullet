@@ -44,7 +44,7 @@ class Devices {
 		function retreiveDevices() {
 			$.ajax({
 				type: "GET", 
-				url: "//" + window.location.host + "/rest/any/domain/devices",
+				url: "//" + window.location.host + "/rest/allapp/domain/devices",
 				success: function(msg){
 				
 					$('#' + deviceId).empty();
@@ -177,7 +177,7 @@ class Devices {
 				$(this).text("Stop");
 				$.ajax({
 					type: "GET", 
-					url: "//" + window.location.host + "/rest/domain/record",
+					url: "//" + window.location.host + "/rest/allapp/domain/record",
 					success: function(msg){
 	
 					}
@@ -187,7 +187,7 @@ class Devices {
 				$(this).text("Record");
 				$.ajax({
 					type: "GET", 
-					url: "//" + window.location.host + "/rest/domain/script",
+					url: "//" + window.location.host + "/rest/allapp/domain/script",
 					success: function(msg){
 						$('#' + script).empty();
 						var lines = '';
@@ -247,7 +247,7 @@ class Devices {
 		});
 		
 		$('#' + playback).click(function() {
-			playbackScript();
+			playbackFunction();
 		});
 	
 		updateScriptList();
@@ -255,7 +255,7 @@ class Devices {
 		function updateScriptList() {
 			$.ajax({
 				type: "GET", 
-				url: "//" + window.location.host + "/rest/domain/scriptList",
+				url: "//" + window.location.host + "/rest/allapp/domain/scriptList",
 				success: function(msg){
 					$('#' + list + ' > option').remove();
 					for (var i in msg) {
@@ -266,9 +266,9 @@ class Devices {
 			});
 		}
 		
-		function playbackScript() {
+		function playbackFunction() {
 			$.ajax({
-	            url: "//" + window.location.host + "/rest/domain/playback",
+	            url: "//" + window.location.host + "/rest/allapp/domain/playback",
 	            type: 'POST',
 	            contentType: 'text/plain',
 				data: $('#' + playbackScript).val(),

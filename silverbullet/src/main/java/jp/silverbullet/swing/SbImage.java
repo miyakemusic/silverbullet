@@ -13,6 +13,7 @@ import javax.swing.JLabel;
 
 import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 
+import jp.silverbullet.core.property2.ImageProperty;
 import jp.silverbullet.core.ui.UiModel;
 import jp.silverbullet.core.ui.UiProperty;
 import jp.silverbullet.core.ui.UiPropertyConverter;
@@ -49,10 +50,12 @@ public class SbImage extends SbWidget {
 	@Override
 	protected void onUpdate(UiProperty uiProp) {
 		String val = uiProp.getCurrentValue();
-		if (!val.startsWith("data:image/png;base64")) {
-			val = this.getUiModel().getBlob(uiProp.getId()).toString();
-		}
-		byte[] bytes = Base64.decode(val.replace("data:image/png;base64,", ""));
+		byte[] bytes = ((ImageProperty)this.getUiModel().getBlob(uiProp.getId())).getImage();
+		
+//		if (!val.startsWith("data:image/png;base64")) {
+//			val = this.getUiModel().getBlob(uiProp.getId()).toString();
+//		}
+//		byte[] bytes = Base64.decode(val.replace("data:image/png;base64,", ""));
 		try {
 			BufferedImage image = ImageIO.read(new ByteArrayInputStream(bytes));
 			Image scaled = image.getScaledInstance(label.getWidth(), label.getHeight(), Image.SCALE_SMOOTH);

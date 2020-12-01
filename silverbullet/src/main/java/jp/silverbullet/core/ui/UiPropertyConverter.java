@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jp.silverbullet.core.BlobStore;
-import jp.silverbullet.core.property2.ChartContent;
+import jp.silverbullet.core.property2.ChartProperty;
 import jp.silverbullet.core.property2.ListDetailElement;
 import jp.silverbullet.core.property2.RuntimeProperty;
 //import jp.silverbullet.dev.StaticInstances;
@@ -46,9 +46,9 @@ public class UiPropertyConverter {
 						return ret;
 					}
 					
-					ChartContent chartContent = null;
+					ChartProperty chartContent = null;
 					try {
-						chartContent = (ChartContent)blobStore.get(property.getId());
+						chartContent = (ChartProperty)blobStore.get(property.getId());
 					}
 					catch(Exception e) {
 						e.printStackTrace();

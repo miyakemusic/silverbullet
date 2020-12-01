@@ -12,6 +12,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import jp.silverbullet.core.dependency2.DependencySpec;
 import jp.silverbullet.core.ui.UiModel;
 import jp.silverbullet.core.ui.UiProperty;
 import jp.silverbullet.core.ui.part2.Pane;
@@ -57,7 +58,15 @@ public class SbDialog extends SbWidget {
 						dialog.setVisible(false);
 					}
 				};
+				ActionListener okLisetenr = new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+						SbDialog.this.setValue(SbDialog.this.getUiProperty().getCurrentValue().equals(DependencySpec.True) ? DependencySpec.False : DependencySpec.True);
+						
+					}
+				};				
 				ok.addActionListener(closeLisetenr);
+				ok.addActionListener(okLisetenr);
 				cancel.addActionListener(closeLisetenr);
 				
 				String[] tmp = pane.optional.split("=");
@@ -89,8 +98,7 @@ public class SbDialog extends SbWidget {
 
 	@Override
 	protected void onUpdate(UiProperty uiProp) {
-		// TODO Auto-generated method stub
-		
+
 	}
 
 }

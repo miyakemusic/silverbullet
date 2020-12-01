@@ -44,6 +44,7 @@ public class RuntimeResource {
 		Object object = SilverBulletServer.getStaticInstance().getBuilderModelBySessionName(cookie, app, device).getBlobStore().get(id);
 		BlobJson json = new BlobJson();
 		json.data = object.toString();
+
 		return json;
 	}
 	

@@ -257,7 +257,6 @@ class IdEditorClass {
 		}
 			
 		function changeSelection(id, selectionId, paramName, value) {
-			var me = this;
 			$.ajax({
 			   type: "GET", 
 			   url: me.idPath + "/updateChoice?id=" + id + "&selectionId=" + selectionId + "&paramName=" + paramName + "&value=" + value,
