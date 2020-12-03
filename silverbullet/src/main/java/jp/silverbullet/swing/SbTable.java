@@ -9,7 +9,7 @@ import javax.swing.table.AbstractTableModel;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import jp.silverbullet.core.property2.JsTableContent;
+import jp.silverbullet.core.property2.TableProperty;
 import jp.silverbullet.core.ui.UiModel;
 import jp.silverbullet.core.ui.UiProperty;
 import jp.silverbullet.core.ui.part2.Pane;
@@ -18,7 +18,7 @@ public class SbTable extends SbWidget {
 
 	private AbstractTableModel model;
 	private JTable table;
-	private JsTableContent tableData = new JsTableContent();
+	private TableProperty tableData = new TableProperty();
 
 	public SbTable(Pane pane, UiModel uiModel, Container parent) {
 		super(pane, uiModel, parent);
@@ -38,7 +38,7 @@ public class SbTable extends SbWidget {
 
 	@Override
 	void onInit(Pane pane, UiProperty uiProp, Container parent) {
-		tableData = new JsTableContent();
+		tableData = new TableProperty();
 		model = new SbTableModel();
 		table = new JTable(model);
 		parent.add(table);
@@ -46,14 +46,10 @@ public class SbTable extends SbWidget {
 
 	@Override
 	protected void onUpdate(UiProperty uiProp) {
-		try {
-			this.tableData = new ObjectMapper().readValue(uiProp.getCurrentValue(), JsTableContent.class);
-			model.fireTableStructureChanged();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+		Object obj = this.getUiModel().getBlob(uiProp.getId());
+
+		this.tableData = (TableProperty)obj;//new ObjectMapper().readValue(uiProp.getCurrentValue(), TableProperty.class);
+		model.fireTableStructureChanged();		
 	}
 
 	class SbTableModel extends AbstractTableModel {

@@ -61,7 +61,8 @@ public class SbDialog extends SbWidget {
 				ActionListener okLisetenr = new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
-						SbDialog.this.setValue(SbDialog.this.getUiProperty().getCurrentValue().equals(DependencySpec.True) ? DependencySpec.False : DependencySpec.True);
+						//SbDialog.this.setValue(SbDialog.this.getUiProperty().getCurrentValue().equals(DependencySpec.True) ? DependencySpec.False : DependencySpec.True);
+						SbDialog.this.setValue(DependencySpec.True);
 						
 					}
 				};				

@@ -355,7 +355,7 @@ class Dialog extends Widget {
 				    "OK": function(){
 				    	$('#' + me.dialogId).empty();
 				    	$(this).dialog('destroy');
-				    	me.setter(me.widget.id, 0, alternative(me.property));
+				    	me.setter(me.widget.id, 0, 'true');
 				    },
 				    "Cancel": function(){
 				    	$('#' + me.dialogId).empty();
@@ -813,21 +813,25 @@ class Table extends Widget {
 		if (property.currentValue == '') {
 			return;
 		}
-		var table = JSON.parse(property.currentValue);
-		
-		if (this.headers.length != table.headers.length) {
-			this.createTable(table.headers);
-		}
-		this.headers = table.headers;
-	
 		var me = this;
-				
-		this.hot.updateSettings({
-		    height: $('#' + me.divid).height()
-		});	
-
-		this.hot.loadData(table.data);
 		
+		me.ajaxRuntime("getProperty?id=" + me.widget.id + '&index=' + index, function(property) {
+	   		if (property == null) {
+	   			return;
+	   		}
+			var table = JSON.parse(property.currentValue);
+			
+			if (me.headers.length != table.headers.length) {
+				me.createTable(table.headers);
+			}
+			me.headers = table.headers;
+					
+			this.hot.updateSettings({
+			    height: $('#' + me.divid).height()
+			});	
+	
+			me.hot.loadData(table.data);
+		});		
 	}
 		
 	createTable(headers) {
@@ -842,8 +846,8 @@ class Table extends Widget {
 }
 
 class Table2 extends Widget {
-	constructor(widget, parent, divid) {
-		super(widget, parent, divid);
+	constructor(widget, parent, divid, ajaxRuntime) {
+		super(widget, parent, divid, ajaxRuntime);
 		
 		$('#' + this.parent).append('<div id="' + this.divid + '"></div>');
 		$('#' + this.divid).css('font', 'inherit');
@@ -874,15 +878,23 @@ class Table2 extends Widget {
 		if (property.currentValue == '') {
 			return;
 		}
-		this.data = JSON.parse(property.currentValue);
-		
-		if (this.data.dataChanged) {
-			if (this.data.structureChanged) {
-				this.table.build();
+		var me = this;
+		var index = 0;
+		me.ajaxRuntime("getBlob?id=" + me.widget.id + '&index=' + index, function(blobData) {
+	   		if (blobData == null) {
+	   			return;
+	   		}
+			me.data = JSON.parse(blobData.data);
+			
+			if (me.data.dataChanged) {
+				if (me.data.structureChanged) {
+					me.table.build();
+				}
+				me.table.update();
 			}
-			this.table.update();
-		}
-		this.table.selectRow(this.data.selectedRow);
+			me.table.selectRow(me.data.selectedRow);
+		});		
+
 	}
 }
 

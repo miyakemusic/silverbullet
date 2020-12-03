@@ -102,7 +102,7 @@ public class RuntimeProperty implements Cloneable {
 	}
 	
 	public void setCurrentValue(String val) {
-		if (!forceChange  && this.currentValue.equals(val)) {
+		if (!forceChange  && this.currentValue.equals(val) && !this.isAction()) {
 			return;
 		}
 		

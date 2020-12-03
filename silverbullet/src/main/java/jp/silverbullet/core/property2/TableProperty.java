@@ -5,10 +5,11 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @XmlRootElement
-public class JsTableContent {
+public class TableProperty {
 
 	public List<String> headers = new ArrayList<>();
 	private List<List<String>> data = new ArrayList<>();
@@ -49,11 +50,11 @@ public class JsTableContent {
 	}
 
 
-	public static JsTableContent read(String str) {
+	public static TableProperty read(String str) {
 		try {
-			return new ObjectMapper().readValue(str, JsTableContent.class);
+			return new ObjectMapper().readValue(str, TableProperty.class);
 		} catch (Exception e) {
-			return new JsTableContent();
+			return new TableProperty();
 		} 
 	}
 
@@ -109,5 +110,13 @@ public class JsTableContent {
 		this.dataChanged = true;
 		this.selectedRowChanged = true;
 	}
-
+	@Override
+	public String toString() {
+		try {
+			return new ObjectMapper().writeValueAsString(this);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 }
