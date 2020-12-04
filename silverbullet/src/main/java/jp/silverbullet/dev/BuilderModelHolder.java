@@ -2,22 +2,44 @@ package jp.silverbullet.dev;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
-
 import jp.silverbullet.core.Zip;
 import jp.silverbullet.core.dependency2.RequestRejectedException;
 import jp.silverbullet.core.sequncer.Sequencer;
 
+
 class UserModel {
+
 	private Map<String, BuilderModelImpl> builderModels = new HashMap<>();
 	private Map<String, BuilderModelImpl> runtimeModels = new HashMap<>();
+	private Automator automator = null;
+	
+	private AutomatorInterface automaterInterface = new AutomatorInterface() {
+
+		@Override
+		public void write(String device, String id, String value) {
+			Sequencer sequencer = runtimeModels.get(device).getSequencer();
+			try {
+				sequencer.requestChange(id, value);
+			} catch (RequestRejectedException e) {
+				e.printStackTrace();
+			}
+		}
+
+		@Override
+		public String read(String addr, String query) {
+			//return runtimeModels
+			return null;
+		}				
+	};
+	
+	public UserModel() {
+		automator = new Automator(automaterInterface);
+	}
 	
 	public BuilderModelImpl getBuilderModel(String app) {
 		return builderModels.get(app);
@@ -35,98 +57,89 @@ class UserModel {
 		for (BuilderModelImpl model : runtimeModels.values()) {
 			model.load(folder);
 		}
+	}
+
+	public BuilderModelImpl addRuntimeModel(String app, String device, String userid) {
+		try {
+			BuilderModelImpl runtimeModel = SbFiles.loadAfile(userid, SbFiles.PERSISTENT_FOLDER + "/" + userid + "/" + app + ".zip", device);
+			runtimeModel.setApplicationName(app);
+			runtimeModels.put(device, runtimeModel);
+			
+			runtimeModel.getSequencer().addSequencerListener(automator.createListener(device));
+			System.out.println("Runtime Model was generated. :" + 
+					device + " @" + Thread.currentThread().getName() + ":" + runtimeModels.hashCode());
+			return runtimeModel;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public void addDevModel(BuilderModelImpl model, String app) {
+		this.builderModels.put(app, model);
 	}	
+	
+
+	public Automator getAutomator() {
+		return this.automator;
+	}
+
+	public void removeDevice(String device) {
+		runtimeModels.remove(device);
+		this.automator.removeDevice(device);
+	}
+
+	public BuilderModelImpl getModel(String app, String device) {
+		if (!runtimeModels.containsKey(device)) {
+			return this.getBuilderModel(app);
+		}
+		else {
+			BuilderModelImpl model = runtimeModels.get(device);
+			return model;
+		}
+	}
 }
 
 public abstract class BuilderModelHolder {
-	public static final String PERSISTENT_FOLDER = "./persistent";
-	public static final String TMP_FOLDER = PERSISTENT_FOLDER + "/sv_tmp";
+
 	public static final String NO_DEVICE = "NO_DEVICE";
 	public static final String DEFAULT_USER_SERIAL = "Default00";
 	public static final String DEFAULT_USER_FILE = "silverbullet.zip";
 	public static final String DEFAULT_USER_NAME = "silverbullet";
 	
 	private Map<String, UserModel> allUsers = new HashMap<>();
-	private Map<String, Automator> automators = new HashMap<>(); // key is userid
+	
 	
 	public BuilderModelHolder() {
 
 	}
 
 	public Automator getAutomator(String userid) {
-		return automators.get(userid);
+		return this.allUsers.get(userid).getAutomator();
 	}	
 
-	private void createFolderIfNotExists(String folder) {
-		if (!Files.exists(Paths.get(folder))) {
-			try {
-				Files.createDirectory(Paths.get(folder));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	private static synchronized void createTmpFolderIfNotExists() {
-		if (!Files.exists(Paths.get(PERSISTENT_FOLDER))) {
-			try {
-				Files.createDirectory(Paths.get(PERSISTENT_FOLDER));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		if (!Files.exists(Paths.get(TMP_FOLDER))) {
-			try {
-				Files.createDirectory(Paths.get(TMP_FOLDER));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
 	public void loadAll() {
-		createTmpFolderIfNotExists();
+		SbFiles.createTmpFolderIfNotExists();
 		
-		for (File file : new File(PERSISTENT_FOLDER).listFiles()) {
-			if (file.isDirectory()) {
-				if (file.getName().equals(new File(TMP_FOLDER).getName())) {
-					continue;
-				}
+		new SbFiles.WalkThrough() {
+			@Override
+			protected void handleUserId(String userid, List<String> list) {
 				UserModel userModel = new UserModel();
-				String userid = file.getName();
-				this.allUsers.put(userid, userModel);
-				for (File file2 : file.listFiles()) {
-
-					String filename = file2.getAbsolutePath();
+				allUsers.put(userid, userModel);
+				
+				for (String path : list) {
+					BuilderModelImpl model;
 					try {
-						BuilderModelImpl model = loadAfile(userid, filename, NO_DEVICE);
-						userModel.getBuilderModels().put(new File(filename).getName().replace(".zip", ""), model);
+						model = SbFiles.loadAfile(userid, path, NO_DEVICE);
+						String app = createApp(path);
+						userModel.addDevModel(model, app);
 					} catch (IOException e) {
 						e.printStackTrace();
-					}		
+					}
 				}
-			}			
-		}
-	}
+			}
+		};
 	
-	private synchronized BuilderModelImpl loadAfile(String userid, String filename, String device) throws IOException {
-		if (filename.endsWith(".zip")) {
-			createTmpFolderIfNotExists();
-			FileUtils.cleanDirectory(new File(TMP_FOLDER));
-			Zip.unzip(filename, TMP_FOLDER);
-			BuilderModelImpl model = new BuilderModelImpl() {
-				@Override
-				protected String getAccessToken() {
-					return BuilderModelHolder.this.getAccessToken(userid);
-				}	
-			};
-			model.load(TMP_FOLDER);			
-			model.setDevice(device);
-			new SvClientHandler(userid, device, model);
-			return model;
-		}
-		throw new IOException();
 	}
 
 	public BuilderModelImpl get(String userid, String app) {
@@ -134,51 +147,13 @@ public abstract class BuilderModelHolder {
 	}
 
 	public BuilderModelImpl getBuilderModel(String userid, String app, String device) {
-		Map<String, BuilderModelImpl> runtimeModels = this.allUsers.get(userid).getRuntimeModels();
-		if (!runtimeModels.containsKey(device)) {
-			return this.allUsers.get(userid).getBuilderModel(app);
-		}
-		else {
-			BuilderModelImpl model = runtimeModels.get(device);
-			return model;
-		}
+		return this.allUsers.get(userid).getModel(app, device);
 	}
 	
 	private synchronized BuilderModelImpl generateModel(String userid, String app, String device) {
-		try {
-			Map<String, BuilderModelImpl> runtimeModels = this.allUsers.get(userid).getRuntimeModels();
-			BuilderModelImpl r = this.loadAfile(userid, PERSISTENT_FOLDER + "/" + userid + "/" + app + ".zip", device);
-			r.setApplicationName(app);
-			runtimeModels.put(device, r);
-			
-			r.getSequencer().addSequencerListener(createAutomator(userid).createListener(device));
-			System.out.println("Runtime Model was generated. :" + 
-					device + " @" + Thread.currentThread().getName() + ":" + runtimeModels.hashCode());
-			return r;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
+		return this.allUsers.get(userid).addRuntimeModel(app, device, userid);
 	}
 
-	private Automator createAutomator(String userid) {
-		if (!this.automators.containsKey(userid)) {
-			AutomatorInterface automaterInterface = new AutomatorInterface() {
-
-				@Override
-				public void write(String device, String id, String value) {
-					Sequencer sequencer = allUsers.get(userid).getRuntimeModels().get(device).getSequencer();
-					try {
-						sequencer.requestChange(id, value);
-					} catch (RequestRejectedException e) {
-						e.printStackTrace();
-					}
-				}				
-			};
-			this.automators.put(userid, new Automator(automaterInterface));
-		}
-		return this.automators.get(userid);
-	}
 
 	public void createDevice(String userid, String app, String device) {
 		generateModel(userid, app, device);
@@ -207,8 +182,7 @@ public abstract class BuilderModelHolder {
 	}
 
 	public void deleteDevice(String userid, String app, String device) {
-		Map<String, BuilderModelImpl> runtimeModels = this.allUsers.get(userid).getRuntimeModels();
-		runtimeModels.remove(device);
+		this.allUsers.get(userid).removeDevice(device);
 	}
 
 	public boolean containsId(String id) {
@@ -220,15 +194,15 @@ public abstract class BuilderModelHolder {
 	}
 
 	public String save(String userid, String app) {
-		createTmpFolderIfNotExists();
+		SbFiles.createTmpFolderIfNotExists();
 		
-		allUsers.get(userid).getBuilderModel(app).save(TMP_FOLDER);
+		allUsers.get(userid).getBuilderModel(app).save(SbFiles.TMP_FOLDER);
 		
-		createFolderIfNotExists(PERSISTENT_FOLDER + "/" + userid);
-		String filename = PERSISTENT_FOLDER + "/" + userid + "/" + app + ".zip";
-		Zip.zip(TMP_FOLDER, filename);	
+		SbFiles.createFolderIfNotExists(SbFiles.PERSISTENT_FOLDER + "/" + userid);
+		String filename = SbFiles.PERSISTENT_FOLDER + "/" + userid + "/" + app + ".zip";
+		Zip.zip(SbFiles.TMP_FOLDER, filename);	
 		
-		allUsers.get(userid).reloadRuntime(TMP_FOLDER);
+		allUsers.get(userid).reloadRuntime(SbFiles.TMP_FOLDER);
 		return filename;
 	}
 	
@@ -236,7 +210,7 @@ public abstract class BuilderModelHolder {
 		UserModel userModel = new UserModel();
 		this.allUsers.put(userid, userModel);
 		
-		File subFolder = new File(PERSISTENT_FOLDER + "/" + userid);
+		File subFolder = new File(SbFiles.PERSISTENT_FOLDER + "/" + userid);
 		
 		if (!subFolder.exists()) {
 			return;
@@ -245,18 +219,24 @@ public abstract class BuilderModelHolder {
 		for (File file2 : subFolder.listFiles()) {
 			String filename = file2.getAbsolutePath();
 			try {
-				BuilderModelImpl model = loadAfile(userid, filename, NO_DEVICE);
-				userModel.getBuilderModels().put(new File(filename).getName().replace(".zip", ""), model);
+				BuilderModelImpl model = SbFiles.loadAfile(userid, filename, NO_DEVICE);
+				String app = createApp(filename);
+				userModel.addDevModel(model, app);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}		
 		}
 	}
 
+	protected String createApp(String filename) {
+		return new File(filename).getName().replace(".zip", "");
+	}
+
 	public void load(String userid, String path) {
 		try {
-			BuilderModelImpl model = loadAfile(userid, path, NO_DEVICE);
-			this.allUsers.get(userid).getBuilderModels().put(new File(path).getName().replace(".zip", ""), model);
+			BuilderModelImpl model = SbFiles.loadAfile(userid, path, NO_DEVICE);
+			String app = createApp(path);
+			this.allUsers.get(userid).addDevModel(model, app);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}		

@@ -126,8 +126,8 @@ public class StaticInstances {
 	}
 
 	public void copyConfigToDefault(String id, String application) {
-		String sourceFile = BuilderModelHolder.PERSISTENT_FOLDER + "/" + id + "/" + application + ".zip";
-		String targetFolder = BuilderModelHolder.PERSISTENT_FOLDER + "/" + BuilderModelHolder.DEFAULT_USER_SERIAL;
+		String sourceFile = SbFiles.PERSISTENT_FOLDER + "/" + id + "/" + application + ".zip";
+		String targetFolder = SbFiles.PERSISTENT_FOLDER + "/" + BuilderModelHolder.DEFAULT_USER_SERIAL;
 		if (!Files.exists(Paths.get(targetFolder))) {
 	 		try {
 				Files.createDirectory(Paths.get(targetFolder));
@@ -137,7 +137,7 @@ public class StaticInstances {
 			}		
 		}
 
-		String targetFile = BuilderModelHolder.PERSISTENT_FOLDER + "/" + BuilderModelHolder.DEFAULT_USER_SERIAL + 
+		String targetFile = SbFiles.PERSISTENT_FOLDER + "/" + BuilderModelHolder.DEFAULT_USER_SERIAL + 
 				"/" + BuilderModelHolder.DEFAULT_USER_FILE;
 		
 		try {
@@ -149,7 +149,7 @@ public class StaticInstances {
 
 	public void createFile(String sessionName, byte bytes[], String filename) {
 		String userid = userStore.findBySessionName(sessionName).getPersonal().id;
-		String path = BuilderModelHolder.PERSISTENT_FOLDER + "/" + userid + "/" + filename;
+		String path = SbFiles.PERSISTENT_FOLDER + "/" + userid + "/" + filename;
 		
 		try {
 			Files.write(Paths.get(path), bytes);
@@ -167,7 +167,7 @@ public class StaticInstances {
 		getBuilderModelHolder().createNewAccount(personal.id);
 		
 		try {
-			Files.createDirectories(Paths.get(BuilderModelHolder.PERSISTENT_FOLDER + "/" + personal.id));
+			Files.createDirectories(Paths.get(SbFiles.PERSISTENT_FOLDER + "/" + personal.id));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

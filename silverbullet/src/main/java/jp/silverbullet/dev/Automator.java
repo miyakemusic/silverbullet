@@ -1,12 +1,13 @@
 package jp.silverbullet.dev;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import jp.silverbullet.core.dependency2.Id;
 import jp.silverbullet.core.sequncer.SequencerListener;
 
 public class Automator {
-
+	private List<String> devices = new ArrayList<>();
 	private List<String> lines = new ArrayList<>();
 	private Integer deviceNumber = 1;
 	private Integer variableNumber = 1;
@@ -19,7 +20,8 @@ public class Automator {
 	}
 	
 	public SequencerListener createListener(String device) {
-		lines.add(0, "var " + device + " = '192.168.0." + deviceNumber.toString() + ":8080';");
+		devices.add(device);
+		
 		deviceNumber++;
 		AutomatorListener automatorListener = new AutomatorListener() {
 			@Override
@@ -103,27 +105,66 @@ public class Automator {
 	}
 
 	public void clear() {
-		this.lines.clear();;
+		this.lines.clear();
+		for (String device : devices) {
+			//lines.add(0, "var " + device + " = '192.168.0." + deviceNumber.toString() + ":8080';");
+			lines.add(0, "var " + device + " = '" + device + "';");
+		}
 	}
 
 	public void playback(String script) {
-		for (String line: script.split("\n")) {
-			if (line.startsWith("sb.write")) {
-				String[] tmp = line.split("[(',)=]+");
-				this.automaterInterface.write(tmp[1], tmp[3], tmp[4]);
-				//automaterInterface.write();
+		new ScriptManager() {
+
+			@Override
+			public void write(String addr, String command) {
+				//automaterInterface.write(tmp[1], tmp[3], tmp[4]);
+				System.out.println(command);
+				String[] tmp = command.split("=");
+				automaterInterface.write(addr, tmp[0], tmp[1]);
 			}
-			else if (line.startsWith("sb.sleep")){
-				String[] tmp = line.split("[()]+");
-				try {
-					Thread.sleep(Integer.valueOf(tmp[1]));
-				} catch (NumberFormatException e) {
-					e.printStackTrace();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+
+			@Override
+			public String read(String addr, String query) {
+				return automaterInterface.read(addr, query);
 			}
-		}
+
+			@Override
+			public String waitEqual(String addr, String id, String value) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public void log(String arg) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void message(String message) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		}.start(Arrays.asList(script.split("\n")));
+		
+//		for (String line: script.split("\n")) {
+//			if (line.startsWith("sb.write")) {
+//				String[] tmp = line.split("[(',)=]+");
+//				this.automaterInterface.write(tmp[1], tmp[3], tmp[4]);
+//				//automaterInterface.write();
+//			}
+//			else if (line.startsWith("sb.sleep")){
+//				String[] tmp = line.split("[()]+");
+//				try {
+//					Thread.sleep(Integer.valueOf(tmp[1]));
+//				} catch (NumberFormatException e) {
+//					e.printStackTrace();
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		}
 	}
 
 	public void register(String name, String script) {
@@ -132,5 +173,9 @@ public class Automator {
 
 	public List<String> scriptList() {
 		return store.nameList();
+	}
+
+	public void removeDevice(String device) {
+		this.devices.remove(device);
 	}
 }

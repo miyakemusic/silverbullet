@@ -16,6 +16,7 @@ import javax.ws.rs.core.MediaType;
 import jp.silverbullet.core.KeyValue;
 import jp.silverbullet.core.Zip;
 import jp.silverbullet.dev.BuilderModelHolder;
+import jp.silverbullet.dev.SbFiles;
 import jp.silverbullet.dev.StaticInstances;
 
 @Path("/{app}/config")
@@ -25,7 +26,7 @@ public class FileResource {
 	@Path("/all")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<KeyValue> getIdFile(@PathParam("app") String app) {
-		Zip.unzip("ti_back.zip", BuilderModelHolder.TMP_FOLDER);
+		Zip.unzip("ti_back.zip", SbFiles.TMP_FOLDER);
 		
 		List<KeyValue> files = new ArrayList<>();
 		for (File file : new File("sv_tmp").listFiles()) {
