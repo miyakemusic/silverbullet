@@ -44,6 +44,7 @@
 <script type="text/javascript" src="devices.js"></script>
 <script type="text/javascript" src="build.js"></script>
 <script type="text/javascript" src="persistent.js"></script>
+<script type="text/javascript" src="report.js"></script>
 
 <script type="text/javascript">
 $(function() {
@@ -94,6 +95,7 @@ $(function() {
 			var build = new Build('tab_build', application);
 			var devices = new Devices('tab_device', 'vertical');
 //			var devices = new AllDevices('tab_device');
+			var report = new ReportBuilder('tab_report');
 			
 			$('#applications').change(function() {
 			    var r = $('option:selected').val();
@@ -105,6 +107,7 @@ $(function() {
 			    register.rebuild(application);
 			    build.rebuild(application);
 				persistent.rebuild(application);
+				report.rebuild(application);
 			});
 
 			$('#newApplication').click(function() {
@@ -237,6 +240,7 @@ $(function() {
 	  	<li><a href="#tab_persistent">Store</a></li>
 	  	<li><a href="#tab_build">Build</a></li>
 	  	<li><a href="#tab_device">Devices</a></li>
+	  	<li><a href="#tab_report">Report</a></li>
 	  </ul>
 	  <div id="tab_id"></div>
 	  <div id="tab_register"></div>
@@ -249,6 +253,7 @@ $(function() {
 	  <div id="tab_dependencydesign2"></div>
 	  <div id="tab_build"></div>
 	  <div id="tab_device"></div>
+	  <div id="tab_report"></div>
 	</div>
 </div>
 <div id="login">

@@ -91,11 +91,11 @@ public class RuntimePropertyStoreTest {
 			assertEquals(false, true);
 		}
 		
-		assertEquals(PropertyDef2.False,  ret.getValue("ID_BOOLEAN#0"));
+		assertEquals(PropertyDef2.False,  ret.value("ID_BOOLEAN#0"));
 
-		assertEquals("123.00", ret.getValue("ID_NUMERIC#0"));
+		assertEquals("123.00", ret.value("ID_NUMERIC#0"));
 
-		assertEquals("ID_LIST_B", ret.getValue("ID_LIST#0"));
+		assertEquals("ID_LIST_B", ret.value("ID_LIST#0"));
 
 	}
 

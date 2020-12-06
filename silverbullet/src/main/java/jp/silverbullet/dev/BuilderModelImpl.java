@@ -342,7 +342,10 @@ public abstract class BuilderModelImpl implements Cloneable {
 	}
 
 	
-	public void save(String folder) {
+	public String save() {
+		SbFiles.createTmpFolderIfNotExists();
+		
+		String folder = SbFiles.TMP_FOLDER;
 		try {
 			Files.newDirectoryStream(Paths.get(folder)).forEach(path -> {
 				try {
@@ -376,6 +379,8 @@ public abstract class BuilderModelImpl implements Cloneable {
 		this.selfBuilder.save(folder);
 		
 		this.persistentHolder.save(folder);
+		
+		return folder;
 	}
 
 	private void saveJson(Object object, String filename) {

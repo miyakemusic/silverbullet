@@ -64,7 +64,11 @@ public class PersistentHolder {
 		this.ids.get(triggerId).add(storedId);
 	}
 	public List<String> storedId(String triggerId) {
-		List<String> ret = new ArrayList<String>(this.ids.get(triggerId));
+		LinkedHashSet<String> idSet = this.ids.get(triggerId);
+		if (idSet == null) {
+			return new ArrayList<String>();
+		}
+		List<String> ret = new ArrayList<String>(idSet);
 //		if (ret == null) {
 //			ret = new ArrayList<String>();
 //		}

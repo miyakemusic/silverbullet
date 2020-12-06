@@ -18,7 +18,7 @@ public class IdValues {
 		this.idValue = idValue;
 	}
 
-	public String getValue(String id) {
+	public String value(String id) {
 		for (IdValue v : this.idValue) {
 			if (v.getId().toString().equals(id)) {
 				return v.getValue();

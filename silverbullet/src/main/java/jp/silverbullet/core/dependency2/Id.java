@@ -52,6 +52,18 @@ public class Id {
 	public String getSource() {
 		return source;
 	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
+	}
 	
 	
 

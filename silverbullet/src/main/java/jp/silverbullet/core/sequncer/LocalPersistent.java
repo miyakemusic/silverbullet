@@ -41,6 +41,10 @@ public class LocalPersistent implements UserSequencer {
 			throws RequestRejectedException {
 
 		for (String key : changed.keySet()) {
+			String k = new Id(key).getId();
+			if (!this.targetIds().contains(k)) {
+				continue;
+			}
 			String id = new Id(key).getId();
 			List<String> ids = persistentHolder.storedId(id);
 			save(ids, this.store.get(persistentHolder.path(id)).getCurrentValue());

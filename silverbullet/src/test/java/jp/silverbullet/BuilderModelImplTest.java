@@ -124,7 +124,7 @@ public class BuilderModelImplTest {
 
 		assertEquals("START", written);
 		
-		builder.save("testFoler");
+		String folder = builder.save();
 		
 		BuilderModelImpl builder2 = new BuilderModelImpl() {
 
@@ -135,7 +135,7 @@ public class BuilderModelImplTest {
 			}
 			
 		};
-		builder2.load("testFoler");
+		builder2.load(folder);
 		assertEquals("ID_MODE", builder2.getPropertiesHolder2().get("ID_MODE").getId());
 		assertEquals("ID_MODE", builder2.getRuntimePropertyStore().get("ID_MODE").getId());
 		

@@ -143,7 +143,17 @@ public abstract class SpecBuilder {
 						}
 					}
 				}
-				
+				else if (targetProp.isText()) {
+					if (triggerProp.isList()) {
+						String triggerCond = "$" + this.getMainId(triggerId) + "==" +  "%" + triggerId;
+						this.getDependencySpecHolder().getSpec(targetId).addValue(value.relation, triggerCond, value.condition, silentChange, blockPropagation);
+					}
+					else if (triggerProp.isText() || triggerProp.isNumeric() || triggerProp.isBoolean()|| triggerProp.isAction()){
+						String triggerCond = "$" + triggerId + "==" +  "$" + triggerId;
+						this.getDependencySpecHolder().getSpec(targetId).addValue(value.relation, triggerCond, value.condition, silentChange, blockPropagation);
+					}
+
+				}
 				
 			}
 		}

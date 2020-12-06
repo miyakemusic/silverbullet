@@ -56,6 +56,9 @@ public abstract class ExpressionCalculator {
 			if (prop.isList()) {
 				value = getTmpOptionValue(prop.getCurrentValue(), mapTmpValue);//"\"%" + prop.getCurrentValue() + "\"";
 			}
+			else if (prop.isText()) {
+				value = "'" + prop.getCurrentValue() + "'";
+			}
 			else /*if (prop.isNumericProperty())*/ {
 				value = prop.getCurrentValue();
 			}

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<script type="text/javascript" src="lib/jquery-3.3.1.min.js"></script> 
+<script type="text/javascript" src="lib/jquery-ui.js"></script> 
+<script type="text/javascript" src="lib/js.cookie-2.2.1.min.js"></script> 
+<script type="text/javascript" src="lib/handsontable.full.js"></script>
+<script type="text/javascript" src="lib/jquery.canvasjs.min.js"></script>
+<script type="text/javascript" src="lib/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="lib/jquery.keyboard.min.js"></script>
+<script type="text/javascript" src="lib/jquery.resizableColumns.min.js"></script>
+
+<script type="text/javascript" src="commondialogs.js"></script>
+<script type="text/javascript" src="commonwidgets.js"></script>
+<script type="text/javascript" src="jsmytable.js"></script>
+<script type="text/javascript" src="mychart.js"></script>
+<script type="text/javascript" src="newlayout.js"></script> 
+<script type="text/javascript" src="mywebsocket.js"></script>
+<script type="text/javascript" src="devices.js"></script>
+<script type="text/javascript">
+$(function() {
+	function getArgMap() {
+		var argMap = new Map();
+		var args = window.location.search;
+		for (var arg of args.split('&')) {
+			var item = arg.split('=')[0].replace('?', '');
+			var value = arg.split('=')[1];
+			
+			argMap.set(item, value);
+		}
+		return argMap;
+	}
+
+	var device = getArgMap().get('device')
+	if (device != null) {
+		myCookie.key('silverbullet' + device);
+	}
+	var application = 'silverbullet';
+	
+	$(document).ready(function(){
+		var username = "silverbullet";
+		var password = "silverbullet";
+		
+		$.ajax({
+			type: "GET", 
+			url: window.location.origin + "/rest/nativeLogin?username=" + username
+				+ '&password=' + password,
+				
+			success: function(response) {
+				//Cookies.set('silverbulletid', response.value2);
+				myCookie.set(response.value2);
+				websocket.start();
+				var argMap = getArgMap();//new Map();
+				new NewLayout('main', argMap.get('div'), device);
+			},
+			error: function(response) {
+				alert(response);
+			}
+		});	
+	});
+	
+	$.ajaxPrefilter( function( options, originalOptions, jqXHR ) {
+		if (application == null) {
+			return;
+		}
+		
+		var url = options.url;
+		if (url.includes('?')) {
+			url = options.url.split('?')[0];
+		}
+		var count = ( url.match( new RegExp( '/', "g" ) ) || [] ).length ;
+		if (count > 4) {
+			options.url = options.url.replace('/rest/', '/rest/' + application + '/');
+		}
+	});
+	
+})
+</script>
+<link rel="stylesheet" media="screen" href="lib/handsontable.full.css">
+<link rel="stylesheet" media="screen" href="lib/jquery.dataTables.min.css">
+<link rel="stylesheet" media="screen" href="lib/jquery.resizableColumns.css">
+
+<link rel="stylesheet" type="text/css" href="mywidget.css">
+<link rel="stylesheet" type="text/css" href="lib/jquery-ui.css">
+<link rel="stylesheet" type="text/css" href="mycss.css">
+<link rel="stylesheet" type="text/css" href="jsmytable.css">
+<link rel="stylesheet" type="text/css" href="lib/keyboard.min.css">
+<link rel="stylesheet" type="text/css" href="login.css">
+
+<head>
+<meta charset="UTF-8">
+<title>Silverbullet</title>
+</head>
+<body>
+<div id="main"></div>
+</body>
+</html>

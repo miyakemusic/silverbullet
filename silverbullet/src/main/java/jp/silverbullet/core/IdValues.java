@@ -21,11 +21,11 @@ public class IdValues {
 		this.allData = allData;
 	}
 
-	public Set<String> getAllIds() {
+	public Set<String> allIds() {
 		return this.allData.keySet();
 	}
 	
-	public String getValue(String id) {
+	public String value(String id) {
 		return this.allData.get(id);
 	}
 }
