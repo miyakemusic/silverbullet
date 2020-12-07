@@ -46,7 +46,7 @@ public class SbChart extends SbWidget {
 		dataset = new XYSeriesCollection();
 		
 		chart = ChartFactory.createXYLineChart(
-			        "XY Line Chart Example",
+			        "",
 			        "X-Axis",
 			        "Y-Axis",
 			        dataset,

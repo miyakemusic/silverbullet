@@ -7,6 +7,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Map;
 
@@ -73,11 +76,7 @@ public class LocalPersistent implements UserSequencer {
 				}
 				else {
 					try {
-						ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(path + "_" + id));
-						oos.writeObject(obj.toString());
-						oos.close();
-					} catch (FileNotFoundException e) {
-						e.printStackTrace();
+						Files.write(Paths.get(path + "_" + id), obj.toString().getBytes(), StandardOpenOption.CREATE_NEW);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
