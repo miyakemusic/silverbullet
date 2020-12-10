@@ -3,10 +3,7 @@ package jp.silverbullet.core.sequncer;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -21,13 +18,16 @@ import jp.silverbullet.core.dependency2.ChangedItemValue;
 import jp.silverbullet.core.dependency2.Id;
 import jp.silverbullet.core.dependency2.IdValue;
 import jp.silverbullet.core.dependency2.RequestRejectedException;
+import jp.silverbullet.core.property2.ChartProperty;
 import jp.silverbullet.core.property2.IdValues;
 import jp.silverbullet.core.property2.ImageProperty;
 import jp.silverbullet.core.property2.RuntimeProperty;
 import jp.silverbullet.core.property2.RuntimePropertyStore;
+import jp.silverbullet.core.property2.TableProperty;
+import jp.silverbullet.dev.BuilderInterface;
 import jp.silverbullet.dev.PersistentHolder;
 
-public class LocalPersistent implements UserSequencer {
+public abstract class LocalPersistent implements UserSequencer {
 
 	private PersistentHolder persistentHolder;
 	private RuntimePropertyStore store;
@@ -50,9 +50,11 @@ public class LocalPersistent implements UserSequencer {
 			}
 			String id = new Id(key).getId();
 			List<String> ids = persistentHolder.storedId(id);
-			save(ids, this.store.get(persistentHolder.path(id)).getCurrentValue());
+			save(ids, getStorePath() + "/" + this.store.get(persistentHolder.path(id)).getCurrentValue());
 		}
 	}
+
+	protected abstract String getStorePath();
 
 	private void save(List<String> ids, String path) {
 		String folder = createFolder(path);
@@ -73,6 +75,20 @@ public class LocalPersistent implements UserSequencer {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
+				}
+				else if (obj.getClass().equals(ChartProperty.class)) {
+					try {
+						Files.write(Paths.get(path + ".chart." + id), obj.toString().getBytes(), StandardOpenOption.CREATE_NEW);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}					
+				}
+				else if (obj.getClass().equals(TableProperty.class)) {
+					try {
+						Files.write(Paths.get(path + ".table." + id), obj.toString().getBytes(), StandardOpenOption.CREATE_NEW);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}					
 				}
 				else {
 					try {

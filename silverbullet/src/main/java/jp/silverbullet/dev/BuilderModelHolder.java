@@ -158,4 +158,16 @@ public abstract class BuilderModelHolder {
 		}
 		return ret;
 	}
+
+	public String getStorePath(String userid) {
+		return SbFiles.getStorePath(userid);
+	}
+	
+	public List<String> getStorePaths(String userid) {
+		List<String> ret = new ArrayList<>();
+		for (String path : SbFiles.getStorePaths(userid)) {
+			ret.add(new File(path).getName());
+		}
+		return ret;
+	}
 }

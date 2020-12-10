@@ -172,4 +172,14 @@ public class StaticInstances {
 			e.printStackTrace();
 		}
 	}
+
+	public String getStorePath(String sessionName) {
+		String userid = userStore.findBySessionName(sessionName).getPersonal().id;
+		return this.builderModelHolder.getStorePath(userid);	
+	}
+	
+	public List<String> getStorePaths(String sessionName) {
+		String userid = userStore.findBySessionName(sessionName).getPersonal().id;
+		return this.builderModelHolder.getStorePaths(userid);	
+	}
 }

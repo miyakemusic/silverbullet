@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -81,5 +82,16 @@ public class SbFiles {
 			}
 		}
 		protected abstract void handleUserId(String userid, List<String> list);
+	}
+	public static String getStorePath(String userid) {
+		return PERSISTENT_FOLDER + "/" + userid + "/store/";
+	}
+	
+	public static List<String> getStorePaths(String userid) {
+		List<String> ret = new ArrayList<>();
+		for (File file : new File(PERSISTENT_FOLDER + "/" + userid + "/store/").listFiles()) {
+			ret.add(file.getAbsolutePath());
+		}
+		return ret;
 	}
 };

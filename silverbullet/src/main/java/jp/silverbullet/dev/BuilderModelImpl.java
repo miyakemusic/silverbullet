@@ -271,7 +271,14 @@ public abstract class BuilderModelImpl implements Cloneable {
 			
 		};
 //		sequencer.addUserSequencer(persistentHandler);
-		sequencer.addUserSequencer(new LocalPersistent(persistentHolder, this.store, this.blobStore));
+		sequencer.addUserSequencer(new LocalPersistent(persistentHolder, this.store, this.blobStore) {
+
+			@Override
+			protected String getStorePath() {
+				return storePath;
+			}
+			
+		});
 		createDependencyEngine();
 		
 		this.undoManager.set(propertiesHolder2, dependencySpecHolder2, uiBuilder, this.testRecorder);
@@ -589,6 +596,7 @@ public abstract class BuilderModelImpl implements Cloneable {
 	private DialogAnswer dialogReply = DialogAnswer.OK;
 	private String device;
 	private String applicationName;
+	private String storePath;
 	
 	public ValueSetResult requestChange(String id, String value, 
 			boolean forceChange, Actor actor) {
@@ -717,8 +725,9 @@ public abstract class BuilderModelImpl implements Cloneable {
 		return device;
 	}
 
-	public void setApplicationName(String app) {
+	public void setApplicationName(String app, String storePath) {
 		this.applicationName = app;
+		this.storePath = storePath;
 	}
 
 	public String getApplicationName() {
