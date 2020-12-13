@@ -57,8 +57,8 @@ public class UserModel {
 
 	public BuilderModelImpl addRuntimeModel(String app, String device, String userid) {
 		try {
-			BuilderModelImpl runtimeModel = SbFiles.loadAfile(userid, app, device);
-			runtimeModel.setApplicationName(app, SbFiles.getStorePath(userid));
+			BuilderModelImpl runtimeModel = new SbFiles().loadAfile(userid, app, device);
+			runtimeModel.setApplicationName(app, new SbFiles().getStorePath(userid));
 			runtimeModels.put(device, runtimeModel);
 			
 			runtimeModel.getSequencer().addSequencerListener(automator.createListener(device));

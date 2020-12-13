@@ -6,7 +6,7 @@ public class Id {
 
 	private String id;
 	private int index;
-	private String source;
+	private String source = "";
 	
 	public Id() {}
 	

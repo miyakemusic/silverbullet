@@ -92,7 +92,7 @@ public abstract class LocalPersistent implements UserSequencer {
 				}
 				else {
 					try {
-						Files.write(Paths.get(path + "_" + id), obj.toString().getBytes(), StandardOpenOption.CREATE_NEW);
+						Files.write(Paths.get(path + "." + id), obj.toString().getBytes(), StandardOpenOption.CREATE_NEW);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}

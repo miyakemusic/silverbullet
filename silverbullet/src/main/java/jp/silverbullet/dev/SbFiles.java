@@ -16,7 +16,7 @@ public class SbFiles {
 	public static final String PERSISTENT_FOLDER = "./persistent";
 	public static final String TMP_FOLDER = PERSISTENT_FOLDER + "/sv_tmp";
 	
-	public static synchronized void createTmpFolderIfNotExists() {
+	public void createTmpFolderIfNotExists() {
 		if (!Files.exists(Paths.get(PERSISTENT_FOLDER))) {
 			try {
 				Files.createDirectory(Paths.get(PERSISTENT_FOLDER));
@@ -34,10 +34,10 @@ public class SbFiles {
 		}
 	}	
 	
-	public static synchronized BuilderModelImpl loadAfile(String userid, String appName, String device) throws IOException {
+	public BuilderModelImpl loadAfile(String userid, String appName, String device) throws IOException {
 		String filename = SbFiles.PERSISTENT_FOLDER + "/" + userid + "/" + appName + ".zip";
 		if (filename.endsWith(".zip")) {
-			SbFiles.createTmpFolderIfNotExists();
+			createTmpFolderIfNotExists();
 			FileUtils.cleanDirectory(new File(TMP_FOLDER));
 			Zip.unzip(filename, TMP_FOLDER);
 			BuilderModelImpl model = new BuilderModelImpl() {
@@ -55,7 +55,7 @@ public class SbFiles {
 		throw new IOException();
 	}
 
-	public static void createFolderIfNotExists(String folder) {
+	public void createFolderIfNotExists(String folder) {
 		folder = SbFiles.PERSISTENT_FOLDER + "/" + folder;
 		if (!Files.exists(Paths.get(folder))) {
 			try {
@@ -83,11 +83,11 @@ public class SbFiles {
 		}
 		protected abstract void handleUserId(String userid, List<String> list);
 	}
-	public static String getStorePath(String userid) {
+	public String getStorePath(String userid) {
 		return PERSISTENT_FOLDER + "/" + userid + "/store/";
 	}
 	
-	public static List<String> getStorePaths(String userid) {
+	public List<String> getStorePaths(String userid) {
 		List<String> ret = new ArrayList<>();
 		for (File file : new File(PERSISTENT_FOLDER + "/" + userid + "/store/").listFiles()) {
 			ret.add(file.getAbsolutePath());

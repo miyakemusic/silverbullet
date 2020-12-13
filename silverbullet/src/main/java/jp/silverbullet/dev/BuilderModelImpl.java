@@ -350,7 +350,7 @@ public abstract class BuilderModelImpl implements Cloneable {
 
 	
 	public String save() {
-		SbFiles.createTmpFolderIfNotExists();
+		new SbFiles().createTmpFolderIfNotExists();
 		
 		String folder = SbFiles.TMP_FOLDER;
 		try {

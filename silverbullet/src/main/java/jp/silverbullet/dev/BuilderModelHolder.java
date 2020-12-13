@@ -28,7 +28,7 @@ public abstract class BuilderModelHolder {
 	}	
 
 	public void loadAll() {
-		SbFiles.createTmpFolderIfNotExists();
+		new SbFiles().createTmpFolderIfNotExists();
 		
 		new SbFiles.WalkThrough() {
 			@Override
@@ -39,7 +39,7 @@ public abstract class BuilderModelHolder {
 				for (String path : list) {
 					BuilderModelImpl model;
 					try {
-						model = SbFiles.loadAfile(userid, path, NO_DEVICE);
+						model = new SbFiles().loadAfile(userid, path, NO_DEVICE);
 						String app = createApp(path);
 						userModel.addDevModel(model, app);
 					} catch (IOException e) {
@@ -105,7 +105,7 @@ public abstract class BuilderModelHolder {
 	public String save(String userid, String app) {
 		String folder = allUsers.get(userid).getBuilderModel(app).save();
 		
-		SbFiles.createFolderIfNotExists(userid);
+		new SbFiles().createFolderIfNotExists(userid);
 		String filename = SbFiles.PERSISTENT_FOLDER + "/" + userid + "/" + app + ".zip";
 		Zip.zip(folder, filename);	
 		
@@ -127,7 +127,7 @@ public abstract class BuilderModelHolder {
 			String filename = file2.getAbsolutePath();
 			String app = createApp(filename);
 			try {
-				BuilderModelImpl model = SbFiles.loadAfile(userid, app, NO_DEVICE);
+				BuilderModelImpl model = new SbFiles().loadAfile(userid, app, NO_DEVICE);
 				userModel.addDevModel(model, app);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -141,7 +141,7 @@ public abstract class BuilderModelHolder {
 
 	public void load(String userid, String path) {
 		try {
-			BuilderModelImpl model = SbFiles.loadAfile(userid, path, NO_DEVICE);
+			BuilderModelImpl model = new SbFiles().loadAfile(userid, path, NO_DEVICE);
 			String app = createApp(path);
 			this.allUsers.get(userid).addDevModel(model, app);
 		} catch (IOException e) {
@@ -160,12 +160,12 @@ public abstract class BuilderModelHolder {
 	}
 
 	public String getStorePath(String userid) {
-		return SbFiles.getStorePath(userid);
+		return new SbFiles().getStorePath(userid);
 	}
 	
 	public List<String> getStorePaths(String userid) {
 		List<String> ret = new ArrayList<>();
-		for (String path : SbFiles.getStorePaths(userid)) {
+		for (String path : new SbFiles().getStorePaths(userid)) {
 			ret.add(new File(path).getName());
 		}
 		return ret;
