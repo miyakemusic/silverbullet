@@ -4,8 +4,10 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.util.Set;
 
+import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -118,7 +120,9 @@ public class SwingGui extends JFrame {
 	private String gui;
 	
 	public SwingGui(UiBuilder uiBuilder, RuntimePropertyStore runtimePropertyStore, 
-			BlobStore blobStore, Sequencer sequencer, String gui, String title, Image bgImage) {
+			BlobStore blobStore, Sequencer sequencer, String gui, 
+			String title, BufferedImage bgImage, 
+			int topMarginInt, int leftMarginInt, int width, int height) {
 		this.runtimePropertyStore = runtimePropertyStore;
 		this.blobStore = blobStore;
 		this.sequencer = sequencer;
@@ -142,24 +146,33 @@ public class SwingGui extends JFrame {
 				g.drawImage(bgImage, 0, 0, null);
 			}			
 		};
-		mainPane.setPreferredSize(new Dimension(550, 400));
+		
+		
+		mainPane.setPreferredSize(new Dimension(1550, 400));
 		backgroundPane.setLayout(new BorderLayout());
 		
-		int topM = 93;
-		int sizeM = 113;
+//		int topM = topMarginInt;
+//		int sizeM = leftMarginInt;
 		JLabel topMargin = new JLabel();
-		JLabel bottomMargin = new JLabel();
+//		JLabel bottomMargin = new JLabel();
 		JLabel leftMargin = new JLabel();
-		JLabel rightMargin = new JLabel();
-		topMargin.setPreferredSize(new Dimension(120, topM));
-		bottomMargin.setPreferredSize(new Dimension(120, topM));
-		leftMargin.setPreferredSize(new Dimension(sizeM, 50));
-		rightMargin.setPreferredSize(new Dimension(sizeM, 50));
-		backgroundPane.add(topMargin, BorderLayout.NORTH);
+//		JLabel rightMargin = new JLabel();
+		
+		topMargin.setPreferredSize(new Dimension(120, topMarginInt));
+//		bottomMargin.setPreferredSize(new Dimension(120, bottomMarginInt));
+		leftMargin.setPreferredSize(new Dimension(leftMarginInt, 50));
+//		rightMargin.setPreferredSize(new Dimension(rightMarginInt, 50));
+		
+		backgroundPane.setBorder(BorderFactory.createEmptyBorder(
+				topMarginInt, leftMarginInt, 
+				bgImage.getHeight() - topMarginInt - height, 
+				bgImage.getWidth() - leftMarginInt - width));
+		
+//		backgroundPane.add(topMargin, BorderLayout.NORTH);
 		backgroundPane.add(mainPane, BorderLayout.CENTER);
-		backgroundPane.add(bottomMargin, BorderLayout.SOUTH);
-		backgroundPane.add(leftMargin, BorderLayout.EAST);
-		backgroundPane.add(rightMargin, BorderLayout.WEST);
+//		backgroundPane.add(bottomMargin, BorderLayout.SOUTH);
+//		backgroundPane.add(leftMargin, BorderLayout.WEST);
+//		backgroundPane.add(rightMargin, BorderLayout.EAST);
 //		this.getContentPane().add(rootPanes, BorderLayout.SOUTH);
 		this.getContentPane().add(backgroundPane/*new JScrollPane(mainPane)*/, BorderLayout.CENTER);
 		
@@ -170,8 +183,12 @@ public class SwingGui extends JFrame {
 //			}
 //		});
 //		
-//		rootPanes.setSelectedItem(gui);
-		this.setSize(new Dimension(985, 641));
+
+		//setResizable(false);
+		this.mainPane.setMaximumSize(new Dimension(width, height));
+//		this.mainPane.setPreferredSize(new Dimension(bgImage.getWidth()-leftMarginInt-rightMarginInt, bgImage.getHeight() - topMarginInt - bottomMarginInt));
+		this.setSize(new Dimension(bgImage.getWidth() + 25, bgImage.getHeight() + 95));
+//		this.setSize(new Dimension(985, 641));
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		
 //		SwingUtilities.invokeLater(new Runnable() {
@@ -195,7 +212,12 @@ public class SwingGui extends JFrame {
 			
 		}.start();
 		
-		updateGUI();
+		try {
+			updateGUI();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 
 	}
 

@@ -1,5 +1,6 @@
 package jp.silverbullet.swing;
 
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Image;
@@ -10,6 +11,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.border.LineBorder;
 
 import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 
@@ -44,6 +46,7 @@ public class SbImage extends SbWidget {
 
 	    label = new JLabel();
 		//label.setPreferredSize(new Dimension(uiProp.get));
+	    label.setBorder(new LineBorder(Color.black, 1));
 		parent.add(label);
 	}
 
