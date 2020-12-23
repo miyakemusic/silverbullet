@@ -68,7 +68,6 @@ public abstract class ScriptManager {
 			}
 	        
 		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
@@ -87,11 +86,11 @@ public abstract class ScriptManager {
 		}
     }
     
-    abstract public   void log(String arg);
+    abstract public   void debug(String arg);
     
     public void request(String arg){
         System.out.println(arg);
     }
     
-    abstract public void message(String message);
+    abstract public void message(String addr, String message);
 }

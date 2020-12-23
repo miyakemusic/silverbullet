@@ -1,5 +1,7 @@
 package jp.silverbullet.swing;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -9,8 +11,8 @@ import java.awt.event.ComponentEvent;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
-
 import jp.silverbullet.core.ui.UiModel;
 import jp.silverbullet.core.ui.UiProperty;
 import jp.silverbullet.core.ui.part2.Layout;
@@ -43,6 +45,7 @@ public abstract class SbPanel extends SbWidget{
 		panel = new JPanel();
 		parent.add(panel);
 		
+	//	panel.setBorder(new TitledBorder(pane.widgetId));
 		//if (!pane.id.isEmpty()) {
 			//panel.setBorder(new TitledBorder(this.getUiModel().getUiProperty(pane.id).getTitle()));
 //			panel.setBorder(new TitledBorder(pane.widgetId + ":" + pane.subId));
@@ -60,11 +63,6 @@ public abstract class SbPanel extends SbWidget{
 			catch (Exception e) {
 				panel.setLayout(new FlowLayout(FlowLayout.LEFT));
 			}
-			parent.addComponentListener(new ComponentAdapter() {
-				@Override
-				public void componentResized(ComponentEvent arg0) {
-				}					
-			});
 		}
 		else if (pane.layout.equals(Layout.ABSOLUTE)){
 			panel.setLayout(new VerticalLayout());

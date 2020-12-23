@@ -135,15 +135,13 @@ public class Automator {
 			}
 
 			@Override
-			public void log(String arg) {
-				// TODO Auto-generated method stub
-				
+			public void debug(String arg) {
+				automaterInterface.debug(arg);
 			}
 
 			@Override
-			public void message(String message) {
-				// TODO Auto-generated method stub
-				
+			public void message(String addr, String message) {
+				automaterInterface.message(addr, message);
 			}
 			
 		}.start(Arrays.asList(script.split("\n")));

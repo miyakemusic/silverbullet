@@ -40,13 +40,18 @@ class Devices {
 		
 		retreiveDevices();
 		
+		var uiList = [];
+		
 		var me = this;
 		function retreiveDevices() {
 			$.ajax({
 				type: "GET", 
 				url: "//" + window.location.host + "/rest/allapp/domain/devices",
 				success: function(msg){
-				
+					for (var ui of uiList) {
+						$('#' + ui).dialog('destroy');
+					}
+					uiList.splice(0);
 					$('#' + deviceId).empty();
 					for (var o of msg) {
 						var device = o.split(',')[0];
@@ -55,15 +60,31 @@ class Devices {
 						retreiveUiEntry(application, device, function(result, application, device) {
 							var deviceIdOne = deviceId + '_' + device;
 							var deviceIdOneButton = deviceIdOne + '_button';
+							var deviceUiWindows = deviceIdOne + "_uiPane";
+							$('#' + deviceId).append('<div id=' + deviceUiWindows + '></div>');
+							
+																		
 							$('#' + deviceId).append('<button id="' + deviceIdOneButton + '">' + device + '</button><div id="' + deviceIdOne + '"></div>');
 							
 							$('#' + deviceIdOneButton).click(function() {
 								registerUiEntry(application, $(this).text());
 							});
-							
-							new NewLayout(deviceIdOne, result, device, function(height) {
-								$('#' + deviceIdOne).css({'min-height':height, 'overflow':'hidden'});
-							}, application);
+		
+							if (result != '') {
+								uiList.push(deviceUiWindows);
+								new NewLayout(deviceUiWindows, result, device, function(height) {
+									$('#' + deviceIdOne).css({'min-height':height, 'overflow':'hidden'});
+									
+									$('#' + deviceUiWindows).dialog({
+										autoOpen: true,
+										title: device,
+										closeOnEscape: false,
+										modal: false,
+										width: 600,
+										height: 400
+									});
+								}, application);
+							}
 						});					
 					}
 			   }

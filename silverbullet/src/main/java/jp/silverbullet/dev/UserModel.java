@@ -26,9 +26,19 @@ public class UserModel {
 		}
 
 		@Override
-		public String read(String addr, String query) {
-			//return runtimeModels
-			return null;
+		public String read(String device, String query) {
+			return runtimeModels.get(device).getRuntimePropertyStore().get(query).getCurrentValue();
+		}
+
+		@Override
+		public String message(String device, String message) {
+			//runtimeModels.get(device).getSequencer().requestChange("SYSTEM:MESSAGE", value);
+			return "";
+		}
+
+		@Override
+		public void debug(String text) {
+			System.out.println(text);
 		}				
 	};
 	

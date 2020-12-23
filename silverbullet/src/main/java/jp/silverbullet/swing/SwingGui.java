@@ -12,6 +12,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
 import jp.silverbullet.core.BlobStore;
 import jp.silverbullet.core.dependency2.CommitListener;
 import jp.silverbullet.core.dependency2.Id;
@@ -133,8 +136,7 @@ public class SwingGui extends JFrame {
 		
 		this.getContentPane().setLayout(new BorderLayout());
 		mainPane = new JPanel();
-		
-		
+				
 		JPanel toolBar = new JPanel();
 		this.getContentPane().add(toolBar, BorderLayout.NORTH);
 		initToolbar(toolBar);
