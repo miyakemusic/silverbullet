@@ -33,7 +33,7 @@ public abstract class BuilderModelHolder {
 		new SbFiles.WalkThrough() {
 			@Override
 			protected void handleUserId(String userid, List<String> list) {
-				UserModel userModel = new UserModel();
+				UserModel userModel = new UserModel(userid);
 				allUsers.put(userid, userModel);
 				
 				for (String path : list) {
@@ -99,7 +99,7 @@ public abstract class BuilderModelHolder {
 	}
 
 	public void createNewAccount(String id) {
-		this.allUsers.put(id, new UserModel());
+		this.allUsers.put(id, new UserModel(id));
 	}
 
 	public String save(String userid, String app) {
@@ -114,7 +114,7 @@ public abstract class BuilderModelHolder {
 	}
 	
 	public void load(String userid) {
-		UserModel userModel = new UserModel();
+		UserModel userModel = new UserModel(userid);
 		this.allUsers.put(userid, userModel);
 		
 		File subFolder = new File(SbFiles.PERSISTENT_FOLDER + "/" + userid);

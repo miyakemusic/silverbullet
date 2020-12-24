@@ -6,11 +6,12 @@ import java.util.Map;
 
 import jp.silverbullet.core.dependency2.RequestRejectedException;
 import jp.silverbullet.core.sequncer.Sequencer;
+import jp.silverbullet.web.WebSocketBroadcaster;
 
 public class UserModel {
 
-	private Map<String, BuilderModelImpl> builderModels = new HashMap<>();
-	private Map<String, BuilderModelImpl> runtimeModels = new HashMap<>();
+	private Map<String, BuilderModelImpl> builderModels = new HashMap<>(); // key = app
+	private Map<String, BuilderModelImpl> runtimeModels = new HashMap<>(); // key = app
 	private Automator automator = null;
 	
 	private AutomatorInterface automaterInterface = new AutomatorInterface() {
@@ -32,7 +33,7 @@ public class UserModel {
 
 		@Override
 		public String message(String device, String message) {
-			//runtimeModels.get(device).getSequencer().requestChange("SYSTEM:MESSAGE", value);
+			WebSocketBroadcaster.getInstance().sendMessageAsync(userid, "MESSAGE@" + device, message);
 			return "";
 		}
 
@@ -41,8 +42,10 @@ public class UserModel {
 			System.out.println(text);
 		}				
 	};
+	private String userid;
 	
-	public UserModel() {
+	public UserModel(String userid) {
+		this.userid = userid;
 		automator = new Automator(automaterInterface);
 	}
 	
