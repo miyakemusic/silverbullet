@@ -972,15 +972,18 @@ class NewLayout {
 		
 		websocket.addListener('VALUES@' + me.device, valueHandler);
 
-		var messageDialogId = divBase + "_messageDialog";
-		var messageId = divBase + "_message";
+		var messageDialogId = div + "_messageDialog";
+		var messageId = div + "_message";
 		var messageHandler = function(msg) {
 			if (msg == '@CLOSE@') {
 				$('#' + messageDialogId).dialog('close');
 			}
 			else {
-				$('#' + messageId).html(msg.replace('\n', '<br>'));
+				$('#' + messageDialogId).html(msg);
 				$('#' + messageDialogId).dialog('open');
+				$('#' + messageDialogId).dialog('option', 'position',
+					{ my: 'left top', at: 'left top', of: $('#' + div)}
+				);
 			}
 		}
 		
@@ -1118,7 +1121,7 @@ class NewLayout {
 		websocket.addListener('UIDESIGN', designHandler);
 						
 		
-		$('#' + divBase).append('<div id="' + messageDialogId + '"><label id="' + messageId + '"></label></div>');
+		$('#' + div).append('<div id="' + messageDialogId + '"><label id="' + messageId + '"></label></div>');
 		$('#' + messageDialogId).dialog({
 			  autoOpen: false,
 			  title: "Message",
@@ -1138,6 +1141,7 @@ class NewLayout {
 			width: 600,
 			height: 400
 		});
+				
 		function replyDialog(messageId, reply) {
 			$.ajax({
 			   type: "GET", 

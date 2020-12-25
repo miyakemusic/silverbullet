@@ -113,8 +113,16 @@ public class Automator {
 	}
 
 	public void playback(String script) {
-		new ScriptManager() {
+		new Thread() {
+			@Override
+			public void run() {
+				startScriptManager(script);
+			}
+		}.start();		
+	}
 
+	protected void startScriptManager(String script) {
+		new ScriptManager() {
 			@Override
 			public void write(String addr, String command) {
 				//automaterInterface.write(tmp[1], tmp[3], tmp[4]);
@@ -130,8 +138,18 @@ public class Automator {
 
 			@Override
 			public String waitEqual(String addr, String id, String value) {
-				// TODO Auto-generated method stub
-				return null;
+				for (int i = 0; i < 100; i++) {
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+
+					}
+					String ret = read(addr, id);
+					if (ret.equals(value)) {
+						break;
+					}
+				}
+				return "";
 			}
 
 			@Override
@@ -145,24 +163,6 @@ public class Automator {
 			}
 			
 		}.start(Arrays.asList(script.split("\n")));
-		
-//		for (String line: script.split("\n")) {
-//			if (line.startsWith("sb.write")) {
-//				String[] tmp = line.split("[(',)=]+");
-//				this.automaterInterface.write(tmp[1], tmp[3], tmp[4]);
-//				//automaterInterface.write();
-//			}
-//			else if (line.startsWith("sb.sleep")){
-//				String[] tmp = line.split("[()]+");
-//				try {
-//					Thread.sleep(Integer.valueOf(tmp[1]));
-//				} catch (NumberFormatException e) {
-//					e.printStackTrace();
-//				} catch (InterruptedException e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		}
 	}
 
 	public void register(String name, String script) {

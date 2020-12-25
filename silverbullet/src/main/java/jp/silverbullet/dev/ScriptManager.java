@@ -21,31 +21,6 @@ public abstract class ScriptManager {
 
 	}
 	
-	public void test() {
-		//ScriptManager es = new ScriptManager();
-        // create a script engine manager
-		ScriptManager sb = this;
-        ScriptEngineManager factory = new ScriptEngineManager();
-        // create a JavaScript engine
-        ScriptEngine engine = factory.getEngineByName("JavaScript");
-        // evaluate JavaScript code from String
-  //     engine.eval("println('Welcome to Java world')");
-
-        // add the Java object into the engine.
-        engine.put("sb",sb);
-
-        ScriptEngineFactory sef = engine.getFactory();
-        String s = sef.getMethodCallSyntax("sb", "request('AAAA')", new String[0]);
-        // show the correct way to call the Java method
-        System.out.println(s);
-        try {
-			engine.eval(s);
-		} catch (ScriptException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
 	public void start(List<String> lines) {
 //		File script = new File("C:\\Users\\miyak\\git\\openti\\openti\\target\\script2.js");
 		try {
