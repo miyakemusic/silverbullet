@@ -7,5 +7,6 @@ public interface UiModel {
 	void addListener(String id, UiModelListener uiModelListener);
 	void setValue(String id, String value);
 	Object getBlob(String id);
+	void replyMessage(String id, String string);
 
 }

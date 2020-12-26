@@ -1,6 +1,7 @@
 package jp.silverbullet.core.sequncer;
 
 import jp.silverbullet.core.property2.SvFileException;
+import jp.silverbullet.dev.ControlObject;
 
 public interface SystemAccessor {
 
@@ -14,6 +15,6 @@ public interface SystemAccessor {
 	}
 	DialogAnswer dialog(String string);
 
-	void message(String string);
+	void message(String string, ControlObject controls);
 
 }

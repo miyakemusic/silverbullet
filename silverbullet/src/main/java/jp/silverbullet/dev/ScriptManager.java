@@ -67,5 +67,5 @@ public abstract class ScriptManager {
         System.out.println(arg);
     }
     
-    abstract public void message(String addr, String message);
+    abstract public String message(String addr, String message, String controls);
 }

@@ -6,7 +6,7 @@ public interface AutomatorInterface {
 
 	String read(String device, String query);
 
-	String message(String device, String message);
+	String message(String device, String message, String controls);
 
 	void debug(String text);
 }

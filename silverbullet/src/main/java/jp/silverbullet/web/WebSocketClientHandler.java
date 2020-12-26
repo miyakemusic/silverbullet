@@ -33,7 +33,7 @@ public abstract class WebSocketClientHandler {
             @Override
             public void onWebSocketText(String message2)
             {
-                super.onWebSocketText(message2);
+//                super.onWebSocketText(message2);
                 onMessageReceived(message2);
             }
 

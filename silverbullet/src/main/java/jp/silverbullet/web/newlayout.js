@@ -979,7 +979,18 @@ class NewLayout {
 				$('#' + messageDialogId).dialog('close');
 			}
 			else {
-				$('#' + messageDialogId).html(msg);
+				var obj = JSON.parse(msg);
+				$('#' + messageDialogHtmllId).html(obj.html);
+
+				$('#' + messageDialogControlId).empty();
+				for (var c of obj.controls.controls) {
+					$('#' + messageDialogControlId).append('<button id="' + c.id + '">' + c.title + '</button>');
+					$('#' + c.id).click(function() {
+						$('#' + messageDialogId).dialog('close');
+						replyMessage(obj.messageId, $(this).prop('id'));
+					});
+				}
+				
 				$('#' + messageDialogId).dialog('open');
 				$('#' + messageDialogId).dialog('option', 'position',
 					{ my: 'left top', at: 'left top', of: $('#' + div)}
@@ -1120,14 +1131,19 @@ class NewLayout {
 		};
 		websocket.addListener('UIDESIGN', designHandler);
 						
+		var messageDialogHtmllId = messageDialogId + "_html";
+		var messageDialogControlId = messageDialogId + "_control";
 		
 		$('#' + div).append('<div id="' + messageDialogId + '"><label id="' + messageId + '"></label></div>');
+		$('#' + messageDialogId).append('<div id="' + messageDialogHtmllId + '">control</div>');
+		$('#' + messageDialogId).append('<div id="' + messageDialogControlId + '">control</div>');
+		
 		$('#' + messageDialogId).dialog({
 			  autoOpen: false,
 			  title: "Message",
 			  closeOnEscape: false,
 			  modal: false,
-			  buttons: {
+/*			  buttons: {
 			    "OK": function(){
 			    	replyDialog("", "OK");
 			    	$(this).dialog('close');
@@ -1138,6 +1154,7 @@ class NewLayout {
 			    	$(this).dialog('close');
 			    }
 			  },
+*/
 			width: 600,
 			height: 400
 		});
@@ -1146,6 +1163,16 @@ class NewLayout {
 			$.ajax({
 			   type: "GET", 
 			   url: me.runtimePath + "/replyDialog?messageId=" + messageId + "&reply=" + reply,
+			   success: function(widget){
+
+			   }
+			});	
+		}
+		
+		function replyMessage(messageId, reply) {
+			$.ajax({
+			   type: "GET", 
+			   url: me.runtimePath + "/replyMessage?messageId=" + messageId + "&reply=" + reply,
 			   success: function(widget){
 
 			   }

@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jp.silverbullet.core.dependency2.RequestRejectedException;
 import jp.silverbullet.core.sequncer.Sequencer;
 import jp.silverbullet.web.WebSocketBroadcaster;
@@ -32,8 +34,16 @@ public class UserModel {
 		}
 
 		@Override
-		public String message(String device, String message) {
-			WebSocketBroadcaster.getInstance().sendMessageAsync(userid, "MESSAGE@" + device, message);
+		public String message(String device, String message, String controls) {
+			try {
+				ControlObject controlsObj = new ObjectMapper().readValue(controls, ControlObject.class);
+				runtimeModels.get(device).message(device, message, controlsObj);
+				//WebSocketBroadcaster.getInstance().sendMessageAsync(userid, "MESSAGE@" + device, message);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 			return "";
 		}
 

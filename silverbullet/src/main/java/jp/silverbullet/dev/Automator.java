@@ -121,6 +121,9 @@ public class Automator {
 		}.start();		
 	}
 
+	private Object sync = new Object();
+	private String messageReply;
+	
 	protected void startScriptManager(String script) {
 		new ScriptManager() {
 			@Override
@@ -158,8 +161,16 @@ public class Automator {
 			}
 
 			@Override
-			public void message(String addr, String message) {
-				automaterInterface.message(addr, message);
+			public String message(String addr, String message, String controls) {
+				automaterInterface.message(addr, message, controls);
+				synchronized (sync) {
+					try {
+						sync.wait();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				return messageReply;
 			}
 			
 		}.start(Arrays.asList(script.split("\n")));
@@ -175,5 +186,12 @@ public class Automator {
 
 	public void removeDevice(String device) {
 		this.devices.remove(device);
+	}
+
+	public void onReplyMessage(String messageId, String reply) {
+		this.messageReply = reply;
+		synchronized(sync) {
+			sync.notify();
+		}
 	}
 }

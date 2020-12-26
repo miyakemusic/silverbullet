@@ -20,6 +20,7 @@ import jp.silverbullet.core.property2.PropertyType2;
 import jp.silverbullet.core.property2.RuntimeProperty;
 import jp.silverbullet.core.ui.UiProperty;
 import jp.silverbullet.core.ui.UiPropertyConverter;
+import jp.silverbullet.dev.Automator;
 
 @Path("/{app}/{device}/runtime")
 public class RuntimeResource {
@@ -63,6 +64,19 @@ public class RuntimeResource {
 	public String replyDialog(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @PathParam("device") String device,
 			@QueryParam("messageId") String messageId, @QueryParam("reply") String reply) {
 		SilverBulletServer.getStaticInstance().getBuilderModelBySessionName(cookie, app, device).replyDialog(messageId, reply);
+		return "OK";
+	}
+	
+	@GET
+	@Path("/replyMessage")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String replyMessage(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @PathParam("device") String device,
+			@QueryParam("messageId") String messageId, @QueryParam("reply") String reply) {
+//		SilverBulletServer.getStaticInstance().getBuilderModelBySessionName(cookie, app, device).replyMessage(messageId, reply);
+		
+		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
+		Automator automator = SilverBulletServer.getStaticInstance().getBuilderModelHolder().getAutomator(userid);
+		automator.onReplyMessage(messageId, reply);
 		return "OK";
 	}
 	

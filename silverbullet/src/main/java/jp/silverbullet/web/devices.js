@@ -302,7 +302,7 @@ class Devices {
 		
 		function registerScript(name) {
 			$.ajax({
-	            url: "//" + window.location.host + "/rest/domain/saveScript?name=" + name,
+	            url: "//" + window.location.host + "/rest/allapp/domain/saveScript?name=" + name,
 	            type: 'POST',
 	            contentType: 'text/plain',
 				data: $('#' + playbackScript).val(),

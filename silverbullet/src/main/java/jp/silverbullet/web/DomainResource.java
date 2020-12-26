@@ -165,12 +165,15 @@ public class DomainResource {
 		return "OK";
 	}
 	
-	private static Map<String, String> uiEntry = new HashMap<>();
+//	private static Map<String, String> uiEntry = new HashMap<>();
 	@GET
 	@Path("/{device}/getUiEntry")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String getUiEntry(@PathParam("app") String app, @PathParam("device") String device) {
-		String ret = uiEntry.get(device);
+	public String getUiEntry(@CookieParam("SilverBullet") String cookie, 
+			@PathParam("app") String app, @PathParam("device") String device) {
+		
+		String ret = SilverBulletServer.getStaticInstance().getBuilderModel(cookie, app).getUiEntry(device);
+//		String ret = uiEntry.get(device);
 		if (ret == null) {
 			ret = "";
 		}
@@ -180,8 +183,10 @@ public class DomainResource {
 	@GET
 	@Path("/{device}/setUiEntry")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String setDeviceUi(@PathParam("app") String app, @PathParam("device") String device, @QueryParam("ui") String ui) {
-		uiEntry.put(device, ui);
+	public String setDeviceUi(@CookieParam("SilverBullet") String cookie, 
+			@PathParam("app") String app, @PathParam("device") String device, @QueryParam("ui") String ui) {
+//		uiEntry.put(device, ui);
+		SilverBulletServer.getStaticInstance().getBuilderModel(cookie, app).setUiEntry(device, ui);
 		return "OK";
 	}
 	

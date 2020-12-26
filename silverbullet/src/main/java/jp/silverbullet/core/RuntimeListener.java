@@ -1,6 +1,7 @@
 package jp.silverbullet.core;
 
 import jp.silverbullet.core.sequncer.SystemAccessor.DialogAnswer;
+import jp.silverbullet.dev.ControlObject;
 
 public interface RuntimeListener {
 
@@ -8,6 +9,6 @@ public interface RuntimeListener {
 
 	void onReply(String messageId, String reply);
 
-	void message(String message);
+	void message(String html, ControlObject controls);
 
 }

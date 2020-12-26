@@ -24,6 +24,7 @@ import jp.silverbullet.core.sequncer.SystemAccessor.DialogAnswer;
 import jp.silverbullet.core.ui.part2.UiBuilderListener;
 import jp.silverbullet.core.ui.part2.WidgetType;
 import jp.silverbullet.dev.test.TestRecorderListener;
+import jp.silverbullet.web.MessageToDevice;
 import jp.silverbullet.web.WebSequencer;
 import jp.silverbullet.web.WebSocketBroadcaster;
 import jp.silverbullet.web.WebSocketMessage;
@@ -43,7 +44,7 @@ public class SvClientHandler {
 			@Override
 			public DialogAnswer dialog(String message) {
 				message = message.replace("\n", "<br>");
-				sendMessagePromptAsync(device, message);
+				sendMessagePromptAsync(device, message, new ControlObject());
 				synchronized(syncDialog) {
 					try {
 						syncDialog.wait();
@@ -51,7 +52,7 @@ public class SvClientHandler {
 						e.printStackTrace();
 					}
 				}
-				sendMessagePromptAsync(device, "@CLOSE@");
+				sendMessagePromptAsync(device, "@CLOSE@", new ControlObject());
 				return answerDialog;
 			}
 	
@@ -64,8 +65,8 @@ public class SvClientHandler {
 			}
 	
 			@Override
-			public void message(String message) {
-				sendMessagePromptAsync(device, message);
+			public void message(String message, ControlObject controls) {
+				sendMessagePromptAsync(device, message, controls);
 			}
 		});
 	
@@ -299,8 +300,22 @@ public class SvClientHandler {
 		WebSocketBroadcaster.getInstance().sendMessageAsync(userid, "VALUES@" + device, message);
 	}
 
-	private void sendMessagePromptAsync(String device, String message) {
-		WebSocketBroadcaster.getInstance().sendMessageAsync(userid, "MESSAGE@" + device, message);
+	private void sendMessagePromptAsync(String device, String html, ControlObject controls) {
+		
+		
+		MessageToDevice msg = new MessageToDevice();
+		msg.type = MessageToDevice.MESSAGE;
+		msg.cls = MessageObject.class.getName();
+		
+		try {
+			String messageId = String.valueOf(System.currentTimeMillis());
+			msg.json = new ObjectMapper().writeValueAsString(new MessageObject(html, controls, messageId));
+			WebSocketBroadcaster.getInstance().sendMessageToDomainModel(userid, device, new ObjectMapper().writeValueAsString(msg));
+			WebSocketBroadcaster.getInstance().sendMessageAsync(userid, "MESSAGE@" + device, msg.json);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	private void sendMessage(String str) {

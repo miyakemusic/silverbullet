@@ -31,6 +31,7 @@ import jp.silverbullet.core.ui.UiPropertyConverter;
 import jp.silverbullet.core.ui.part2.Pane;
 import jp.silverbullet.core.ui.part2.UiBuilder;
 import jp.silverbullet.core.ui.part2.WidgetType;
+import jp.silverbullet.dev.MessageObject;
 
 public class SwingGui extends JFrame {
 	private CommitListener commitListener = new CommitListener() {
@@ -112,6 +113,12 @@ public class SwingGui extends JFrame {
 			} catch (RequestRejectedException e) {
 				e.printStackTrace();
 			}
+		}
+
+		@Override
+		public void replyMessage(String id, String string) {
+			// TODO Auto-generated method stub
+			
 		}		
 	};
 	
@@ -294,6 +301,15 @@ public class SwingGui extends JFrame {
 		selectedRootPane = uiBuilder.getRootPane(gui, true);
 		parsePane(selectedRootPane, mainPane);
 		getContentPane().repaint();
+	}
+
+	public void showMessage(MessageObject message2) {
+		new SbMessageBox(message2, this) {
+			@Override
+			protected void onClick(String id) {
+				uiModel.replyMessage(id, "Clicked");
+			}
+		}.setVisible(true);
 	}
 
 }

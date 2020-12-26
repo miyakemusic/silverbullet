@@ -66,6 +66,7 @@ public abstract class BuilderModelImpl implements Cloneable {
 	private RuntimeRegisterMap runtimeRegisterMap = new RuntimeRegisterMap();
 	private BlobStore blobStore = new BlobStore();
 	private RefactorManager undoManager = new RefactorManager();
+	private DeviceUiEntry deviceUiEntry = new DeviceUiEntry();
 	
 	private DependencyDesigner dependencyDesigner = new DependencyDesigner(propertiesHolder2) {
 
@@ -189,8 +190,8 @@ public abstract class BuilderModelImpl implements Cloneable {
 		}
 
 		@Override
-		public void message(String message) {
-			runtimeListeners.forEach(listener -> listener.message(message));
+		public void message(String message, ControlObject controls) {
+			runtimeListeners.forEach(listener -> listener.message(message, controls));
 		}
 	};
 	
@@ -317,6 +318,8 @@ public abstract class BuilderModelImpl implements Cloneable {
 		this.undoManager.set(propertiesHolder2, dependencySpecHolder2, uiBuilder, this.testRecorder);
 		
 		this.persistentHolder.load(folder);
+		
+		this.deviceUiEntry = DeviceUiEntry.load(folder);
 	}
 
 	public void createDependencyEngine() {
@@ -386,6 +389,8 @@ public abstract class BuilderModelImpl implements Cloneable {
 		this.selfBuilder.save(folder);
 		
 		this.persistentHolder.save(folder);
+		
+		this.deviceUiEntry.save(folder);
 		
 		return folder;
 	}
@@ -732,6 +737,18 @@ public abstract class BuilderModelImpl implements Cloneable {
 
 	public String getApplicationName() {
 		return applicationName;
+	}
+
+	public void message(String device2, String message, ControlObject controls) {
+		this.runtimeListeners.forEach(listener -> listener.message(message, controls));
+	}
+
+	public void setUiEntry(String device, String ui) {
+		this.deviceUiEntry.set(device, ui);
+	}
+
+	public String getUiEntry(String device) {
+		return deviceUiEntry.get(device);
 	}
 	
 	

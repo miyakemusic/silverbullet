@@ -2,8 +2,9 @@ package jp.silverbullet.web;
 
 public class MessageToDevice {
 	
-	public static final String FILEREADY = "FileReady";
-	public static final String PROPERTYUPDATED = "PropertyUpdated";
+	public static final String FILEREADY = "FILEREADY";
+	public static final String PROPERTYUPDATED = "PROPERTYUPDATED";
+	public static final String MESSAGE = "MESSAGE";
 	
 	public MessageToDevice() {}
 	public MessageToDevice(String type, String cls, String json) {
