@@ -50,9 +50,10 @@ public class DomainResource {
 	@GET
 	@Path("/script")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public List<String> selectDevice(@CookieParam("SilverBullet") String cookie) {
+	public List<String> selectDevice(@CookieParam("SilverBullet") String cookie, @QueryParam("name") String name) {
 		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
 		Automator automator = SilverBulletServer.getStaticInstance().getBuilderModelHolder().getAutomator(userid);
+		automator.loadScript(name);
 		return automator.getLines();
 	}
 	
@@ -112,6 +113,30 @@ public class DomainResource {
 		SilverBulletServer.getStaticInstance().deleteDevice(userid, app, device);
 		return "OK";
 	}
+	
+
+	@GET
+	@Path("/autoScriptListFromDevice")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public ListStringClass autoScriptListFromDevice(@QueryParam("userid") String userid) {
+		Automator automator = SilverBulletServer.getStaticInstance().getBuilderModelHolder().getAutomator(userid);
+		List<String> list = automator.scriptList();
+		ListStringClass ret = new ListStringClass();
+		ret.list = list;
+		return ret;
+	}
+	
+	@GET
+	@Path("/autoScriptFromDevice")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public ListStringClass autoScriptListFromDevice(@QueryParam("userid") String userid, @QueryParam("name") String name) {
+		Automator automator = SilverBulletServer.getStaticInstance().getBuilderModelHolder().getAutomator(userid);
+		automator.loadScript(name);
+		ListStringClass ret = new ListStringClass();
+		ret.list = automator.getLines();
+		return ret;
+	}
+
 	
 	@GET
 	@Path("/{device}/getProperty")

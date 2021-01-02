@@ -238,6 +238,24 @@ class Devices {
 		$('#' + toolbar).append('<select id="' + list + '"></select></div>');	
 		$('#' + dialogId).append('<div><textarea id="' + playbackScript + '"></textarea></div>');
 
+		$('#' + list).change(function() {
+			retreiveScript($('#' + list).val());
+		});
+		
+		function retreiveScript(name) {
+			$.ajax({
+				type: "GET", 
+				url: "//" + window.location.host + "/rest/allapp/domain/script?name=" + name,
+				success: function(msg){
+					var lines = "";
+					for (var line of msg) {
+						lines += line + "\n";
+					}
+					$('#' + playbackScript).val(lines);
+				}
+			});
+		}
+		
 		var saveDialogId = div + "_savedialog";
 		$('#' + div).append('<div id="' + saveDialogId + '"></div>');
 		$('#' + saveDialogId).dialog({
@@ -283,6 +301,8 @@ class Devices {
 						var val = msg[i];
 						$('#' + list).append($('<option>').html(val).val(val));
 					}
+					
+					retreiveScript(msg[0]);
 				}
 			});
 		}

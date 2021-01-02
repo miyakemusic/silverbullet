@@ -15,4 +15,14 @@ public class AutomatorStore {
 	public List<String> nameList() {
 		return new ArrayList<String>(data.keySet());
 	}
+
+	public Map<String, String> getData() {
+		return data;
+	}
+
+	public void setData(Map<String, String> data) {
+		this.data = data;
+	}
+	
+	
 }

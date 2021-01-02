@@ -104,6 +104,8 @@ public abstract class BuilderModelHolder {
 
 	public String save(String userid, String app) {
 		String folder = allUsers.get(userid).getBuilderModel(app).save();
+		//String folder = allUsers.get(userid).save(app);
+		allUsers.get(userid).getAutomator().save(folder + "/Automator.json");
 		
 		new SbFiles().createFolderIfNotExists(userid);
 		String filename = SbFiles.PERSISTENT_FOLDER + "/" + userid + "/" + app + ".zip";
@@ -126,9 +128,11 @@ public abstract class BuilderModelHolder {
 		for (File file2 : subFolder.listFiles()) {
 			String filename = file2.getAbsolutePath();
 			String app = createApp(filename);
+
 			try {
 				BuilderModelImpl model = new SbFiles().loadAfile(userid, app, NO_DEVICE);
 				userModel.addDevModel(model, app);
+				allUsers.get(userid).getAutomator().load(SbFiles.TMP_FOLDER + "/Automator.json");
 			} catch (IOException e) {
 				e.printStackTrace();
 			}		

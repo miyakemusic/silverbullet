@@ -1,8 +1,13 @@
 package jp.silverbullet.dev;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jp.silverbullet.core.dependency2.Id;
 import jp.silverbullet.core.sequncer.SequencerListener;
 
@@ -193,5 +198,27 @@ public class Automator {
 		synchronized(sync) {
 			sync.notify();
 		}
+	}
+	
+	public void save(String filename) {
+		try {
+			new ObjectMapper().writeValue(new File(filename), this.store);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void load(String filename) {
+		try {
+			this.store = new ObjectMapper().readValue(new File(filename), AutomatorStore.class);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void loadScript(String name) {
+		this.lines = new ArrayList<String>(Arrays.asList(this.store.getData().get(name).split("\n")));
 	}
 }
