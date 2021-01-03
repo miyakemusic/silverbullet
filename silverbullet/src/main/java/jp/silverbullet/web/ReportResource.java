@@ -22,7 +22,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.xml.internal.messaging.saaj.util.Base64;
+import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 
 import jp.silverbullet.core.dependency2.Id;
 import jp.silverbullet.core.dependency2.IdValue;
@@ -233,7 +233,7 @@ public class ReportResource {
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_HTML)
 	public String html(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, String html) {
-		String ret  = Base64.base64Decode(html.replace("data:text/html;base64,", ""));
+		String ret  = new String(Base64.decode(html.replace("data:text/html;base64,", "")));
 		return ret;
 	}
 }
