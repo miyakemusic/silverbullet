@@ -7,6 +7,7 @@ import java.util.Map;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import jp.silverbullet.core.JsonPersistent;
+import jp.silverbullet.dev.SbFiles;
 import jp.silverbullet.web.auth.PersonalResponse;
 
 class UserStoreData {
@@ -33,7 +34,7 @@ public class UserStore {
 
 	public void loadJson() {
 		try {
-			UserStoreData loaded =  new JsonPersistent().loadJson(UserStoreData.class, USERS_JSON);
+			UserStoreData loaded =  new JsonPersistent().loadJson(UserStoreData.class, SbFiles.PERSISTENT_FOLDER + "/" + USERS_JSON);
 			this.data = loaded;
 			
 		} catch (IOException e) {
@@ -43,7 +44,7 @@ public class UserStore {
 
 	private void save() {
 		try {
-			new JsonPersistent().saveJson(this.data, USERS_JSON);
+			new JsonPersistent().saveJson(this.data, SbFiles.PERSISTENT_FOLDER + "/" + USERS_JSON);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
