@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -13,8 +12,8 @@ import org.apache.commons.io.FileUtils;
 import jp.silverbullet.core.Zip;
 
 public class SbFiles {
-	public static final String PERSISTENT_FOLDER = "./persistent";
-	public static final String TMP_FOLDER = PERSISTENT_FOLDER + "/sv_tmp";
+	public static String PERSISTENT_FOLDER = "./persistent";
+	public static String TMP_FOLDER = PERSISTENT_FOLDER + "/sv_tmp";
 	
 	public void createTmpFolderIfNotExists() {
 		if (!Files.exists(Paths.get(PERSISTENT_FOLDER))) {
@@ -93,5 +92,10 @@ public class SbFiles {
 			ret.add(file.getAbsolutePath());
 		}
 		return ret;
+	}
+
+	public static void setPERSISTENT_FOLDER(String persistentPath) {
+		PERSISTENT_FOLDER = persistentPath;
+		TMP_FOLDER = PERSISTENT_FOLDER + "/sv_tmp";
 	}
 };

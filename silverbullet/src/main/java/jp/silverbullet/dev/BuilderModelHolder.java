@@ -174,4 +174,8 @@ public abstract class BuilderModelHolder {
 		}
 		return ret;
 	}
+
+	public void setPath(String persistentPath) {
+		SbFiles.setPERSISTENT_FOLDER(persistentPath);
+	}
 }

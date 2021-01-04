@@ -19,8 +19,8 @@ public abstract class SilverBulletServer {
 		return staticInstance;
 	}
 
-	public void start(String port, String protocol) {
-		staticInstance.load();
+	public void start(String port, String protocol, String persistentPath) {
+		staticInstance.load(persistentPath);
 		
 		startWebServer(Integer.valueOf(port), protocol);
 		

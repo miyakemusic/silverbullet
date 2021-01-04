@@ -57,7 +57,8 @@ public class StaticInstances {
 	}
 
 
-	public void load() {
+	public void load(String persistentPath) {
+		this.builderModelHolder.setPath(persistentPath);
 		for (String userid : this.userStore.getData().keySet()) {
 			this.builderModelHolder.load(userid);
 		}

@@ -16,7 +16,7 @@ public class ServerMain extends SilverBulletServer {
 	}
 
 	public static void main(String[] args) {
-		new ServerMain().start(args[0], args[1]);
+		new ServerMain().start(args[0], args[1], args[2]);
 	}
 
 	@Override
