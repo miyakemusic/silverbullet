@@ -58,6 +58,7 @@ public class StaticInstances {
 
 
 	public void load(String persistentPath) {
+		userStore.loadJson(persistentPath);
 		this.builderModelHolder.setPath(persistentPath);
 		for (String userid : this.userStore.getData().keySet()) {
 			this.builderModelHolder.load(userid);

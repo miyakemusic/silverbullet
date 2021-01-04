@@ -27,14 +27,16 @@ class UserStoreData {
 public class UserStore {
 	private static final String USERS_JSON = "users.json";
 	private UserStoreData data = new UserStoreData();
+	private String persistentPath;
 	
 	public UserStore() {
-		loadJson();
+		//loadJson();
 	}
 
-	public void loadJson() {
+	public void loadJson(String persistentPath) {
 		try {
-			UserStoreData loaded =  new JsonPersistent().loadJson(UserStoreData.class, SbFiles.PERSISTENT_FOLDER + "/" + USERS_JSON);
+			this.persistentPath = persistentPath;
+			UserStoreData loaded =  new JsonPersistent().loadJson(UserStoreData.class, persistentPath + "/" + USERS_JSON);
 			this.data = loaded;
 			
 		} catch (IOException e) {
@@ -44,7 +46,7 @@ public class UserStore {
 
 	private void save() {
 		try {
-			new JsonPersistent().saveJson(this.data, SbFiles.PERSISTENT_FOLDER + "/" + USERS_JSON);
+			new JsonPersistent().saveJson(this.data, persistentPath + "/" + USERS_JSON);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
