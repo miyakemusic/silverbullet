@@ -7,6 +7,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import jp.silverbullet.dev.SbFiles;
+
 @Path("/open")
 public class OpenResource {
 	@GET
@@ -14,8 +16,7 @@ public class OpenResource {
 	@Produces(MediaType.APPLICATION_OCTET_STREAM) 
 	public File getIdFile(@PathParam("filename") String filename) {        
 		//String dir = getClass().getClassLoader().getResource("/").toExternalForm();
-		String dir = "";
-		dir = dir + "./persistent/Default00/";
+		String dir = SbFiles.PERSISTENT_FOLDER + "/Default00/";
 		File file = new File(dir + filename);
 		
 		return file;
