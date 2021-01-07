@@ -144,21 +144,6 @@ public class Automator {
 				return automaterInterface.read(addr, query);
 			}
 
-			@Override
-			public String waitEqual(String addr, String id, String value) {
-				for (int i = 0; i < 100; i++) {
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-
-					}
-					String ret = read(addr, id);
-					if (ret.equals(value)) {
-						break;
-					}
-				}
-				return "";
-			}
 
 			@Override
 			public void debug(String arg) {

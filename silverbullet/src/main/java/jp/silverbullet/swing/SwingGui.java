@@ -3,7 +3,6 @@ package jp.silverbullet.swing;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.Set;
 
@@ -12,9 +11,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-
 import jp.silverbullet.core.BlobStore;
 import jp.silverbullet.core.dependency2.CommitListener;
 import jp.silverbullet.core.dependency2.Id;
@@ -33,7 +29,10 @@ import jp.silverbullet.core.ui.part2.UiBuilder;
 import jp.silverbullet.core.ui.part2.WidgetType;
 import jp.silverbullet.dev.MessageObject;
 
-public class SwingGui extends JFrame {
+public abstract class SwingGui extends JFrame {
+
+	abstract protected void replyMessage(String id, String string);
+
 	private CommitListener commitListener = new CommitListener() {
 
 		@Override
@@ -115,11 +114,6 @@ public class SwingGui extends JFrame {
 			}
 		}
 
-		@Override
-		public void replyMessage(String id, String string) {
-			// TODO Auto-generated method stub
-			
-		}		
 	};
 	
 	private RuntimePropertyStore runtimePropertyStore;
@@ -307,7 +301,8 @@ public class SwingGui extends JFrame {
 		new SbMessageBox(message2, this) {
 			@Override
 			protected void onClick(String id) {
-				uiModel.replyMessage(id, "Clicked");
+				setVisible(false);
+				replyMessage(id, "Clicked");
 			}
 		}.setVisible(true);
 	}

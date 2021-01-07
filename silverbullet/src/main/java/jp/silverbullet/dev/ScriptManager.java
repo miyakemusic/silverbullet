@@ -35,6 +35,9 @@ public abstract class ScriptManager {
 	        ScriptEngineManager factory = new ScriptEngineManager();
 	        // create a JavaScript engine
 	        ScriptEngine engine = factory.getEngineByName("JavaScript");
+			if (engine == null) { // for Android
+				engine = new ScriptEngineManager().getEngineByName("rhino");
+			}
 	        engine.put("sb",sb);
 	        try {
 				engine.eval(reader);
@@ -51,7 +54,20 @@ public abstract class ScriptManager {
     
     abstract public  String read(String addr, String query);
     
-    abstract public  String waitEqual(String addr, String id, String value);
+	public String waitEqual(String addr, String id, String value) {
+		for (int i = 0; i < 100; i++) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+
+			}
+			String ret = read(addr, id);
+			if (ret.equals(value)) {
+				break;
+			}
+		}
+		return "";
+	}
     
     public void sleep(int millisecond) {
     	try {
@@ -68,4 +84,5 @@ public abstract class ScriptManager {
     }
     
     abstract public String message(String addr, String message, String controls);
+
 }

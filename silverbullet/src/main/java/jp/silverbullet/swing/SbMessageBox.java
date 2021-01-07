@@ -20,7 +20,7 @@ public abstract class SbMessageBox extends JDialog {
 
 	public SbMessageBox(MessageObject message2, Frame parent) {
 		super(parent);
-		this.setSize(new Dimension(600, 400));
+		this.setSize(new Dimension(600, 300));
 		this.setLocationRelativeTo(parent);
 //		this.setLocation(40, 40);
 		JPanel base = new JPanel();
