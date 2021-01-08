@@ -1,19 +1,13 @@
 package jp.silverbullet.dev;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.io.Reader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.StringReader;
 import java.util.List;
 
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-import javax.swing.JOptionPane;
 
 public abstract class ScriptManager {
 
@@ -22,15 +16,16 @@ public abstract class ScriptManager {
 	}
 	
 	public void start(List<String> lines) {
-//		File script = new File("C:\\Users\\miyak\\git\\openti\\openti\\target\\script2.js");
+//		try {
+//			Files.write(Paths.get("tmp.js"), lines);
+//		} catch (IOException e2) {
+//			e2.printStackTrace();
+//		}
+//		File script = new File("tmp.js");
+		StringBuffer buffer = new StringBuffer();
+		lines.forEach(line -> buffer.append(line + "\n"));
 		try {
-			Files.write(Paths.get("tmp.js"), lines);
-		} catch (IOException e2) {
-			e2.printStackTrace();
-		}
-		File script = new File("tmp.js");
-		try {
-			Reader reader = new FileReader(script);
+			Reader reader = new StringReader(buffer.toString());//new FileReader(script);
 			ScriptManager sb = this;
 	        ScriptEngineManager factory = new ScriptEngineManager();
 	        // create a JavaScript engine
@@ -45,7 +40,7 @@ public abstract class ScriptManager {
 				e.printStackTrace();
 			}
 	        
-		} catch (FileNotFoundException e1) {
+		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
 
