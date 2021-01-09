@@ -190,8 +190,8 @@ public abstract class BuilderModelImpl implements Cloneable {
 		}
 
 		@Override
-		public void message(String message, ControlObject controls) {
-			runtimeListeners.forEach(listener -> listener.message(message, controls));
+		public void message(String message, ControlObject controls, String messageId) {
+			runtimeListeners.forEach(listener -> listener.message(message, controls, messageId));
 		}
 	};
 	
@@ -739,10 +739,14 @@ public abstract class BuilderModelImpl implements Cloneable {
 		return applicationName;
 	}
 
-	public void message(String device2, String message, ControlObject controls) {
-		this.runtimeListeners.forEach(listener -> listener.message(message, controls));
+	public void message(String message, ControlObject controls, String messageId) {
+		this.runtimeListeners.forEach(listener -> listener.message(message, controls, messageId));
 	}
 
+	public void closeMessage(String messageId) {
+		this.runtimeListeners.forEach(listener -> listener.closeMessage(messageId));
+	}
+	
 	public void setUiEntry(String device, String ui) {
 		this.deviceUiEntry.set(device, ui);
 	}
@@ -750,6 +754,8 @@ public abstract class BuilderModelImpl implements Cloneable {
 	public String getUiEntry(String device) {
 		return deviceUiEntry.get(device);
 	}
+
+
 	
 	
 }

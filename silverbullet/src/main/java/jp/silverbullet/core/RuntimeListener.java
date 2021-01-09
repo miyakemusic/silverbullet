@@ -9,6 +9,8 @@ public interface RuntimeListener {
 
 	void onReply(String messageId, String reply);
 
-	void message(String html, ControlObject controls);
+	void message(String html, ControlObject controls, String messageId);
+
+	void closeMessage(String messageId);
 
 }

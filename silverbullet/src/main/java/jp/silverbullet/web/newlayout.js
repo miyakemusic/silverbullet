@@ -986,7 +986,7 @@ class NewLayout {
 				for (var c of obj.controls.controls) {
 					$('#' + messageDialogControlId).append('<button id="' + c.id + '">' + c.title + '</button>');
 					$('#' + c.id).click(function() {
-						$('#' + messageDialogId).dialog('close');
+//						$('#' + messageDialogId).dialog('close');
 						replyMessage(obj.messageId, $(this).prop('id'));
 					});
 				}

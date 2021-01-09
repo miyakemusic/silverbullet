@@ -34,10 +34,10 @@ public class UserModel {
 		}
 
 		@Override
-		public String message(String device, String message, String controls) {
+		public String message(String device, String message, String controls, String messageId) {
 			try {
 				ControlObject controlsObj = new ObjectMapper().readValue(controls, ControlObject.class);
-				runtimeModels.get(device).message(device, message, controlsObj);
+				runtimeModels.get(device).message(message, controlsObj, messageId);
 				//WebSocketBroadcaster.getInstance().sendMessageAsync(userid, "MESSAGE@" + device, message);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -50,6 +50,11 @@ public class UserModel {
 		@Override
 		public void debug(String text) {
 			System.out.println(text);
+		}
+
+		@Override
+		public void closeMessage(String device, String messageId) {
+			runtimeModels.get(device).closeMessage(messageId);
 		}				
 	};
 	private String userid;

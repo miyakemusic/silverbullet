@@ -65,8 +65,13 @@ public class SvClientHandler {
 			}
 	
 			@Override
-			public void message(String message, ControlObject controls) {
+			public void message(String message, ControlObject controls, String messageId) {
 				sendMessagePromptAsync(device, message, controls);
+			}
+
+			@Override
+			public void closeMessage(String messageId) {
+				sendMessageClose(device, messageId);
 			}
 		});
 	
@@ -301,8 +306,6 @@ public class SvClientHandler {
 	}
 
 	private void sendMessagePromptAsync(String device, String html, ControlObject controls) {
-		
-		
 		MessageToDevice msg = new MessageToDevice();
 		msg.type = MessageToDevice.MESSAGE;
 		msg.cls = MessageObject.class.getName();
@@ -313,9 +316,22 @@ public class SvClientHandler {
 			WebSocketBroadcaster.getInstance().sendMessageToDomainModel(userid, device, new ObjectMapper().writeValueAsString(msg));
 			WebSocketBroadcaster.getInstance().sendMessageAsync(userid, "MESSAGE@" + device, msg.json);
 		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	private void sendMessageClose(String device, String messageId) {
+		MessageToDevice msg = new MessageToDevice();
+		msg.type = MessageToDevice.CLOSEMESSAGE;
+		msg.cls = MessageObject.class.getName();
+		
+		try {
+			msg.json = new ObjectMapper().writeValueAsString(new MessageObject(null, null, messageId));
+			WebSocketBroadcaster.getInstance().sendMessageToDomainModel(userid, device, new ObjectMapper().writeValueAsString(msg));
+			WebSocketBroadcaster.getInstance().sendMessageAsync(userid, "@CLOSE@" + device, msg.json);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}		
 	}
 	
 	private void sendMessage(String str) {

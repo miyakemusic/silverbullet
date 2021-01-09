@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -152,7 +153,7 @@ public class Automator {
 
 			@Override
 			public String message(String addr, String message, String controls) {
-				automaterInterface.message(addr, message, controls);
+				automaterInterface.message(addr, message, controls, generateMessageID());
 				synchronized (sync) {
 					try {
 						sync.wait();
@@ -161,6 +162,10 @@ public class Automator {
 					}
 				}
 				return messageReply;
+			}
+
+			private String generateMessageID() {
+				return "SilverBulletServer" + System.currentTimeMillis();
 			}
 			
 		}.start(Arrays.asList(script.split("\n")));
@@ -178,11 +183,12 @@ public class Automator {
 		this.devices.remove(device);
 	}
 
-	public void onReplyMessage(String messageId, String reply) {
+	public void onReplyMessage(String device, String messageId, String reply) {
 		this.messageReply = reply;
 		synchronized(sync) {
 			sync.notify();
 		}
+		this.automaterInterface.closeMessage(device, messageId);
 	}
 	
 	public void save(String filename) {

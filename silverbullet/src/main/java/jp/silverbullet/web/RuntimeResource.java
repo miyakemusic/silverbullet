@@ -76,7 +76,7 @@ public class RuntimeResource {
 		
 		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
 		Automator automator = SilverBulletServer.getStaticInstance().getBuilderModelHolder().getAutomator(userid);
-		automator.onReplyMessage(messageId, reply);
+		automator.onReplyMessage(device, messageId, reply);
 		return "OK";
 	}
 	

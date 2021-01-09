@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
@@ -244,6 +246,9 @@ public abstract class SwingGui extends JFrame {
 	};
 
 	private Pane selectedRootPane;
+
+
+	private Map<String, SbMessageBox> messageMap = new HashMap<>();
 	
 	private void parsePane(Pane pane, JPanel parent) {
 		if (pane.type.equals(WidgetType.Button)) {
@@ -290,6 +295,10 @@ public abstract class SwingGui extends JFrame {
 	}
 
 	public void updateGUI() {
+		for (SbMessageBox m : this.messageMap.values()) {
+			m.setVisible(false);
+		}
+		this.messageMap.clear();
 		mainPane.removeAll();
 		
 		selectedRootPane = uiBuilder.getRootPane(gui, true);
@@ -298,13 +307,20 @@ public abstract class SwingGui extends JFrame {
 	}
 
 	public void showMessage(MessageObject message2) {
-		new SbMessageBox(message2, this) {
+		SbMessageBox messageBox = new SbMessageBox(message2, this) {
 			@Override
 			protected void onClick(String id) {
-				setVisible(false);
+//				setVisible(false);
 				replyMessage(id, "Clicked");
 			}
-		}.setVisible(true);
+		};
+		messageBox.setVisible(true);
+		messageMap.put(message2.messageId, messageBox);
+	}
+
+	public void closeMessage(String messageId) {
+		messageMap.get(messageId).setVisible(false);
+		messageMap.remove(messageId);
 	}
 
 }

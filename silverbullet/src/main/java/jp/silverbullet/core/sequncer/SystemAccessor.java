@@ -15,6 +15,6 @@ public interface SystemAccessor {
 	}
 	DialogAnswer dialog(String string);
 
-	void message(String string, ControlObject controls);
+	void message(String string, ControlObject controls, String messageId);
 
 }
