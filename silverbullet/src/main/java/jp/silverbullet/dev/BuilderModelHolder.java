@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import jp.silverbullet.core.Zip;
+import jp.silverbullet.web.DeviceProperty;
 
 public abstract class BuilderModelHolder {
 
@@ -153,12 +154,13 @@ public abstract class BuilderModelHolder {
 		}		
 	}
 
-	public List<String> getActiveDevices(String userid) {
-		List<String> ret = new ArrayList<>();
+	public List<DeviceProperty> getActiveDevices(String userid) {
+		List<DeviceProperty> ret = new ArrayList<>();
 		
 		Map<String, BuilderModelImpl> models = this.allUsers.get(userid).getRuntimeModels();
 		for (String key : models.keySet()) {
-			ret.add(key + "," + models.get(key).getApplicationName());
+			DeviceProperty prop = new DeviceProperty(key, models.get(key).getApplicationName());
+			ret.add(prop);
 		}
 		return ret;
 	}

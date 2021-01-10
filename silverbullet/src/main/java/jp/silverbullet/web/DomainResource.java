@@ -20,6 +20,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jp.silverbullet.core.dependency2.Id;
@@ -33,10 +35,18 @@ public class DomainResource {
 	@GET
 	@Path("/devices")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public List<String> getDevices(@CookieParam("SilverBullet") String cookie) {
+	public List<DeviceProperty> getDevices(@CookieParam("SilverBullet") String cookie) {
 		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
-		return SilverBulletServer.getStaticInstance().getBuilderModelHolder().getActiveDevices(userid);
+		List<DeviceProperty> ret = SilverBulletServer.getStaticInstance().getBuilderModelHolder().getActiveDevices(userid);
+//		escapeHtml(ret);
+		
+		return ret;
 
+	}
+	private void escapeHtml(List<DeviceProperty> activeDevices) {
+		for (DeviceProperty p : activeDevices) {
+			p.setDeviceName(StringEscapeUtils.escapeHtml3(p.getDeviceName()));
+		}
 	}
 	@GET
 	@Path("/record")
@@ -53,7 +63,9 @@ public class DomainResource {
 	public List<String> selectDevice(@CookieParam("SilverBullet") String cookie, @QueryParam("name") String name) {
 		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
 		Automator automator = SilverBulletServer.getStaticInstance().getBuilderModelHolder().getAutomator(userid);
-		automator.loadScript(name);
+		if (name != null) {
+			automator.loadScript(name);
+		}
 		return automator.getLines();
 	}
 	

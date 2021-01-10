@@ -26,6 +26,9 @@ public class Automator {
 	}
 	
 	public SequencerListener createListener(String device) {
+//		if (device.contains(".")) {
+//			device = device.split("\\.")[0];
+//		}
 		devices.add(device);
 		
 		deviceNumber++;
@@ -113,7 +116,6 @@ public class Automator {
 	public void clear() {
 		this.lines.clear();
 		for (String device : devices) {
-			//lines.add(0, "var " + device + " = '192.168.0." + deviceNumber.toString() + ":8080';");
 			lines.add(0, "var " + device + " = '" + device + "';");
 		}
 	}

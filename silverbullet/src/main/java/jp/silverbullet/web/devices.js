@@ -54,11 +54,11 @@ class Devices {
 					uiList.splice(0);
 					$('#' + deviceId).empty();
 					for (var o of msg) {
-						var device = o.split(',')[0];
-						var application = o.split(',')[1];
+						var device = o.deviceName;//o.split(',')[0];
+						var application = o.applicationName;//o.split(',')[1];
 						
 						retreiveUiEntry(application, device, function(result, application, device) {
-							var deviceIdOne = deviceId + '_' + device;
+							var deviceIdOne = deviceId + '_' + device.replace('.', '_');
 							var deviceIdOneButton = deviceIdOne + '_button';
 							var deviceUiWindows = deviceIdOne + "_uiPane";
 							$('#' + deviceId).append('<div id=' + deviceUiWindows + '></div>');

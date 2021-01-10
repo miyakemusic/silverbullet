@@ -124,6 +124,10 @@ public abstract class SwingGui extends JFrame {
 	private JPanel mainPane;
 	private UiBuilder uiBuilder;
 	private String gui;
+
+	private int baseWidth;
+
+	private int baseHeight;
 	
 	public SwingGui(UiBuilder uiBuilder, RuntimePropertyStore runtimePropertyStore, 
 			BlobStore blobStore, Sequencer sequencer, String gui, 
@@ -134,6 +138,8 @@ public abstract class SwingGui extends JFrame {
 		this.sequencer = sequencer;
 		this.uiBuilder = uiBuilder;
 		this.gui = gui;
+		this.baseWidth = width;
+		this.baseHeight = height;
 		
 		this.setTitle(title);
 		
@@ -307,13 +313,14 @@ public abstract class SwingGui extends JFrame {
 	}
 
 	public void showMessage(MessageObject message2) {
-		SbMessageBox messageBox = new SbMessageBox(message2, this) {
+		SbMessageBox messageBox = new SbMessageBox(message2, (int)(this.baseWidth * 0.8), (int)(this.baseHeight * 0.5), this) {
 			@Override
 			protected void onClick(String id) {
 //				setVisible(false);
 				replyMessage(id, "Clicked");
 			}
 		};
+		//messageBox.setSize(new Dimension((int)(this.baseWidth * 0.8), (int)(this.baseHeight * 0.5)));
 		messageBox.setVisible(true);
 		messageMap.put(message2.messageId, messageBox);
 	}

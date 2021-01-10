@@ -18,9 +18,9 @@ import jp.silverbullet.dev.MessageObject;
 
 public abstract class SbMessageBox extends JDialog {
 
-	public SbMessageBox(MessageObject message2, Frame parent) {
+	public SbMessageBox(MessageObject message2, int width, int height, Frame parent) {
 		super(parent);
-		this.setSize(new Dimension(600, 300));
+		this.setSize(new Dimension(width, height));
 		this.setLocationRelativeTo(parent);
 //		this.setLocation(40, 40);
 		JPanel base = new JPanel();
