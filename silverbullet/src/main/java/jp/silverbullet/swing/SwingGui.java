@@ -200,7 +200,7 @@ public abstract class SwingGui extends JFrame {
 //		this.mainPane.setPreferredSize(new Dimension(bgImage.getWidth()-leftMarginInt-rightMarginInt, bgImage.getHeight() - topMarginInt - bottomMarginInt));
 		this.setSize(new Dimension(bgImage.getWidth() + 25, bgImage.getHeight() + 95));
 //		this.setSize(new Dimension(985, 641));
-		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		
 //		SwingUtilities.invokeLater(new Runnable() {
 //			@Override

@@ -328,7 +328,8 @@ public class SvClientHandler {
 		try {
 			msg.json = new ObjectMapper().writeValueAsString(new MessageObject(null, null, messageId));
 			WebSocketBroadcaster.getInstance().sendMessageToDomainModel(userid, device, new ObjectMapper().writeValueAsString(msg));
-			WebSocketBroadcaster.getInstance().sendMessageAsync(userid, "@CLOSE@" + device, msg.json);
+			//WebSocketBroadcaster.getInstance().sendMessageAsync(userid, "@CLOSE@" + device, msg.json);
+			WebSocketBroadcaster.getInstance().sendMessageAsync(userid, "MESSAGE@" + device, "@CLOSE@");
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 		}		
