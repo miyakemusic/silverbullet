@@ -326,8 +326,16 @@ public abstract class SwingGui extends JFrame {
 	}
 
 	public void closeMessage(String messageId) {
-		messageMap.get(messageId).setVisible(false);
-		messageMap.remove(messageId);
+		if (messageId == null) {
+			for (SbMessageBox m : messageMap.values()) {
+				m.setVisible(false);
+			}
+			messageMap.clear();
+		}
+		else {
+			messageMap.get(messageId).setVisible(false);
+			messageMap.remove(messageId);
+		}
 	}
 
 }

@@ -45,6 +45,7 @@
 <script type="text/javascript" src="build.js"></script>
 <script type="text/javascript" src="persistent.js"></script>
 <script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="testspec.js"></script>
 
 <script type="text/javascript">
 $(function() {
@@ -96,6 +97,7 @@ $(function() {
 			var devices = new Devices('tab_device', 'vertical');
 //			var devices = new AllDevices('tab_device');
 			var report = new ReportBuilder('tab_report');
+			var testspec = new TestSpec('tab_testspec');
 			
 			$('#applications').change(function() {
 			    var r = $('option:selected').val();
@@ -241,6 +243,7 @@ $(function() {
 	  	<li><a href="#tab_build">Build</a></li>
 	  	<li><a href="#tab_device">Devices</a></li>
 	  	<li><a href="#tab_report">Report</a></li>
+	  	<li><a href="#tab_testspec">TestSpec</a></li>
 	  </ul>
 	  <div id="tab_id"></div>
 	  <div id="tab_register"></div>
@@ -254,6 +257,7 @@ $(function() {
 	  <div id="tab_build"></div>
 	  <div id="tab_device"></div>
 	  <div id="tab_report"></div>
+	  <div id="tab_testspec"></div>
 	</div>
 </div>
 <div id="login">

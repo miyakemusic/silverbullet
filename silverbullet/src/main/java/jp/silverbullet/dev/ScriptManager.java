@@ -15,12 +15,6 @@ public abstract class ScriptManager {
 	}
 	
 	public void start(List<String> lines) {
-//		try {
-//			Files.write(Paths.get("tmp.js"), lines);
-//		} catch (IOException e2) {
-//			e2.printStackTrace();
-//		}
-//		File script = new File("tmp.js");
 		StringBuffer buffer = new StringBuffer();
 		lines.forEach(line -> buffer.append(line + "\n"));
 		try {
@@ -48,20 +42,7 @@ public abstract class ScriptManager {
     
     abstract public  String read(String addr, String query);
     
-	public String waitEqual(String addr, String id, String value) {
-		for (int i = 0; i < 100; i++) {
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-
-			}
-			String ret = read(addr, id);
-			if (ret.equals(value)) {
-				break;
-			}
-		}
-		return "";
-	}
+    abstract public String waitEqual(String addr, String id, String value);
     
     public void sleep(int millisecond) {
     	try {

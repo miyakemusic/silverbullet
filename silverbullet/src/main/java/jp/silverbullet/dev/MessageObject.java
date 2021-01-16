@@ -1,5 +1,8 @@
 package jp.silverbullet.dev;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class MessageObject {
 
 	public String messageId;
@@ -12,6 +15,16 @@ public class MessageObject {
 		this.html = html;
 		this.controls = controls;
 		this.messageId = messageId;
+	}
+	@Override
+	public String toString() {
+		try {
+			return new ObjectMapper().writeValueAsString(this);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "";
 	}
 
 }

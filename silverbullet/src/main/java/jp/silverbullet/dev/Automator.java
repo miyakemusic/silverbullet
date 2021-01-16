@@ -169,6 +169,23 @@ public class Automator {
 			private String generateMessageID() {
 				return "SilverBulletServer" + System.currentTimeMillis();
 			}
+
+			@Override
+			public String waitEqual(String addr, String id, String value) {
+				System.out.println(addr + ":" + id + ":" + value);
+				for (int i = 0; i < 100; i++) {
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+
+					}
+					String ret = read(addr, id);
+					if (ret.equals(value)) {
+						break;
+					}
+				}
+				return "";
+			}
 			
 		}.start(Arrays.asList(script.split("\n")));
 	}

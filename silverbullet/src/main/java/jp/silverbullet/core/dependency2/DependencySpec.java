@@ -88,7 +88,7 @@ public class DependencySpec {
 		addValue(value, trigger, "");
 		return this;
 	}
-	
+		
 	public String getId() {
 		return id;
 	}

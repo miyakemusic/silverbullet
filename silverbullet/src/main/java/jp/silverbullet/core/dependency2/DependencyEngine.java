@@ -239,9 +239,9 @@ public abstract class DependencyEngine {
 			}
 			else if (spec.isValue()) {
 				String val = spec.getExpression().getValue();
-//				if (val.contains("$")) {
+				if (val.contains("$")) {
 					val = this.calculator.calculate(val);
-//				}
+				}
 				if (property.isList()) {
 					val = val.replace("%", "");
 				}
