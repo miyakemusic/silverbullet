@@ -32,6 +32,11 @@ class NetworkConfigurationTest {
 		olt.add("SLOT1", splitter1);
 		
 		System.out.println(networkConfiguraton.toString());
+		
+		
+		int allNodes = networkConfiguraton.allNodesCount();
+//		System.out.println(allNodes);
+		new TsPresentationNodes(networkConfiguraton);
 	}
 
 }

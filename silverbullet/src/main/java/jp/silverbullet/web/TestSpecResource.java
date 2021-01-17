@@ -9,13 +9,14 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import jp.silverbullet.testspec.NetworkConfiguration;
+import jp.silverbullet.testspec.TsPresentationNodes;
 
 @Path("/testSpec")
 public class TestSpecResource {
 	@GET
 	@Path("/getDemo")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public NetworkConfiguration getTest(@CookieParam("SilverBullet") String cookie) {
-		return new NetworkConfiguration().createDemo();
+	public TsPresentationNodes getTest(@CookieParam("SilverBullet") String cookie) {
+		return new TsPresentationNodes(new NetworkConfiguration().createDemo());
 	}
 }
