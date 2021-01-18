@@ -26,34 +26,47 @@ public class NetworkConfiguration {
 
 	public NetworkConfiguration createDemo() {
 		NetworkConfiguration ret = new NetworkConfiguration();
-		TsOlt olt = new TsOlt("OLT_001", 12);
-		ret.setRoot(olt);
 		
-		TsSplitter splitter1 = new TsSplitter("SPL1", 8);
+		TsNode backbone = new TsNode("Backbone");
+		ret.setRoot(backbone);
 		
-		TsSplitter splitter1_1 = new TsSplitter("SPL1_1", 8);
+		TsNode olt = new TsNode("OLT_001");
+		backbone.port_out("P1").connect(olt.port_in("I1"));
+		backbone.port_out("P2").connect(olt.port_in("I2"));
+//		backbone.port_out("P3").connect(olt.port_in("I3"));
+//		backbone.port_out("P4").connect(olt.port_in("I4"));
+		
+		TsNode splitter1 = new TsNode("SPL1");
+		
+		TsNode splitter1_1 = new TsNode("SPL1_1");
 		for (int i = 0; i < 8; i++) {
-			splitter1_1.add("B" + i, new TsOnu("ONU" + i + "_SPL1_1"));
+			splitter1_1.port_out("B" + i).connect(new TsNode("ONU" + i).port_in());
 		}
 				
-		TsSplitter splitter1_2 = new TsSplitter("SPL1_2", 8);
+		TsNode splitter1_2 = new TsNode("SPL1_2");
 		for (int i = 0; i < 8; i++) {
-			splitter1_2.add("B" + i, new TsOnu("ONU" + i + "_SPL1_2"));
+			splitter1_2.port_out("B" + i).connect(new TsNode("ONU" + i).port_in());
 		}
 		
-		splitter1.add("B0", new TsOnu("ONU0_SPL1")).add("B1", new TsOnu("ONU1_SPL1")).add("B2", splitter1_1).add("B3", new TsOnu("ONU2_SPL1"))
-		.add("B4", new TsOnu("ONU3_SPL1")).add("B5", new TsOnu("ONU4_SPL1")).add("B6", splitter1_2).add("B7", new TsUnused());
+		splitter1.port_out("B0").connect(new TsNode("ONU0").port_in());
+		splitter1.port_out("B1").connect(new TsNode("ONU1").port_in());
+		splitter1.port_out("B2").connect(splitter1_1.port_in());
+		splitter1.port_out("B3").connect(new TsNode("ONU2").port_in());
+		splitter1.port_out("B4").connect(new TsNode("ONU3").port_in());
+		splitter1.port_out("B5").connect(new TsNode("ONU4").port_in());
+		splitter1.port_out("B6").connect(splitter1_2.port_in());
+		splitter1.port_out("B7").connect(new TsUnused().port_in());
 
-		olt.add("SLOT1", splitter1);
+		olt.port_out("SLOT1").connect(splitter1.port_in());
 		
-		TsSplitter splitter2 = new TsSplitter("SPL2", 8);
-		olt.add("SLOT2", splitter2);
+		TsNode splitter2 = new TsNode("SPL2");
+		olt.port_out("SLOT2").connect(splitter2.port_in());
 		
-		TsSplitter splitter3 = new TsSplitter("SPL3", 8);
-		olt.add("SLOT3", splitter3);
+		TsNode splitter3 = new TsNode("SPL3");
+		olt.port_out("SLOT3").connect(splitter3.port_in());
 	
-		TsSplitter splitter4 = new TsSplitter("SPL4", 8);
-		olt.add("SLOT4", splitter4);
+		TsNode splitter4 = new TsNode("SPL4");
+		olt.port_out("SLOT4").connect(splitter4.port_in());
 		
 		return ret;
 	}

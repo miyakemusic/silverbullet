@@ -6,7 +6,11 @@ import java.util.Map;
 
 public class TsNode {
 
-	private Map<String, TsNode> subNodes = new LinkedHashMap<>();
+	
+	private Map<String, TsPort> outputs = new LinkedHashMap<>();
+	private Map<String, TsPort> inputs = new LinkedHashMap<>();
+	
+	
 	private String id;
 	
 	public TsNode() {}
@@ -15,21 +19,25 @@ public class TsNode {
 		this.id = id;
 	}
 	
-	public TsNode add(String id, TsNode node) {
-		this.subNodes.put(id, node);
-		return this;
+//	public TsNode add(String id, TsPort port) {
+//		this.outputs.put(id, port);
+//		return this;
+//	}
+
+	public Map<String, TsPort> getOutputs() {
+		return outputs;
 	}
 
-	public Map<String, TsNode> getSubNodes() {
-		return subNodes;
+	public Map<String, TsPort> getInputs() {
+		return inputs;
 	}
 
 	public String getId() {
 		return id;
 	}
 
-	public void setSubNodes(Map<String, TsNode> subNodes) {
-		this.subNodes = subNodes;
+	public void setOutputs(Map<String, TsPort> subNodes) {
+		this.outputs = subNodes;
 	}
 
 	public void setId(String id) {
@@ -37,15 +45,40 @@ public class TsNode {
 	}
 
 	public int allNodesCount() {
-		if (this.subNodes.size() == 0) {
+		if (this.outputs.size() == 0) {
 			return 1;
 		}
 		int ret = 0;
-		for (TsNode node : this.subNodes.values()) {
-			ret += node.allNodesCount();
+		for (TsPort port : this.outputs.values()) {
+			ret += port.pairPort().owner().allNodesCount();
 		}
 		return ret;
 	}
+
+	public TsPort port_in(String id2) {
+		if (!this.inputs.keySet().contains(id2)) {
+			this.inputs.put(id2, new TsPort(this) {
+				@Override
+				public String getName() {
+					return id2;
+				}
+			});
+		}
+		return this.inputs.get(id2);
+	}
 	
-	
+	public TsPort port_in() {
+		return port_in("o");
+	}
+	public TsPort port_out(String id2) {
+		if (!this.outputs.keySet().contains(id2)) {
+			this.outputs.put(id2, new TsPort(this) {
+				@Override
+				public String getName() {
+					return id2;
+				}				
+			});
+		}
+		return this.outputs.get(id2);
+	}
 }

@@ -3,12 +3,15 @@ package jp.silverbullet.testspec;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class TsPresentationNodes {
 
-	private int width = 150;
+	private int width = 200;
 	private int horizontal_gap = 50;
 //	private int unitHeight = 20;
 
@@ -40,20 +43,33 @@ public class TsPresentationNodes {
 				node.setTop(topv);
 				node.setWidth(width);
 				
-				top.put(node.getLeft(), topv + node.getHeight());
+				top.put(node.getLeft(), topv + node.getHeight() + 10);
 				System.out.println(node.getId() + ", top=" + node.getTop() + ", left=" + node.getLeft());
 				
 				allNodes.add(node);
 				
-				if (node.parent() != null) {
-					TsLine line = new TsLine(node.parent(), node);
+				node.getInput().forEach(ip -> {
+					TsPresentationPort pair = fintPresentationOutputPort(ip.tsPort().pairPort());
+					TsLine line = new TsLine(ip, pair);
 					allLines.add(line);
-				}
+				});
 			}
 		}
 	}
 
 	
+	private TsPresentationPort fintPresentationOutputPort(TsPort pairPort) {
+		for (TsPresentationNode node : allNodes) {
+			for (TsPresentationPort pn : node.getOutput()) {
+				if (pn.tsPort() == pairPort) {
+					return pn;
+				}
+			}
+		}
+		return null;
+	}
+
+
 	public List<TsPresentationNode> getAllNodes() {
 		return allNodes;
 	}
@@ -73,9 +89,11 @@ public class TsPresentationNodes {
 
 
 	private void recursive(TsNode node, TsPresentationNode parent, int layer) {
-		Map<String, TsNode> subNodes = node.getSubNodes();
+		Map<String, TsPort> subNodes = node.getOutputs();
 		TsPresentationNode presNode = new TsPresentationNode(node, parent,
-				node.getSubNodes().keySet().toArray(new String[0]), layer * (width + horizontal_gap), node.allNodesCount());
+				node.getInputs().keySet().toArray(new String[0]),
+				node.getOutputs().keySet().toArray(new String[0]), 
+				layer * (width + horizontal_gap));
 		
 		if (!tmp.containsKey(layer)) {
 			tmp.put(layer, new ArrayList<>());
@@ -83,10 +101,14 @@ public class TsPresentationNodes {
 		tmp.get(layer).add(presNode);
 		//allNodes.add(presNode);
 		
+		Set<TsNode> nextNodes = new LinkedHashSet<>();
 		for (String nodeId : subNodes.keySet()) {
-			TsNode subNode = subNodes.get(nodeId);
+			TsPort subNode = subNodes.get(nodeId);
+			nextNodes.add(subNode.pairPort().owner());
 			
-			recursive(subNode, presNode, layer + 1);
+		}
+		for (TsNode n : nextNodes) {
+			recursive(n, presNode, layer + 1);
 		}
 	}
 

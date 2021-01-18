@@ -8,8 +8,8 @@ public class TextGenerator {
 	private List<String> recursive(String key, TsNode node) {
 		List<String> ret = new ArrayList<>();
 		
-		for (String k : node.getSubNodes().keySet()) {
-			TsNode subNode = node.getSubNodes().get(k);
+		for (String k : node.getOutputs().keySet()) {
+			TsNode subNode = node.getOutputs().get(k).owner();
 						
 			List<String> rr = recursive(k, subNode);
 			if (rr.size() > 0) {

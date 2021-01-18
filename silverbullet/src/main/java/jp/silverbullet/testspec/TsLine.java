@@ -11,21 +11,26 @@ public class TsLine {
 
 	public TsLine() {}
 	
-	public TsLine(TsPresentationNode parent, TsPresentationNode node) {
-		int index = 0;
-		for (String key : parent.node().getSubNodes().keySet()) {
-			TsNode subNode = parent.node().getSubNodes().get(key);
-			if (subNode.getId().equals(node.getId())) {
-				
-				break;
-			}
-			index++;
-		}
-//		int index = Arrays.asList(parent.getOutput()).indexOf(node.getId());
-		x1 = parent.getLeft() + parent.getWidth();
-		y1 = parent.getTop() + index * node.unitHeight + node.unitHeight / 2;
-		x2 = node.getLeft();
-		y2 = node.getTop() + node.unitHeight / 2;
+	public TsLine(TsPresentationPort port1, TsPresentationPort port2) {
+//		int index = 0;
+//		for (String key : parent.node().getOutputs().keySet()) {
+//			TsPort subNode = parent.node().getOutputs().get(key);
+//			if (subNode.owner().getId().equals(node.getId())) {
+//				
+//				break;
+//			}
+//			index++;
+//		}
+//		x1 = parent.getLeft() + parent.getWidth();
+//		y1 = parent.getTop() + index * node.unitHeight + node.unitHeight / 2;
+//		x2 = node.getLeft();
+//		y2 = node.getTop() + node.unitHeight / 2;
+		
+		x1 = port1.getLeft();
+		y1 = port1.getTop() + port1.getHeight() / 2;
+		
+		x2 = port2.getLeft() + port2.getWidth();
+		y2 = port2.getTop() + port2.getHeight() / 2;
 	}
 
 }
