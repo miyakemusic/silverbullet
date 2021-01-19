@@ -50,7 +50,9 @@ public class TsNode {
 		}
 		int ret = 0;
 		for (TsPort port : this.outputs.values()) {
-			ret += port.pairPort().owner().allNodesCount();
+			if (!port.terminated()) {
+				ret += port.pairPort().owner().allNodesCount();
+			}
 		}
 		return ret;
 	}

@@ -3,8 +3,8 @@ package jp.silverbullet.testspec;
 public abstract class TsPort {
 
 	private TsNode owner;
-	private TsPort pairPort;
-	
+	private TsPort pairPort = null;
+
 	public TsPort(TsNode owner2) {
 		this.owner = owner2;
 	}
@@ -28,4 +28,13 @@ public abstract class TsPort {
 	}
 
 	abstract public String getName();
+
+	public void terminate() {
+		this.pairPort = null;
+	}
+
+	public boolean terminated() {
+		return this.pairPort == null;
+	}
+	
 }

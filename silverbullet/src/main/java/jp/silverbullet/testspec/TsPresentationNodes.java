@@ -11,7 +11,7 @@ import java.util.Set;
 
 public class TsPresentationNodes {
 
-	private int width = 200;
+	private int width = 120;
 	private int horizontal_gap = 50;
 //	private int unitHeight = 20;
 
@@ -43,13 +43,14 @@ public class TsPresentationNodes {
 				node.setTop(topv);
 				node.setWidth(width);
 				
-				top.put(node.getLeft(), topv + node.getHeight() + 10);
-				System.out.println(node.getId() + ", top=" + node.getTop() + ", left=" + node.getLeft());
+				top.put(node.getLeft(), topv + node.getHeight() + 20);
+//				System.out.println(node.getId() + ", top=" + node.getTop() + ", left=" + node.getLeft());
 				
 				allNodes.add(node);
 				
 				node.getInput().forEach(ip -> {
 					TsPresentationPort pair = fintPresentationOutputPort(ip.tsPort().pairPort());
+					System.out.println(ip.getId() + " <--> " + pair.getId());
 					TsLine line = new TsLine(ip, pair);
 					allLines.add(line);
 				});
@@ -89,7 +90,7 @@ public class TsPresentationNodes {
 
 
 	private void recursive(TsNode node, TsPresentationNode parent, int layer) {
-		Map<String, TsPort> subNodes = node.getOutputs();
+		Map<String, TsPort> outputs = node.getOutputs();
 		TsPresentationNode presNode = new TsPresentationNode(node, parent,
 				node.getInputs().keySet().toArray(new String[0]),
 				node.getOutputs().keySet().toArray(new String[0]), 
@@ -102,9 +103,11 @@ public class TsPresentationNodes {
 		//allNodes.add(presNode);
 		
 		Set<TsNode> nextNodes = new LinkedHashSet<>();
-		for (String nodeId : subNodes.keySet()) {
-			TsPort subNode = subNodes.get(nodeId);
-			nextNodes.add(subNode.pairPort().owner());
+		for (String nodeId : outputs.keySet()) {
+			TsPort output = outputs.get(nodeId);
+			if (!output.terminated()) {
+				nextNodes.add(output.pairPort().owner());
+			}
 			
 		}
 		for (TsNode n : nextNodes) {

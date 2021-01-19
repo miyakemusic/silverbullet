@@ -21,23 +21,26 @@ class MyCanvas extends Canvas {
 	@Override
 	public void paint(Graphics gg) {	
 		Graphics2D g = (Graphics2D)gg;
+		int offset = 20;
+		
 		for (TsPresentationNode node : presentation.getAllNodes()) {
-			g.drawRect(node.getLeft(), node.getTop(), node.getWidth(), node.getHeight());
-			g.drawString(node.getId(), node.getLeft() + node.getWidth()/3, node.getTop() + node.getHeight()/2);
+			g.drawRect(node.getLeft(), node.getTop() + offset, node.getWidth(), node.getHeight());
+			g.drawString(node.getId(), node.getLeft() + 10, node.getTop() + offset);
 			
+//			int topOffset = node.getTop() + offset;
 			node.getInput().forEach(o -> {
-				g.drawRect(o.getLeft(), o.getTop(), o.getWidth(), o.getHeight());
-				g.drawString(o.getId(), o.getLeft(), o.getTop() + 15);
+				g.drawRect(o.getLeft(), o.getTop() + offset, o.getWidth(), o.getHeight());
+				g.drawString(o.getId(), o.getLeft(), o.getTop() + offset + 15);
 			});
 			
 			node.getOutput().forEach(o -> {
-				g.drawRect(o.getLeft(), o.getTop(), o.getWidth(), o.getHeight());
-				g.drawString(o.getId(), o.getLeft(), o.getTop() + 15);
+				g.drawRect(o.getLeft(), o.getTop() + offset, o.getWidth(), o.getHeight());
+				g.drawString(o.getId(), o.getLeft(), o.getTop() + offset + 15);
 			});
 		}
 		
 		for (TsLine line : presentation.getAllLines()) {
-			g.drawLine(line.x1, line.y1, line.x2, line.y2);
+			g.drawLine(line.x1, line.y1 + offset, line.x2, line.y2 + offset);
 		}
 	}
 }
