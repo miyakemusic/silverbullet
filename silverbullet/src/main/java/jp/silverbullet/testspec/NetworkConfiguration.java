@@ -31,10 +31,10 @@ public class NetworkConfiguration {
 		ret.setRoot(backbone);
 		
 		TsNode olt = new TsNode("OLT_001");
-		backbone.port_out("P1").connect(olt.port_in("I1"));
-		backbone.port_out("P2").connect(olt.port_in("I2"));
-//		backbone.port_out("P3").connect(olt.port_in("I3"));
-//		backbone.port_out("P4").connect(olt.port_in("I4"));
+		backbone.port_out("out1").connect(olt.port_in("in1"));
+		backbone.port_out("in1").connect(olt.port_in("out1"));
+		backbone.port_out("out2").connect(olt.port_in("in2"));
+		backbone.port_out("in2").connect(olt.port_in("out2"));
 		
 		TsNode splitter1 = new TsNode("SPLITTER_1");
 		

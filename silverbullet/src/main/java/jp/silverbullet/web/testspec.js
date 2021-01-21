@@ -11,6 +11,7 @@ class TestSpec {
 		$('#' + canvasId).css('position','absolute');
 		$('#' + canvasId).css('top','0px');
 		$('#' + canvasId).css('left','0px');
+			
 		
 		function drawLine(x1, y1, x2, y2) {
 		    var canvas = $("#" + canvasId);
@@ -18,7 +19,6 @@ class TestSpec {
 		    ctx.beginPath();
 		    ctx.moveTo( x1, y1);
 		    ctx.lineTo(x2, y2);
-		    //ctx.closePath();
 		    ctx.stroke();
 		    return false;
 		}	
@@ -62,15 +62,10 @@ class TestSpec {
 			}
 		}
 		
-		function getRandomInt(min, max) {
-			min = Math.ceil(min);
-			max = Math.floor(max);
-			return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
-		}
 		function drawDiagram2(msg) {
 			var outputId = divId + "_outoutButton";
 			for (var node of msg.allNodes) {
-				var divId = node.id + '_' + getRandomInt(0, 1000);
+				var divId = node.serial;
 				var tag = '<div id="' + divId + '"><table><tr><td><button>'+ node.id + '</button></td><td>';
 				for (var v of node.output) {
 					
@@ -102,15 +97,11 @@ class TestSpec {
 				drawString(node.id, node.left + 10, node.top + offset - 5);
 				
 				for (var o of node.input) {
-//					drawRect(o.left, o.top + offset, o.width, o.height);
-//					drawString(o.id, o.left, o.top + offset + 15);
-					createButton(o.id, o.left, o.top + offset, o.width, o.height);
+					createButton(o.serial, node.id, o.id, o.left, o.top + offset, o.width, o.height);
 				}
 				
 				for (var o of node.output) {
-//					drawRect(o.left, o.top + offset, o.width, o.height);
-//					drawString(o.id, o.left, o.top + offset + 15);
-					createButton(o.id, o.left, o.top + offset, o.width, o.height);
+					createButton(o.serial, node.id, o.id, o.left, o.top + offset, o.width, o.height);
 				}
 			}
 			
@@ -119,45 +110,65 @@ class TestSpec {
 			}
 		}
 		
+		var beingSelectedPort;
 		var dialogId = mainId + '_dialog';
 		$('#' + mainId).append('<div id="' + dialogId + '"></div>');
 		var leftId = dialogId + '_left';
 		var rightId = dialogId + '_right';
 		
-		$('#' + dialogId).append('<table><thead><td>Left Side</td><td>Right Side</td></thead><tbody><tr><td><div id="' + leftId + '"></div></td><td><div id="' + rightId + '"></div></td></tr></tbody></table>');
+		var leftCaption = leftId + '_cap';
+		var rightCaption = rightId + '_cap';
 		
+		var comboConnector = dialogId + '_connector';
+		$('#' + dialogId).append('Connector Type: <select id="' + comboConnector + '"></select>');
+//		var options = ['-', 'SC/UPC', 'SC/APC', 'FC/UPC', 'FC/APC', 'LC/UPC', 'LC/APC', 'MPO12', 'MPO24', 'ODC-2', 'ODC-4', 'Pushlok'];
+		retrieveTestType(function(list) {
+			for (var o of list) {
+				$('#' + comboConnector).append($('<option>').text(o).val(o));
+			}
+		});
+		
+		$('#' + dialogId).append('<table><thead><td><label id="' + leftCaption + '">Left Side</td><td><label id="'+rightCaption+'">Right Side</label></td></thead><tbody><tr><td><div id="' + leftId + '"></div></td><td><div id="' + rightId + '"></div></td></tr></tbody></table>');
+		
+		var left_tests = [];
+		var leftAdd = div + '_leftAdd';
 		var comboIdLeft = dialogId + '_comboLeft';
-		$('#' + leftId).append('<select id="' + comboIdLeft + '"></select><button>Add</button>');
-		var options = ['Fiber end face inspection', 'OTDR', 'Optical Power Meter'];
+		$('#' + leftId).append('<select id="' + comboIdLeft + '"></select><button id="' + leftAdd + '">Add</button>');
+		var options = ['Fiber end-face inspection', 'OTDR', 'Optical Power Meter'];
 		for (var o of options) {
 			$('#' + comboIdLeft).append($('<option>').text(o).val(o));
 		}
 		
+		var leftTests = div + '_leftTests';
+		$('#' + leftId).append('<div id="' + leftTests + '"></div>');
+		$('#' + leftAdd).click(function() {
+			left_tests.push($('#' + comboIdLeft).val());
+			$('#' + leftTests).append('<div>' + $('#' + comboIdLeft).val() + '</div>');
+		});
+		
+		var right_tests = [];
+		var rightAdd = div + '_rightAdd';
 		var comboIdRight = dialogId + '_comboRight';
-		$('#' + rightId).append('<select id="' + comboIdRight + '"></select><button>Add</button>');		
+		$('#' + rightId).append('<select id="' + comboIdRight + '"></select><button id="' + rightAdd + '">Add</button>');		
 		for (var o of options) {
 			$('#' + comboIdRight).append($('<option>').text(o).val(o));
 		}
+		var rightTests = div + '_rightTests';
+		$('#' + rightId).append('<div id="' + rightTests + '"></div>');
+		$('#' + rightAdd).click(function() {
+			right_tests.push($('#' + comboIdRight).val());
+			$('#' + rightTests).append('<div>' + $('#' + comboIdRight).val() + '</div>');
+		});
 		
-//		$('#' + leftId).append('<div><input type="checkbox">Fiber End-face Inspection</input></div>');
-//		$('#' + leftId).append('<div><input type="checkbox">OTDR</input></div>');
-//		$('#' + leftId).append('<div><input type="checkbox">Optical Power Meter</input></div>');
-//		$('#' + leftId).append('<div><input type="checkbox">CPRI</input></div>');
-		$('#' + leftId).css('width', '200px');
-
-//		$('#' + rightId).append('<div><input type="checkbox">Fiber End-face Inspection</input></div>');
-//		$('#' + rightId).append('<div><input type="checkbox">OTDR</input></div>');
-//		$('#' + rightId).append('<div><input type="checkbox">Optical Power Meter</input></div>');
-//		$('#' + rightId).append('<div><input type="checkbox">CPRI</input></div>');
 		$('#' + rightId).css('width', '200px');
 		
-		var serial = 0;
-		function createButton(text, x, y, width, height) {
-			var id = "id" + serial++;
-			$('#' + mainId).append('<button id="' + id + '"></button>');
-			$('#' + id).text(text);
+		
+		
+		function createButton(serial, nodeText, portText, x, y, width, height) {
+			var id = serial;
+			$('#' + mainId).append('<button name="' + nodeText + '_' + portText + '" id="' + serial + '"></button>');
+			$('#' + id).text(portText);
 			$('#' + id).css({'position':'absolute'});
-//			$('#' + id).css({'position':'relative'});
 			$('#' + id).css('left',x + 'px');
 			$('#' + id).css('top',y + 'px');
 			$('#' + id).css('width',width + 'px');
@@ -165,7 +176,36 @@ class TestSpec {
 			$('#' + id).css('font', '10px sans-serif');
 			
 			$('#' + id).click(function() {
+				beingSelectedPort = $(this).prop('id');
+				if ($(this).attr('id').startsWith('in')) {
+					$('#' + rightCaption).text('Device Side');
+					$('#' + leftCaption).text('Fiber Side');
+				}
+				else {
+					$('#' + leftCaption).text('Device Side');
+					$('#' + rightCaption).text('Fiber Side');
+				}
+				
+				left_tests.splice(0);
+				right_tests.splice(0);
+				
+				var title = $(this).prop('name');
+				$('#' + dialogId).dialog({ title: title });
 				$('#' + dialogId).dialog('open');
+				
+				retrievePortConfig(beingSelectedPort, function(portConfig) {
+					$('#' + leftTests).empty();
+					$('#' + rightTests).empty();
+					$('#' + comboConnector).val(portConfig.connector);
+					for (var v of portConfig.leftSideTest) {
+						$('#' + leftTests).append('<div>' + v + '</div>');
+						left_tests.push(v);
+					}
+					for (var v of portConfig.rightSideTest) {
+						$('#' + rightTests).append('<div>' + v + '</div>');
+						right_tests.push(v);
+					}					
+				});
 			});
 		}
 		
@@ -177,20 +217,61 @@ class TestSpec {
 			}
 		});	
 		
+		function retrieveTestType(callback) {
+			$.ajax({
+				type: "GET", 
+				url: "//" + window.location.host + "/rest/testSpec/testType",
+				success: function(msg){
+					callback(msg);
+				}
+			});	
+		}
+		
+		function retrievePortConfig(serial, callback) {
+			$.ajax({
+				type: "GET", 
+				url: "//" + window.location.host + "/rest/testSpec/portConfig?serial=" + serial,
+				success: function(msg){
+					callback(msg);
+				}
+			});	
+		}
+		function postPortConfig(serial, testConfig) {
+			$.ajax({
+				url: "//" + window.location.host + "/rest/testSpec/postPortConfig?serial=" + serial,
+				type: 'POST',
+				contentType: 'application/json',
+				data: JSON.stringify(testConfig),
+				processData: false
+			})
+			.done(function( data ) {
+
+			});	
+		}		
+		
+		function commitPortConfig() {
+			var portConfig = new Object();
+			portConfig.connector = $('#' + comboConnector).val();
+			portConfig.leftSideTest = left_tests;
+			portConfig.rightSideTest = right_tests;
+			postPortConfig(beingSelectedPort, portConfig);
+		}
+		
 		$('#' + dialogId).dialog({
-			  autoOpen: false,
-			  title: 'Test Target',
-			  closeOnEscape: true,
-			  modal: true,
-			  buttons: {
-			    "OK": function(){
-			      $(this).dialog('close');
-			    }
-			    ,
-			    "Cancel": function(){
-			      $(this).dialog('close');
-			    }
-			  },
+			autoOpen: false,
+			title: 'Test Target',
+			closeOnEscape: true,
+			modal: true,
+			buttons: {
+				"OK": function(){
+					commitPortConfig();
+					$(this).dialog('close');
+				}
+				,
+				"Cancel": function(){
+					$(this).dialog('close');
+				}
+			},
 			width: 600,
 			height: 400
 		});	

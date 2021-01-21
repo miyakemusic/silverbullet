@@ -11,13 +11,15 @@ class TsPresentationPort{
 	private int left = 0;
 	private int height;
 	private TsPort tsPort;
+	public String serial;
 	
-	public TsPresentationPort(String id, int left, int index, int height, TsPort tsPort) {
+	public TsPresentationPort(String serial, String id, int left, int index, int height, TsPort tsPort) {
 		this.id = id;
 		this.top = index * height;
 		this.height = height;
 		this.left = left;
 		this.tsPort = tsPort;
+		this.serial = serial;
 	}
 	public int getWidth() {
 		return width;
@@ -71,23 +73,26 @@ public class TsPresentationNode {
 	private TsPresentationNode parent;
 	private TsNode node;
 		
+	public String serial;
+	
 	public TsPresentationNode() {}
-	public TsPresentationNode(TsNode node, TsPresentationNode parent2, String[] input2, String[] output2, int left2) {
+	public TsPresentationNode(String serial, TsNode node, TsPresentationNode parent2, String[] input2, String[] output2, int left2) {
 		this.id = node.getId();
 		this.left = left2;
 
 		this.height = max(node.allNodesCount(), node.getInputs().size(), node.getOutputs().size()) * unitHeight;
 		this.parent = parent2;
 		this.node = node;
+		this.serial = serial;
 		
 		for (int i = 0; i < input2.length; i++) {
 			String portid = input2[i];
-			this.input.add(new TsPresentationPort(portid, left, i, unitHeight, node.getInputs().get(portid)));
+			this.input.add(new TsPresentationPort("in_" + serial + "_" + portid, portid, left, i, unitHeight, node.getInputs().get(portid)));
 		}
 		
 		for (int i = 0; i < output2.length; i++) {
 			String portid = output2[i];
-			this.output.add(new TsPresentationPort(portid, left, i, unitHeight, node.getOutputs().get(portid)));
+			this.output.add(new TsPresentationPort("out_" + serial + "_" + portid, portid, left, i, unitHeight, node.getOutputs().get(portid)));
 		}
 	}
 

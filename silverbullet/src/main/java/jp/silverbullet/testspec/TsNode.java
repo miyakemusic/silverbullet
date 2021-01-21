@@ -70,7 +70,7 @@ public class TsNode {
 	}
 	
 	public TsPort port_in() {
-		return port_in("o");
+		return port_in("in");
 	}
 	public TsPort port_out(String id2) {
 		if (!this.outputs.keySet().contains(id2)) {

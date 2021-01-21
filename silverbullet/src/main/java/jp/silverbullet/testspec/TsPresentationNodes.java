@@ -91,7 +91,7 @@ public class TsPresentationNodes {
 
 	private void recursive(TsNode node, TsPresentationNode parent, int layer) {
 		Map<String, TsPort> outputs = node.getOutputs();
-		TsPresentationNode presNode = new TsPresentationNode(node, parent,
+		TsPresentationNode presNode = new TsPresentationNode(generateSerial("D"), node, parent,
 				node.getInputs().keySet().toArray(new String[0]),
 				node.getOutputs().keySet().toArray(new String[0]), 
 				layer * (width + horizontal_gap));
@@ -113,6 +113,11 @@ public class TsPresentationNodes {
 		for (TsNode n : nextNodes) {
 			recursive(n, presNode, layer + 1);
 		}
+	}
+
+	private int serialno = 0;
+	private String generateSerial(String prefix) {
+		return prefix + serialno++;
 	}
 
 }
