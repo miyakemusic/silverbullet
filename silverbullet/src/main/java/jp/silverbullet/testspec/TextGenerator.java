@@ -14,11 +14,11 @@ public class TextGenerator {
 			List<String> rr = recursive(k, subNode);
 			if (rr.size() > 0) {
 				for (String r : rr) {
-					ret.add(key + "." + node.getId() + "." + r);
+					ret.add(key + "." + node.getName() + "." + r);
 				}
 			}
 			else {
-				ret.add(key + "." + node.getId() + "." + k + "." + subNode.getId());
+				ret.add(key + "." + node.getName() + "." + k + "." + subNode.getName());
 			}
 		}
 		

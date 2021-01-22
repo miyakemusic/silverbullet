@@ -4,6 +4,7 @@ public abstract class TsPort {
 
 	private TsNode owner;
 	private TsPort pairPort = null;
+	public String id;
 
 	public TsPort(TsNode owner2) {
 		this.owner = owner2;

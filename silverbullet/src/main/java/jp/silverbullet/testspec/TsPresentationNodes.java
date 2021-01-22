@@ -50,7 +50,7 @@ public class TsPresentationNodes {
 				
 				node.getInput().forEach(ip -> {
 					TsPresentationPort pair = fintPresentationOutputPort(ip.tsPort().pairPort());
-					System.out.println(ip.getId() + " <--> " + pair.getId());
+					System.out.println(ip.getName() + " <--> " + pair.getName());
 					TsLine line = new TsLine(ip, pair);
 					allLines.add(line);
 				});
@@ -91,7 +91,7 @@ public class TsPresentationNodes {
 
 	private void recursive(TsNode node, TsPresentationNode parent, int layer) {
 		Map<String, TsPort> outputs = node.getOutputs();
-		TsPresentationNode presNode = new TsPresentationNode(generateSerial("D"), node, parent,
+		TsPresentationNode presNode = new TsPresentationNode(node, parent,
 				node.getInputs().keySet().toArray(new String[0]),
 				node.getOutputs().keySet().toArray(new String[0]), 
 				layer * (width + horizontal_gap));

@@ -43,21 +43,38 @@ public class TestSpecResource {
 		return ret;
 	}
 	
+	static private NetworkConfiguration config = new NetworkConfiguration();
+	
 	@GET
 	@Path("/portConfig")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public TsPortConfig portConfig(@CookieParam("SilverBullet") String cookie, @QueryParam("serial") String serial) {
-		if (!configs.containsKey(serial)) {
-			configs.put(serial, new TsPortConfig());
+	public TsPortConfig portConfig(@CookieParam("SilverBullet") String cookie, @QueryParam("id") String id) {
+		if (!configs.containsKey(id)) {
+			configs.put(id, new TsPortConfig());
 		}
-		return configs.get(serial);
+		return configs.get(id);
+	}
+	
+	@GET
+	@Path("/getTestSpec")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public TsPresentationNodes getTestSpec(@CookieParam("SilverBullet") String cookie) {
+		return new TsPresentationNodes(config);
+	}
+	
+	@GET
+	@Path("/createDemo")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public Response createDemo(@CookieParam("SilverBullet") String cookie) {
+		config = config.createDemo();
+		return Response.ok().build();
 	}
 	
 	@POST
 	@Path("/postPortConfig")
 	@Consumes(MediaType.APPLICATION_JSON) 
-	public Response portConfig(@CookieParam("SilverBullet") String cookie, @QueryParam("serial") String serial, TsPortConfig config) {
-		configs.put(serial, config);
+	public Response portConfig(@CookieParam("SilverBullet") String cookie, @QueryParam("id") String id, TsPortConfig config) {
+		configs.put(id, config);
 		return Response.ok().build();
 	}
 }

@@ -1,6 +1,20 @@
 class TestSpec {
 	constructor(div) {
 	
+		var toolBarId = div + "_toolbar";
+		$('#' + div).append('<div id="' + toolBarId + '"></div>');
+		var createDemoId = div + "_createDemo";
+		$('#' + toolBarId).append('<button id="' + createDemoId + '">Create Demo</button>');
+		$('#' + createDemoId).click(function() {
+			createDemo();
+		});
+		
+		var getTestSpecId = div + "_getTestSpec";
+		$('#' + toolBarId).append('<button id="' + getTestSpecId + '">Redraw</button>');
+		$('#' + getTestSpecId).click(function() {
+			retrieveTest();
+		});
+			
 		var mainId = div + "_main";
 		$('#' + div).append('<div id="' + mainId + '"></div>');
 		
@@ -42,8 +56,8 @@ class TestSpec {
 		}
 		
 		function recursive(node, parent, layer) {
-			var divId = parent.id + '_' + node.id;
-			var tag = '<div id="' + divId + '"><table><tr><td><button>'+ node.id + '</button></td><td>';
+			var divId = parent.name + '_' + node.name;
+			var tag = '<div id="' + divId + '"><table><tr><td><button>'+ node.name + '</button></td><td>';
 			for (var v in node.subNodes) {
 				tag += '<div><button>' + v + '</button></div>';
 			}
@@ -65,8 +79,8 @@ class TestSpec {
 		function drawDiagram2(msg) {
 			var outputId = divId + "_outoutButton";
 			for (var node of msg.allNodes) {
-				var divId = node.serial;
-				var tag = '<div id="' + divId + '"><table><tr><td><button>'+ node.id + '</button></td><td>';
+				var divId = node.id;
+				var tag = '<div id="' + divId + '"><table><tr><td><button>'+ node.name + '</button></td><td>';
 				for (var v of node.output) {
 					
 					tag += '<div><button class="' + outputId + '">' + v + '</button></div>';
@@ -92,16 +106,18 @@ class TestSpec {
 		
 		var offset = 20;
 		function drawDiagram3(msg) {
+//			$('#' + mainId).empty();
+			
 			for (var node of msg.allNodes) {
 				drawRect(node.left, node.top + offset, node.width, node.height);
-				drawString(node.id, node.left + 10, node.top + offset - 5);
+				drawString(node.name, node.left + 10, node.top + offset - 5);
 				
 				for (var o of node.input) {
-					createButton(o.serial, node.id, o.id, o.left, o.top + offset, o.width, o.height);
+					createButton(o.id, o.direction, node.name, o.name, o.left, o.top + offset, o.width, o.height);
 				}
 				
 				for (var o of node.output) {
-					createButton(o.serial, node.id, o.id, o.left, o.top + offset, o.width, o.height);
+					createButton(o.id, o.direction, node.name, o.name, o.left, o.top + offset, o.width, o.height);
 				}
 			}
 			
@@ -164,9 +180,8 @@ class TestSpec {
 		
 		
 		
-		function createButton(serial, nodeText, portText, x, y, width, height) {
-			var id = serial;
-			$('#' + mainId).append('<button name="' + nodeText + '_' + portText + '" id="' + serial + '"></button>');
+		function createButton(id, direction, nodeText, portText, x, y, width, height) {
+			$('#' + mainId).append('<button value="' + direction + '" + name="' + nodeText + '_' + portText + '" id="' + id + '"></button>');
 			$('#' + id).text(portText);
 			$('#' + id).css({'position':'absolute'});
 			$('#' + id).css('left',x + 'px');
@@ -177,7 +192,7 @@ class TestSpec {
 			
 			$('#' + id).click(function() {
 				beingSelectedPort = $(this).prop('id');
-				if ($(this).attr('id').startsWith('in')) {
+				if ($(this).attr('value').startsWith('in')) {
 					$('#' + rightCaption).text('Device Side');
 					$('#' + leftCaption).text('Fiber Side');
 				}
@@ -209,13 +224,25 @@ class TestSpec {
 			});
 		}
 		
-		$.ajax({
-			type: "GET", 
-			url: "//" + window.location.host + "/rest/testSpec/getDemo",
-			success: function(msg){
-				drawDiagram3(msg);
-			}
-		});	
+		function createDemo() {
+			$.ajax({
+				type: "GET", 
+				url: "//" + window.location.host + "/rest/testSpec/createDemo",
+				success: function(msg){
+					//drawDiagram3(msg);
+				}
+			});	
+		}
+		
+		function retrieveTest() {
+			$.ajax({
+				type: "GET", 
+				url: "//" + window.location.host + "/rest/testSpec/getTestSpec",
+				success: function(msg){
+					drawDiagram3(msg);
+				}
+			});	
+		}
 		
 		function retrieveTestType(callback) {
 			$.ajax({
@@ -227,18 +254,18 @@ class TestSpec {
 			});	
 		}
 		
-		function retrievePortConfig(serial, callback) {
+		function retrievePortConfig(id, callback) {
 			$.ajax({
 				type: "GET", 
-				url: "//" + window.location.host + "/rest/testSpec/portConfig?serial=" + serial,
+				url: "//" + window.location.host + "/rest/testSpec/portConfig?id=" + id,
 				success: function(msg){
 					callback(msg);
 				}
 			});	
 		}
-		function postPortConfig(serial, testConfig) {
+		function postPortConfig(id, testConfig) {
 			$.ajax({
-				url: "//" + window.location.host + "/rest/testSpec/postPortConfig?serial=" + serial,
+				url: "//" + window.location.host + "/rest/testSpec/postPortConfig?id=" + id,
 				type: 'POST',
 				contentType: 'application/json',
 				data: JSON.stringify(testConfig),

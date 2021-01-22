@@ -6,20 +6,22 @@ import java.util.Map;
 
 class TsPresentationPort{
 	private int width = 50;
-	private String id;
+	private String name;
 	private int top;
 	private int left = 0;
 	private int height;
 	private TsPort tsPort;
-	public String serial;
+	public String id;
+	public String direction;
 	
-	public TsPresentationPort(String serial, String id, int left, int index, int height, TsPort tsPort) {
-		this.id = id;
+	public TsPresentationPort(String id, String direction, String name, int left, int index, int height, TsPort tsPort) {
+		this.name = name;
 		this.top = index * height;
 		this.height = height;
 		this.left = left;
 		this.tsPort = tsPort;
-		this.serial = serial;
+		this.id = id;
+		this.direction = direction;
 	}
 	public int getWidth() {
 		return width;
@@ -27,11 +29,11 @@ class TsPresentationPort{
 	public void setWidth(int width) {
 		this.width = width;
 	}
-	public String getId() {
-		return id;
+	public String getName() {
+		return name;
 	}
-	public void setId(String id) {
-		this.id = id;
+	public void setName(String name) {
+		this.name = name;
 	}
 	public int getTop() {
 		return top;
@@ -61,7 +63,7 @@ class TsPresentationPort{
 }
 
 public class TsPresentationNode {
-	private String id;
+	private String name;
 	private int left;
 	private int height;
 	private int top;
@@ -73,38 +75,49 @@ public class TsPresentationNode {
 	private TsPresentationNode parent;
 	private TsNode node;
 		
-	public String serial;
+	public String id;
 	
 	public TsPresentationNode() {}
-	public TsPresentationNode(String serial, TsNode node, TsPresentationNode parent2, String[] input2, String[] output2, int left2) {
-		this.id = node.getId();
+	public TsPresentationNode(TsNode node, TsPresentationNode parent2, String[] input2, String[] output2, int left2) {
+		this.name = node.getName();
 		this.left = left2;
 
 		this.height = max(node.allNodesCount(), node.getInputs().size(), node.getOutputs().size()) * unitHeight;
 		this.parent = parent2;
 		this.node = node;
-		this.serial = serial;
+		this.id = node.id;
 		
-		for (int i = 0; i < input2.length; i++) {
-			String portid = input2[i];
-			this.input.add(new TsPresentationPort("in_" + serial + "_" + portid, portid, left, i, unitHeight, node.getInputs().get(portid)));
+		int i = 0;
+		for (String name : node.getInputs().keySet()) {
+			TsPort port  =node.getInputs().get(name);
+			this.input.add(new TsPresentationPort(port.id, "in", port.getName(), left, i++, unitHeight, port));
+		}
+		i = 0;
+		for (String name : node.getOutputs().keySet()) {
+			TsPort port  =node.getOutputs().get(name);
+			this.output.add(new TsPresentationPort(port.id, "out", port.getName(), left, i++, unitHeight, port));
 		}
 		
-		for (int i = 0; i < output2.length; i++) {
-			String portid = output2[i];
-			this.output.add(new TsPresentationPort("out_" + serial + "_" + portid, portid, left, i, unitHeight, node.getOutputs().get(portid)));
-		}
+//		for (int i = 0; i < input2.length; i++) {
+//			String portid = input2[i];
+//			this.input.add(new TsPresentationPort(/*"in_" + serial + "_" + portid*/id, "in", portid, left, i, unitHeight, node.getInputs().get(portid)));
+//		}
+//		
+//		for (int i = 0; i < output2.length; i++) {
+//			String portid = output2[i];
+//			this.output.add(new TsPresentationPort(/*"out_" + serial + "_" + portid*/id, "out", portid, left, i, unitHeight, node.getOutputs().get(portid)));
+//		}
 	}
 
 	private int max(int v1, int v2, int v3) {
 		return Math.max(v2,  v3);
 		//return Math.max(Math.max(v1, v2), v3);
 	}
-	public String getId() {
-		return id;
+	public String getName() {
+		return name;
 	}
-	public void setId(String id) {
-		this.id = id;
+	public void setName(String name) {
+		this.name = name;
 	}
 	public int getLeft() {
 		return left;

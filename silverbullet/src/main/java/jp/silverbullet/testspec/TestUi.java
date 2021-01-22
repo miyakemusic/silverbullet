@@ -25,17 +25,16 @@ class MyCanvas extends Canvas {
 		
 		for (TsPresentationNode node : presentation.getAllNodes()) {
 			g.drawRect(node.getLeft(), node.getTop() + offset, node.getWidth(), node.getHeight());
-			g.drawString(node.getId(), node.getLeft() + 10, node.getTop() + offset);
-			
-//			int topOffset = node.getTop() + offset;
+			g.drawString(node.getName(), node.getLeft() + 10, node.getTop() + offset);
+
 			node.getInput().forEach(o -> {
 				g.drawRect(o.getLeft(), o.getTop() + offset, o.getWidth(), o.getHeight());
-				g.drawString(o.getId(), o.getLeft(), o.getTop() + offset + 15);
+				g.drawString(o.getName(), o.getLeft(), o.getTop() + offset + 15);
 			});
 			
 			node.getOutput().forEach(o -> {
 				g.drawRect(o.getLeft(), o.getTop() + offset, o.getWidth(), o.getHeight());
-				g.drawString(o.getId(), o.getLeft(), o.getTop() + offset + 15);
+				g.drawString(o.getName(), o.getLeft(), o.getTop() + offset + 15);
 			});
 		}
 		

@@ -1,29 +1,23 @@
 package jp.silverbullet.testspec;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class TsNode {
-
+public abstract class TsNode {
+	abstract protected String generateId(TsPort port);
 	
 	private Map<String, TsPort> outputs = new LinkedHashMap<>();
 	private Map<String, TsPort> inputs = new LinkedHashMap<>();
+	public String id = "";
 	
-	
-	private String id;
+	private String name;
 	
 	public TsNode() {}
 	
-	public TsNode(String id) {
-		this.id = id;
+	public TsNode(String name) {
+		this.name = name;
 	}
 	
-//	public TsNode add(String id, TsPort port) {
-//		this.outputs.put(id, port);
-//		return this;
-//	}
-
 	public Map<String, TsPort> getOutputs() {
 		return outputs;
 	}
@@ -32,16 +26,16 @@ public class TsNode {
 		return inputs;
 	}
 
-	public String getId() {
-		return id;
+	public String getName() {
+		return name;
 	}
 
 	public void setOutputs(Map<String, TsPort> subNodes) {
 		this.outputs = subNodes;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public int allNodesCount() {
@@ -57,30 +51,32 @@ public class TsNode {
 		return ret;
 	}
 
-	public TsPort port_in(String id2) {
-		if (!this.inputs.keySet().contains(id2)) {
-			this.inputs.put(id2, new TsPort(this) {
-				@Override
-				public String getName() {
-					return id2;
-				}
-			});
+	private TsPort createPort(String name, TsNode parent) {
+		TsPort port = new TsPort(this) {
+			@Override
+			public String getName() {
+				return name;
+			}
+		};
+		port.id = generateId(port);
+		return port;
+	}
+	
+	public TsPort port_in(String name) {
+		if (!this.inputs.keySet().contains(name)) {			
+			this.inputs.put(name, createPort(name, this));
 		}
-		return this.inputs.get(id2);
+		return this.inputs.get(name);
 	}
 	
 	public TsPort port_in() {
 		return port_in("in");
 	}
-	public TsPort port_out(String id2) {
-		if (!this.outputs.keySet().contains(id2)) {
-			this.outputs.put(id2, new TsPort(this) {
-				@Override
-				public String getName() {
-					return id2;
-				}				
-			});
+	
+	public TsPort port_out(String name) {
+		if (!this.outputs.keySet().contains(name)) {
+			this.outputs.put(name, createPort(name, this));
 		}
-		return this.outputs.get(id2);
+		return this.outputs.get(name);
 	}
 }
