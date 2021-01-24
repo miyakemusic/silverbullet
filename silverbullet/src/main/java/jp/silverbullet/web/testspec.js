@@ -44,7 +44,14 @@ class TestSpec {
 			 	$(this).css('width', "150px");
 			});
 			
-			$('#' + scriptList).text(script.script);
+			$('#' + scriptList).empty();
+			$('#' + scriptList)
+			var str = '<table width="100%">';
+			for ( var line of script.script) {
+				str += "<tr><td>" + line + "</td></tr>";
+			}
+			str += '</table>';
+			$('#' + scriptList).append(str);
 		}
 		
 		var mainId = div + "_main";
