@@ -1,11 +1,23 @@
 package jp.silverbullet.testspec;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class NetworkConfiguration {
 	private TsNode rootNode = new TsNode("ROOT") {
 
 		@Override
 		protected String generateId(TsPort port) {
 			return NetworkConfiguration.this.generateId(port);
+		}
+
+		@Override
+		protected void portCreated(TsPort port) {
+			allPorts.put(port.id, port);
 		}
 		
 	};
@@ -82,35 +94,78 @@ public class NetworkConfiguration {
 		for (int i = 0; i < 16; i++) {
 			splitter4.port_out("B" + i).terminate();
 		}	
-		
+		this.rootNode = networkConfig.rootNode;
 		return networkConfig;
 	}
 
 	TsNode createNode(String name) {
+		return createNode(name, null);
+	}
+	
+	TsNode createNode(String name, String id) {
 		TsNode node = new TsNode(name) {
-
 			@Override
 			protected String generateId(TsPort port) {
 				return NetworkConfiguration.this.generateId(port);
 			}
+
+			@Override
+			protected void portCreated(TsPort port) {
+				allPorts.put(port.id, port);
+			}
 			
 		};
-		node.id = generateId(node);
+		if (id == null) {
+			node.id = generateId(node);
+		}
+		else {
+			node.id = id;
+		}
+		allNodes.put(node.id, node);
 		return node;
 	}
 
+	public Map<String, TsNode> allNodes = new HashMap<>();
+	public Map<String, TsPort> allPorts = new HashMap<>();
+	
 	public TsNode createRoot(String name) {
+		return createRoot(name, null);
+	}
+	
+	public TsNode createRoot(String name, String id) {
 		TsNode root = createNode(name);
-		root.id = generateId(root);
+		if (id == null) {
+			root.id = generateId(root);
+		}
+		else {
+			root.id = id;
+		}
 		setRoot(root);
 		return root;
 	}
 
-	private String generateId(Object node) {
+	protected String generateId(Object node) {
 		return String.valueOf(node.hashCode());
 	}
 
 	public int allNodesCount() {
 		return this.rootNode.allNodesCount();
 	}
+
+	public TsNode findNode(String id) {
+		return this.allNodes.get(id);
+	}
+
+	public TsPort findPort(String id) {
+		return this.allPorts.get(id);
+	}
+
+	public void setRoot(String id) {
+		this.rootNode = this.findNode(id);
+	}
+
+	public void copyConfig(String id, TsPortConfig config) {
+		this.allPorts.get(id).getOwner().copyPortConfig(id, config);
+	}
+
 }

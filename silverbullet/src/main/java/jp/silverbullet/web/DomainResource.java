@@ -98,15 +98,6 @@ public class DomainResource {
 		return automator.scriptList();
 	}
 	
-//	@GET
-//	@Path("/{device}/selectDevice")
-//	@Produces(MediaType.APPLICATION_JSON) 
-//	public Response selectDevice(@CookieParam("SilverBullet") String cookie) {
-//		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
-//		Map<String, WebSocketObject> set = WebSocketBroadcaster.getInstance().getDomainModels(userid);
-//		return Response.ok().build();
-//	}
-	
 	@GET
 	@Path("/{device}/login")
 	@Produces(MediaType.TEXT_PLAIN) 

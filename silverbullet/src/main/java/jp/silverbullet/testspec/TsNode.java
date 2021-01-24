@@ -51,20 +51,32 @@ public abstract class TsNode {
 		return ret;
 	}
 
-	private TsPort createPort(String name, TsNode parent) {
+	private TsPort createPort(String name, String id, TsNode parent) {
 		TsPort port = new TsPort(this) {
 			@Override
 			public String getName() {
 				return name;
 			}
 		};
-		port.id = generateId(port);
+		if (id == null) {
+			port.id = generateId(port);
+		}
+		else {
+			port.id = id;
+		}
+		portCreated(port);
 		return port;
 	}
 	
+	protected abstract void portCreated(TsPort port);
+
 	public TsPort port_in(String name) {
+		return port_in(name, null);
+	}
+	
+	public TsPort port_in(String name, String id) {
 		if (!this.inputs.keySet().contains(name)) {			
-			this.inputs.put(name, createPort(name, this));
+			this.inputs.put(name, createPort(name, id, this));
 		}
 		return this.inputs.get(name);
 	}
@@ -74,9 +86,44 @@ public abstract class TsNode {
 	}
 	
 	public TsPort port_out(String name) {
+		return port_out(name, null);
+	}
+	
+	public TsPort port_out(String name, String id) {
 		if (!this.outputs.keySet().contains(name)) {
-			this.outputs.put(name, createPort(name, this));
+			this.outputs.put(name, createPort(name, id, this));
 		}
 		return this.outputs.get(name);
 	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public void setInputs(Map<String, TsPort> inputs) {
+		this.inputs = inputs;
+	}
+
+	public void copyPortConfig(String id2, TsPortConfig config) {
+		if (containsId(id2, this.inputs)) {
+			this.inputs.forEach((k,v) -> v.config(config));
+		}
+		else if (containsId(id2, this.outputs)) {
+			this.outputs.forEach((k,v) -> v.config(config));
+		}
+	}
+
+	private boolean containsId(String id2, Map<String, TsPort> inputs2) {
+		for (TsPort port : inputs2.values()) {
+			if (port.id.equals(id2)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 }

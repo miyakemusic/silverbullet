@@ -5,6 +5,6 @@ import java.util.List;
 
 public class TsPortConfig {
 	public String connector = TsConnectorType.NOT_SPECIFIED.name();
-	public List<String> leftSideTest = new ArrayList<>();
-	public List<String> rightSideTest = new ArrayList<>();
+	public List<String> insideTest = new ArrayList<>();
+	public List<String> outsideTest = new ArrayList<>();
 }

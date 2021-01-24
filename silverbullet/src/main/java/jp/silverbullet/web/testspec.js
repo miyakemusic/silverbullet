@@ -14,7 +14,39 @@ class TestSpec {
 		$('#' + getTestSpecId).click(function() {
 			retrieveTest();
 		});
+		
+		var scriptDialogId = div + '_scriptDialog';
+		var scriptTableId = div + '_scriptDialog';
+		var createScriptId = div + "_createScript";
+		$('#' + toolBarId).append('<button id="' + createScriptId + '">Create Script</button>');
+		$('#' + createScriptId).click(function() {
+			createScript(function(script) {
+				updateScriptTable(script);
+				$('#' + scriptDialogId).dialog('open');
+			});
+		});
+		
+		function updateScriptTable(script) {
+//			$('#' +scriptTableId).empty();
+//			$('#' + scriptTableId).append('<tr><td>Node Name</td><td>Direction</td><td>Port Name</td><td>Test Side</td><td>Test Method</td></tr>');
+
+			$('#' + scriptTableId + ' > tbody').empty();
+//			var row = "";
+			for (var o of script.spec) {
+				//var sortFields = ['nodeName', 'portDirection', 'testSide', 'portName', 'testMethod'];
+				var row = '<tr><td>'+o.nodeName+'</td><td>'+o.portDirection+'</td><td>'+o.testSide+'</td><td>'+o.portName+'</td><td>'+o.testMethod+'</td></tr>';
+				$('#' + scriptTableId + ' > tbody').append(row);
+//				$('#' + scriptTableId).append(row);
+			}
+//			$('#' + scriptTableId + ' tbody').after(row);
+//			$('#' + scriptTableId + ' > tbody:first').append(row);
+			$('#' + scriptTableId + ' td').each(function() {
+			 	$(this).css('width', "150px");
+			});
 			
+			$('#' + scriptList).text(script.script);
+		}
+		
 		var mainId = div + "_main";
 		$('#' + div).append('<div id="' + mainId + '"></div>');
 		
@@ -104,13 +136,31 @@ class TestSpec {
 			$('.' + outputId).css({'height':node.unitHeight + 'px'});	
 		}
 		
+		var checked = [];
+		
 		var offset = 20;
 		function drawDiagram3(msg) {
 //			$('#' + mainId).empty();
 			
 			for (var node of msg.allNodes) {
 				drawRect(node.left, node.top + offset, node.width, node.height);
-				drawString(node.name, node.left + 10, node.top + offset - 5);
+				//drawString(node.name, node.left + 10, node.top + offset - 5);
+				var nodeCheckDiv = div + "_checkDiv" + node.id;
+				var nodeCheck = div + "_check" + node.id;
+				$('#' + mainId).append('<div id="' + nodeCheckDiv + '"><input type="checkbox" id="'+nodeCheck+ '" value="'+node.id+'">' + node.name + '</div>');
+				$('#' + nodeCheckDiv).css('position', 'absolute');
+				$('#' + nodeCheckDiv).css('top', node.top + 'px');
+				$('#' + nodeCheckDiv).css('left', node.left + 'px');
+				
+				$('#' + nodeCheck).click(function() {
+					if ($(this).prop('checked') == true) {
+						checked.push($(this).attr('value'));
+					}
+					else {
+						var index = checked.indexOf($(this).attr('value'));
+						checked.splice(index, 1);
+					}
+				});
 				
 				for (var o of node.input) {
 					createButton(o.id, o.direction, node.name, o.name, o.left, o.top + offset, o.width, o.height);
@@ -125,7 +175,7 @@ class TestSpec {
 				drawLine(line.x1, line.y1 + offset, line.x2, line.y2 + offset);
 			}
 		}
-		
+				
 		var beingSelectedPort;
 		var dialogId = mainId + '_dialog';
 		$('#' + mainId).append('<div id="' + dialogId + '"></div>');
@@ -150,11 +200,8 @@ class TestSpec {
 		var leftAdd = div + '_leftAdd';
 		var comboIdLeft = dialogId + '_comboLeft';
 		$('#' + leftId).append('<select id="' + comboIdLeft + '"></select><button id="' + leftAdd + '">Add</button>');
-		var options = ['Fiber end-face inspection', 'OTDR', 'Optical Power Meter'];
-		for (var o of options) {
-			$('#' + comboIdLeft).append($('<option>').text(o).val(o));
-		}
 		
+
 		var leftTests = div + '_leftTests';
 		$('#' + leftId).append('<div id="' + leftTests + '"></div>');
 		$('#' + leftAdd).click(function() {
@@ -166,9 +213,14 @@ class TestSpec {
 		var rightAdd = div + '_rightAdd';
 		var comboIdRight = dialogId + '_comboRight';
 		$('#' + rightId).append('<select id="' + comboIdRight + '"></select><button id="' + rightAdd + '">Add</button>');		
-		for (var o of options) {
-			$('#' + comboIdRight).append($('<option>').text(o).val(o));
-		}
+
+		retrieveTestMethods(function(options) {
+			for (var o of options) {
+				$('#' + comboIdLeft).append($('<option>').text(o).val(o));
+				$('#' + comboIdRight).append($('<option>').text(o).val(o));
+			}
+		});
+		
 		var rightTests = div + '_rightTests';
 		$('#' + rightId).append('<div id="' + rightTests + '"></div>');
 		$('#' + rightAdd).click(function() {
@@ -177,8 +229,6 @@ class TestSpec {
 		});
 		
 		$('#' + rightId).css('width', '200px');
-		
-		
 		
 		function createButton(id, direction, nodeText, portText, x, y, width, height) {
 			$('#' + mainId).append('<button value="' + direction + '" + name="' + nodeText + '_' + portText + '" id="' + id + '"></button>');
@@ -192,14 +242,14 @@ class TestSpec {
 			
 			$('#' + id).click(function() {
 				beingSelectedPort = $(this).prop('id');
-				if ($(this).attr('value').startsWith('in')) {
-					$('#' + rightCaption).text('Device Side');
-					$('#' + leftCaption).text('Fiber Side');
-				}
-				else {
-					$('#' + leftCaption).text('Device Side');
-					$('#' + rightCaption).text('Fiber Side');
-				}
+//				if ($(this).attr('value').startsWith('in')) {
+					$('#' + rightCaption).text('Inside Port (Device side)');
+					$('#' + leftCaption).text('Outside Port (Fiber side)');
+//				}
+//				else {
+//					$('#' + leftCaption).text('Device Side');
+//					$('#' + rightCaption).text('Fiber Side');
+//				}
 				
 				left_tests.splice(0);
 				right_tests.splice(0);
@@ -212,11 +262,11 @@ class TestSpec {
 					$('#' + leftTests).empty();
 					$('#' + rightTests).empty();
 					$('#' + comboConnector).val(portConfig.connector);
-					for (var v of portConfig.leftSideTest) {
+					for (var v of portConfig.insideTest) {
 						$('#' + leftTests).append('<div>' + v + '</div>');
 						left_tests.push(v);
 					}
-					for (var v of portConfig.rightSideTest) {
+					for (var v of portConfig.outsideTest) {
 						$('#' + rightTests).append('<div>' + v + '</div>');
 						right_tests.push(v);
 					}					
@@ -275,13 +325,59 @@ class TestSpec {
 
 			});	
 		}		
+		function copyToAll(id, testConfig) {
+			$.ajax({
+				url: "//" + window.location.host + "/rest/testSpec/copyConfig?id=" + id,
+				type: 'POST',
+				contentType: 'application/json',
+				data: JSON.stringify(testConfig),
+				processData: false
+			})
+			.done(function( data ) {
+
+			});	
+		}
+
+		function createScript(callback) {
+			$.ajax({
+				type: "GET", 
+				url: "//" + window.location.host + "/rest/testSpec/createScript?id=" + checked,
+				success: function(msg){
+					callback(msg);
+				}
+			});			
+		}
 		
+		function doSortBy(sortBy, callback) {
+			$.ajax({
+				type: "GET", 
+				url: "//" + window.location.host + "/rest/testSpec/sortBy?sortBy=" + sortBy,
+				success: function(msg){
+					callback(msg);
+				}
+			});
+		}
+		
+		function retrieveTestMethods(callback) {
+			$.ajax({
+				type: "GET", 
+				url: "//" + window.location.host + "/rest/testSpec/testMethods",
+				success: function(msg){
+					callback(msg);
+				}
+			});
+		}
+		
+			
 		function commitPortConfig() {
+			postPortConfig(beingSelectedPort, createPortConfig());
+		}
+		function createPortConfig() {
 			var portConfig = new Object();
 			portConfig.connector = $('#' + comboConnector).val();
-			portConfig.leftSideTest = left_tests;
-			portConfig.rightSideTest = right_tests;
-			postPortConfig(beingSelectedPort, portConfig);
+			portConfig.insideTest = left_tests;
+			portConfig.outsideTest = right_tests;
+			return portConfig;
 		}
 		
 		$('#' + dialogId).dialog({
@@ -290,8 +386,46 @@ class TestSpec {
 			closeOnEscape: true,
 			modal: true,
 			buttons: {
+				"Copy to All": function(){
+					copyToAll(beingSelectedPort, createPortConfig());
+					$(this).dialog('close');
+				},
 				"OK": function(){
 					commitPortConfig();
+					$(this).dialog('close');
+				}
+				,
+				"Cancel": function(){
+					$(this).dialog('close');
+				}
+			},
+			width: 600,
+			height: 400
+		});	
+		
+		var sortBy = div + '_sortby';
+		var sortDo = div + '_sortdo';
+		var scriptList = div + '_scriptList';
+		$('#' + div).append('<div id="'+scriptDialogId+'"><div><select id="'+sortBy+'"></select><button id="'+sortDo+'">SORT</button></div><table id="'+scriptTableId+'"></table><div id="'+scriptList+'"></div></div>');
+		$('#' + scriptTableId).append('<thead><tr><td>nodeName</td><td>portDirection</td><td>testSide</td><td>portName</td><td>testMethod</td></tr></thead><tbody></tbody>');
+	
+		var sortFields = ['nodeName', 'portDirection', 'testSide', 'portName', 'testMethod'];
+		for (var o of sortFields) {
+			$('#' + sortBy).append($('<option>').text(o).val(o));
+		}
+		$('#' + sortDo).click(function() {
+			doSortBy($('#' + sortBy).val(), function(script) {
+				updateScriptTable(script);
+			});
+		});
+		
+		$('#' + scriptDialogId).dialog({
+			autoOpen: false,
+			title: 'Test Target',
+			closeOnEscape: true,
+			modal: true,
+			buttons: {
+				"OK": function(){
 					$(this).dialog('close');
 				}
 				,

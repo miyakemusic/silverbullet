@@ -45,6 +45,7 @@ import jp.silverbullet.dev.dependency2.design.DependencyDesigner;
 import jp.silverbullet.dev.selfbuild.SelfBuilder;
 import jp.silverbullet.dev.test.TestRecorder;
 import jp.silverbullet.dev.test.TestRecorderInterface;
+import jp.silverbullet.testspec.NetworkConfiguration;
 import jp.silverbullet.web.PersistentSequencer;
 import jp.silverbullet.web.ValueSetResult;
 
@@ -202,6 +203,7 @@ public abstract class BuilderModelImpl implements Cloneable {
 	private Set<RuntimeListener> runtimeListeners = new HashSet<>();
 	private PersistentHolder persistentHolder = new PersistentHolder();
 //	private PersistentSequencer persistentHandler;
+//	private NetworkConfiguration networkTestSpec = new NetworkConfiguration();
 	
 	public enum RegisterTypeEnum {
 		Simulator,
@@ -320,6 +322,8 @@ public abstract class BuilderModelImpl implements Cloneable {
 		this.persistentHolder.load(folder);
 		
 		this.deviceUiEntry = DeviceUiEntry.load(folder);
+		
+//		this.networkTestSpec = NetworkConfiguration.load(folder);
 	}
 
 	public void createDependencyEngine() {
@@ -391,6 +395,8 @@ public abstract class BuilderModelImpl implements Cloneable {
 		this.persistentHolder.save(folder);
 		
 		this.deviceUiEntry.save(folder);
+		
+//		this.networkTestSpec.save(folder);
 		
 		return folder;
 	}

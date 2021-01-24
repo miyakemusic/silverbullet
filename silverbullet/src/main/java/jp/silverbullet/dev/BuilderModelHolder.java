@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 
 import jp.silverbullet.core.Zip;
+import jp.silverbullet.testspec.NetworkConfiguration;
+import jp.silverbullet.testspec.NetworkTestConfigurationHolder;
+import jp.silverbullet.testspec.TsPresentationNodes;
 import jp.silverbullet.web.DeviceProperty;
 
 public abstract class BuilderModelHolder {
@@ -107,6 +110,7 @@ public abstract class BuilderModelHolder {
 		String folder = allUsers.get(userid).getBuilderModel(app).save();
 		//String folder = allUsers.get(userid).save(app);
 		allUsers.get(userid).getAutomator().save(folder + "/Automator.json");
+		allUsers.get(userid).getNetworkTestConfig().save(folder);
 		
 		new SbFiles().createFolderIfNotExists(userid);
 		String filename = SbFiles.PERSISTENT_FOLDER + "/" + userid + "/" + app + ".zip";
@@ -134,6 +138,7 @@ public abstract class BuilderModelHolder {
 				BuilderModelImpl model = new SbFiles().loadAfile(userid, app, NO_DEVICE);
 				userModel.addDevModel(model, app);
 				allUsers.get(userid).getAutomator().load(SbFiles.TMP_FOLDER + "/Automator.json");
+				allUsers.get(userid).getNetworkTestConfig().load(SbFiles.TMP_FOLDER);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}		
@@ -179,5 +184,9 @@ public abstract class BuilderModelHolder {
 
 	public void setPath(String persistentPath) {
 		SbFiles.setPERSISTENT_FOLDER(persistentPath);
+	}
+
+	public NetworkTestConfigurationHolder getTestConfig(String userid) {
+		return this.allUsers.get(userid).getNetworkTestConfig();
 	}
 }

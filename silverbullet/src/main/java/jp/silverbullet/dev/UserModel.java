@@ -8,6 +8,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jp.silverbullet.core.dependency2.RequestRejectedException;
 import jp.silverbullet.core.sequncer.Sequencer;
+import jp.silverbullet.testspec.NetworkConfiguration;
+import jp.silverbullet.testspec.NetworkTestConfigurationHolder;
+import jp.silverbullet.testspec.TsPresentationNodes;
 import jp.silverbullet.web.WebSocketBroadcaster;
 
 public class UserModel {
@@ -15,6 +18,7 @@ public class UserModel {
 	private Map<String, BuilderModelImpl> builderModels = new HashMap<>(); // key = app
 	private Map<String, BuilderModelImpl> runtimeModels = new HashMap<>(); // key = app
 	private Automator automator = null;
+	private NetworkTestConfigurationHolder networkConfiguration = new NetworkTestConfigurationHolder();
 	
 	private AutomatorInterface automaterInterface = new AutomatorInterface() {
 
@@ -57,10 +61,9 @@ public class UserModel {
 			runtimeModels.get(device).closeMessage(messageId);
 		}				
 	};
-	private String userid;
+//	private String userid;
 	
 	public UserModel(String userid) {
-		this.userid = userid;
 		automator = new Automator(automaterInterface);
 	}
 	
@@ -121,5 +124,9 @@ public class UserModel {
 			BuilderModelImpl model = runtimeModels.get(device);
 			return model;
 		}
+	}
+
+	public NetworkTestConfigurationHolder getNetworkTestConfig() {
+		return this.networkConfiguration;
 	}
 }

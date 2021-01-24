@@ -1,37 +1,18 @@
 package jp.silverbullet.dev;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
-
 import jp.silverbullet.dev.sourcegenerator.PropertySourceGenerator;
 import jp.silverbullet.dev.sourcegenerator.RegisterSourceGenerator;
-import jp.silverbullet.web.SilverBulletServer;
 import jp.silverbullet.web.UserStore;
 import jp.silverbullet.web.WebSocketBroadcaster;
 import jp.silverbullet.web.auth.PersonalResponse;
 
 public class StaticInstances {
-//	public enum ServerMode {
-//		DEV,
-//		RUNTIME
-//	}
-//	private ServerMode serverMode;
-//	public void setServerMode(String mode) {
-//		serverMode = ServerMode.valueOf(mode);
-//	}
-//
-//	public ServerMode getServerMode() {
-//		return serverMode;
-//	}
 	
 	private UserStore userStore = new UserStore();
 	private BuilderModelHolder builderModelHolder = new BuilderModelHolder() {

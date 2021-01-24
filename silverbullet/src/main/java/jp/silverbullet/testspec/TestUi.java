@@ -16,6 +16,7 @@ class MyCanvas extends Canvas {
 
 	public MyCanvas(TsPresentationNodes presentation) {
 		this.presentation = presentation;
+		this.setPreferredSize(new Dimension(600, 600));
 	}
 
 	@Override
@@ -50,17 +51,25 @@ public class TestUi extends JFrame {
 		new TestUi().setVisible(true);
 	}
 
-	private TsPresentationNodes presentation;
-
 	public TestUi() {
 		this.setSize(new Dimension(800, 600));
-		presentation = new TsPresentationNodes(new NetworkConfiguration().createDemo());
+		
+		NetworkConfiguration netConfig = new NetworkConfiguration();
+		netConfig = netConfig.createDemo();
+		PrsNetworkConfiguration prsConfig = new NodeConverter().persistentData(netConfig);
+		TsPresentationNodes presentation1 = new TsPresentationNodes(netConfig);
+		
+		NetworkConfiguration netConfig2 = new NodeConverter().programData(prsConfig);
+		
+		TsPresentationNodes presentation2 = new TsPresentationNodes(netConfig2);
 
 		this.getContentPane().setLayout(new BorderLayout());
 
-		MyCanvas canvas = new MyCanvas(presentation);
+		MyCanvas canvas1 = new MyCanvas(presentation1);
+		MyCanvas canvas2 = new MyCanvas(presentation2);
 		
-		this.getContentPane().add(canvas, BorderLayout.CENTER);
+		this.getContentPane().add(canvas1, BorderLayout.WEST);
+		this.getContentPane().add(canvas2, BorderLayout.EAST);
 	}
 
 	
