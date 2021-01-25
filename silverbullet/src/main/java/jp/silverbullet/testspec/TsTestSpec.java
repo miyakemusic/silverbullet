@@ -22,6 +22,9 @@ public class TsTestSpec {
 		String currentMethod = "";
 		String currentPort = "";
 		
+		script.add("var MT1041A = 'MT1041A';");
+		script.add("var okControl = '{\"controls\":[{\"type\":\"Button\",\"title\":\"OK\",\"id\":\"ok\"}]}';");
+		
 		for (TsTestSpecElement e : spec) {
 			String message = "";
 			
@@ -58,21 +61,48 @@ public class TsTestSpec {
 				currentPort = e.portName;
 			}
 			
+			String device = deviceName(e.testMethod);
+			
 			if (!message.isEmpty()) {
-				script.add("sb.message('"+ message + "')");
+				script.add("sb.message("+ device + ", '" + message + "', okControl)");
 			}
 			if (e.testMethod.equals(NetworkTestConfigurationHolder.FIBER_END_FACE_INSPECTION)) {
-				script.add("sb.write('VIP', \"ID_VIP_TESTCONTROL=ID_VIP_TESTCONTROL_START\");");
+				script.add("sb.write(" + device + ", 'ID_APPLICATION=ID_APPLICATION_VIP');");
+				script.add("sb.sleep(1000);");
+				script.add("sb.write(" + device + ", 'ID_VIPCONTROL=ID_VIPCONTROL_START');");
+				script.add("sb.sleep(1000);");
+				script.add("sb.waitEqual(" + device + ", 'ID_VIPCONTROL', 'ID_VIPCONTROL_STOP');");
 			}
 			else if (e.testMethod.equals(NetworkTestConfigurationHolder.OPTICAL_POWER_METER)) {
-				script.add("sb.write('OPM', \"ID_OPM_TESTCONTROL=ID_OPM_TESTCONTROL_START\");");
+				script.add("sb.write(" + device + ", 'ID_APPLICATION=ID_APPLICATION_OLTS');");
+				script.add("sb.sleep(1000);");
+				script.add("sb.write(" + device + ", 'ID_LS_ENABLED=ID_LS_ENABLED_ON');");
+				script.add("sb.sleep(3000);");
+				script.add("sb.write(" + device + ", 'ID_LS_ENABLED=ID_LS_ENABLED_OFF');");
 			}
 			else if (e.testMethod.equals(NetworkTestConfigurationHolder.OTDR)) {
-				script.add("sb.write('OTDR', \"ID_OTDR_TESTCONTROL=ID_OTDR_TESTCONTROL_START\");");
+				script.add("sb.write(" + device + ", 'ID_APPLICATION=ID_APPLICATION_OTDR');");
+				script.add("sb.sleep(1000);");
+				script.add("sb.write(" + device + ", 'ID_OTDR_TESTCONTROL=ID_OTDR_TESTCONTROL_START');");
+				script.add("sb.sleep(1000);");
+				script.add("sb.waitEqual(" + device + ", 'ID_OTDR_TESTCONTROL', 'ID_OTDR_TESTCONTROL_STOP');");
 			} 
 		};
 	}
 	
+	private String deviceName(String testMethod) {
+//		if (testMethod.equals(NetworkTestConfigurationHolder.FIBER_END_FACE_INSPECTION) ){
+//			return "VIP";
+//		}
+//		else if (testMethod.equals(NetworkTestConfigurationHolder.OPTICAL_POWER_METER) ){
+//			return "OPM";
+//		}
+//		else if (testMethod.equals(NetworkTestConfigurationHolder.OTDR) ){
+//			return "OTDR";
+//		}
+		return "MT1041A";
+	}
+
 	public void sort(String fieldName) {
 		Comparator<TsTestSpecElement> comparator = new Comparator<TsTestSpecElement>() {
 

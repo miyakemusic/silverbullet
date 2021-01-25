@@ -44,14 +44,14 @@ class TestSpec {
 			 	$(this).css('width', "150px");
 			});
 			
-			$('#' + scriptList).empty();
-			$('#' + scriptList)
-			var str = '<table width="100%">';
+			$('#' + scriptList).text('');
+
+			var str = '';
 			for ( var line of script.script) {
-				str += "<tr><td>" + line + "</td></tr>";
+				str += line + "\n";
 			}
-			str += '</table>';
-			$('#' + scriptList).append(str);
+
+			$('#' + scriptList).text(str);
 		}
 		
 		var mainId = div + "_main";
@@ -413,7 +413,7 @@ class TestSpec {
 		var sortBy = div + '_sortby';
 		var sortDo = div + '_sortdo';
 		var scriptList = div + '_scriptList';
-		$('#' + div).append('<div id="'+scriptDialogId+'"><div><select id="'+sortBy+'"></select><button id="'+sortDo+'">SORT</button></div><table id="'+scriptTableId+'"></table><div id="'+scriptList+'"></div></div>');
+		$('#' + div).append('<div id="'+scriptDialogId+'"><div><select id="'+sortBy+'"></select><button id="'+sortDo+'">SORT</button></div><table id="'+scriptTableId+'"></table><div><textarea id="'+scriptList+'"></textarea></div></div>');
 		$('#' + scriptTableId).append('<thead><tr><td>nodeName</td><td>portDirection</td><td>testSide</td><td>portName</td><td>testMethod</td></tr></thead><tbody></tbody>');
 	
 		var sortFields = ['nodeName', 'portDirection', 'testSide', 'portName', 'testMethod'];
