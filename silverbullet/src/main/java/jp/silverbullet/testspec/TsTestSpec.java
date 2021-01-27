@@ -25,6 +25,7 @@ public class TsTestSpec {
 		script.add("var MT1041A = 'MT1041A';");
 		script.add("var okControl = '{\"controls\":[{\"type\":\"Button\",\"title\":\"OK\",\"id\":\"ok\"}]}';");
 		
+		String device = null;
 		for (TsTestSpecElement e : spec) {
 			String message = "";
 			
@@ -61,7 +62,7 @@ public class TsTestSpec {
 				currentPort = e.portName;
 			}
 			
-			String device = deviceName(e.testMethod);
+			device = deviceName(e.testMethod);
 			
 			if (!message.isEmpty()) {
 				script.add("sb.message("+ device + ", '" + message + "', okControl)");
@@ -88,6 +89,7 @@ public class TsTestSpec {
 				script.add("sb.waitEqual(" + device + ", 'ID_OTDR_TESTCONTROL', 'ID_OTDR_TESTCONTROL_STOP');");
 			} 
 		};
+		script.add("sb.message(" + device + ", '<h1>Good Job! <br>You can go home now!</h1>', okControl );");
 	}
 	
 	private String deviceName(String testMethod) {
