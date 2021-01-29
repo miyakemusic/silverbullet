@@ -20,7 +20,6 @@ import javax.ws.rs.core.Response;
 import jp.silverbullet.dev.Automator;
 import jp.silverbullet.testspec.NetworkConfiguration;
 import jp.silverbullet.testspec.NetworkTestConfigurationHolder;
-import jp.silverbullet.testspec.TsConnectorType;
 import jp.silverbullet.testspec.TsPortConfig;
 import jp.silverbullet.testspec.TsPresentationNodes;
 import jp.silverbullet.testspec.TsTestSpec;
@@ -34,21 +33,14 @@ public class TestSpecResource {
 		return new TsPresentationNodes(new NetworkConfiguration().createDemo());
 	}
 	
-//	static
-	
 	@GET
-	@Path("/testType")
+	@Path("/connectors")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<String> testType(@CookieParam("SilverBullet") String cookie) {
-		List<String> ret = new ArrayList<>();
-		for (TsConnectorType t : TsConnectorType.values()) {
-			ret.add(t.toString());
-		}
-		return ret;
+		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
+		return SilverBulletServer.getStaticInstance().getBuilderModelHolder().getTestConfig(userid).selections.connetros;
 	}
-	
-//	static private NetworkConfiguration config = new NetworkConfiguration();
-	
+
 	@GET
 	@Path("/portConfig")
 	@Produces(MediaType.APPLICATION_JSON) 
@@ -56,7 +48,6 @@ public class TestSpecResource {
 		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
 		NetworkTestConfigurationHolder testConfig = SilverBulletServer.getStaticInstance().getBuilderModelHolder().getTestConfig(userid);
 		return testConfig.getPortConfig(id);
-
 	}
 	
 	@GET
@@ -79,15 +70,22 @@ public class TestSpecResource {
 	}
 	
 	@GET
+	@Path("/registerScript")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public Response registerScript(@CookieParam("SilverBullet") String cookie) {
+		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
+		SilverBulletServer.getStaticInstance().getBuilderModelHolder().registerScript(userid);
+		
+		return Response.ok().build();
+	}
+	
+	@GET
 	@Path("/createScript")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public TsTestSpec createScript(@CookieParam("SilverBullet") String cookie, @QueryParam("id") String ids) {
 		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
 		NetworkTestConfigurationHolder testConfig = SilverBulletServer.getStaticInstance().getBuilderModelHolder().getTestConfig(userid);
 		TsTestSpec testSpec = testConfig.createScript(Arrays.asList(ids.split(",")));
-//		testSpec.sort("testMethod");
-//		testSpec.sort("testSide");
-//		testSpec.sort("portDirection");
 		return testSpec;
 	}
 	
@@ -98,9 +96,6 @@ public class TestSpecResource {
 		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
 		NetworkTestConfigurationHolder testConfig = SilverBulletServer.getStaticInstance().getBuilderModelHolder().getTestConfig(userid);
 		TsTestSpec testSpec = testConfig.sortBy(sortBy);
-//		testSpec.sort("testMethod");
-//		testSpec.sort("testSide");
-//		testSpec.sort("portDirection");
 		return testSpec;
 	}
 	

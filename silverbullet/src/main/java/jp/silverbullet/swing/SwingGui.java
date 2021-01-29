@@ -313,7 +313,7 @@ public abstract class SwingGui extends JFrame {
 	}
 
 	public void showMessage(MessageObject message2) {
-		SbMessageBox messageBox = new SbMessageBox(message2, (int)(this.baseWidth * 0.8), (int)(this.baseHeight * 0.5), this) {
+		SbMessageBox messageBox = new SbMessageBox(message2, (int)(this.baseWidth * 0.8), (int)(this.baseHeight * 0.8), this) {
 			@Override
 			protected void onClick(String id) {
 //				setVisible(false);

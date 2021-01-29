@@ -189,4 +189,14 @@ public abstract class BuilderModelHolder {
 	public NetworkTestConfigurationHolder getTestConfig(String userid) {
 		return this.allUsers.get(userid).getNetworkTestConfig();
 	}
+
+	public void registerScript(String userid) {
+		UserModel userModel = this.allUsers.get(userid);
+		List<String> script = userModel.getNetworkTestConfig().testSpec().script;
+		String s = "";
+		for (String line : script) {
+			s += line + "\n";
+		}
+		userModel.getAutomator().register("AutoGenerate", s);
+	}
 }

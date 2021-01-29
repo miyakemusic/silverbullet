@@ -195,7 +195,7 @@ class TestSpec {
 		var comboConnector = dialogId + '_connector';
 		$('#' + dialogId).append('Connector Type: <select id="' + comboConnector + '"></select>');
 //		var options = ['-', 'SC/UPC', 'SC/APC', 'FC/UPC', 'FC/APC', 'LC/UPC', 'LC/APC', 'MPO12', 'MPO24', 'ODC-2', 'ODC-4', 'Pushlok'];
-		retrieveTestType(function(list) {
+		retrieveConnectors(function(list) {
 			for (var o of list) {
 				$('#' + comboConnector).append($('<option>').text(o).val(o));
 			}
@@ -301,10 +301,10 @@ class TestSpec {
 			});	
 		}
 		
-		function retrieveTestType(callback) {
+		function retrieveConnectors(callback) {
 			$.ajax({
 				type: "GET", 
-				url: "//" + window.location.host + "/rest/testSpec/testType",
+				url: "//" + window.location.host + "/rest/testSpec/connectors",
 				success: function(msg){
 					callback(msg);
 				}
@@ -375,7 +375,15 @@ class TestSpec {
 			});
 		}
 		
-			
+		function registerScript() {
+			$.ajax({
+				type: "GET", 
+				url: "//" + window.location.host + "/rest/testSpec/registerScript",
+				success: function(msg){
+				}
+			});
+		};
+		
 		function commitPortConfig() {
 			postPortConfig(beingSelectedPort, createPortConfig());
 		}
@@ -413,7 +421,15 @@ class TestSpec {
 		var sortBy = div + '_sortby';
 		var sortDo = div + '_sortdo';
 		var scriptList = div + '_scriptList';
-		$('#' + div).append('<div id="'+scriptDialogId+'"><div><select id="'+sortBy+'"></select><button id="'+sortDo+'">SORT</button></div><table id="'+scriptTableId+'"></table><div><textarea id="'+scriptList+'"></textarea></div></div>');
+		var register = div + '_register';
+		
+		$('#' + div).append('<div id="'+scriptDialogId+'"></div>');
+		$('#' + scriptDialogId).append('<div><select id="'+sortBy+'"></select><button id="'+sortDo+'">SORT</button><button id="' + register + '">Register Script</button></div>');
+		$('#' + scriptDialogId).append('<div><table id="'+scriptTableId+'"></table></div>');
+		$('#' + scriptDialogId).append('<div><textarea id="'+scriptList+'"></textarea></div>');
+		
+		
+		
 		$('#' + scriptTableId).append('<thead><tr><td>nodeName</td><td>portDirection</td><td>testSide</td><td>portName</td><td>testMethod</td></tr></thead><tbody></tbody>');
 	
 		var sortFields = ['nodeName', 'portDirection', 'testSide', 'portName', 'testMethod'];
@@ -424,6 +440,10 @@ class TestSpec {
 			doSortBy($('#' + sortBy).val(), function(script) {
 				updateScriptTable(script);
 			});
+		});
+		
+		$('#' + register).click(function() {
+			registerScript();
 		});
 		
 		$('#' + scriptDialogId).dialog({
