@@ -28,6 +28,8 @@ public class TsSelectionConfig {
 		connetros.add("Corning_OptiTip");
 		connetros.add("Corning_OptiTap");
 		
+		String folder = "C:/Users/miyak/OneDrive/openti/results/";
+		
 		String device = "MT1041A";
 		{
 			List<String> script = new ArrayList<>();
@@ -36,9 +38,12 @@ public class TsSelectionConfig {
 			script.add("sb.write(" + device + ", 'ID_VIPCONTROL=ID_VIPCONTROL_START');");
 			script.add("sb.sleep(1000);");
 			script.add("sb.waitEqual(" + device + ", 'ID_VIPCONTROL', 'ID_VIPCONTROL_STOP');");
+			script.add("sb.write(" + device + ", 'ID_AUTO_FILENAME=false');");
+			script.add("sb.write(" + device + ", 'ID_FILE_NAME=" + folder + "%NODEID%.%PORTID%.%DIRECTION%.%SIDE%.%METHOD%');");
+			script.add("sb.write(" + device + ", 'ID_SAVE_VIP=true');");
+			String message = "<div><img src=\"https://keytech.ntt-at.co.jp/optic1/images/p0030_4.jpg\" width=\"400\" height=\"200\" ></div>";			
 			
-			String message = "<img src=\"https://dl.cdn-anritsu.com/images/products/tm-mt9085a-b-c/mt9085-e.png?h=310&w=420\">";
-			testMethods.put("OTDR", new TsTesterInfo(script, message));
+			testMethods.put("Fiber end-face inspection", new TsTesterInfo(script, message));
 		}
 		{
 			List<String> script = new ArrayList<>();
@@ -47,6 +52,9 @@ public class TsSelectionConfig {
 			script.add("sb.write(" + device + ", 'ID_LS_ENABLED=ID_LS_ENABLED_ON');");
 			script.add("sb.sleep(3000);");
 			script.add("sb.write(" + device + ", 'ID_LS_ENABLED=ID_LS_ENABLED_OFF');");
+			script.add("sb.write(" + device + ", 'ID_AUTO_FILENAME=false');");
+			script.add("sb.write(" + device + ", 'ID_FILE_NAME=" + folder + "%NODEID%.%PORTID%.%DIRECTION%.%SIDE%.%METHOD%');");
+			script.add("sb.write(" + device + ", 'ID_SAVE_OLTS=true');");
 			
 			String message = "";
 			testMethods.put("Optical Power Meter", new TsTesterInfo(script, message));
@@ -58,10 +66,14 @@ public class TsSelectionConfig {
 			script.add("sb.write(" + device + ", 'ID_OTDR_TESTCONTROL=ID_OTDR_TESTCONTROL_START');");
 			script.add("sb.sleep(1000);");
 			script.add("sb.waitEqual(" + device + ", 'ID_OTDR_TESTCONTROL', 'ID_OTDR_TESTCONTROL_STOP');");
+//			script.add("sb.write(" + device + ", 'ID_FILE_FOLDER=" + folder + "');");
+			script.add("sb.write(" + device + ", 'ID_AUTO_FILENAME=false');");
+			script.add("sb.write(" + device + ", 'ID_FILE_NAME=" + folder + "%NODEID%.%PORTID%.%DIRECTION%.%SIDE%.%METHOD%');");
+			script.add("sb.write(" + device + ", 'ID_FILE_SAVE=true');");
 			
-			String message = "<div><img src=\"https://keytech.ntt-at.co.jp/optic1/images/p0030_4.jpg\" width=\"200\" height=\"200\" ></div>";
+			String message = "<img src=\"https://dl.cdn-anritsu.com/images/products/tm-mt9085a-b-c/mt9085-e.png?h=310&w=420\">";
 			
-			testMethods.put("Fiber end-face inspection", new TsTesterInfo(script, message));
+			testMethods.put("OTDR", new TsTesterInfo(script, message));
 		}
 	}
 

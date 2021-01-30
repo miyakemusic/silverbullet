@@ -10,8 +10,8 @@ public class TsTestSpec {
 	public List<TsTestSpecElement> spec = new ArrayList<>();
 	public List<String> script = new ArrayList<>();
 	
-	public void add(String nodeName, String portDirection, String testSide, String portName, String testMethod) {
-		this.spec.add(new TsTestSpecElement(nodeName, portDirection, testSide, portName, testMethod));
+	public void add(String nodeId, String nodeName, String portId, String portDirection, String testSide, String portName, String testMethod) {
+		this.spec.add(new TsTestSpecElement(nodeId, nodeName, portId, portDirection, testSide, portName, testMethod));
 	}
 	
 }

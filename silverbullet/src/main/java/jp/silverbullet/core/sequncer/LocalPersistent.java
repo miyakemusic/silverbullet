@@ -50,7 +50,7 @@ public abstract class LocalPersistent implements UserSequencer {
 			}
 			String id = new Id(key).getId();
 			List<String> ids = persistentHolder.storedId(id);
-			save(ids, getStorePath() + "/" + this.store.get(persistentHolder.path(id)).getCurrentValue());
+			save(ids, /*getStorePath() + "/" +*/ this.store.get(persistentHolder.path(id)).getCurrentValue());
 		}
 	}
 
@@ -70,7 +70,9 @@ public abstract class LocalPersistent implements UserSequencer {
 				      
 					try {
 						BufferedImage final_buffered_image = ImageIO.read(input_stream);
-						ImageIO.write(final_buffered_image , "png", new File(path + "_" + id + ".png") );
+						String filename = path + "_" + id + ".png";
+						Files.deleteIfExists(Paths.get(filename));
+						ImageIO.write(final_buffered_image , "png", new File(filename) );
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -78,21 +80,27 @@ public abstract class LocalPersistent implements UserSequencer {
 				}
 				else if (obj.getClass().equals(ChartProperty.class)) {
 					try {
-						Files.write(Paths.get(path + ".chart." + id), obj.toString().getBytes(), StandardOpenOption.CREATE_NEW);
+						String filename = path + ".chart." + id;
+						Files.deleteIfExists(Paths.get(filename));
+						Files.write(Paths.get(filename), obj.toString().getBytes(), StandardOpenOption.CREATE_NEW);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}					
 				}
 				else if (obj.getClass().equals(TableProperty.class)) {
 					try {
-						Files.write(Paths.get(path + ".table." + id), obj.toString().getBytes(), StandardOpenOption.CREATE_NEW);
+						String filename = path + ".table." + id;
+						Files.deleteIfExists(Paths.get(filename));
+						Files.write(Paths.get(filename), obj.toString().getBytes(), StandardOpenOption.CREATE_NEW);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}					
 				}
 				else {
 					try {
-						Files.write(Paths.get(path + "." + id), obj.toString().getBytes(), StandardOpenOption.CREATE_NEW);
+						String filename = path + "." + id;
+						Files.deleteIfExists(Paths.get(filename));
+						Files.write(Paths.get(filename), obj.toString().getBytes(), StandardOpenOption.CREATE_NEW);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}

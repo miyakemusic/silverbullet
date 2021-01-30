@@ -2,7 +2,7 @@ package jp.silverbullet.testspec;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -10,10 +10,7 @@ import java.util.List;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class NetworkTestConfigurationHolder {
-//	public static final String OPTICAL_POWER_METER = "Optical Power Meter";
-//	public static final String OTDR = "OTDR";
-//	public static final String FIBER_END_FACE_INSPECTION = "Fiber end-face inspection";
-	
+
 	private NetworkConfiguration active = new NetworkConfiguration();
 	private TsTestSpec testSpec;
 	private static final String filename = "networktestconfig.json";
@@ -75,7 +72,7 @@ public class NetworkTestConfigurationHolder {
 					return s1.compareTo(s2);
 				} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException
 						| SecurityException e) {
-					// TODO Auto-generated catch block
+
 					e.printStackTrace();
 				}
 				
@@ -84,11 +81,11 @@ public class NetworkTestConfigurationHolder {
 			
 		};
 		Collections.sort(this.testSpec.spec, comparator);
-		generate3();
+		generate();
 		return this.testSpec;
 	}
 	
-	private void generate3() {
+	private void generate() {
 		this.testSpec.script.clear();
 		String currentNode = "";
 		String currentDirection = "";
@@ -130,8 +127,8 @@ public class NetworkTestConfigurationHolder {
 			if (!message.isEmpty()) {
 				this.testSpec.script.add("if (sb.message("+ device + ", '" + message + "', okControl) == 'abort')return;");
 			}
-			
-			this.testSpec.script.addAll(this.selections.script(e.testMethod));
+
+			this.testSpec.script.addAll(replaceValues(this.selections.script(e.testMethod), e));
 			
 		};
 		this.testSpec.script.add("if (sb.message(" + device + ", '<h1>Good Job! <br>You can go home now!</h1>', okControl) =='abort')return;");
@@ -140,6 +137,14 @@ public class NetworkTestConfigurationHolder {
 		this.testSpec.script.add("func();");
 	}
 	
+	private List<String> replaceValues(List<String> script, TsTestSpecElement e) {
+		List<String> ret = new ArrayList<>();
+		for (String line : script) {
+			ret.add(line.replace("%NODEID%", e.nodeId).replace("%PORTID%", e.portId).replace("%DIRECTION%", e.portDirection).replace("%PORT%", e.portName).replace("%METHOD%", e.testMethod).replace("%SIDE%", e.testSide));
+		}
+		return ret;
+	}
+
 	private String deviceName(String testMethod) {
 //		if (testMethod.equals(NetworkTestConfigurationHolder.FIBER_END_FACE_INSPECTION) ){
 //			return "VIP";

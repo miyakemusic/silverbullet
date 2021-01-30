@@ -27,21 +27,13 @@ class TestSpec {
 		});
 		
 		function updateScriptTable(script) {
-//			$('#' +scriptTableId).empty();
-//			$('#' + scriptTableId).append('<tr><td>Node Name</td><td>Direction</td><td>Port Name</td><td>Test Side</td><td>Test Method</td></tr>');
-
 			$('#' + scriptTableId + ' > tbody').empty();
-//			var row = "";
 			for (var o of script.spec) {
-				//var sortFields = ['nodeName', 'portDirection', 'testSide', 'portName', 'testMethod'];
 				var row = '<tr><td>'+o.nodeName+'</td><td>'+o.portDirection+'</td><td>'+o.testSide+'</td><td>'+o.portName+'</td><td>'+o.testMethod+'</td></tr>';
 				$('#' + scriptTableId + ' > tbody').append(row);
-//				$('#' + scriptTableId).append(row);
 			}
-//			$('#' + scriptTableId + ' tbody').after(row);
-//			$('#' + scriptTableId + ' > tbody:first').append(row);
 			$('#' + scriptTableId + ' td').each(function() {
-			 	$(this).css('width', "150px");
+			 	$(this).css('width', "250px");
 			});
 			
 			$('#' + scriptList).text('');
@@ -201,8 +193,12 @@ class TestSpec {
 			}
 		});
 		
-		$('#' + dialogId).append('<table><thead><td><label id="' + leftCaption + '">Left Side</td><td><label id="'+rightCaption+'">Right Side</label></td></thead><tbody><tr><td><div id="' + leftId + '"></div></td><td><div id="' + rightId + '"></div></td></tr></tbody></table>');
-		
+		var portDetailTable = div + "_portDetailTable";
+		$('#' + dialogId).append('<table id="' + portDetailTable + '"><thead><td><label id="' + leftCaption + '">Left Side</td><td><label id="'+rightCaption+'">Right Side</label></td></thead><tbody><tr><td><div id="' + leftId + '"></div></td><td><div id="' + rightId + '"></div></td></tr></tbody></table>');
+		$('#' + portDetailTable + ' td').each(function() {
+		 	$(this).css('width', "300px");
+		});
+					
 		var left_tests = [];
 		var leftAdd = div + '_leftAdd';
 		var comboIdLeft = dialogId + '_comboLeft';
@@ -249,14 +245,9 @@ class TestSpec {
 			
 			$('#' + id).click(function() {
 				beingSelectedPort = $(this).prop('id');
-//				if ($(this).attr('value').startsWith('in')) {
-					$('#' + rightCaption).text('Inside Port (Device side)');
-					$('#' + leftCaption).text('Outside Port (Fiber side)');
-//				}
-//				else {
-//					$('#' + leftCaption).text('Device Side');
-//					$('#' + rightCaption).text('Fiber Side');
-//				}
+
+				$('#' + rightCaption).text('Inside Port (Device side)');
+				$('#' + leftCaption).text('Outside Port (Fiber side)');
 				
 				left_tests.splice(0);
 				right_tests.splice(0);
@@ -270,11 +261,13 @@ class TestSpec {
 					$('#' + rightTests).empty();
 					$('#' + comboConnector).val(portConfig.connector);
 					for (var v of portConfig.insideTest) {
-						$('#' + leftTests).append('<div>' + v + '</div>');
+						var portResult = div + "_" + v;
+						$('#' + leftTests).append('<div>' + v + '</div><div id="' + portResult + '"></div><img src="' + "//" + window.location.host + '/rest/testSpec/result?portId=' + beingSelectedPort +'&testMethod=' + v +  "&side=Device Side" + '" width=300px height=200px>');						
 						left_tests.push(v);
 					}
 					for (var v of portConfig.outsideTest) {
-						$('#' + rightTests).append('<div>' + v + '</div>');
+						$('#' + rightTests).append('<div>' + v + '</div><div id="' + portResult + '"></div><img src="' + "//" + window.location.host + '/rest/testSpec/result?portId=' + beingSelectedPort +'&testMethod=' + v + "&side=Fiber Side" +  '" width=300px height=200px>');						
+						
 						right_tests.push(v);
 					}					
 				});
@@ -289,6 +282,16 @@ class TestSpec {
 					//drawDiagram3(msg);
 				}
 			});	
+		}
+		
+		function retreivePortResult(portId, testMethod, div, callback) {
+			$.ajax({
+				type: "GET", 
+				url: "//" + window.location.host + "/rest/testSpec/result?portId=" + portId + "&testMethod=" + testMethod,
+				success: function(msg){
+					callback(div, msg);
+				}
+			});			
 		}
 		
 		function retrieveTest() {

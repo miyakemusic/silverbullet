@@ -196,8 +196,6 @@ public class ReportResource {
 	public Response image(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, 
 			@PathParam("folder") String folder, @PathParam("filename") String filename) {
 		String path  = SilverBulletServer.getStaticInstance().getStorePath(cookie) + "/" + folder + "/" + filename;
-		//String path  = "C:\\Users\\miyak\\git\\silverbullet\\silverbullet\\2020-12-06\\";
-//		path += filename;  
 		
 		try {
 			BufferedImage image = ImageIO.read(new File(path));
@@ -207,14 +205,14 @@ public class ReportResource {
 		}
 		return null;
 	}
+	
 	@GET
 	@Path("/chart/{folder}/{filename}")
 	@Produces("image/png") 
 	public Response chart(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, 
 			@PathParam("folder") String folder, @PathParam("filename") String filename) {
 		String path  = SilverBulletServer.getStaticInstance().getStorePath(cookie) + "/" + folder + "/" + filename;
-	//	path += "/" + filename;  
-		
+	
 		try {
 			byte[] bytes = Files.readAllBytes(Paths.get(path));
 			ChartProperty chart = new ObjectMapper().readValue(bytes, ChartProperty.class);

@@ -1,11 +1,19 @@
 package jp.silverbullet.web;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.imageio.ImageIO;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.GET;
@@ -17,6 +25,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jp.silverbullet.core.property2.ChartProperty;
 import jp.silverbullet.dev.Automator;
 import jp.silverbullet.testspec.NetworkConfiguration;
 import jp.silverbullet.testspec.NetworkTestConfigurationHolder;
@@ -100,13 +111,59 @@ public class TestSpecResource {
 	}
 	
 	@GET
+	@Path("/result")
+	@Produces("image/png") 
+	public Response result(@CookieParam("SilverBullet") String cookie,  @QueryParam("portId") String portId,  @QueryParam("testMethod") String testMethod,
+			@QueryParam("side") String side) {
+		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
+
+//		Files.list(Paths.get("")).forEach(file -> {
+//			if (file.getFileName().toString().contains(portId) && file.getFileName().toString().contains(testMethod)) {
+//				
+//			}
+//		});
+		System.out.println(testMethod);
+		for (File file : new File("C:\\Users\\miyak\\OneDrive\\openti\\results").listFiles()) {
+			String name = file.getName();
+			if (name.contains(portId) && name.contains(testMethod) && name.contains(side)) {
+				System.out.println(name);
+				if (testMethod.equals("OTDR")) {
+					try {
+						byte[] bytes = Files.readAllBytes(Paths.get(file.getAbsolutePath()));
+						ChartProperty chart = new ObjectMapper().readValue(bytes, ChartProperty.class);
+						ByteArrayOutputStream baos = new ChartImage().get(chart);
+						BufferedImage image = ImageIO.read(new ByteArrayInputStream(baos.toByteArray())); 
+						return Response.ok(image).build();	
+					} catch (IOException e) {
+						e.printStackTrace();
+					}		
+				}
+				else if (testMethod.equals("Fiber end-face inspection")) {
+					if (file.getName().contains(".png")) {
+						try {
+							BufferedImage image = ImageIO.read(file);
+							return Response.ok(image).build();	
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+				}				
+			}
+		}
+
+		return Response.ok().build();
+
+	}	
+	
+	@GET
 	@Path("/testMethods")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<String> testMethods(@CookieParam("SilverBullet") String cookie) {
 		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
 		List<String> ret = SilverBulletServer.getStaticInstance().getBuilderModelHolder().getTestConfig(userid).getTestMethods();
 		return ret;
-	}	
+	}
+	
 	@POST
 	@Path("/postPortConfig")
 	@Consumes(MediaType.APPLICATION_JSON) 
