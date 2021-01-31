@@ -25,9 +25,14 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jp.silverbullet.core.property2.ChartProperty;
+import jp.silverbullet.core.property2.IdValues;
+import jp.silverbullet.core.property2.RuntimeProperty;
+import jp.silverbullet.core.property2.RuntimePropertyStore;
 import jp.silverbullet.dev.Automator;
 import jp.silverbullet.testspec.NetworkConfiguration;
 import jp.silverbullet.testspec.NetworkTestConfigurationHolder;
@@ -112,22 +117,59 @@ public class TestSpecResource {
 	
 	@GET
 	@Path("/result")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String result(@CookieParam("SilverBullet") String cookie,  @QueryParam("portId") String portId,  @QueryParam("testMethod") String testMethod,
+			@QueryParam("side") String side) {
+		
+		String app = "silverbullet";
+//		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
+		RuntimePropertyStore store = SilverBulletServer.getStaticInstance().getBuilderModel(cookie, app).getRuntimePropertyStore();
+
+		StringBuilder builder = new StringBuilder();
+		for (File file : new File("C:\\Users\\miyak\\OneDrive\\openti\\results").listFiles()) {
+			String name = file.getName();
+			if (name.contains(portId) && name.contains(testMethod) && name.contains(side)) {
+				try {
+					byte[] bytes = Files.readAllBytes(Paths.get(file.getAbsolutePath()));
+					String json = new String(bytes);
+					IdValues v = new ObjectMapper().readValue(json, IdValues.class);
+					
+					v.idValue.forEach(a -> {
+						RuntimeProperty prop = store.get(a.getId().getId());
+						String value = prop.getCurrentValue();
+						if (prop.isList()) {
+							value = prop.getSelectedListTitle();
+						}
+						String line = "<div>" + prop.getTitle() + " : " + value + prop.getUnit() + "</div>";
+						builder.append(line);
+					});
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
+		}
+		String ret = "<img src=\"rest/testSpec/image?portId=" + portId + "&testMethod=" + testMethod + "&side=" + side + "\" width=\"300px\" height=\"200px\">";
+		System.out.println(ret);
+		
+		builder.append(ret);
+		return builder.toString();
+	}
+	
+	@GET
+	@Path("/image")
 	@Produces("image/png") 
-	public Response result(@CookieParam("SilverBullet") String cookie,  @QueryParam("portId") String portId,  @QueryParam("testMethod") String testMethod,
+	public Response image(@CookieParam("SilverBullet") String cookie,  @QueryParam("portId") String portId,  @QueryParam("testMethod") String testMethod,
 			@QueryParam("side") String side) {
 		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
 
-//		Files.list(Paths.get("")).forEach(file -> {
-//			if (file.getFileName().toString().contains(portId) && file.getFileName().toString().contains(testMethod)) {
-//				
-//			}
-//		});
 		System.out.println(testMethod);
 		for (File file : new File("C:\\Users\\miyak\\OneDrive\\openti\\results").listFiles()) {
 			String name = file.getName();
 			if (name.contains(portId) && name.contains(testMethod) && name.contains(side)) {
 				System.out.println(name);
-				if (testMethod.equals("OTDR")) {
+				if (name.contains(".chart")) {
 					try {
 						byte[] bytes = Files.readAllBytes(Paths.get(file.getAbsolutePath()));
 						ChartProperty chart = new ObjectMapper().readValue(bytes, ChartProperty.class);
@@ -138,7 +180,7 @@ public class TestSpecResource {
 						e.printStackTrace();
 					}		
 				}
-				else if (testMethod.equals("Fiber end-face inspection")) {
+				else if (name.contains(".png")) {
 					if (file.getName().contains(".png")) {
 						try {
 							BufferedImage image = ImageIO.read(file);

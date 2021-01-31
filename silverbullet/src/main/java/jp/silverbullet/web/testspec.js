@@ -186,7 +186,6 @@ class TestSpec {
 		
 		var comboConnector = dialogId + '_connector';
 		$('#' + dialogId).append('Connector Type: <select id="' + comboConnector + '"></select>');
-//		var options = ['-', 'SC/UPC', 'SC/APC', 'FC/UPC', 'FC/APC', 'LC/UPC', 'LC/APC', 'MPO12', 'MPO24', 'ODC-2', 'ODC-4', 'Pushlok'];
 		retrieveConnectors(function(list) {
 			for (var o of list) {
 				$('#' + comboConnector).append($('<option>').text(o).val(o));
@@ -197,8 +196,9 @@ class TestSpec {
 		$('#' + dialogId).append('<table id="' + portDetailTable + '"><thead><td><label id="' + leftCaption + '">Left Side</td><td><label id="'+rightCaption+'">Right Side</label></td></thead><tbody><tr><td><div id="' + leftId + '"></div></td><td><div id="' + rightId + '"></div></td></tr></tbody></table>');
 		$('#' + portDetailTable + ' td').each(function() {
 		 	$(this).css('width', "300px");
+		 	$(this).css('vertical-align', 'top');
 		});
-					
+				
 		var left_tests = [];
 		var leftAdd = div + '_leftAdd';
 		var comboIdLeft = dialogId + '_comboLeft';
@@ -261,15 +261,21 @@ class TestSpec {
 					$('#' + rightTests).empty();
 					$('#' + comboConnector).val(portConfig.connector);
 					for (var v of portConfig.insideTest) {
-						var portResult = div + "_" + v;
-						$('#' + leftTests).append('<div>' + v + '</div><div id="' + portResult + '"></div><img src="' + "//" + window.location.host + '/rest/testSpec/result?portId=' + beingSelectedPort +'&testMethod=' + v +  "&side=Device Side" + '" width=300px height=200px>');						
+						var portResult = div + "_device_" + v.replace(/\s/g, '');
 						left_tests.push(v);
+						
+						$('#' + leftTests).append('<div><h2>[' + v + ']</h2></div><div id="' + portResult + '"></div>');
+						retreivePortResult(beingSelectedPort, v, 'Device Side', portResult);
 					}
 					for (var v of portConfig.outsideTest) {
-						$('#' + rightTests).append('<div>' + v + '</div><div id="' + portResult + '"></div><img src="' + "//" + window.location.host + '/rest/testSpec/result?portId=' + beingSelectedPort +'&testMethod=' + v + "&side=Fiber Side" +  '" width=300px height=200px>');						
-						
+						var portResult = div + "_fiber_" + v.replace(/\s/g, '');
 						right_tests.push(v);
-					}					
+						
+						$('#' + rightTests).append('<div><h2>[' + v + ']</h2></div><div id="' + portResult + '"></div>');
+						retreivePortResult(beingSelectedPort, v, 'Fiber Side', portResult);
+					}	
+					$('#' + leftTests).css('vertical-align', 'top');
+					$('#' + rightTests).css('vertical-align', 'top');				
 				});
 			});
 		}
@@ -284,12 +290,12 @@ class TestSpec {
 			});	
 		}
 		
-		function retreivePortResult(portId, testMethod, div, callback) {
+		function retreivePortResult(portId, testMethod, side, div) {
 			$.ajax({
 				type: "GET", 
-				url: "//" + window.location.host + "/rest/testSpec/result?portId=" + portId + "&testMethod=" + testMethod,
+				url: "//" + window.location.host + "/rest/testSpec/result?portId=" + portId + "&side=" + side + "&testMethod=" + testMethod,
 				success: function(msg){
-					callback(div, msg);
+					$('#' + div).append(msg);
 				}
 			});			
 		}
@@ -417,8 +423,8 @@ class TestSpec {
 					$(this).dialog('close');
 				}
 			},
-			width: 600,
-			height: 400
+			width: 800,
+			height: 600
 		});	
 		
 		var sortBy = div + '_sortby';
