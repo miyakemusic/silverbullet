@@ -165,4 +165,8 @@ public class NetworkTestConfigurationHolder {
 	public TsTestSpec testSpec() {
 		return this.testSpec;
 	}
+
+	public TsNode getNode(String nodeId) {
+		return this.active.findNode(nodeId);
+	}
 }

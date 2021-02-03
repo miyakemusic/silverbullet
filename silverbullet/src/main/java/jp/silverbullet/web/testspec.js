@@ -82,10 +82,7 @@ class TestSpec {
 			ctx.fillText(text, x, y); 
 		}
 		
-		function drawDiagram(msg) {
-			recursive(msg.rootNode, 'root', 0);
-		}
-		
+
 		function recursive(node, parent, layer) {
 			var divId = parent.name + '_' + node.name;
 			var tag = '<div id="' + divId + '"><table><tr><td><button>'+ node.name + '</button></td><td>';
@@ -107,46 +104,22 @@ class TestSpec {
 			}
 		}
 		
-		function drawDiagram2(msg) {
-			var outputId = divId + "_outoutButton";
-			for (var node of msg.allNodes) {
-				var divId = node.id;
-				var tag = '<div id="' + divId + '"><table><tr><td><button>'+ node.name + '</button></td><td>';
-				for (var v of node.output) {
-					
-					tag += '<div><button class="' + outputId + '">' + v + '</button></div>';
-				}
-				tag += '</td></tr></table></div>';
-				 
-				$('#' + div).append(tag);
-				
-				$('#' + divId).css({'position':'absolute'});
-				$('#' + divId).css({'width':node.width + 'px', 'left': node.left + 'px', 'top': node.top + 100 + 'px', 'height':node.height + 'px'});
-				
-				
-			}
-			
-			var hoffset = -25;
-			var voffset = 40;
-			for (var line of msg.allLines) {
-				drawLine(line.x1 + hoffset, line.y1 + voffset, line.x2 + hoffset, line.y2 + voffset);
-			}
-			
-			$('.' + outputId).css({'height':node.unitHeight + 'px'});	
-		}
-		
 		var checked = [];
 		
 		var offset = 20;
-		function drawDiagram3(msg) {
-//			$('#' + mainId).empty();
-			
+		function drawDiagram3(msg) {		
 			for (var node of msg.allNodes) {
 				drawRect(node.left, node.top + offset, node.width, node.height);
-				//drawString(node.name, node.left + 10, node.top + offset - 5);
 				var nodeCheckDiv = div + "_checkDiv" + node.id;
 				var nodeCheck = div + "_check" + node.id;
-				$('#' + mainId).append('<div id="' + nodeCheckDiv + '"><input type="checkbox" id="'+nodeCheck+ '" value="'+node.id+'">' + node.name + '</div>');
+				$('#' + mainId).append('<div id="' + nodeCheckDiv + '"><input type="checkbox" id="'+nodeCheck+ '" value="'+node.id+'"></div>');
+				var reportLink = div + node.id + "report";
+				$('#' + nodeCheckDiv).append('<a href="' + "//" + window.location.host + "/rest/testSpec/report?nodeId=" + node.id + '" target="_blank">' + node.name + '</a>');
+//				$('#' + nodeCheckDiv).append('<label id="' + reportLink + '">' + node.name + '</label>');
+//				$('#' + reportLink).click(function() {
+//					window.open("//" + window.location.host + "/rest/testSpec/report?nodeId=" + node.id, "window1","width=800,height=600");
+//				});
+				
 				$('#' + nodeCheckDiv).css('position', 'absolute');
 				$('#' + nodeCheckDiv).css('top', node.top + 'px');
 				$('#' + nodeCheckDiv).css('left', node.left + 'px');
@@ -436,9 +409,7 @@ class TestSpec {
 		$('#' + scriptDialogId).append('<div><select id="'+sortBy+'"></select><button id="'+sortDo+'">SORT</button><button id="' + register + '">Register Script</button></div>');
 		$('#' + scriptDialogId).append('<div><table id="'+scriptTableId+'"></table></div>');
 		$('#' + scriptDialogId).append('<div><textarea id="'+scriptList+'"></textarea></div>');
-		
-		
-		
+
 		$('#' + scriptTableId).append('<thead><tr><td>nodeName</td><td>portDirection</td><td>testSide</td><td>portName</td><td>testMethod</td></tr></thead><tbody></tbody>');
 	
 		var sortFields = ['nodeName', 'portDirection', 'testSide', 'portName', 'testMethod'];

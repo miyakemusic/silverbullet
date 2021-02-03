@@ -36,6 +36,8 @@ import jp.silverbullet.core.property2.RuntimePropertyStore;
 import jp.silverbullet.dev.Automator;
 import jp.silverbullet.testspec.NetworkConfiguration;
 import jp.silverbullet.testspec.NetworkTestConfigurationHolder;
+import jp.silverbullet.testspec.TsNode;
+import jp.silverbullet.testspec.TsPort;
 import jp.silverbullet.testspec.TsPortConfig;
 import jp.silverbullet.testspec.TsPresentationNodes;
 import jp.silverbullet.testspec.TsTestSpec;
@@ -121,10 +123,12 @@ public class TestSpecResource {
 	public String result(@CookieParam("SilverBullet") String cookie,  @QueryParam("portId") String portId,  @QueryParam("testMethod") String testMethod,
 			@QueryParam("side") String side) {
 		
-		String app = "silverbullet";
 //		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
-		RuntimePropertyStore store = SilverBulletServer.getStaticInstance().getBuilderModel(cookie, app).getRuntimePropertyStore();
+		String ret = readJson(cookie, portId, testMethod, side);
+		return ret;
+	}
 
+	private String readJson(String cookie, String portId, String testMethod, String side) {
 		StringBuilder builder = new StringBuilder();
 		for (File file : new File("C:\\Users\\miyak\\OneDrive\\openti\\results").listFiles()) {
 			String name = file.getName();
@@ -134,6 +138,8 @@ public class TestSpecResource {
 					String json = new String(bytes);
 					IdValues v = new ObjectMapper().readValue(json, IdValues.class);
 					
+					String app = v.application;
+					RuntimePropertyStore store = SilverBulletServer.getStaticInstance().getBuilderModel(cookie, app).getRuntimePropertyStore();
 					v.idValue.forEach(a -> {
 						RuntimeProperty prop = store.get(a.getId().getId());
 						String value = prop.getCurrentValue();
@@ -151,6 +157,7 @@ public class TestSpecResource {
 			}
 		}
 		String ret = "<img src=\"rest/testSpec/image?portId=" + portId + "&testMethod=" + testMethod + "&side=" + side + "\" width=\"300px\" height=\"200px\">";
+		
 		System.out.println(ret);
 		
 		builder.append(ret);
@@ -169,7 +176,7 @@ public class TestSpecResource {
 			String name = file.getName();
 			if (name.contains(portId) && name.contains(testMethod) && name.contains(side)) {
 				System.out.println(name);
-				if (name.contains(".chart")) {
+				if (name.endsWith(".chart")) {
 					try {
 						byte[] bytes = Files.readAllBytes(Paths.get(file.getAbsolutePath()));
 						ChartProperty chart = new ObjectMapper().readValue(bytes, ChartProperty.class);
@@ -180,7 +187,7 @@ public class TestSpecResource {
 						e.printStackTrace();
 					}		
 				}
-				else if (name.contains(".png")) {
+				else if (name.endsWith(".png")) {
 					if (file.getName().contains(".png")) {
 						try {
 							BufferedImage image = ImageIO.read(file);
@@ -224,5 +231,46 @@ public class TestSpecResource {
 		NetworkTestConfigurationHolder testConfig = SilverBulletServer.getStaticInstance().getBuilderModelHolder().getTestConfig(userid);
 		testConfig.copyPortConfig(id, config);
 		return Response.ok().build();
+	}
+	
+	@GET
+	@Path("/report")
+	@Produces(MediaType.TEXT_HTML)
+	public String testMethods(@CookieParam("SilverBullet") String cookie, @QueryParam("nodeId") String nodeId) {
+		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
+		TsNode node = SilverBulletServer.getStaticInstance().getBuilderModelHolder().getTestConfig(userid).getNode(nodeId);
+		
+		StringBuilder builder = new StringBuilder();
+		builder.append("<HTML><BODY>");
+		
+		builder.append("<div><h2>[" + node.getName() + "]</h2></div>");
+		
+	
+		generateTable(cookie, builder, node.getInputs());
+		generateTable(cookie, builder, node.getOutputs());
+
+
+		builder.append("</BODY></HTML>");
+		return builder.toString();
+	}
+
+	private void generateTable(String cookie, StringBuilder builder, Map<String, TsPort> outlet) {
+//		builder.append("<table>");
+		outlet.forEach((k,v) -> {
+			builder.append(v.getName());
+			
+			v.config().insideTest.forEach(t -> {
+				String side = "Device Side";
+				builder.append("<div>" + t + "</div>");
+				builder.append(readJson(cookie, v.id, t, side).replace("rest/testSpec/", ""));
+				
+			});
+			v.config().outsideTest.forEach(t -> {
+				String side = "Fiber Side";
+				builder.append("<div>" + t + "</div>");
+				builder.append(readJson(cookie, v.id, t, side).replace("rest/testSpec/", ""));
+			});
+		});
+//		builder.append("</table>");
 	}
 }

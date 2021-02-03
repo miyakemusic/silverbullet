@@ -32,11 +32,13 @@ public abstract class LocalPersistent implements UserSequencer {
 	private PersistentHolder persistentHolder;
 	private RuntimePropertyStore store;
 	private BlobStore blobStore;
+	private String application;
 
-	public LocalPersistent(PersistentHolder persistentHolder, RuntimePropertyStore store, BlobStore blobStore) {
+	public LocalPersistent(PersistentHolder persistentHolder, RuntimePropertyStore store, BlobStore blobStore, String application) {
 		this.persistentHolder = persistentHolder;
 		this.store = store;
 		this.blobStore = blobStore;
+		this.application = application;
 	}
 
 	@Override
@@ -57,8 +59,8 @@ public abstract class LocalPersistent implements UserSequencer {
 	protected abstract String getStorePath();
 
 	private void save(List<String> ids, String path) {
-		String folder = createFolder(path);
-		IdValues idValue = new IdValues();
+//		String folder = createFolder(path);
+		IdValues idValue = new IdValues(application);
 		for (String id : ids) {
 			RuntimeProperty prop = this.store.get(id);
 			idValue.idValue.add(new IdValue(prop.getId(), prop.getCurrentValue()));
@@ -70,7 +72,7 @@ public abstract class LocalPersistent implements UserSequencer {
 				      
 					try {
 						BufferedImage final_buffered_image = ImageIO.read(input_stream);
-						String filename = path + "_" + id + ".png";
+						String filename = path + "." + id + ".png";
 						Files.deleteIfExists(Paths.get(filename));
 						ImageIO.write(final_buffered_image , "png", new File(filename) );
 					} catch (IOException e) {
@@ -80,7 +82,7 @@ public abstract class LocalPersistent implements UserSequencer {
 				}
 				else if (obj.getClass().equals(ChartProperty.class)) {
 					try {
-						String filename = path + ".chart." + id;
+						String filename = path + "." + id + ".chart";
 						Files.deleteIfExists(Paths.get(filename));
 						Files.write(Paths.get(filename), obj.toString().getBytes(), StandardOpenOption.CREATE_NEW);
 					} catch (IOException e) {
@@ -89,7 +91,7 @@ public abstract class LocalPersistent implements UserSequencer {
 				}
 				else if (obj.getClass().equals(TableProperty.class)) {
 					try {
-						String filename = path + ".table." + id;
+						String filename = path + "." + id + ".table";
 						Files.deleteIfExists(Paths.get(filename));
 						Files.write(Paths.get(filename), obj.toString().getBytes(), StandardOpenOption.CREATE_NEW);
 					} catch (IOException e) {

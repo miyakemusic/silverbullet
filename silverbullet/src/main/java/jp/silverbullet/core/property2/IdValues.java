@@ -8,6 +8,11 @@ import jp.silverbullet.core.dependency2.IdValue;
 public class IdValues {
 	public IdValues() {}
 	
+	public IdValues(String application) {
+		this.application = application;
+	}
+	
+	public String application;
 	public List<IdValue> idValue = new ArrayList<IdValue>();
 
 	public List<IdValue> getIdValue() {
