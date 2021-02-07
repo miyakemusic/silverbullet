@@ -13,19 +13,28 @@ class TestSpec {
 		$('#' + toolBarId).append('<button id="' + getTestSpecId + '">Redraw</button>');
 		$('#' + getTestSpecId).click(function() {
 			retrieveTest();
+			retrievePortState();
 		});
 		
 		var scriptDialogId = div + '_scriptDialog';
 		var scriptTableId = div + '_scriptDialog';
 		var createScriptId = div + "_createScript";
+		var createReportId = div + "_createReport";
+		var updateStateId = div + "_updateState";
 		$('#' + toolBarId).append('<button id="' + createScriptId + '">Create Script</button>');
+		$('#' + toolBarId).append('<button id="' + createReportId + '">Create Report</button>');
+		$('#' + toolBarId).append('<button id="' + updateStateId + '">Update State</button>');
+		
 		$('#' + createScriptId).click(function() {
 			createScript(function(script) {
 				updateScriptTable(script);
 				$('#' + scriptDialogId).dialog('open');
 			});
 		});
-		
+		$('#' + updateStateId).click(function() {
+			retrievePortState();
+		});
+						
 		function updateScriptTable(script) {
 			$('#' + scriptTableId + ' > tbody').empty();
 			for (var o of script.spec) {
@@ -105,6 +114,10 @@ class TestSpec {
 		}
 		
 		var checked = [];
+		
+		$('#' + createReportId).click(function() {
+			createReport(checked);
+		});
 		
 		var offset = 20;
 		function drawDiagram3(msg) {		
@@ -253,6 +266,10 @@ class TestSpec {
 			});
 		}
 		
+		function createReport(target) {
+			window.open( "//" + window.location.host + "/rest/testSpec/report?nodeId=" + target, '_blank');
+		}
+		
 		function createDemo() {
 			$.ajax({
 				type: "GET", 
@@ -282,6 +299,52 @@ class TestSpec {
 				}
 			});	
 		}
+		
+		
+		setInterval(blinkCurrent, 1000);
+		var latestTest;
+		var blink = true;
+		function blinkCurrent() {
+			if (latestTest == null) {
+				return;
+			}
+			var color;
+			if (blink) {
+				color = 'black';
+			}
+			else {
+				color = 'white';
+			}
+			$('#' + latestTest.portId).css('color', color);
+			blink = !blink;
+		}
+		
+		function retrievePortState() {
+			$.ajax({
+				type: "GET", 
+				url: "//" + window.location.host + "/rest/testSpec/portState",
+				success: function(msg){
+					for (var o of msg) {
+						var color = 'gray';
+						if (o.portState == 'COMPLETE_PASS') {
+							color = 'lightgreen';
+						}
+						else if (o.portState == 'COMPLETE_FAIL') {
+							color = 'red';
+						}
+						else if (o.portState == 'ON_GOING') {
+							color = 'lightblue';
+						}
+						
+						$('#' + o.portId).css('background-color', color);
+						$('#' + o.portId).css('color', 'black');
+					}
+					
+					latestTest = msg[msg.length-1];
+				}
+			});	
+		}
+
 		
 		function retrieveConnectors(callback) {
 			$.ajax({
@@ -443,5 +506,9 @@ class TestSpec {
 			width: 600,
 			height: 400
 		});	
+		
+		websocket.addListener('TESTRESULT', function(result) {
+			retrievePortState();
+		});
 	}
 }

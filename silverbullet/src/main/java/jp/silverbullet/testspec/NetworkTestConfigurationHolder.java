@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -168,5 +169,9 @@ public class NetworkTestConfigurationHolder {
 
 	public TsNode getNode(String nodeId) {
 		return this.active.findNode(nodeId);
+	}
+
+	public Set<String> getAllPorts() {
+		return this.active.allPorts.keySet();
 	}
 }

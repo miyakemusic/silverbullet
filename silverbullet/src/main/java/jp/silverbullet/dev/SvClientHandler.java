@@ -94,6 +94,9 @@ public class SvClientHandler {
 					if (debugEnabled) {
 						sendMessageValueAsync("DEBUG@" + device, toHtml(depHistory));
 					}
+					
+					// This is tentative
+					WebSocketBroadcaster.getInstance().sendMessageAsync(userid, "TESTRESULT", message);
 //				}
 			}
 	
