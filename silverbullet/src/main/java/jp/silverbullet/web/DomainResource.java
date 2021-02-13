@@ -1,5 +1,6 @@
 package jp.silverbullet.web;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -28,6 +29,7 @@ import jp.silverbullet.core.dependency2.Id;
 import jp.silverbullet.core.property2.LightProperty;
 import jp.silverbullet.core.property2.RuntimeProperty;
 import jp.silverbullet.dev.Automator;
+import jp.silverbullet.testspec.TestResultList;
 
 @Path("/{app}/domain")
 public class DomainResource {
@@ -97,6 +99,7 @@ public class DomainResource {
 		Automator automator = SilverBulletServer.getStaticInstance().getBuilderModelHolder().getAutomator(userid);
 		return automator.scriptList();
 	}
+
 	
 	@GET
 	@Path("/{device}/login")
@@ -140,6 +143,27 @@ public class DomainResource {
 		return ret;
 	}
 
+	
+	@GET
+	@Path("/{projectName}/resultListFromDevice")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public TestResultList resultList(@PathParam("projectName") String projectName, @QueryParam("userid") String userid, @QueryParam("name") String name) {
+
+		String path = SilverBulletServer.getStaticInstance().getBuilderModelHolder().getStorePath(userid) + "/" + projectName;
+		
+		TestResultList ret = new TestResultList();
+		for (File file : new File(path).listFiles()) {
+			String filename = file.getName();
+			String portId = filename.split("\\.")[1];
+			String testMethod = filename.split("\\.")[4];
+			
+			ret.add(portId, testMethod);
+		}
+		
+		return ret;
+		
+	}
+	
 	
 	@GET
 	@Path("/{device}/getProperty")
@@ -245,9 +269,9 @@ public class DomainResource {
 	@Produces(MediaType.APPLICATION_OCTET_STREAM) 
 	public Response upload(@PathParam("app") String app, @PathParam("device") String device, 
 			@QueryParam("userid") String userid, @QueryParam("filepath") String filepath, String base64) {
-		String access_token = SilverBulletServer.getStaticInstance().getUserStore().findByUseID(userid).getAccess_token();
+//		String access_token = SilverBulletServer.getStaticInstance().getUserStore().findByUseID(userid).getAccess_token();
 		
-		String fileID = new GoogleDrivePost().type("application/octet-stream").base64(base64).post(access_token, filepath);
+//		String fileID = new GoogleDrivePost().type("application/octet-stream").base64(base64).post(access_token, filepath);
 		return Response.ok().build();
 	}
 	

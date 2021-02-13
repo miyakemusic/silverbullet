@@ -4,6 +4,15 @@ class TestSpec {
 		var toolBarId = div + "_toolbar";
 		$('#' + div).append('<div id="' + toolBarId + '"></div>');
 		var createDemoId = div + "_createDemo";
+		
+		var projectName = div + "_projectName";
+		$('#' + toolBarId).append('Project: <select id="' + projectName + '">');
+		retreiveProjectList(function(options) {
+			for (var o of options) {
+				$('#' + projectName).append($('<option>').text(o).val(o));
+			}
+		});
+		
 		$('#' + toolBarId).append('<button id="' + createDemoId + '">Create Demo</button>');
 		$('#' + createDemoId).click(function() {
 			createDemo();
@@ -127,10 +136,10 @@ class TestSpec {
 				var nodeCheck = div + "_check" + node.id;
 				$('#' + mainId).append('<div id="' + nodeCheckDiv + '"><input type="checkbox" id="'+nodeCheck+ '" value="'+node.id+'"></div>');
 				var reportLink = div + node.id + "report";
-				$('#' + nodeCheckDiv).append('<a href="' + "//" + window.location.host + "/rest/testSpec/report?nodeId=" + node.id + '" target="_blank">' + node.name + '</a>');
+				$('#' + nodeCheckDiv).append('<a href="' + "//" + window.location.host + resourcepath() + "/report?nodeId=" + node.id + '" target="_blank">' + node.name + '</a>');
 //				$('#' + nodeCheckDiv).append('<label id="' + reportLink + '">' + node.name + '</label>');
 //				$('#' + reportLink).click(function() {
-//					window.open("//" + window.location.host + "/rest/testSpec/report?nodeId=" + node.id, "window1","width=800,height=600");
+//					window.open("//" + window.location.host + resourcepath() + "/report?nodeId=" + node.id, "window1","width=800,height=600");
 //				});
 				
 				$('#' + nodeCheckDiv).css('position', 'absolute');
@@ -267,7 +276,17 @@ class TestSpec {
 		}
 		
 		function createReport(target) {
-			window.open( "//" + window.location.host + "/rest/testSpec/report?nodeId=" + target, '_blank');
+			window.open( "//" + window.location.host + resourcepath() + "/report?nodeId=" + target, '_blank');
+		}
+		
+		function retreiveProjectList(callback) {
+			$.ajax({
+				type: "GET", 
+				url: "//" + window.location.host + "/rest/testSpec/projectList",
+				success: function(msg){
+					callback(msg);
+				}
+			});	
 		}
 		
 		function createDemo() {
@@ -283,7 +302,7 @@ class TestSpec {
 		function retreivePortResult(portId, testMethod, side, div) {
 			$.ajax({
 				type: "GET", 
-				url: "//" + window.location.host + "/rest/testSpec/result?portId=" + portId + "&side=" + side + "&testMethod=" + testMethod,
+				url: "//" + window.location.host + resourcepath() + "/result?portId=" + portId + "&side=" + side + "&testMethod=" + testMethod,
 				success: function(msg){
 					$('#' + div).append(msg);
 				}
@@ -293,7 +312,7 @@ class TestSpec {
 		function retrieveTest() {
 			$.ajax({
 				type: "GET", 
-				url: "//" + window.location.host + "/rest/testSpec/getTestSpec",
+				url: "//" + window.location.host + resourcepath() + "/getTestSpec",
 				success: function(msg){
 					drawDiagram3(msg);
 				}
@@ -322,7 +341,7 @@ class TestSpec {
 		function retrievePortState() {
 			$.ajax({
 				type: "GET", 
-				url: "//" + window.location.host + "/rest/testSpec/portState",
+				url: "//" + window.location.host + resourcepath() + "/portState",
 				success: function(msg){
 					for (var o of msg) {
 						var color = 'gray';
@@ -359,7 +378,7 @@ class TestSpec {
 		function retrievePortConfig(id, callback) {
 			$.ajax({
 				type: "GET", 
-				url: "//" + window.location.host + "/rest/testSpec/portConfig?id=" + id,
+				url: "//" + window.location.host + resourcepath() + "/portConfig?id=" + id,
 				success: function(msg){
 					callback(msg);
 				}
@@ -367,7 +386,7 @@ class TestSpec {
 		}
 		function postPortConfig(id, testConfig) {
 			$.ajax({
-				url: "//" + window.location.host + "/rest/testSpec/postPortConfig?id=" + id,
+				url: "//" + window.location.host + resourcepath() * "/postPortConfig?id=" + id,
 				type: 'POST',
 				contentType: 'application/json',
 				data: JSON.stringify(testConfig),
@@ -379,7 +398,7 @@ class TestSpec {
 		}		
 		function copyToAll(id, testConfig) {
 			$.ajax({
-				url: "//" + window.location.host + "/rest/testSpec/copyConfig?id=" + id,
+				url: "//" + window.location.host + resourcepath() + "/copyConfig?id=" + id,
 				type: 'POST',
 				contentType: 'application/json',
 				data: JSON.stringify(testConfig),
@@ -393,7 +412,7 @@ class TestSpec {
 		function createScript(callback) {
 			$.ajax({
 				type: "GET", 
-				url: "//" + window.location.host + "/rest/testSpec/createScript?id=" + checked,
+				url: "//" + window.location.host + resourcepath() + "/createScript?id=" + checked,
 				success: function(msg){
 					callback(msg);
 				}
@@ -403,7 +422,7 @@ class TestSpec {
 		function doSortBy(sortBy, callback) {
 			$.ajax({
 				type: "GET", 
-				url: "//" + window.location.host + "/rest/testSpec/sortBy?sortBy=" + sortBy,
+				url: "//" + window.location.host + resourcepath() + "/sortBy?sortBy=" + sortBy,
 				success: function(msg){
 					callback(msg);
 				}
@@ -423,7 +442,7 @@ class TestSpec {
 		function registerScript() {
 			$.ajax({
 				type: "GET", 
-				url: "//" + window.location.host + "/rest/testSpec/registerScript",
+				url: "//" + window.location.host + resourcepath() + "/registerScript",
 				success: function(msg){
 				}
 			});
@@ -438,6 +457,10 @@ class TestSpec {
 			portConfig.insideTest = left_tests;
 			portConfig.outsideTest = right_tests;
 			return portConfig;
+		}
+		
+		function resourcepath() {
+			return "/rest/testSpec/" + $('#' + projectName).val();
 		}
 		
 		$('#' + dialogId).dialog({

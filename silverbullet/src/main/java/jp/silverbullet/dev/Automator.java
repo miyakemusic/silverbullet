@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -185,6 +184,11 @@ public class Automator {
 					}
 				}
 				return "";
+			}
+
+			@Override
+			public boolean requires(String portid, String testMethod) {
+				return true;
 			}
 			
 		}.start(Arrays.asList(script.split("\n")));

@@ -44,6 +44,8 @@ public abstract class ScriptManager {
     
     abstract public String waitEqual(String addr, String id, String value);
     
+    abstract public boolean requires(String portid, String testMethod);
+    
     public void sleep(int millisecond) {
     	try {
 			Thread.sleep(millisecond);

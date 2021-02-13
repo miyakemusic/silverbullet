@@ -10,7 +10,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +20,7 @@ import javax.ws.rs.CookieParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -52,6 +52,15 @@ public class TestSpecResource {
 	}
 	
 	@GET
+	@Path("/projectList")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public List<String> projectList(@CookieParam("SilverBullet") String cookie) {
+		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
+		NetworkTestConfigurationHolder testConfig = SilverBulletServer.getStaticInstance().getBuilderModelHolder().getTestConfig(userid);
+		return testConfig.getProjectList();
+	}
+	
+	@GET
 	@Path("/connectors")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public List<String> testType(@CookieParam("SilverBullet") String cookie) {
@@ -60,21 +69,22 @@ public class TestSpecResource {
 	}
 
 	@GET
-	@Path("/portConfig")
+	@Path("/{projectName}/portConfig")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public TsPortConfig portConfig(@CookieParam("SilverBullet") String cookie, @QueryParam("id") String id) {
+	public TsPortConfig portConfig(@CookieParam("SilverBullet") String cookie, @PathParam("projectName") String projectName, @QueryParam("id") String id) {
 		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
 		NetworkTestConfigurationHolder testConfig = SilverBulletServer.getStaticInstance().getBuilderModelHolder().getTestConfig(userid);
-		return testConfig.getPortConfig(id);
+		TsPortConfig ret = testConfig.getPortConfig(projectName, id);
+		return ret;
 	}
 	
 	@GET
-	@Path("/getTestSpec")
+	@Path("/{projectName}/getTestSpec")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public TsPresentationNodes getTestSpec(@CookieParam("SilverBullet") String cookie) {
+	public TsPresentationNodes getTestSpec(@CookieParam("SilverBullet") String cookie, @PathParam("projectName") String projectName) {
 		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
 		NetworkTestConfigurationHolder testConfig = SilverBulletServer.getStaticInstance().getBuilderModelHolder().getTestConfig(userid);
-		return new TsPresentationNodes(testConfig.get());
+		return new TsPresentationNodes(testConfig.get(projectName));
 	}
 	
 	@GET
@@ -88,48 +98,59 @@ public class TestSpecResource {
 	}
 	
 	@GET
-	@Path("/registerScript")
+	@Path("/{projectName}/registerScript")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public Response registerScript(@CookieParam("SilverBullet") String cookie) {
+	public Response registerScript(@CookieParam("SilverBullet") String cookie, @PathParam("projectName") String projectName) {
 		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
-		SilverBulletServer.getStaticInstance().getBuilderModelHolder().registerScript(userid);
+		SilverBulletServer.getStaticInstance().getBuilderModelHolder().registerScript(projectName, userid);
 		
 		return Response.ok().build();
 	}
 	
 	@GET
-	@Path("/createScript")
+	@Path("/{projectName}/createScript")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public TsTestSpec createScript(@CookieParam("SilverBullet") String cookie, @QueryParam("id") String ids) {
+	public TsTestSpec createScript(@CookieParam("SilverBullet") String cookie, @PathParam("projectName") String projectName, @QueryParam("id") String ids) {
 		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
 		NetworkTestConfigurationHolder testConfig = SilverBulletServer.getStaticInstance().getBuilderModelHolder().getTestConfig(userid);
-		TsTestSpec testSpec = testConfig.createScript(Arrays.asList(ids.split(",")));
+		TsTestSpec testSpec = testConfig.createScript(projectName, Arrays.asList(ids.split(",")));
 		return testSpec;
 	}
 	
 	@GET
-	@Path("/sortBy")
+	@Path("/{projectName}/sortBy")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public TsTestSpec sortBy(@CookieParam("SilverBullet") String cookie, @QueryParam("sortBy") String sortBy) {
+	public TsTestSpec sortBy(@CookieParam("SilverBullet") String cookie, @PathParam("projectName") String projectName, @QueryParam("sortBy") String sortBy) {
 		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
 		NetworkTestConfigurationHolder testConfig = SilverBulletServer.getStaticInstance().getBuilderModelHolder().getTestConfig(userid);
-		TsTestSpec testSpec = testConfig.sortBy(sortBy);
+		TsTestSpec testSpec = testConfig.sortBy(projectName, sortBy);
 		return testSpec;
 	}
 	
 	@GET
-	@Path("/result")
+	@Path("/{projectName}/result")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String result(@CookieParam("SilverBullet") String cookie,  @QueryParam("portId") String portId,  @QueryParam("testMethod") String testMethod,
+	public String result(@CookieParam("SilverBullet") String cookie,  @PathParam("projectName") String projectName, @QueryParam("portId") String portId,  
+			@QueryParam("testMethod") String testMethod,
 			@QueryParam("side") String side) {
 
-		String ret = readJson(cookie, portId, testMethod, side);
+		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
+		
+		String path = SilverBulletServer.getStaticInstance().getBuilderModelHolder().getStorePath(userid);
+		
+//		NetworkTestConfigurationHolder testConfig = SilverBulletServer.getStaticInstance().getBuilderModelHolder().getTestConfig(userid);
+		
+		String ret = readJson(cookie, portId, testMethod, side, path, projectName);
 		return ret;
 	}
 
-	private String readJson(String cookie, String portId, String testMethod, String side) {
+	private String readJson(String cookie, String portId, String testMethod, String side, String path, String projectName) {
+		String path2 = path + "/" + projectName;
+		if (!Files.exists(Paths.get(path2))) {
+			return "";
+		}
 		StringBuilder builder = new StringBuilder();
-		for (File file : new File("C:\\Users\\miyak\\OneDrive\\openti\\results").listFiles()) {
+		for (File file : new File(path2).listFiles()) {
 			String name = file.getName();
 			if (name.contains(portId) && name.contains(testMethod) && name.contains(side)) {
 				try {
@@ -155,7 +176,8 @@ public class TestSpecResource {
 
 			}
 		}
-		String ret = "<img src=\"rest/testSpec/image?portId=" + portId + "&testMethod=" + testMethod + "&side=" + side + "\" width=\"300px\" height=\"200px\">";
+		String ret = "<img src=\"rest/testSpec/" + projectName + "/image?portId=" + portId + "&testMethod=" + testMethod + "&side=" + side
+				+ "\" width=\"300px\" height=\"200px\">";
 		
 		System.out.println(ret);
 		
@@ -164,14 +186,17 @@ public class TestSpecResource {
 	}
 	
 	@GET
-	@Path("/image")
+	@Path("/{projectName}/image")
 	@Produces("image/png") 
-	public Response image(@CookieParam("SilverBullet") String cookie,  @QueryParam("portId") String portId,  @QueryParam("testMethod") String testMethod,
+	public Response image(@CookieParam("SilverBullet") String cookie,  @PathParam("projectName") String projectName, 
+			@QueryParam("portId") String portId,  @QueryParam("testMethod") String testMethod,
 			@QueryParam("side") String side) {
 		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
 
+		String path = SilverBulletServer.getStaticInstance().getBuilderModelHolder().getStorePath(userid);
+		
 		System.out.println(testMethod);
-		for (File file : new File("C:\\Users\\miyak\\OneDrive\\openti\\results").listFiles()) {
+		for (File file : new File(path + "/" + projectName).listFiles()) {
 			String name = file.getName();
 			if (name.contains(portId) && name.contains(testMethod) && name.contains(side)) {
 				System.out.println(name);
@@ -213,22 +238,22 @@ public class TestSpecResource {
 	}
 	
 	@POST
-	@Path("/postPortConfig")
+	@Path("/{projectName}/postPortConfig")
 	@Consumes(MediaType.APPLICATION_JSON) 
-	public Response portConfig(@CookieParam("SilverBullet") String cookie, @QueryParam("id") String id, TsPortConfig config) {
+	public Response portConfig(@CookieParam("SilverBullet") String cookie, @PathParam("projectName") String projectName, @QueryParam("id") String id, TsPortConfig config) {
 		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
 		NetworkTestConfigurationHolder testConfig = SilverBulletServer.getStaticInstance().getBuilderModelHolder().getTestConfig(userid);
-		testConfig.setPortConfig(id, config);
+		testConfig.setPortConfig(projectName, id, config);
 		return Response.ok().build();
 	}
 	
 	@POST
-	@Path("/copyConfig")
+	@Path("/{projectName}/copyConfig")
 	@Consumes(MediaType.APPLICATION_JSON) 
-	public Response copyConfig(@CookieParam("SilverBullet") String cookie, @QueryParam("id") String id, TsPortConfig config) {
+	public Response copyConfig(@CookieParam("SilverBullet") String cookie, @PathParam("projectName") String projectName, @QueryParam("id") String id, TsPortConfig config) {
 		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
 		NetworkTestConfigurationHolder testConfig = SilverBulletServer.getStaticInstance().getBuilderModelHolder().getTestConfig(userid);
-		testConfig.copyPortConfig(id, config);
+		testConfig.copyPortConfig(projectName, id, config);
 		return Response.ok().build();
 	}
 	
@@ -244,15 +269,20 @@ public class TestSpecResource {
 	}
 	
 	@GET
-	@Path("/portState")
+	@Path("/{projectName}/portState")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<PortStatus> portState(@CookieParam("SilverBullet") String cookie) throws IOException {
+	public List<PortStatus> portState(@CookieParam("SilverBullet") String cookie, @PathParam("projectName") String projectName) throws IOException {
 		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
-//		NetworkTestConfigurationHolder testConfig = SilverBulletServer.getStaticInstance().getBuilderModelHolder().getTestConfig(userid);
+	
+		String path = SilverBulletServer.getStaticInstance().getBuilderModelHolder().getStorePath(userid);
 		
 		Map<String, PortStateEnum> map = new LinkedHashMap<>();
 		
-		File[] files = new File("C:\\Users\\miyak\\OneDrive\\openti\\results").listFiles();
+		File[] files = new File(path + "/" + projectName).listFiles();
+		
+		if (files == null) {
+			return new ArrayList<PortStatus>();
+		}
 		Arrays.sort(files, Comparator.comparingLong(File::lastModified));
 		
 		for (File file : files) {
@@ -283,10 +313,12 @@ public class TestSpecResource {
 	}
 	
 	@GET
-	@Path("/report")
+	@Path("/{projectName}/report")
 	@Produces(MediaType.TEXT_HTML)
-	public String testMethods(@CookieParam("SilverBullet") String cookie, @QueryParam("nodeId") String nodeId) {
+	public String testMethods(@CookieParam("SilverBullet") String cookie, @PathParam("projectName") String projectName, 
+			@QueryParam("nodeId") String nodeId) {
 		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
+		String path = SilverBulletServer.getStaticInstance().getBuilderModelHolder().getStorePath(userid);
 		
 		StringBuilder builder = new StringBuilder();
 		builder.append("<HTML>");
@@ -297,18 +329,18 @@ public class TestSpecResource {
 		builder.append("<BODY>");
 		
 		for (String n : nodeId.split(",")) {
-			TsNode node = SilverBulletServer.getStaticInstance().getBuilderModelHolder().getTestConfig(userid).getNode(n);
+			TsNode node = SilverBulletServer.getStaticInstance().getBuilderModelHolder().getTestConfig(userid).getNode(projectName, n);
 					
 			builder.append("<div><h2>[" + node.getName() + "]</h2></div>");
 			
-			generateTable(cookie, builder, node.getInputs());
-			generateTable(cookie, builder, node.getOutputs());
+			generateTable(cookie, builder, node.getInputs(), path, projectName);
+			generateTable(cookie, builder, node.getOutputs(), path, projectName);
 		}
 		builder.append("</BODY></HTML>");
 		return builder.toString();
 	}
 
-	private void generateTable(String cookie, StringBuilder builder, Map<String, TsPort> outlet) {
+	private void generateTable(String cookie, StringBuilder builder, Map<String, TsPort> outlet, String path, String projectName) {
 		builder.append("<table class=\"myTable\">");
 		outlet.forEach((k,v) -> {
 			builder.append("<tr>");
@@ -325,7 +357,7 @@ public class TestSpecResource {
 						
 						if (testMethod != null) {
 							builder.append("<div class=\"method\">[" + testMethod + "]</div>");
-							String html = readJson(cookie, v.id, testMethod, "Device Side").replace("rest/testSpec/", "");
+							String html = readJson(cookie, v.id, testMethod, "Device Side", path, projectName).replace("rest/testSpec/", "");
 							builder.append(html);
 						}
 					}
@@ -337,7 +369,7 @@ public class TestSpecResource {
 						String testMethod = v.config().outsideTest.get(i);
 						if (testMethod != null) {
 							builder.append("<div class=\"method\">[" + testMethod + "]</div>");
-							String html = readJson(cookie, v.id, testMethod, "Fiber Side").replace("rest/testSpec/", "");
+							String html = readJson(cookie, v.id, testMethod, "Fiber Side", path, projectName).replace("rest/testSpec/", "");
 							builder.append(html);
 						}
 					}

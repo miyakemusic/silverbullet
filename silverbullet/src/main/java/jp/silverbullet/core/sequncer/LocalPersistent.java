@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -32,18 +33,21 @@ public abstract class LocalPersistent implements UserSequencer {
 	private PersistentHolder persistentHolder;
 	private RuntimePropertyStore store;
 	private BlobStore blobStore;
-	private String application;
-
-	public LocalPersistent(PersistentHolder persistentHolder, RuntimePropertyStore store, BlobStore blobStore, String application) {
+//	private String application;
+	abstract protected String application();
+	
+	public LocalPersistent(PersistentHolder persistentHolder, RuntimePropertyStore store, BlobStore blobStore) {
+		
 		this.persistentHolder = persistentHolder;
 		this.store = store;
 		this.blobStore = blobStore;
-		this.application = application;
+//		this.application = application;
 	}
 
 	@Override
 	public void handle(SvHandlerModel model, Map<String, List<ChangedItemValue>> changed, Id sourceId)
 			throws RequestRejectedException {
+
 
 		for (String key : changed.keySet()) {
 			String k = new Id(key).getId();
@@ -52,15 +56,27 @@ public abstract class LocalPersistent implements UserSequencer {
 			}
 			String id = new Id(key).getId();
 			List<String> ids = persistentHolder.storedId(id);
-			save(ids, /*getStorePath() + "/" +*/ this.store.get(persistentHolder.path(id)).getCurrentValue());
+
+			save(ids, getStorePath() + "/" + this.store.get(persistentHolder.path(id)).getCurrentValue());
 		}
 	}
 
 	protected abstract String getStorePath();
 
 	private void save(List<String> ids, String path) {
-//		String folder = createFolder(path);
-		IdValues idValue = new IdValues(application);
+
+		
+		String dir  =path.replace(new File(path).getName(), "");
+		if (!Files.exists(Paths.get(dir))) {
+			try {
+				Files.createDirectories(Paths.get(dir));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		List<String> saved = new ArrayList<>();
+		
+		IdValues idValue = new IdValues(application());
 		for (String id : ids) {
 			RuntimeProperty prop = this.store.get(id);
 			idValue.idValue.add(new IdValue(prop.getId(), prop.getCurrentValue()));
@@ -75,8 +91,9 @@ public abstract class LocalPersistent implements UserSequencer {
 						String filename = path + "." + id + ".png";
 						Files.deleteIfExists(Paths.get(filename));
 						ImageIO.write(final_buffered_image , "png", new File(filename) );
+						
+						saved.add(filename);
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -85,6 +102,8 @@ public abstract class LocalPersistent implements UserSequencer {
 						String filename = path + "." + id + ".chart";
 						Files.deleteIfExists(Paths.get(filename));
 						Files.write(Paths.get(filename), obj.toString().getBytes(), StandardOpenOption.CREATE_NEW);
+						
+						saved.add(filename);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}					
@@ -94,6 +113,7 @@ public abstract class LocalPersistent implements UserSequencer {
 						String filename = path + "." + id + ".table";
 						Files.deleteIfExists(Paths.get(filename));
 						Files.write(Paths.get(filename), obj.toString().getBytes(), StandardOpenOption.CREATE_NEW);
+						saved.add(filename);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}					
@@ -103,6 +123,7 @@ public abstract class LocalPersistent implements UserSequencer {
 						String filename = path + "." + id;
 						Files.deleteIfExists(Paths.get(filename));
 						Files.write(Paths.get(filename), obj.toString().getBytes(), StandardOpenOption.CREATE_NEW);
+						saved.add(filename);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -115,7 +136,11 @@ public abstract class LocalPersistent implements UserSequencer {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		onSaved(saved);
 	}
+
+	protected abstract void onSaved(List<String> saved);
 
 	private String createFolder(String path) {
 		String concatPath = "";

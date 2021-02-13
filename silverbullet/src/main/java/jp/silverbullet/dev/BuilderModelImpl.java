@@ -274,11 +274,22 @@ public abstract class BuilderModelImpl implements Cloneable {
 			
 		};
 //		sequencer.addUserSequencer(persistentHandler);
-		sequencer.addUserSequencer(new LocalPersistent(persistentHolder, this.store, this.blobStore, applicationName) {
+		sequencer.addUserSequencer(new LocalPersistent(persistentHolder, this.store, this.blobStore) {
 
 			@Override
 			protected String getStorePath() {
 				return storePath;
+			}
+
+			@Override
+			protected void onSaved(List<String> saved) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			protected String application() {
+				return applicationName;
 			}
 			
 		});

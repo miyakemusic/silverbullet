@@ -1,12 +1,18 @@
 package jp.silverbullet.testspec;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class TestSpecGenerator {
 
-	public TsTestSpec generate(NetworkConfiguration active, List<String> ids) {
-		TsTestSpec testSpec = new TsTestSpec();
+	public TsTestSpec generate(NetworkConfiguration active, List<String> ids, String projectName) {
+		List<String> nodes = new ArrayList<>(); 
+		ids.forEach(id -> {
+			TsNode node = active.findNode(id);
+			nodes.add(node.getName());
+		});
+		TsTestSpec testSpec = new TsTestSpec(projectName, nodes);
 				
 		ids.forEach(id -> {
 			TsNode node = active.findNode(id);

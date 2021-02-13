@@ -8,10 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jp.silverbullet.core.dependency2.RequestRejectedException;
 import jp.silverbullet.core.sequncer.Sequencer;
-import jp.silverbullet.testspec.NetworkConfiguration;
 import jp.silverbullet.testspec.NetworkTestConfigurationHolder;
-import jp.silverbullet.testspec.TsPresentationNodes;
-import jp.silverbullet.web.WebSocketBroadcaster;
 
 public class UserModel {
 
@@ -19,6 +16,7 @@ public class UserModel {
 	private Map<String, BuilderModelImpl> runtimeModels = new HashMap<>(); // key = app
 	private Automator automator = null;
 	private NetworkTestConfigurationHolder networkConfiguration = new NetworkTestConfigurationHolder();
+	private SbFiles sbFiles = new SbFiles();
 	
 	private AutomatorInterface automaterInterface = new AutomatorInterface() {
 
@@ -88,8 +86,8 @@ public class UserModel {
 
 	public BuilderModelImpl addRuntimeModel(String app, String device, String userid) {
 		try {
-			BuilderModelImpl runtimeModel = new SbFiles().loadAfile(userid, app, device);
-			runtimeModel.setApplicationName(app, new SbFiles().getStorePath(userid));
+			BuilderModelImpl runtimeModel = sbFiles.loadAfile(userid, app, device);
+			runtimeModel.setApplicationName(app, sbFiles.getStorePath(userid));
 			runtimeModels.put(device, runtimeModel);
 			
 			runtimeModel.getSequencer().addSequencerListener(automator.createListener(device));

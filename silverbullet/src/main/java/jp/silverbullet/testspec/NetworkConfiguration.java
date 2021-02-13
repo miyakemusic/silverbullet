@@ -1,11 +1,7 @@
 package jp.silverbullet.testspec;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class NetworkConfiguration {
 	private TsNode rootNode = new TsNode("ROOT") {

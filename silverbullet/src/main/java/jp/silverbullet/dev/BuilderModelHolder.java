@@ -11,6 +11,7 @@ import jp.silverbullet.core.Zip;
 import jp.silverbullet.testspec.NetworkConfiguration;
 import jp.silverbullet.testspec.NetworkTestConfigurationHolder;
 import jp.silverbullet.testspec.TsPresentationNodes;
+import jp.silverbullet.testspec.TsTestSpec;
 import jp.silverbullet.web.DeviceProperty;
 
 public abstract class BuilderModelHolder {
@@ -21,7 +22,7 @@ public abstract class BuilderModelHolder {
 	public static final String DEFAULT_USER_NAME = "silverbullet";
 	
 	private Map<String, UserModel> allUsers = new HashMap<>();
-	
+	private SbFiles sbFiles = new SbFiles();
 	
 	public BuilderModelHolder() {
 
@@ -32,7 +33,7 @@ public abstract class BuilderModelHolder {
 	}	
 
 	public void loadAll() {
-		new SbFiles().createTmpFolderIfNotExists();
+		sbFiles.createTmpFolderIfNotExists();
 		
 		new SbFiles.WalkThrough() {
 			@Override
@@ -43,7 +44,7 @@ public abstract class BuilderModelHolder {
 				for (String path : list) {
 					BuilderModelImpl model;
 					try {
-						model = new SbFiles().loadAfile(userid, path, NO_DEVICE);
+						model = sbFiles.loadAfile(userid, path, NO_DEVICE);
 						String app = createApp(path);
 						userModel.addDevModel(model, app);
 					} catch (IOException e) {
@@ -112,7 +113,7 @@ public abstract class BuilderModelHolder {
 		allUsers.get(userid).getAutomator().save(folder + "/Automator.json");
 		allUsers.get(userid).getNetworkTestConfig().save(folder);
 		
-		new SbFiles().createFolderIfNotExists(userid);
+		sbFiles.createFolderIfNotExists(userid);
 		String filename = SbFiles.PERSISTENT_FOLDER + "/" + userid + "/" + app + ".zip";
 		Zip.zip(folder, filename);	
 		
@@ -135,7 +136,7 @@ public abstract class BuilderModelHolder {
 			String app = createApp(filename);
 
 			try {
-				BuilderModelImpl model = new SbFiles().loadAfile(userid, app, NO_DEVICE);
+				BuilderModelImpl model = sbFiles.loadAfile(userid, app, NO_DEVICE);
 				userModel.addDevModel(model, app);
 				allUsers.get(userid).getAutomator().load(SbFiles.TMP_FOLDER + "/Automator.json");
 				allUsers.get(userid).getNetworkTestConfig().load(SbFiles.TMP_FOLDER);
@@ -151,7 +152,7 @@ public abstract class BuilderModelHolder {
 
 	public void load(String userid, String path) {
 		try {
-			BuilderModelImpl model = new SbFiles().loadAfile(userid, path, NO_DEVICE);
+			BuilderModelImpl model = sbFiles.loadAfile(userid, path, NO_DEVICE);
 			String app = createApp(path);
 			this.allUsers.get(userid).addDevModel(model, app);
 		} catch (IOException e) {
@@ -171,12 +172,12 @@ public abstract class BuilderModelHolder {
 	}
 
 	public String getStorePath(String userid) {
-		return new SbFiles().getStorePath(userid);
+		return sbFiles.getStorePath(userid);
 	}
 	
 	public List<String> getStorePaths(String userid) {
 		List<String> ret = new ArrayList<>();
-		for (String path : new SbFiles().getStorePaths(userid)) {
+		for (String path : sbFiles.getStorePaths(userid)) {
 			ret.add(new File(path).getName());
 		}
 		return ret;
@@ -190,13 +191,19 @@ public abstract class BuilderModelHolder {
 		return this.allUsers.get(userid).getNetworkTestConfig();
 	}
 
-	public void registerScript(String userid) {
+	public void registerScript(String projectName, String userid) {
 		UserModel userModel = this.allUsers.get(userid);
-		List<String> script = userModel.getNetworkTestConfig().testSpec().script;
+		TsTestSpec testSpec = userModel.getNetworkTestConfig().testSpec(projectName);
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append(projectName);
+		testSpec.nodes().forEach(node -> {
+			stringBuilder.append("." + node);
+		});
+		List<String> script = testSpec.script();
 		String s = "";
 		for (String line : script) {
 			s += line + "\n";
 		}
-		userModel.getAutomator().register("AutoGenerate", s);
+		userModel.getAutomator().register(stringBuilder.toString(), s);
 	}
 }

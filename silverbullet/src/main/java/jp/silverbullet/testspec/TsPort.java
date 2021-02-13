@@ -5,7 +5,7 @@ public abstract class TsPort {
 	private TsNode owner;
 	private TsPort pairPort = null;
 	public String id;
-	private TsPortConfig config;
+	private TsPortConfig config = new TsPortConfig();
 
 	abstract public String getName();
 	

@@ -2,73 +2,103 @@ package jp.silverbullet.testspec;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class NetworkTestConfigurationHolder {
-
-	private NetworkConfiguration active = new NetworkConfiguration();
-	private TsTestSpec testSpec;
-	private static final String filename = "networktestconfig.json";
 	public TsSelectionConfig selections = new TsSelectionConfig();
+	private Map<String, NetworkConfiguration> configs = new HashMap<>();
+	private Map<String, TsTestSpec> testSpecs = new HashMap<>();
 	
-	public NetworkConfiguration get() {
-		return this.active;
+	private static final String EXTENSION = ".netcfg";
+	public NetworkConfiguration get(String projectName) {
+		return this.configs.get(projectName);
 	}
 	
 	public void load(String folder) {
 		try {
-			PrsNetworkConfiguration cfg = new ObjectMapper().readValue(new File(folder + "/" + filename ), PrsNetworkConfiguration.class);
-			this.active = new NodeConverter().programData(cfg);
+
+			try (Stream<Path> walk = Files.walk(Paths.get(folder))) {
+				walk
+					.filter(p -> !Files.isDirectory(p))   // not a directory
+					.map(p -> p.toString().toLowerCase()) // convert path to string
+					.filter(f -> f.endsWith(EXTENSION))       // check end with
+					.forEach(file -> {
+			  				try {
+								PrsNetworkConfiguration cfg = new ObjectMapper().readValue(new File(file), PrsNetworkConfiguration.class);
+								
+								NetworkConfiguration networkConfiguration = new NodeConverter().programData(cfg);
+								
+								configs.put(new File(file).getName().replace(EXTENSION, ""), networkConfiguration);
+								
+							} catch (IOException e) {
+								e.printStackTrace();
+							}	
+			              });
+			  }
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
 		
 	}
 	
 	public void save(String folder) {
-		PrsNetworkConfiguration cfg = new NodeConverter().persistentData(this.active);
-		try {
-			new ObjectMapper().writeValue(new File(folder + "/" + filename), cfg);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		this.configs.forEach((k,v) -> {
+			PrsNetworkConfiguration cfg = new NodeConverter().persistentData(v);
+			try {
+				new ObjectMapper().writeValue(new File(folder + "/" + k + EXTENSION), cfg);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}			
+		});
+		
+
 	}
 
-	public void setPortConfig(String id, TsPortConfig config) {
-		this.active.findPort(id).config(config);
+	public void setPortConfig(String projectName, String id, TsPortConfig config) {
+		this.configs.get(projectName).findPort(id).config(config);
 	}
 
-	public TsPortConfig getPortConfig(String id) {
-		return this.active.findPort(id).config();
+	public TsPortConfig getPortConfig(String projectName, String id) {
+		return this.configs.get(projectName).findPort(id).config();
 	}
 
 	public void createDemo() {
-		this.active = new NetworkConfiguration().createDemo();
+		NetworkConfiguration demo = new NetworkConfiguration().createDemo();
+		this.configs.put("demo", demo);
 	}
 
-	public void copyPortConfig(String id, TsPortConfig config) {
-		this.active.copyConfig(id, config);
+	public void copyPortConfig(String projectName, String id, TsPortConfig config) {
+		this.configs.get(projectName).copyConfig(id, config);
 	}
 
-	public TsTestSpec createScript(List<String> ids) {
-		testSpec = new TestSpecGenerator().generate(this.active, ids);
+	public TsTestSpec createScript(String projectName, List<String> ids) {
+		TsTestSpec testSpec = new TestSpecGenerator().generate(this.configs.get(projectName), ids, projectName);
+		this.testSpecs.put(projectName, testSpec);
 		return testSpec;
 	}
 
-	public TsTestSpec sortBy(String sortBy) {
+	public TsTestSpec sortBy(String projectName, String sortBy) {
 		Comparator<TsTestSpecElement> comparator = new Comparator<TsTestSpecElement>() {
 
 			@Override
 			public int compare(TsTestSpecElement arg0, TsTestSpecElement arg1) {
 				try {
-					String s1 = TsTestSpecElement.class.getField(sortBy).get(arg0).toString();
+					String s1 = TsTestSpecElement.class.getField(sortBy).get(arg0).toString();				
 					String s2 = TsTestSpecElement.class.getField(sortBy).get(arg1).toString();
 					return s1.compareTo(s2);
 				} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException
@@ -81,28 +111,28 @@ public class NetworkTestConfigurationHolder {
 			}
 			
 		};
-		Collections.sort(this.testSpec.spec, comparator);
-		generate();
-		return this.testSpec;
+		TsTestSpec testSpec = this.testSpecs.get(projectName);
+		Collections.sort(testSpec.spec, comparator);
+		generate(testSpec, projectName);
+		return testSpec;
 	}
 	
-	private void generate() {
-		this.testSpec.script.clear();
+	private void generate(TsTestSpec testSpec, String projectName) {
+		testSpec.clear();
 		String currentNode = "";
 		String currentDirection = "";
 		String currentSide = "";
 		String currentMethod = "";
 		String currentPort = "";
 		
-		this.testSpec.script.add("var MT1041A = 'MT1041A';");
-		this.testSpec.script.add("var okControl = '{\"controls\":[{\"type\":\"Button\",\"title\":\"OK\",\"id\":\"ok\"},{\"type\":\"Button\",\"title\":\"Abort\",\"id\":\"abort\"}]}';");
+		testSpec.add("var MT1041A = 'MT1041A';");
+		testSpec.add("var okControl = '{\"controls\":[{\"type\":\"Button\",\"title\":\"OK\",\"id\":\"ok\"},{\"type\":\"Button\",\"title\":\"Abort\",\"id\":\"abort\"}]}';");
 		
-		this.testSpec.script.add("function func() {");
+		testSpec.add("function func() {");
 		String device = null;
-		for (TsTestSpecElement e : this.testSpec.spec) {
+		for (TsTestSpecElement e : testSpec.spec) {
 			String message = "";
 
-			
 			if (!e.testMethod.equals(currentMethod)) {
 				message += "<div>Use tester <b><font color=\"blue\">" + e.testMethod + "</font></b>.</div>";			
 				message += this.selections.message(e.testMethod);
@@ -125,17 +155,22 @@ public class NetworkTestConfigurationHolder {
 			
 			device = deviceName(e.testMethod);
 			
+			testSpec.add("\tif (sb.requires('" + e.portId + "', '" + e.testMethod + "')) {");
 			if (!message.isEmpty()) {
-				this.testSpec.script.add("if (sb.message("+ device + ", '" + message + "', okControl) == 'abort')return;");
+				testSpec.add("\t\tif (sb.message("+ device + ", '" + message + "', okControl) == 'abort')return;");
 			}
 
-			this.testSpec.script.addAll(replaceValues(this.selections.script(e.testMethod), e));
+			for (String line : replaceValues(this.selections.script(projectName, e.testMethod), e)) {
+				testSpec.add("\t\t" + line);
+			}
+//			this.testSpec.script.addAll(replaceValues(this.selections.script(e.testMethod), e));
+			testSpec.add("\t}");
 			
 		};
-		this.testSpec.script.add("if (sb.message(" + device + ", '<h1>Good Job! <br>You can go home now!</h1>', okControl) =='abort')return;");
+		testSpec.add("if (sb.message(" + device + ", '<h1>Good Job! <br>You can go home now!</h1>', okControl) =='abort')return;");
 		
-		this.testSpec.script.add("}");
-		this.testSpec.script.add("func();");
+		testSpec.add("}");
+		testSpec.add("func();");
 	}
 	
 	private List<String> replaceValues(List<String> script, TsTestSpecElement e) {
@@ -163,15 +198,19 @@ public class NetworkTestConfigurationHolder {
 		return this.selections.testMethods();
 	}
 
-	public TsTestSpec testSpec() {
-		return this.testSpec;
+	public TsTestSpec testSpec(String projectName) {
+		return this.testSpecs.get(projectName);
 	}
 
-	public TsNode getNode(String nodeId) {
-		return this.active.findNode(nodeId);
+	public TsNode getNode(String projectName, String nodeId) {
+		return this.configs.get(projectName).findNode(nodeId);
 	}
 
-	public Set<String> getAllPorts() {
-		return this.active.allPorts.keySet();
+	public Set<String> getAllPorts(String projectName) {
+		return this.configs.get(projectName).allPorts.keySet();
+	}
+
+	public List<String> getProjectList() {
+		return new ArrayList<String>(this.configs.keySet());
 	}
 }

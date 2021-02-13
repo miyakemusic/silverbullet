@@ -28,7 +28,7 @@ public class TsSelectionConfig {
 		connetros.add("Corning_OptiTip");
 		connetros.add("Corning_OptiTap");
 		
-		String folder = "C:/Users/miyak/OneDrive/openti/results/";
+		String folder = "%FOLDER%";//projectName() + "/";
 		
 		String device = "MT1041A";
 		{
@@ -81,8 +81,13 @@ public class TsSelectionConfig {
 		return this.testMethods.get(testMethod).getMessage();
 	}
 
-	public List<String> script(String testMethod) {
-		return this.testMethods.get(testMethod).getScript();
+	public List<String> script(String projectName, String testMethod) {
+		List<String> ret=  new ArrayList<>();
+		this.testMethods.get(testMethod).getScript().forEach(line -> {
+			ret.add(line.replace("%FOLDER%", projectName + "/"));
+		});
+				
+		return ret;
 	}
 
 	public List<String> testMethods() {
