@@ -39,11 +39,11 @@ public class WebSocketBroadcaster {
 		this.clients.get(userid).add(client);
 	}
 	
-	public void registerAsDevice(String userid, String name, WebSocketObject client) {
+	public void registerAsDevice(String userid, String deviceName, String serialNo, WebSocketObject client) {
 		if (!this.domainModels.containsKey(userid)) {
 			this.domainModels.put(userid, new HashMap<String, WebSocketObject>());
 		}
-		this.domainModels.get(userid).put(name, client);			
+		this.domainModels.get(userid).put(new DeviceName().generate(deviceName, serialNo), client);			
 
 		sendMessageAsync(userid, "DEVICE", "Added");
 	}	

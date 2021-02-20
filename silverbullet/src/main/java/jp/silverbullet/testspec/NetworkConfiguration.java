@@ -164,4 +164,49 @@ public class NetworkConfiguration {
 		this.allPorts.get(id).getOwner().copyPortConfig(id, config);
 	}
 
+	public NetworkConfiguration createDemo2() {
+		NetworkConfiguration networkConfig = new NetworkConfiguration();
+		
+		TsNode core = networkConfig.createRoot("Core Switch");
+		
+		for (int i = 1 ; i < 5; i++) {
+			TsNode aggregation = networkConfig.createNode("Aggregation Switch" + i);
+			core.port_out("out" + i).connect(aggregation.port_in("in"));
+			
+			for (int j = 1; j < 5; j++) {
+				TsNode access = networkConfig.createNode("Access Switch" + j);
+				aggregation.port_out("out" + j).connect(access.port_in("in"));		
+				
+				for (int k = 1; k < 10; k++) {
+					TsNode server = networkConfig.createNode("Server" + String.valueOf(i) + String.valueOf(j) + String.valueOf(k));
+					access.port_out("out" + k).connect(server.port_in("in"));						
+				}
+			}
+		}
+		
+		TsNode splitter1 = networkConfig.createNode("SPLITTER_1");
+		
+//		TsNode splitter1_1 = networkConfig.createNode("SPLITTER_1_1");
+//		for (int i = 0; i < 8; i++) {
+//			olt.port_out("B" + i).connect(networkConfig.createNode("ONU" + i).port_in());
+//		}
+				
+		TsNode splitter1_2 = networkConfig.createNode("SPLITTER_1_2");
+		for (int i = 0; i < 16; i++) {
+			splitter1_2.port_out("B" + i).connect(networkConfig.createNode("ONU" + i).port_in());
+		}
+		
+//		splitter1.port_out("B0").connect(networkConfig.createNode("ONU0").port_in());
+//		splitter1.port_out("B1").connect(networkConfig.createNode("ONU1").port_in());
+//		splitter1.port_out("B2").connect(splitter1_1.port_in());
+//		splitter1.port_out("B3").connect(networkConfig.createNode("ONU2").port_in());
+//		splitter1.port_out("B4").connect(networkConfig.createNode("ONU3").port_in());
+//		splitter1.port_out("B5").connect(networkConfig.createNode("ONU4").port_in());
+//		splitter1.port_out("B6").connect(networkConfig.createNode("UNUSED").port_in());
+//		splitter1.port_out("B7").connect(splitter1_2.port_in());
+
+		this.rootNode = networkConfig.rootNode;
+		return networkConfig;
+	}
+
 }

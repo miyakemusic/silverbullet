@@ -9,4 +9,5 @@ public class WsLoginMessage {
 	public String device;
 	public String sessionName;
 	public String userid;
+	public String serialNo;
 }

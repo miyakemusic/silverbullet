@@ -42,7 +42,7 @@ public class BuilderServer {
 		if (protocol.equals("https")) {
 			server = new Server();
 			SslContextFactory sslContextFactory = new SslContextFactory();
-	        sslContextFactory.setKeyStorePath(System.getProperty("user.dir") + "/mykeystore.jks");
+	        sslContextFactory.setKeyStorePath(System.getProperty("user.dir") + "/keystore.jks");
 	        sslContextFactory.setKeyStorePassword("mypassword");
 	        ServerConnector httpsConnector = new ServerConnector(server, sslContextFactory);
 	        httpsConnector.setPort(port);

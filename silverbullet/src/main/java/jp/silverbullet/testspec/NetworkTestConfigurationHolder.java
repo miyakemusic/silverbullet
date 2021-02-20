@@ -79,7 +79,7 @@ public class NetworkTestConfigurationHolder {
 
 	public void createDemo() {
 		NetworkConfiguration demo = new NetworkConfiguration().createDemo();
-		this.configs.put("demo", demo);
+		this.configs.put("Kanagawa_Atsugi_Access", demo);
 	}
 
 	public void copyPortConfig(String projectName, String id, TsPortConfig config) {

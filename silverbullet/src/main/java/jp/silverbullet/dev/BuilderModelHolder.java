@@ -12,6 +12,7 @@ import jp.silverbullet.testspec.NetworkConfiguration;
 import jp.silverbullet.testspec.NetworkTestConfigurationHolder;
 import jp.silverbullet.testspec.TsPresentationNodes;
 import jp.silverbullet.testspec.TsTestSpec;
+import jp.silverbullet.web.DeviceName;
 import jp.silverbullet.web.DeviceProperty;
 
 public abstract class BuilderModelHolder {
@@ -165,7 +166,8 @@ public abstract class BuilderModelHolder {
 		
 		Map<String, BuilderModelImpl> models = this.allUsers.get(userid).getRuntimeModels();
 		for (String key : models.keySet()) {
-			DeviceProperty prop = new DeviceProperty(key, models.get(key).getApplicationName());
+			DeviceName deviceName = new DeviceName(key);
+			DeviceProperty prop = new DeviceProperty(deviceName.getDeviceName(), deviceName.getSerialNo(), models.get(key).getApplicationName());
 			ret.add(prop);
 		}
 		return ret;

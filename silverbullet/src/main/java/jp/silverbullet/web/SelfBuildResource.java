@@ -1,9 +1,5 @@
 package jp.silverbullet.web;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -14,8 +10,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-
-import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 
 import jp.silverbullet.core.property2.SvFileException;
 

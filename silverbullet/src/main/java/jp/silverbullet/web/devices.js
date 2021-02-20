@@ -56,8 +56,9 @@ class Devices {
 					for (var o of msg) {
 						var device = o.deviceName;//o.split(',')[0];
 						var application = o.applicationName;//o.split(',')[1];
+						var serialNo = o.serialNo;
 						
-						retreiveUiEntry(application, device, function(result, application, device) {
+						retreiveUiEntry(application, device, serialNo, function(result, application, device, serialNo) {
 							var deviceIdOne = deviceId + '_' + device.replace('.', '_');
 							var deviceIdOneButton = deviceIdOne + '_button';
 							var deviceUiWindows = deviceIdOne + "_uiPane";
@@ -72,11 +73,11 @@ class Devices {
 		
 							if (result != '') {
 								uiList.push(deviceUiWindows);
-								new NewLayout(deviceUiWindows, result, device, function(height) {
+								new NewLayout(deviceUiWindows, result, device, serialNo, function(height) {
 									$('#' + deviceIdOne).css({'min-height':height, 'overflow':'hidden'});
 									
 									$('#' + deviceUiWindows).dialog({
-										autoOpen: true,
+										autoOpen: false,
 										title: device,
 										closeOnEscape: false,
 										modal: false,
@@ -144,12 +145,12 @@ class Devices {
 			});
 		}
 		
-		function retreiveUiEntry(application, device, result) {
+		function retreiveUiEntry(application, device, serialNo, result) {
 			$.ajax({
 				type: "GET", 
-				url: "//" + window.location.host + "/rest/" + application + "/domain/" + device + "/getUiEntry",
+				url: "//" + window.location.host + "/rest/" + application + "/domain/" + device + "/" + serialNo + "/getUiEntry",
 				success: function(msg){
-					result(msg, application, device);
+					result(msg, application, device, serialNo);
 				}
 			});
 		}	

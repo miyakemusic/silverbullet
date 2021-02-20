@@ -899,13 +899,14 @@ class Table2 extends Widget {
 }
 
 class NewLayout {
-	constructor(divParent, rootName, device, listener, application) {
+	constructor(divParent, rootName, device, serialNo, listener, application) {
 		var propertyMap = new Map();
 		var widgetMap = new Map();
 		var divMap = new Map();
 
 		var me = this;
 
+		this.serialNo = serialNo;
 		if (device == null) {
 			this.device = 'NO_DEVICE';
 		}
@@ -915,7 +916,7 @@ class NewLayout {
 		
 		this.basePath = "//" + window.location.host + "/rest";
 		this.newGuiPath = this.basePath + "/" + application + "/newGui";
-		this.runtimePath = this.basePath + "/" + application + "/" + this.device + "/runtime";
+		this.runtimePath = this.basePath + "/runtime/" + application + "/" + this.device + "/" + this.serialNo;
 		this.domainPath = this.basePath + "/" + application + "/domain";
 		this.registerPath = this.basePath + "/" + application + "/register2";	
 
@@ -970,7 +971,7 @@ class NewLayout {
 			}
 		};
 		
-		websocket.addListener('VALUES@' + me.device, valueHandler);
+		websocket.addListener('VALUES@' + me.device + "." + me.serialNo, valueHandler);
 
 		var messageDialogId = div + "_messageDialog";
 		var messageId = div + "_message";
@@ -1511,7 +1512,7 @@ class NewLayout {
 	
 	rebuild(application) {
 		this.newGuiPath = this.basePath + "/" + application + "/newGui";
-		this.runtimePath = this.basePath + "/" + application + "/" + this.device + "/runtime";
+		this.runtimePath = this.basePath + "/runtime/" + application + "/" + this.device + "/" + this.serialNo;
 		this.domainPath = this.basePath + "/" + application + "/domain";
 		this.registerPath = this.basePath + "/" + application + "/register2";	
 		this.library.path(this.newGuiPath);

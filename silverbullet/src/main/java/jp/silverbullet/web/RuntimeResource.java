@@ -22,27 +22,41 @@ import jp.silverbullet.core.ui.UiProperty;
 import jp.silverbullet.core.ui.UiPropertyConverter;
 import jp.silverbullet.dev.Automator;
 
-@Path("/{app}/{device}/runtime")
+@Path("/runtime/{app}/{device}")
 public class RuntimeResource {
 	@GET
-	@Path("/getProperty")
+	@Path("/{serialNo}/getProperty")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public UiProperty getProperty(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @PathParam("device") String device,
+			@PathParam("serialNo") String serialNo,
 			@QueryParam("id") String id, @QueryParam("index") Integer index, @QueryParam("ext") String ext) {
-		RuntimeProperty property = SilverBulletServer.getStaticInstance().getBuilderModelBySessionName(cookie, app, device).getRuntimePropertyStore().get(RuntimeProperty.createIdText(id,index));
+		
+		String deviceName = new DeviceName().generate(device, serialNo);
+		RuntimeProperty property = SilverBulletServer.getStaticInstance().getBuilderModelBySessionName(cookie, app, deviceName).getRuntimePropertyStore().get(RuntimeProperty.createIdText(id,index));
 		if (property == null) {
 			System.err.println(id);
 		}
-		UiProperty ret = UiPropertyConverter.convert(property, ext, SilverBulletServer.getStaticInstance().getBuilderModelBySessionName(cookie, app, device).getBlobStore());
+		UiProperty ret = UiPropertyConverter.convert(property, ext, SilverBulletServer.getStaticInstance().getBuilderModelBySessionName(cookie, app, deviceName).getBlobStore());
 		return ret;
 	}
 
 	@GET
-	@Path("/getBlob")
+	@Path("/{serialNo}/setValue")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public ValueSetResult setCurrentValue(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @PathParam("device") String device,
+			@PathParam("serialNo") String serialNo,
+			@QueryParam("id") String id, @QueryParam("index") Integer index, @QueryParam("value") String value) {
+		return SilverBulletServer.getStaticInstance().getBuilderModelBySessionName(cookie, app, new DeviceName().generate(device, serialNo)).requestChangeByUser(new Id(id, index), value);
+	}
+	
+	@GET
+	@Path("/{serialNo}/getBlob")
 	@Produces(MediaType.APPLICATION_JSON) 
 	public BlobJson getProperty(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @PathParam("device") String device,
+			@PathParam("serialNo") String serialNo,
 			@QueryParam("id") String id, @QueryParam("name") String name) {
-		Object object = SilverBulletServer.getStaticInstance().getBuilderModelBySessionName(cookie, app, device).getBlobStore().get(id);
+		Object object = SilverBulletServer.getStaticInstance().getBuilderModelBySessionName(cookie, app, new DeviceName().
+				generate(device, serialNo)).getBlobStore().get(id);
 		BlobJson json = new BlobJson();
 		json.data = object.toString();
 
@@ -50,7 +64,7 @@ public class RuntimeResource {
 	}
 	
 	@GET
-	@Path("/respondMessage")
+	@Path("/{serialNo}/respondMessage")
 	@Produces(MediaType.APPLICATION_JSON)
 	public String respondMessage(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @PathParam("device") String device,
 			@QueryParam("id") String id, @QueryParam("type") String type) {
@@ -59,7 +73,7 @@ public class RuntimeResource {
 	}
 
 	@GET
-	@Path("/replyDialog")
+	@Path("/{serialNo}/replyDialog")
 	@Produces(MediaType.APPLICATION_JSON)
 	public String replyDialog(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @PathParam("device") String device,
 			@QueryParam("messageId") String messageId, @QueryParam("reply") String reply) {
@@ -68,7 +82,7 @@ public class RuntimeResource {
 	}
 	
 	@GET
-	@Path("/replyMessage")
+	@Path("/{serialNo}/replyMessage")
 	@Produces(MediaType.APPLICATION_JSON)
 	public String replyMessage(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @PathParam("device") String device,
 			@QueryParam("messageId") String messageId, @QueryParam("reply") String reply) {
@@ -81,18 +95,10 @@ public class RuntimeResource {
 	}
 	
 	@GET
-	@Path("/getProperties")
+	@Path("/{serialNo}/getProperties")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<UiProperty> getProperties(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @PathParam("device") String device) {
 		return UiPropertyConverter.convert(SilverBulletServer.getStaticInstance().getBuilderModelBySessionName(cookie, app, device).getRuntimePropertyStore().getAllProperties(PropertyType2.NotSpecified));
-	}
-	
-	@GET
-	@Path("/setValue")
-	@Produces(MediaType.APPLICATION_JSON) 
-	public ValueSetResult setCurrentValue(@CookieParam("SilverBullet") String cookie, @PathParam("app") String app, @PathParam("device") String device,
-			@QueryParam("id") String id, @QueryParam("index") Integer index, @QueryParam("value") String value) {
-		return SilverBulletServer.getStaticInstance().getBuilderModelBySessionName(cookie, app, device).requestChangeByUser(new Id(id, index), value);
 	}
 
 	@GET

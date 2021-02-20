@@ -102,21 +102,21 @@ public class DomainResource {
 
 	
 	@GET
-	@Path("/{device}/login")
+	@Path("/{device}/{serialNo}/login")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String longin(@QueryParam("userid") String userid, @PathParam("app") String app, 
+	public String longin(@QueryParam("userid") String userid, @PathParam("app") String app, @PathParam("serialNo") String serialNo, 
 			@PathParam("device") String device, @Context HttpServletRequest request) {
 		System.out.println("login: + " + app + "@" + device);
-		SilverBulletServer.getStaticInstance().createDevice(userid, app, device);
+		SilverBulletServer.getStaticInstance().createDevice(userid, app, new DeviceName().generate(device, serialNo));
 		return "OK";
 	}
 
 	@GET
-	@Path("/{device}/logout")
+	@Path("/{device}/{serialNo}/logout")
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String logout(@QueryParam("userid") String userid, @PathParam("app") String app, @PathParam("device") String device) {
+	public String logout(@QueryParam("userid") String userid, @PathParam("app") String app, @PathParam("device") String device, @PathParam("serialNo") String serialNo) {
 		System.out.println("logout: + " + app + "@" + device);
-		SilverBulletServer.getStaticInstance().deleteDevice(userid, app, device);
+		SilverBulletServer.getStaticInstance().deleteDevice(userid, app, new DeviceName().generate(device, serialNo));
 		return "OK";
 	}
 	
@@ -166,11 +166,11 @@ public class DomainResource {
 	
 	
 	@GET
-	@Path("/{device}/getProperty")
+	@Path("/{device}/{serialNo}/getProperty")
 	@Produces(MediaType.APPLICATION_JSON) 
-	public LightProperty getProperty(@QueryParam("userid") String userid, @PathParam("app") String app, @PathParam("device") String device, 
+	public LightProperty getProperty(@QueryParam("userid") String userid, @PathParam("app") String app, @PathParam("device") String device, @PathParam("serialNo") String serialNo, 
 			@QueryParam("id") String id, @QueryParam("index") Integer index, @QueryParam("ext") String ext) {
-		RuntimeProperty property = SilverBulletServer.getStaticInstance().getBuilderModelByUserId(userid, app, device).getRuntimePropertyStore().get(RuntimeProperty.createIdText(id,index));
+		RuntimeProperty property = SilverBulletServer.getStaticInstance().getBuilderModelByUserId(userid, app, new DeviceName().generate(device, serialNo)).getRuntimePropertyStore().get(RuntimeProperty.createIdText(id,index));
 		if (property == null) {
 			System.err.println(id);
 		}
@@ -182,14 +182,14 @@ public class DomainResource {
 	}
 	
 	@POST
-	@Path("/{device}/setValueBySystem")
+	@Path("/{device}/{serialNo}/setValueBySystem")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.TEXT_PLAIN) 
-	public String setValueBySystem(@QueryParam("userid") String userid, @PathParam("app") String app, 
+	public String setValueBySystem(@QueryParam("userid") String userid, @PathParam("app") String app, @PathParam("serialNo") String serialNo, 
 			@PathParam("device") String device, String json) {
 		try {
 			LightProperty prop = new ObjectMapper().readValue(json, LightProperty.class);
-			SilverBulletServer.getStaticInstance().getBuilderModelByUserId(userid, app, device)
+			SilverBulletServer.getStaticInstance().getBuilderModelByUserId(userid, app, new DeviceName().generate(device, serialNo))
 				.requestChangeBySystem(new Id(prop.id, 0, device), prop.currentValue);
 
 		} catch (IOException e) {
@@ -199,18 +199,18 @@ public class DomainResource {
 	}
 	
 	@POST
-	@Path("/{device}/postValueBySystem")
+	@Path("/{device}/{serialNo}/postValueBySystem")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.TEXT_PLAIN)
 	public String postValue(@QueryParam("userid") String userid, 
-			@PathParam("app") String app, @PathParam("device") String device, 
+			@PathParam("app") String app, @PathParam("device") String device, @PathParam("serialNo") String serialNo, 
 			@QueryParam("id") String id, @QueryParam("index") Integer index, 
 			@QueryParam("name") String name, @QueryParam("classname") String classname, String json) {
 //		System.out.println("postValue " + object);
 		try {
 			Object object = new ObjectMapper().readValue(json, Class.forName(classname));
-			return SilverBulletServer.getStaticInstance().getBuilderModelByUserId(userid, app, device)
-					.requestBlobChangeBySystem(new Id(id, index, device), object, name);
+			return SilverBulletServer.getStaticInstance().getBuilderModelByUserId(userid, app, new DeviceName().generate(device, serialNo))
+					.requestBlobChangeBySystem(new Id(id, index, new DeviceName().generate(device, serialNo)), object, name);
 		} catch (ClassNotFoundException | IOException e) {
 			e.printStackTrace();
 		}
@@ -219,10 +219,10 @@ public class DomainResource {
 	
 //	private static Map<String, String> uiEntry = new HashMap<>();
 	@GET
-	@Path("/{device}/getUiEntry")
+	@Path("/{device}/{serialNo}/getUiEntry")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String getUiEntry(@CookieParam("SilverBullet") String cookie, 
-			@PathParam("app") String app, @PathParam("device") String device) {
+			@PathParam("app") String app, @PathParam("device") String device, @PathParam("serialNo") String serialNo) {
 		
 		String ret = SilverBulletServer.getStaticInstance().getBuilderModel(cookie, app).getUiEntry(device);
 //		String ret = uiEntry.get(device);
@@ -233,10 +233,10 @@ public class DomainResource {
 	}
 	
 	@GET
-	@Path("/{device}/setUiEntry")
+	@Path("/{device}/{serialNo}/setUiEntry")
 	@Produces(MediaType.TEXT_PLAIN) 
 	public String setDeviceUi(@CookieParam("SilverBullet") String cookie, 
-			@PathParam("app") String app, @PathParam("device") String device, @QueryParam("ui") String ui) {
+			@PathParam("app") String app, @PathParam("device") String device, @PathParam("serialNo") String serialNo, @QueryParam("ui") String ui) {
 //		uiEntry.put(device, ui);
 		SilverBulletServer.getStaticInstance().getBuilderModel(cookie, app).setUiEntry(device, ui);
 		return "OK";
@@ -265,9 +265,9 @@ public class DomainResource {
 	}	
 	
 	@POST
-	@Path("/{device}/upload")
+	@Path("/{device}/{serialNo}/upload")
 	@Produces(MediaType.APPLICATION_OCTET_STREAM) 
-	public Response upload(@PathParam("app") String app, @PathParam("device") String device, 
+	public Response upload(@PathParam("app") String app, @PathParam("device") String device, @PathParam("serialNo") String serialNo, 
 			@QueryParam("userid") String userid, @QueryParam("filepath") String filepath, String base64) {
 //		String access_token = SilverBulletServer.getStaticInstance().getUserStore().findByUseID(userid).getAccess_token();
 		

@@ -30,7 +30,7 @@ public class WebSocketObject {
     			WebSocketBroadcaster.getInstance().registerAsBrowser(obj.sessionName, this);
     		}
     		else if (obj.type.equals(WsLoginMessage.DomainModel)) {
-    			WebSocketBroadcaster.getInstance().registerAsDevice(obj.userid, obj.device, this);
+    			WebSocketBroadcaster.getInstance().registerAsDevice(obj.userid, obj.device, obj.serialNo, this);
     		}
     		
     	}

@@ -13,6 +13,11 @@ class TestSpec {
 			}
 		});
 		
+		$('#' + projectName).change(function() {
+			retrieveTest();
+			retrievePortState();
+		});
+		
 		$('#' + toolBarId).append('<button id="' + createDemoId + '">Create Demo</button>');
 		$('#' + createDemoId).click(function() {
 			createDemo();
@@ -30,9 +35,12 @@ class TestSpec {
 		var createScriptId = div + "_createScript";
 		var createReportId = div + "_createReport";
 		var updateStateId = div + "_updateState";
+
 		$('#' + toolBarId).append('<button id="' + createScriptId + '">Create Script</button>');
 		$('#' + toolBarId).append('<button id="' + createReportId + '">Create Report</button>');
 		$('#' + toolBarId).append('<button id="' + updateStateId + '">Update State</button>');
+		
+		new DeviceList(toolBarId);
 		
 		$('#' + createScriptId).click(function() {
 			createScript(function(script) {
@@ -43,7 +51,7 @@ class TestSpec {
 		$('#' + updateStateId).click(function() {
 			retrievePortState();
 		});
-						
+								
 		function updateScriptTable(script) {
 			$('#' + scriptTableId + ' > tbody').empty();
 			for (var o of script.spec) {
@@ -64,18 +72,23 @@ class TestSpec {
 			$('#' + scriptList).text(str);
 		}
 		
-		var mainId = div + "_main";
-		$('#' + div).append('<div id="' + mainId + '"></div>');
-		
+		var baseId = div + '_base';
+		$('#' + div).append('<div id="' + baseId + '"></div>');
+				
 		var canvasId = div + '_canvas';
-		$('#' + mainId).append('<canvas id="' + canvasId + '" width="1000" height="2000"></canvas>');
-		$('#' + mainId).css('position','relative');
+		$('#' + baseId).append('<canvas id="' + canvasId + '" width="1000" height="2000"></canvas>');
+		$('#' + baseId).css('position','relative');
 		
 		$('#' + canvasId).css('position','absolute');
 		$('#' + canvasId).css('top','0px');
-		$('#' + canvasId).css('left','0px');
-			
-		
+		$('#' + canvasId).css('left','0px');	
+
+		var mainId = div + "_main";
+		$('#' + baseId).append('<div id="' + mainId + '"></div>');
+		$('#' + mainId).css('position','absolute');
+		$('#' + mainId).css('top','0px');
+		$('#' + mainId).css('left','0px');
+				
 		function drawLine(x1, y1, x2, y2) {
 		    var canvas = $("#" + canvasId);
 		    var ctx = canvas[0].getContext("2d");
@@ -100,6 +113,11 @@ class TestSpec {
 			ctx.fillText(text, x, y); 
 		}
 		
+		function clearCanvas() {
+			var canvas = $("#" + canvasId);
+			var ctx = canvas[0].getContext("2d");
+			ctx.clearRect(0, 0, $('#' + canvasId).attr('width'), $('#' + canvasId).attr('height')); 
+		}
 
 		function recursive(node, parent, layer) {
 			var divId = parent.name + '_' + node.name;
@@ -129,7 +147,10 @@ class TestSpec {
 		});
 		
 		var offset = 20;
-		function drawDiagram3(msg) {		
+		function drawDiagram3(msg) {	
+			$('#' + mainId).empty();
+			clearCanvas();
+			
 			for (var node of msg.allNodes) {
 				drawRect(node.left, node.top + offset, node.width, node.height);
 				var nodeCheckDiv = div + "_checkDiv" + node.id;
@@ -137,14 +158,11 @@ class TestSpec {
 				$('#' + mainId).append('<div id="' + nodeCheckDiv + '"><input type="checkbox" id="'+nodeCheck+ '" value="'+node.id+'"></div>');
 				var reportLink = div + node.id + "report";
 				$('#' + nodeCheckDiv).append('<a href="' + "//" + window.location.host + resourcepath() + "/report?nodeId=" + node.id + '" target="_blank">' + node.name + '</a>');
-//				$('#' + nodeCheckDiv).append('<label id="' + reportLink + '">' + node.name + '</label>');
-//				$('#' + reportLink).click(function() {
-//					window.open("//" + window.location.host + resourcepath() + "/report?nodeId=" + node.id, "window1","width=800,height=600");
-//				});
 				
 				$('#' + nodeCheckDiv).css('position', 'absolute');
 				$('#' + nodeCheckDiv).css('top', node.top + 'px');
 				$('#' + nodeCheckDiv).css('left', node.left + 'px');
+				$('#' + nodeCheckDiv).css('width', '200px');
 				
 				$('#' + nodeCheck).click(function() {
 					if ($(this).prop('checked') == true) {
@@ -172,7 +190,7 @@ class TestSpec {
 				
 		var beingSelectedPort;
 		var dialogId = mainId + '_dialog';
-		$('#' + mainId).append('<div id="' + dialogId + '"></div>');
+		$('#' + toolBarId).append('<div id="' + dialogId + '"></div>');
 		var leftId = dialogId + '_left';
 		var rightId = dialogId + '_right';
 		
