@@ -19,9 +19,10 @@ class DeviceList {
 						var device = o.deviceName;
 						var application = o.applicationName;
 						var serial = o.serialNo;
+						var userName = o.currentUserName;
 						var id = device + '_' + serial;
 						
-						$('#' + mainId).append('<button id="' + id + '">' + device + '(' + serial + ')' + '</button>');
+						$('#' + mainId).append('<button id="' + id + '">' + device + '(' + userName + ')' + '</button>');
 						
 						$('#' + id).click(function() {
 							openWindow($(this).prop('id'), application);

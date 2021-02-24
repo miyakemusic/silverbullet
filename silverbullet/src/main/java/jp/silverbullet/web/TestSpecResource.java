@@ -35,7 +35,9 @@ import jp.silverbullet.core.property2.RuntimePropertyStore;
 import jp.silverbullet.testspec.NetworkConfiguration;
 import jp.silverbullet.testspec.NetworkTestConfigurationHolder;
 import jp.silverbullet.testspec.PortStateEnum;
-import jp.silverbullet.testspec.PortStatus;
+import jp.silverbullet.testspec.JsPortStatus;
+import jp.silverbullet.testspec.TestResultManager;
+import jp.silverbullet.testspec.TestResultManager.Project;
 import jp.silverbullet.testspec.TsNode;
 import jp.silverbullet.testspec.TsPort;
 import jp.silverbullet.testspec.TsPortConfig;
@@ -162,9 +164,12 @@ public class TestSpecResource {
 					RuntimePropertyStore store = SilverBulletServer.getStaticInstance().getBuilderModel(cookie, app).getRuntimePropertyStore();
 					v.idValue.forEach(a -> {
 						RuntimeProperty prop = store.get(a.getId().getId());
-						String value = prop.getCurrentValue();
+						String value = "";//prop.getCurrentValue();
 						if (prop.isList()) {
 							value = prop.getSelectedListTitle();
+						}
+						else {
+							value = a.getValue();
 						}
 						String line = "<div>" + prop.getTitle() + " : " + value + prop.getUnit() + "</div>";
 						builder.append(line);
@@ -271,45 +276,53 @@ public class TestSpecResource {
 	@GET
 	@Path("/{projectName}/portState")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<PortStatus> portState(@CookieParam("SilverBullet") String cookie, @PathParam("projectName") String projectName) throws IOException {
+	public List<JsPortStatus> portState(@CookieParam("SilverBullet") String cookie, @PathParam("projectName") String projectName) throws IOException {
 		String userid = SilverBulletServer.getStaticInstance().getUserID(cookie);
 	
 		String path = SilverBulletServer.getStaticInstance().getBuilderModelHolder().getStorePath(userid);
 		
-		Map<String, PortStateEnum> map = new LinkedHashMap<>();
+		TestResultManager manager = new TestResultManager().load(path);
 		
-		File[] files = new File(path + "/" + projectName).listFiles();
+		List<JsPortStatus> ret = new ArrayList<>();
 		
-		if (files == null) {
-			return new ArrayList<PortStatus>();
-		}
-		Arrays.sort(files, Comparator.comparingLong(File::lastModified));
+		Project project = manager.project(projectName);
+		return project.summary();
+//		Map<String, PortStateEnum> map = new LinkedHashMap<>();
+//		
+//		File[] files = new File(path + "/" + projectName).listFiles();
+//		
+//		if (files == null) {
+//			return new ArrayList<PortStatus>();
+//		}
+//		Arrays.sort(files, Comparator.comparingLong(File::lastModified));
+//		
+//		for (File file : files) {
+//			String name = file.getName();
+//			String portId = name.split("\\.")[1];
+//			if (!map.containsKey(portId)) {
+//				map.put(portId, PortStateEnum.ON_GOING);
+//			}
+//			if (name.endsWith(".json")) {
+//				List<String> lines = Files.readAllLines(Paths.get(file.getAbsolutePath()));
+//				if (lines.toString().toUpperCase().contains("PASS")) {
+//					if (map.get(portId).equals(PortStateEnum.ON_GOING)) {
+//						map.put(portId, PortStateEnum.COMPLETE_PASS);
+//					}
+//				}
+//				else if (lines.toString().toUpperCase().contains("FAIL")) {
+//					map.put(portId, PortStateEnum.COMPLETE_FAIL);
+//				}
+//			}
+//		}
+//		
+//		List<PortStatus> ret = new ArrayList<>();
+//		map.forEach((k,v) ->{
+//			PortStateEnum r = map.get(k);
+//			ret.add(new PortStatus(k,r));
+//		});
+//		return ret;
 		
-		for (File file : files) {
-			String name = file.getName();
-			String portId = name.split("\\.")[1];
-			if (!map.containsKey(portId)) {
-				map.put(portId, PortStateEnum.ON_GOING);
-			}
-			if (name.endsWith(".json")) {
-				List<String> lines = Files.readAllLines(Paths.get(file.getAbsolutePath()));
-				if (lines.toString().toUpperCase().contains("PASS")) {
-					if (map.get(portId).equals(PortStateEnum.ON_GOING)) {
-						map.put(portId, PortStateEnum.COMPLETE_PASS);
-					}
-				}
-				else if (lines.toString().toUpperCase().contains("FAIL")) {
-					map.put(portId, PortStateEnum.COMPLETE_FAIL);
-				}
-			}
-		}
 		
-		List<PortStatus> ret = new ArrayList<>();
-		map.forEach((k,v) ->{
-			PortStateEnum r = map.get(k);
-			ret.add(new PortStatus(k,r));
-		});
-		return ret;
 	}
 	
 	@GET

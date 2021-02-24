@@ -5,6 +5,7 @@ public class DeviceProperty {
 	private String deviceName;
 	private String serialNo;
 	private String applicationName;
+	private String currentUserName;
 	public DeviceProperty() {}
 	public DeviceProperty(String deviceName, String serialNo, String applicationName) {
 		this.deviceName = deviceName;
@@ -28,6 +29,12 @@ public class DeviceProperty {
 	}
 	public void setApplicationName(String applicationName) {
 		this.applicationName = applicationName;
+	}
+	public void setCurrentUserName(String string) {
+		this.currentUserName = string;
+	}
+	public String getCurrentUserName() {
+		return currentUserName;
 	}
 
 }

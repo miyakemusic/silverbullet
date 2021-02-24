@@ -168,9 +168,19 @@ public abstract class BuilderModelHolder {
 		for (String key : models.keySet()) {
 			DeviceName deviceName = new DeviceName(key);
 			DeviceProperty prop = new DeviceProperty(deviceName.getDeviceName(), deviceName.getSerialNo(), models.get(key).getApplicationName());
+			applyUserName(prop);
 			ret.add(prop);
 		}
 		return ret;
+	}
+
+	private void applyUserName(DeviceProperty prop) {
+		if (prop.getSerialNo().equals("SN201923892")) {
+			prop.setCurrentUserName("Miyake");
+		}
+		else if (prop.getSerialNo().equals("SN201923891")) {
+			prop.setCurrentUserName("ë∫è„");
+		}
 	}
 
 	public String getStorePath(String userid) {

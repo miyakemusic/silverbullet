@@ -272,7 +272,7 @@ class TestSpec {
 				retrievePortConfig(beingSelectedPort, function(portConfig) {
 					$('#' + leftTests).empty();
 					$('#' + rightTests).empty();
-					$('#' + comboConnector).val(portConfig.connector);
+					$('#' + comboConnector).val(pblikortConfig.connector);
 					for (var v of portConfig.insideTest) {
 						var portResult = div + "_device_" + v.replace(/\s/g, '');
 						left_tests.push(v);
@@ -339,10 +339,10 @@ class TestSpec {
 		
 		
 		setInterval(blinkCurrent, 1000);
-		var latestTest;
+		var latestTests = [];
 		var blink = true;
 		function blinkCurrent() {
-			if (latestTest == null) {
+			if (latestTests.length == 0) {
 				return;
 			}
 			var color;
@@ -352,7 +352,9 @@ class TestSpec {
 			else {
 				color = 'white';
 			}
-			$('#' + latestTest.portId).css('color', color);
+			for (var o of latestTests) {
+				$('#' + o.portId).css('color', color);
+			}
 			blink = !blink;
 		}
 		
@@ -361,6 +363,8 @@ class TestSpec {
 				type: "GET", 
 				url: "//" + window.location.host + resourcepath() + "/portState",
 				success: function(msg){
+					latestTests = [];
+					
 					for (var o of msg) {
 						var color = 'gray';
 						if (o.portState == 'COMPLETE_PASS') {
@@ -375,9 +379,11 @@ class TestSpec {
 						
 						$('#' + o.portId).css('background-color', color);
 						$('#' + o.portId).css('color', 'black');
+						
+						if (o.onGoing) {
+							latestTests.push(o);
+						}
 					}
-					
-					latestTest = msg[msg.length-1];
 				}
 			});	
 		}

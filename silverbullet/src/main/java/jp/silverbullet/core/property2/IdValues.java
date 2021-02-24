@@ -25,7 +25,7 @@ public class IdValues {
 
 	public String value(String id) {
 		for (IdValue v : this.idValue) {
-			if (v.getId().toString().equals(id)) {
+			if (v.getId().getId().equals(id)) {
 				return v.getValue();
 			}
 		}
