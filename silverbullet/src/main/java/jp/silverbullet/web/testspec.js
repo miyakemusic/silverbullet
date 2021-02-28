@@ -206,7 +206,8 @@ class TestSpec {
 		});
 		
 		var portDetailTable = div + "_portDetailTable";
-		$('#' + dialogId).append('<table id="' + portDetailTable + '"><thead><td><label id="' + leftCaption + '">Left Side</td><td><label id="'+rightCaption+'">Right Side</label></td></thead><tbody><tr><td><div id="' + leftId + '"></div></td><td><div id="' + rightId + '"></div></td></tr></tbody></table>');
+		var portIdDiv = div + "_portId";
+		$('#' + dialogId).append('<div id="' + portIdDiv + '"></div><table id="' + portDetailTable + '"><thead><td><label id="' + leftCaption + '">Left Side</td><td><label id="'+rightCaption+'">Right Side</label></td></thead><tbody><tr><td><div id="' + leftId + '"></div></td><td><div id="' + rightId + '"></div></td></tr></tbody></table>');
 		$('#' + portDetailTable + ' td').each(function() {
 		 	$(this).css('width', "300px");
 		 	$(this).css('vertical-align', 'top');
@@ -246,6 +247,31 @@ class TestSpec {
 		
 		$('#' + rightId).css('width', '200px');
 		
+		var setupDialog = div + "_setupDialog";
+		var setupDialogContent = setupDialog + "_content";
+		$('#' + div).append('<div id="' + setupDialog + '"><div id="' + setupDialogContent + '"></div></div>');
+		$('#' + setupDialog).dialog({
+			autoOpen: false,
+			title: 'Setup',
+			closeOnEscape: true,
+			modal: true,
+			buttons: {
+				"Copy to All": function(){
+					$(this).dialog('close');
+				},
+				"OK": function(){
+					commitPortConfig();
+					$(this).dialog('close');
+				}
+				,
+				"Cancel": function(){
+					$(this).dialog('close');
+				}
+			},
+			width: 800,
+			height: 600
+		});	
+				
 		function createButton(id, direction, nodeText, portText, x, y, width, height) {
 			$('#' + mainId).append('<button value="' + direction + '" + name="' + nodeText + '_' + portText + '" id="' + id + '"></button>');
 			$('#' + id).text(portText);
@@ -259,6 +285,7 @@ class TestSpec {
 			$('#' + id).click(function() {
 				beingSelectedPort = $(this).prop('id');
 
+				$('#' + portIdDiv).text(beingSelectedPort);
 				$('#' + rightCaption).text('Inside Port (Device side)');
 				$('#' + leftCaption).text('Outside Port (Fiber side)');
 				
@@ -272,23 +299,29 @@ class TestSpec {
 				retrievePortConfig(beingSelectedPort, function(portConfig) {
 					$('#' + leftTests).empty();
 					$('#' + rightTests).empty();
-					$('#' + comboConnector).val(pblikortConfig.connector);
+					$('#' + comboConnector).val(portConfig.connector);
 					for (var v of portConfig.insideTest) {
 						var portResult = div + "_device_" + v.replace(/\s/g, '');
+						var portSetup = div + "_setup_device_" + v.replace(/\s/g, '');
 						left_tests.push(v);
 						
-						$('#' + leftTests).append('<div><h2>[' + v + ']</h2></div><div id="' + portResult + '"></div>');
+						$('#' + leftTests).append('<div><h2>[' + v + ']</h2></div><div><button class="setup" id="' + portSetup + '">Setup</div><div id="' + portResult + '"></div>');
 						retreivePortResult(beingSelectedPort, v, 'Device Side', portResult);
 					}
 					for (var v of portConfig.outsideTest) {
 						var portResult = div + "_fiber_" + v.replace(/\s/g, '');
+						var portSetup = div + "_setup_device_" + v.replace(/\s/g, '');
 						right_tests.push(v);
 						
-						$('#' + rightTests).append('<div><h2>[' + v + ']</h2></div><div id="' + portResult + '"></div>');
+						$('#' + rightTests).append('<div><h2>[' + v + ']</h2></div><div><button class="setup" id="' + portSetup + '">Setup</div><div id="' + portResult + '"></div>');
 						retreivePortResult(beingSelectedPort, v, 'Fiber Side', portResult);
 					}	
 					$('#' + leftTests).css('vertical-align', 'top');
-					$('#' + rightTests).css('vertical-align', 'top');				
+					$('#' + rightTests).css('vertical-align', 'top');
+					
+					$('.setup').click(function() {
+						$('#' + setupDialog).dialog('open');
+					});
 				});
 			});
 		}

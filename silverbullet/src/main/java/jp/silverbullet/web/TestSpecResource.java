@@ -147,6 +147,7 @@ public class TestSpecResource {
 	}
 
 	private String readJson(String cookie, String portId, String testMethod, String side, String path, String projectName) {
+		boolean imageExists = false;
 		String path2 = path + "/" + projectName;
 		if (!Files.exists(Paths.get(path2))) {
 			return "";
@@ -155,6 +156,7 @@ public class TestSpecResource {
 		for (File file : new File(path2).listFiles()) {
 			String name = file.getName();
 			if (name.contains(portId) && name.contains(testMethod) && name.contains(side)) {
+				if (name.endsWith(".json")) {
 				try {
 					byte[] bytes = Files.readAllBytes(Paths.get(file.getAbsolutePath()));
 					String json = new String(bytes);
@@ -166,7 +168,7 @@ public class TestSpecResource {
 						RuntimeProperty prop = store.get(a.getId().getId());
 						String value = "";//prop.getCurrentValue();
 						if (prop.isList()) {
-							value = prop.getSelectedListTitle();
+							value = prop.getOptionTitle(a.getValue());
 						}
 						else {
 							value = a.getValue();
@@ -175,18 +177,21 @@ public class TestSpecResource {
 						builder.append(line);
 					});
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-
+				}
+				else if (name.endsWith(".png") || name.endsWith(".chart")) {
+					imageExists = true;
+				}
 			}
 		}
-		String ret = "<img src=\"rest/testSpec/" + projectName + "/image?portId=" + portId + "&testMethod=" + testMethod + "&side=" + side
-				+ "\" width=\"300px\" height=\"200px\">";
-		
-		System.out.println(ret);
-		
-		builder.append(ret);
+		if (imageExists) {
+			String ret = "<img src=\"rest/testSpec/" + projectName + "/image?portId=" + portId + "&testMethod=" + testMethod + "&side=" + side
+					+ "\" width=\"300px\" height=\"200px\">";
+			System.out.println(ret);
+			builder.append(ret);
+		}
+
 		return builder.toString();
 	}
 	

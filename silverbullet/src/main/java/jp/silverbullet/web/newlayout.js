@@ -971,7 +971,11 @@ class NewLayout {
 			}
 		};
 		
-		websocket.addListener('VALUES@' + me.device + "." + me.serialNo, valueHandler);
+		var domain = me.device;
+		if (me.serialNo != null) {
+			domain += '.' + me.serialNo;
+		}
+		websocket.addListener('VALUES@' + domain, valueHandler);
 
 		var messageDialogId = div + "_messageDialog";
 		var messageId = div + "_message";

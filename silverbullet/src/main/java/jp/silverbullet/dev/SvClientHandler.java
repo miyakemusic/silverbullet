@@ -96,7 +96,7 @@ public class SvClientHandler {
 					}
 					
 					// This is tentative
-					WebSocketBroadcaster.getInstance().sendMessageAsync(userid, "TESTRESULT", message);
+//					WebSocketBroadcaster.getInstance().sendMessageAsync(userid, "TESTRESULT", message);
 //				}
 			}
 	
