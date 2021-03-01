@@ -268,8 +268,8 @@ class TestSpec {
 					$(this).dialog('close');
 				}
 			},
-			width: 800,
-			height: 600
+			width: 500,
+			height: 300
 		});	
 				
 		function createButton(id, direction, nodeText, portText, x, y, width, height) {
@@ -320,6 +320,22 @@ class TestSpec {
 					$('#' + rightTests).css('vertical-align', 'top');
 					
 					$('.setup').click(function() {
+						$('#' + setupDialogContent).empty();
+						var application = 'silverbullet';
+						var device = 'NO_DEVICE';
+						var serialNo = 'NO_SERIAL';
+						$.ajax({
+							type: "GET", 
+							url: "//" + window.location.host + "/rest/" + application + "/domain/" + device + "/" + serialNo + "/getUiEntry",
+							success: function(msg){
+
+							}
+						});
+			
+						new NewLayout(setupDialogContent, '100OTDR_SETUP', device, serialNo, function(height) {
+							$('#' + setupDialog).css({'min-height':height, 'overflow':'hidden'});
+						}, application);
+								
 						$('#' + setupDialog).dialog('open');
 					});
 				});
