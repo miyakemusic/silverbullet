@@ -1524,4 +1524,8 @@ class NewLayout {
 		
 		this.library.update();
 	}
+	
+	setRuntimePath(path) {
+		this.runtimePath = this.basePath + "/" + path;
+	}
 }

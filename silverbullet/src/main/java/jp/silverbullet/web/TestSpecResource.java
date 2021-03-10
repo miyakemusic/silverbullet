@@ -28,10 +28,13 @@ import javax.ws.rs.core.Response;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jp.silverbullet.core.dependency2.Id;
 import jp.silverbullet.core.property2.ChartProperty;
 import jp.silverbullet.core.property2.IdValues;
 import jp.silverbullet.core.property2.RuntimeProperty;
 import jp.silverbullet.core.property2.RuntimePropertyStore;
+import jp.silverbullet.core.ui.UiProperty;
+import jp.silverbullet.core.ui.UiPropertyConverter;
 import jp.silverbullet.testspec.NetworkConfiguration;
 import jp.silverbullet.testspec.NetworkTestConfigurationHolder;
 import jp.silverbullet.testspec.PortStateEnum;
@@ -46,6 +49,49 @@ import jp.silverbullet.testspec.TsTestSpec;
 
 @Path("/testSpec")
 public class TestSpecResource {
+	@GET
+	@Path("/getUiEntry")
+	@Produces(MediaType.TEXT_PLAIN) 
+	public String getUiEntry(@CookieParam("SilverBullet") String cookie, @QueryParam("testMethod") String testMethod) {
+		if (testMethod.equals("OTDR")) {
+			return "100OTDR_SETUP";
+		}
+		else if (testMethod.equals("Fiber end-face inspection")) {
+			return "VIP_SETUP";
+		}
+		else if (testMethod.equals("Optical Power Meter")) {
+			return "OLTS_SETUP";
+		}
+		return "OK";
+	}
+	
+	@GET
+	@Path("/{portid}/{testMethod}/getProperty")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public UiProperty getProperty(@CookieParam("SilverBullet") String cookie,  @PathParam("portid") String portid,
+			@PathParam("testMethod") String testMethod,
+			@QueryParam("id") String id, @QueryParam("index") Integer index, @QueryParam("ext") String ext) {
+		
+		String app = "silverbullet";
+		String deviceName = new DeviceName().generate("", "");
+		RuntimeProperty property = SilverBulletServer.getStaticInstance().getBuilderModelBySessionName(cookie, app, deviceName).getRuntimePropertyStore().get(RuntimeProperty.createIdText(id,index));
+		if (property == null) {
+			System.err.println(id);
+		}
+		UiProperty ret = UiPropertyConverter.convert(property, ext, SilverBulletServer.getStaticInstance().getBuilderModelBySessionName(cookie, app, deviceName).getBlobStore());
+		return ret;
+	}
+	
+	@GET
+	@Path("/{portid}/{testMethod}/setValue")
+	@Produces(MediaType.APPLICATION_JSON) 
+	public ValueSetResult setCurrentValue(@CookieParam("SilverBullet") String cookie, @PathParam("portid") String portid, @PathParam("testMethod") String testMethod,
+			@QueryParam("id") String id, @QueryParam("index") Integer index, @QueryParam("value") String value) {
+		
+		System.out.println(portid + "," + testMethod);
+		return new ValueSetResult();
+	}
+	
 	@GET
 	@Path("/getDemo")
 	@Produces(MediaType.APPLICATION_JSON) 

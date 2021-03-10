@@ -227,7 +227,7 @@ public class DomainResource {
 		}
 		return ret;
 	}
-	
+		
 	@GET
 	@Path("/{device}/{serialNo}/setUiEntry")
 	@Produces(MediaType.TEXT_PLAIN) 

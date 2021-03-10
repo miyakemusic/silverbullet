@@ -305,7 +305,7 @@ class TestSpec {
 						var portSetup = div + "_setup_device_" + v.replace(/\s/g, '');
 						left_tests.push(v);
 						
-						$('#' + leftTests).append('<div><h2>[' + v + ']</h2></div><div><button class="setup" id="' + portSetup + '">Setup</div><div id="' + portResult + '"></div>');
+						$('#' + leftTests).append('<div><h2>[' + v + ']</h2></div><div><button class="setup" name="' + v + '" id="' + portSetup + '">Setup</div><div id="' + portResult + '"></div>');
 						retreivePortResult(beingSelectedPort, v, 'Device Side', portResult);
 					}
 					for (var v of portConfig.outsideTest) {
@@ -313,7 +313,7 @@ class TestSpec {
 						var portSetup = div + "_setup_device_" + v.replace(/\s/g, '');
 						right_tests.push(v);
 						
-						$('#' + rightTests).append('<div><h2>[' + v + ']</h2></div><div><button class="setup" id="' + portSetup + '">Setup</div><div id="' + portResult + '"></div>');
+						$('#' + rightTests).append('<div><h2>[' + v + ']</h2></div><div><button class="setup" name="' + v + '" id="' + portSetup + '">Setup</div><div id="' + portResult + '"></div>');
 						retreivePortResult(beingSelectedPort, v, 'Fiber Side', portResult);
 					}	
 					$('#' + leftTests).css('vertical-align', 'top');
@@ -324,19 +324,22 @@ class TestSpec {
 						var application = 'silverbullet';
 						var device = 'NO_DEVICE';
 						var serialNo = 'NO_SERIAL';
+						var name = $(this).prop('name');
 						$.ajax({
 							type: "GET", 
-							url: "//" + window.location.host + "/rest/" + application + "/domain/" + device + "/" + serialNo + "/getUiEntry",
+							url: "//" + window.location.host + "/rest/testSpec/getUiEntry?testMethod=" + name,
 							success: function(msg){
-
+								var layout = new NewLayout(setupDialogContent, msg, device, serialNo, function(height) {
+									$('#' + setupDialog).css({'min-height':height, 'overflow':'hidden'});
+								}, application);
+								
+								layout.setRuntimePath('testSpec/' + beingSelectedPort + '/' + name);
+									
+								$('#' + setupDialog).dialog('open');
 							}
 						});
 			
-						new NewLayout(setupDialogContent, '100OTDR_SETUP', device, serialNo, function(height) {
-							$('#' + setupDialog).css({'min-height':height, 'overflow':'hidden'});
-						}, application);
-								
-						$('#' + setupDialog).dialog('open');
+
 					});
 				});
 			});
